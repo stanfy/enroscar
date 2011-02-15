@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  
+  <declare-styleable name="GridLayout">
+    <attr name="numColumns" format="integer" />
+    <attr name="numRows" format="integer" />
+  </declare-styleable>
+
+  <declare-styleable name="MainWithBubbleLayout">
+    <attr name="bubbleOffsetX" format="dimension" />
+    <attr name="bubbleOffsetY" format="dimension" />
+  </declare-styleable>
+
+</resources>
