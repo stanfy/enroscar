@@ -4,19 +4,20 @@ import com.stanfy.images.model.CachedImage;
 
 /**
  * Cached images DAO.
+ * @param <T> cached image type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public interface ImagesDAO {
+public interface ImagesDAO<T extends CachedImage> {
 
   /**
    * @param image image instance to update
    */
-  void updateImage(CachedImage image);
+  void updateImage(T image);
 
   /**
    * @param url URL
    * @return cached image
    */
-  CachedImage getCachedImage(final String url);
+  T getCachedImage(final String url);
 
 }

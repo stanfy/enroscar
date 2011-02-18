@@ -14,6 +14,8 @@ public class CachedImage implements BaseColumns {
 
   /** Cached image contract. */
   public static class Contract {
+    protected Contract() { }
+
     /** Table name. */
     public static final String TABLE_NAME = "cached_image";
 
@@ -21,17 +23,19 @@ public class CachedImage implements BaseColumns {
     public static final String URL = "url",
                                PATH = "path",
                                LOADED = "loaded",
-                               REMOVED = "removed";
+                               REMOVED = "removed",
+                               TIMESTAMP = "ts";
 
     /** Column indexes. */
-    public static final int INDEX_ID = 0, INDEX_URL = 1, INDEX_PATH = 2, INDEX_LOADED = 3;
+    public static final int INDEX_ID = 0, INDEX_URL = 1, INDEX_PATH = 2, INDEX_LOADED = 3, INDEX_TIMESTAMP = 4;
 
     /** Column names. */
     public static final String[] COLUMNS = new String[] {
       _ID,
       URL,
       PATH,
-      LOADED
+      LOADED,
+      TIMESTAMP
     };
 
     /** DDL script identifier. */
@@ -47,6 +51,7 @@ public class CachedImage implements BaseColumns {
       instance.setUrl(cursor.getString(INDEX_URL));
       instance.setPath(cursor.getString(INDEX_PATH));
       instance.setLoaded(cursor.getInt(INDEX_LOADED) == 1);
+      instance.setTimestamp(cursor.getLong(INDEX_TIMESTAMP));
       return instance;
     }
 
@@ -60,6 +65,7 @@ public class CachedImage implements BaseColumns {
       cv.put(URL, image.getUrl());
       cv.put(PATH, image.getPath());
       cv.put(LOADED, image.isLoaded() ? 1 : 0);
+      cv.put(TIMESTAMP, image.getTimestamp());
       return cv;
     }
 
@@ -75,11 +81,11 @@ public class CachedImage implements BaseColumns {
   /** Local image path. */
   private String path;
 
-  /** News record ID. */
-  private long newsRecordId;
-
   /** Loaded flag. */
   private boolean loaded = false;
+
+  /** Timestamp. */
+  private long timestamp;
 
   public CachedImage(final long id) {
     this.id = id;
@@ -106,16 +112,6 @@ public class CachedImage implements BaseColumns {
   public void setPath(final String path) { this.path = path; }
 
   /**
-   * @return the newsRecordId
-   */
-  public long getNewsRecordId() { return newsRecordId; }
-
-  /**
-   * @param newsRecordId the newsRecordId to set
-   */
-  public void setNewsRecordId(final long newsRecordId) { this.newsRecordId = newsRecordId; }
-
-  /**
    * @return the id
    */
   public long getId() { return id; }
@@ -134,11 +130,16 @@ public class CachedImage implements BaseColumns {
    */
   public void setLoaded(final boolean loaded) { this.loaded = loaded; }
 
+  /** @param timestamp the timestamp to set */
+  public void setTimestamp(final long timestamp) { this.timestamp = timestamp; }
+  /** @return the timestamp */
+  public long getTimestamp() { return timestamp; }
+
   public void set(final CachedImage image) {
     setLoaded(image.isLoaded());
-    setNewsRecordId(image.getNewsRecordId());
     setPath(image.getPath());
     setUrl(image.getUrl());
+    setTimestamp(image.getTimestamp());
   }
 
 }

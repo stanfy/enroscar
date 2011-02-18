@@ -3,7 +3,7 @@ package com.stanfy;
 /**
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class DebugFlags {
+public final class DebugFlags {
 
   /** Private. */
   private DebugFlags() { /* hidden */ }

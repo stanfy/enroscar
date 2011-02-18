@@ -1,5 +1,6 @@
 package com.stanfy.images;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -11,7 +12,8 @@ public interface Downloader {
   /**
    * @param url URL
    * @return input stream
+   * @throws IOException if ever
    */
-  InputStream download(final String url);
+  InputStream download(final String url) throws IOException;
 
 }

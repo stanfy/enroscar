@@ -14,7 +14,7 @@ import com.stanfy.images.ImagesManagerContext;
 public class LoadableImageView extends ImageView {
 
   /** Images manager context. */
-  private ImagesManagerContext imagesManagerContext;
+  private ImagesManagerContext<?> imagesManagerContext;
 
   public LoadableImageView(final Context context) {
     super(context);
@@ -29,7 +29,7 @@ public class LoadableImageView extends ImageView {
   }
 
   /** @param imagesManagerContext the imagesManager context to set */
-  public void setImagesManagerContext(final ImagesManagerContext imagesManagerContext) {
+  public void setImagesManagerContext(final ImagesManagerContext<?> imagesManagerContext) {
     this.imagesManagerContext = imagesManagerContext;
   }
 

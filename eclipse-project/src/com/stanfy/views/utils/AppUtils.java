@@ -107,7 +107,7 @@ public class AppUtils {
     do {
       final int value = (int)(rest % divider);
       rest /= divider;
-      sb.append(value).append("/");
+      sb.append(value).append('/');
     } while (rest != 0);
     sb.append(name);
     return sb.toString();

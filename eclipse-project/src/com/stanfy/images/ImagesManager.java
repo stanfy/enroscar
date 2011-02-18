@@ -29,9 +29,10 @@ import com.stanfy.views.utils.Task;
 import com.stanfy.views.utils.ThreadUtils;
 
 /**
+ * @param <T> cached image type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class ImagesManager {
+public class ImagesManager<T extends CachedImage> {
 
   /** Logging tag. */
   private static final String TAG = "ImagesManager";
@@ -65,25 +66,17 @@ public class ImagesManager {
     {4, BuffersPool.DEFAULT_SIZE_FOR_IMAGES}
   });
 
-  protected static CachedImage createRequiredImage(final long recordId, final String url) {
-    final CachedImage image = new CachedImage(0);
-    image.setNewsRecordId(recordId);
-    image.setLoaded(false);
-    image.setUrl(url);
-    return image;
-  }
-
-  protected static String setCachedImagePath(final CachedImage image) {
+  protected String setCachedImagePath(final T image) {
     if (image.getPath() != null) { return image.getPath(); }
-    final long recordId = image.getNewsRecordId();
-    final String path = AppUtils.buildFilePathById(recordId, "image-" + image.getId());
+    final long id = image.getId();
+    final String path = AppUtils.buildFilePathById(id, "image-" + id);
     image.setPath(path);
     return path;
   }
 
-  public void ensureImages(final ImagesDAO imagesDao, final Downloader downloader, final Context context, final List<CachedImage> images) {
+  public void ensureImages(final ImagesDAO<T> imagesDao, final Downloader downloader, final Context context, final List<T> images) {
     final File imagesDir = getImageDir(context);
-    for (final CachedImage image : images) {
+    for (final T image : images) {
       if (image.isLoaded() && new File(imagesDir, image.getPath()).exists()) { continue; }
       try {
         final Drawable d = download(image, downloader);
@@ -111,7 +104,7 @@ public class ImagesManager {
 
   protected Drawable getLoadingDrawable(@SuppressWarnings("unused") final Context context) { return EMPTY_DRAWABLE; }
 
-  protected void cancelTasks(final ImageLoader loader) {
+  protected void cancelTasks(final ImageLoader<T> loader) {
     ThreadUtils.cancelImageTask(loader.getName());
   }
 
@@ -124,11 +117,11 @@ public class ImagesManager {
     return memCache.getElement(url);
   }
 
-  protected ImageLoader createImageLoaderTask(final ImageView imageView, final String url, final ImagesDAO imagesDAO, final Downloader downloader) {
-    return new ImageLoader(imageView, url, this, imagesDAO, downloader);
+  protected ImageLoader<T> createImageLoaderTask(final ImageView imageView, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
+    return new ImageLoader<T>(imageView, url, this, imagesDAO, downloader);
   }
 
-  public void populateImage(final ImageView imageView, final String url, final ImagesDAO imagesDAO, final Downloader downloader) {
+  public void populateImage(final ImageView imageView, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
     if (TextUtils.isEmpty(url)) {
       setImage(imageView, getLoadingDrawable(imageView.getContext()));
       return;
@@ -139,7 +132,7 @@ public class ImagesManager {
       return;
     }
     setImage(imageView, getLoadingDrawable(imageView.getContext()));
-    final ImageLoader loader = createImageLoaderTask(imageView, url, imagesDAO, downloader);
+    final ImageLoader<T> loader = createImageLoaderTask(imageView, url, imagesDAO, downloader);
     cancelTasks(loader);
     getImageTaskExecutor().execute(loader);
   }
@@ -160,7 +153,7 @@ public class ImagesManager {
     }
   }
 
-  protected void saveCachedImage(final ImagesDAO imagesDao, final Context context, final CachedImage image, final Drawable d) throws IOException {
+  protected void saveCachedImage(final ImagesDAO<T> imagesDao, final Context context, final T image, final Drawable d) throws IOException {
     if (d == null) { return; }
     if (!(d instanceof BitmapDrawable)) {
       Log.w(TAG, "Unsupported drawable " + d.getClass() + ". Local image won't be saved.");
@@ -196,13 +189,13 @@ public class ImagesManager {
     }
   }
 
-  protected Drawable download(final CachedImage cachedImage, final Downloader downloader) throws IOException {
+  protected Drawable download(final T cachedImage, final Downloader downloader) throws IOException {
     final InputStream imageInput = downloader.download(cachedImage.getUrl());
     final Drawable d = decodeStream(imageInput);
     return d;
   }
 
-  protected Drawable readLocal(final CachedImage cachedImage, final Context context) throws IOException {
+  protected Drawable readLocal(final T cachedImage, final Context context) throws IOException {
     final File file = new File(getImageDir(context), cachedImage.getPath());
     if (!file.exists()) {
       if (DEBUG_IO) { Log.w(TAG, "Local file " + file.getAbsolutePath() + "does not exist."); }
@@ -231,9 +224,10 @@ public class ImagesManager {
 
   /**
    * Image loader task.
+   * @param <T> image type
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
-  protected static class ImageLoader extends Task {
+  protected static class ImageLoader<T extends CachedImage> extends Task {
 
     /** Logging tag. */
     private static final String TAG = "ImageLoader";
@@ -245,16 +239,16 @@ public class ImagesManager {
     private final String url;
 
     /** Images manager. */
-    private final ImagesManager imagesManager;
+    private final ImagesManager<T> imagesManager;
 
     /** Images DAO. */
-    private final ImagesDAO imagesDAO;
+    private final ImagesDAO<T> imagesDAO;
 
     /** Downloader. */
     private final Downloader downloader;
 
-    public ImageLoader(final ImageView imageView, final String url, final ImagesManager imagesManager,
-        final ImagesDAO imagesDAO, final Downloader downloader) {
+    public ImageLoader(final ImageView imageView, final String url, final ImagesManager<T> imagesManager,
+        final ImagesDAO<T> imagesDAO, final Downloader downloader) {
       super("image-" + imageView.hashCode());
       this.imagesManager = imagesManager;
       this.url = url;
@@ -263,7 +257,7 @@ public class ImagesManager {
       this.imagesDAO = imagesDAO;
     }
 
-    protected void safeImageSet(final CachedImage cachedImage, final Drawable d) {
+    protected void safeImageSet(final T cachedImage, final Drawable d) {
       if (d == null) { return; }
       final ImageView imageView = this.imageView;
       final long id = cachedImage.getId();
@@ -278,13 +272,13 @@ public class ImagesManager {
       });
     }
 
-    protected Drawable setLocalImage(final CachedImage cachedImage) throws IOException {
+    protected Drawable setLocalImage(final T cachedImage) throws IOException {
       final Drawable d = imagesManager.readLocal(cachedImage, imageView.getContext());
       safeImageSet(cachedImage, d);
       return d;
     }
 
-    protected Drawable setRemoteImage(final CachedImage cachedImage) throws IOException {
+    protected Drawable setRemoteImage(final T cachedImage) throws IOException {
       final Drawable d = imagesManager.download(cachedImage, downloader);
       safeImageSet(cachedImage, d);
       return d;
@@ -322,7 +316,7 @@ public class ImagesManager {
     @Override
     protected void safeSQLRun() {
       try {
-        final CachedImage cachedImage = imagesDAO.getCachedImage(url);
+        final T cachedImage = imagesDAO.getCachedImage(url);
         if (cachedImage == null) {
           Log.w(TAG, "Cached image info was not created for " + url);
           return;
