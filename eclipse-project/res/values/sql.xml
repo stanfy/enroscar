@@ -1,0 +1,15 @@
+<resources>
+
+  <string name="sql_ddl_cached_image">
+  <![CDATA[
+    CREATE TABLE IF NOT EXISTS %1$s (
+      %2$s INTEGER PRIMARY KEY AUTOINCREMENT,
+      url TEXT,
+      path TEXT,
+      loaded INTEGER,
+      removed INTEGER
+    );
+  ]]>
+  </string>
+
+</resources>
