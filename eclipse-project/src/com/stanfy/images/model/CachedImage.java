@@ -10,10 +10,10 @@ import com.stanfy.views.R;
  * Cached image.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class CachedImage implements BaseColumns {
+public class CachedImage {
 
   /** Cached image contract. */
-  public static class Contract {
+  public static class Contract implements BaseColumns {
     protected Contract() { }
 
     /** Table name. */

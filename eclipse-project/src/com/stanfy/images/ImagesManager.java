@@ -180,6 +180,7 @@ public class ImagesManager<T extends CachedImage> {
     out.close();
 
     image.setLoaded(true);
+    image.setTimestamp(System.currentTimeMillis());
     imagesDao.updateImage(image);
   }
 
@@ -315,6 +316,7 @@ public class ImagesManager<T extends CachedImage> {
 
     @Override
     protected void safeSQLRun() {
+      if (DEBUG) { Log.d(TAG, "Start image task"); }
       try {
         final T cachedImage = imagesDAO.getCachedImage(url);
         if (cachedImage == null) {

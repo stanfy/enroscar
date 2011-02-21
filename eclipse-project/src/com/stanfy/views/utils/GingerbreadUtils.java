@@ -8,7 +8,7 @@ import android.content.Context;
  * Gingerbread utilities (API level 9).
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-class GingerbreadUtils extends EclairUtils {
+public class GingerbreadUtils extends EclairUtils {
 
   @Override
   public File getExternalCacheDir(final Context context) { return context.getExternalCacheDir(); }

@@ -9,7 +9,7 @@ import android.os.Environment;
  * Implementation for old versions.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-class LowestSDKDependentUtils implements SDKDependentUtils {
+public class LowestSDKDependentUtils implements SDKDependentUtils {
 
   @Override
   public File getExternalCacheDir(final Context context) {
