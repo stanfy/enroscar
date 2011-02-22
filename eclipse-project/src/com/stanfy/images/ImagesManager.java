@@ -29,6 +29,7 @@ import com.stanfy.views.utils.Task;
 import com.stanfy.views.utils.ThreadUtils;
 
 /**
+ * A manager that encapsulates the images downloading and caching logic.
  * @param <T> cached image type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
@@ -52,9 +53,6 @@ public class ImagesManager<T extends CachedImage> {
   /** Empty drawable. */
   protected static final ColorDrawable EMPTY_DRAWABLE = new ColorDrawable(0xeeeeee);
 
-  /** Hidden constructor. */
-  protected ImagesManager() { /* nothing to do */ }
-
   /** MB. */
   private static final int MB = 20;
 
@@ -66,14 +64,22 @@ public class ImagesManager<T extends CachedImage> {
     {4, BuffersPool.DEFAULT_SIZE_FOR_IMAGES}
   });
 
-  protected String setCachedImagePath(final T image) {
-    if (image.getPath() != null) { return image.getPath(); }
-    final long id = image.getId();
-    final String path = AppUtils.buildFilePathById(id, "image-" + id);
-    image.setPath(path);
-    return path;
-  }
+  /** Images format. */
+  private Bitmap.Config imagesFormat = Bitmap.Config.RGB_565;
 
+  /** Hidden constructor. */
+  protected ImagesManager() { /* nothing to do */ }
+
+  /** @param imagesFormat the imagesFormat to set */
+  public void setImagesFormat(final Bitmap.Config imagesFormat) { this.imagesFormat = imagesFormat; }
+
+  /**
+   * Ensure that all the images are loaded. Not loaded images will be downloaded in this thread.
+   * @param imagesDao images DAO
+   * @param downloader downloader instance
+   * @param context context instance
+   * @param images images collection
+   */
   public void ensureImages(final ImagesDAO<T> imagesDao, final Downloader downloader, final Context context, final List<T> images) {
     final File imagesDir = getImageDir(context);
     for (final T image : images) {
@@ -87,6 +93,12 @@ public class ImagesManager<T extends CachedImage> {
     }
   }
 
+  /**
+   * Clear the cached entities.
+   * @param context context instance
+   * @param path image file system path
+   * @param url image URL
+   */
   public void clearCache(final Context context, final String path, final String url) {
     memCache.remove(url);
     final File f = new File(getImageDir(context), path);
@@ -94,33 +106,12 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   /**
-   * @return an executor for image tasks
+   * Populate the requested image to the specified image view.
+   * @param imageView image view instance
+   * @param url image URL
+   * @param imagesDAO images DAO
+   * @param downloader downloader instance
    */
-  protected Executor getImageTaskExecutor() { return ThreadUtils.getImageTasksExecutor(); }
-  /**
-   * @return an executor for main tasks
-   */
-  protected Executor getMainTaskExecutor() { return ThreadUtils.getMainTasksExecutor(); }
-
-  protected Drawable getLoadingDrawable(@SuppressWarnings("unused") final Context context) { return EMPTY_DRAWABLE; }
-
-  protected void cancelTasks(final ImageLoader<T> loader) {
-    ThreadUtils.cancelImageTask(loader.getName());
-  }
-
-  protected void setImage(final ImageView imageView, final Drawable drawable) {
-    imageView.setImageDrawable(drawable);
-    imageView.setTag(null);
-  }
-
-  protected Drawable getFromMemCache(final String url) {
-    return memCache.getElement(url);
-  }
-
-  protected ImageLoader<T> createImageLoaderTask(final ImageView imageView, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
-    return new ImageLoader<T>(imageView, url, this, imagesDAO, downloader);
-  }
-
   public void populateImage(final ImageView imageView, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
     if (TextUtils.isEmpty(url)) {
       setImage(imageView, getLoadingDrawable(imageView.getContext()));
@@ -137,7 +128,71 @@ public class ImagesManager<T extends CachedImage> {
     getImageTaskExecutor().execute(loader);
   }
 
-  public File getImageDir(final Context context) {
+  /**
+   * @param image image to process
+   * @return local file system path to that image
+   */
+  protected String setCachedImagePath(final T image) {
+    if (image.getPath() != null) { return image.getPath(); }
+    final long id = image.getId();
+    final String path = AppUtils.buildFilePathById(id, "image-" + id);
+    image.setPath(path);
+    return path;
+  }
+
+  /**
+   * @return an executor for image tasks
+   */
+  protected Executor getImageTaskExecutor() { return ThreadUtils.getImageTasksExecutor(); }
+  /**
+   * @return an executor for main tasks
+   */
+  protected Executor getMainTaskExecutor() { return ThreadUtils.getMainTasksExecutor(); }
+
+  /**
+   * @param context context
+   * @return a drawable to display while the image is loading
+   */
+  protected Drawable getLoadingDrawable(@SuppressWarnings("unused") final Context context) { return EMPTY_DRAWABLE; }
+
+  /**
+   * @param loader load instance
+   */
+  protected void cancelTasks(final ImageLoader<T> loader) {
+    ThreadUtils.cancelImageTask(loader.getName());
+  }
+
+  /**
+   * @param imageView image view instance
+   * @param drawable incoming drawable
+   */
+  protected final void setImage(final ImageView imageView, final Drawable drawable) {
+    imageView.setImageDrawable(drawable);
+    imageView.setTag(null);
+  }
+
+  /**
+   * @param url image URL
+   * @return cached drawable
+   */
+  protected Drawable getFromMemCache(final String url) { return memCache.getElement(url); }
+
+  /**
+   * @param imageView image view to process
+   * @param url image URL
+   * @param imagesDAO images DAO
+   * @param downloader downloader instance
+   * @return loader task instance
+   */
+  protected ImageLoader<T> createImageLoaderTask(final ImageView imageView, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
+    return new ImageLoader<T>(imageView, url, this, imagesDAO, downloader);
+  }
+
+  /**
+   * @param context context instance
+   * @return base dir to save images
+   */
+  protected File getImageDir(final Context context) {
     final String eState = Environment.getExternalStorageState();
     if (Environment.MEDIA_MOUNTED.equals(eState)) {
       return AppUtils.getSdkDependentUtils().getExternalCacheDir(context);
@@ -214,6 +269,7 @@ public class ImagesManager<T extends CachedImage> {
 
     final BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inTempStorage = bp.get(bCapacity);
+    opts.inPreferredConfig = imagesFormat;
     final Bitmap bm = BitmapFactory.decodeResourceStream(null, null, src, null, opts);
 
     // recycle
