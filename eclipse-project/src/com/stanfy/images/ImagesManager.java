@@ -153,7 +153,14 @@ public class ImagesManager<T extends CachedImage> {
    * @param context context
    * @return a drawable to display while the image is loading
    */
-  protected Drawable getLoadingDrawable(final Context context) { return EMPTY_DRAWABLE; }
+  protected Drawable getLoadingDrawable(@SuppressWarnings("unused") final Context context) { return EMPTY_DRAWABLE; }
+
+  /**
+   * @param context context instance
+   * @param drawable resulting drawable
+   * @return decorated drawable
+   */
+  protected Drawable decorateDrawable(@SuppressWarnings("unused") final Context context, final Drawable drawable) { return drawable; }
 
   /**
    * @param loader load instance
@@ -167,7 +174,7 @@ public class ImagesManager<T extends CachedImage> {
    * @param drawable incoming drawable
    */
   protected final void setImage(final ImageView imageView, final Drawable drawable) {
-    imageView.setImageDrawable(drawable);
+    imageView.setImageDrawable(decorateDrawable(imageView.getContext(), drawable));
     imageView.setTag(null);
   }
 
@@ -287,9 +294,6 @@ public class ImagesManager<T extends CachedImage> {
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
   protected static class ImageLoader<T extends CachedImage> extends Task {
-
-    /** Logging tag. */
-    private static final String TAG = "ImageLoader";
 
     /** GUI view. */
     private final ImageView imageView;
