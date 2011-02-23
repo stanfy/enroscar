@@ -7,7 +7,8 @@
       url TEXT,
       path TEXT,
       loaded INTEGER,
-      removed INTEGER
+      removed INTEGER,
+      ts INTEGER
     );
   ]]>
   </string>

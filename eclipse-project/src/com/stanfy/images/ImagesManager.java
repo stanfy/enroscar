@@ -153,7 +153,7 @@ public class ImagesManager<T extends CachedImage> {
    * @param context context
    * @return a drawable to display while the image is loading
    */
-  protected Drawable getLoadingDrawable(@SuppressWarnings("unused") final Context context) { return EMPTY_DRAWABLE; }
+  protected Drawable getLoadingDrawable(final Context context) { return EMPTY_DRAWABLE; }
 
   /**
    * @param loader load instance
@@ -246,8 +246,10 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   protected Drawable download(final T cachedImage, final Downloader downloader) throws IOException {
-    final InputStream imageInput = downloader.download(cachedImage.getUrl());
+    final String url = cachedImage.getUrl();
+    final InputStream imageInput = downloader.download(url);
     final Drawable d = decodeStream(imageInput);
+    downloader.finish(url);
     return d;
   }
 
@@ -374,10 +376,13 @@ public class ImagesManager<T extends CachedImage> {
     protected void safeSQLRun() {
       if (DEBUG) { Log.d(TAG, "Start image task"); }
       try {
-        final T cachedImage = imagesDAO.getCachedImage(url);
+        T cachedImage = imagesDAO.getCachedImage(url);
         if (cachedImage == null) {
-          Log.w(TAG, "Cached image info was not created for " + url);
-          return;
+          cachedImage = imagesDAO.createCachedImage(url);
+          if (cachedImage == null) {
+            Log.w(TAG, "Cached image info was not created for " + url);
+            return;
+          }
         }
 
         imageView.setTag(cachedImage.getId());

@@ -20,4 +20,10 @@ public interface ImagesDAO<T extends CachedImage> {
    */
   T getCachedImage(final String url);
 
+  /**
+   * @param url URL
+   * @return cached image instance
+   */
+  T createCachedImage(final String url);
+
 }

@@ -16,4 +16,9 @@ public interface Downloader {
    */
   InputStream download(final String url) throws IOException;
 
+  /**
+   * @param url URL with a finished connection
+   */
+  void finish(final String url);
+
 }
