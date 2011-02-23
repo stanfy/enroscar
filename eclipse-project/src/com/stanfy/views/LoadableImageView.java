@@ -3,7 +3,6 @@ package com.stanfy.views;
 import android.content.Context;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.stanfy.images.ImagesManagerContext;
 
