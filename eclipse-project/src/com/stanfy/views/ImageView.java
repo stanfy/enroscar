@@ -1,6 +1,7 @@
 package com.stanfy.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -18,7 +19,7 @@ import android.util.AttributeSet;
  * <p>
  *   Features:
  *   <ul>
- *     <li><b>rounded corners</b> - set cornersRadius > 0, use transparent background!</li>
+ *     <li><b>rounded corners</b> - set cornersRadius > 0 (attribute {@code android:radius})</li>
  *   </ul>
  * </p>
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
@@ -26,7 +27,7 @@ import android.util.AttributeSet;
 public class ImageView extends android.widget.ImageView {
 
   /** Round corners flag. */
-  private int cornersRadius = 0;
+  private int cornersRadius;
 
   /** Help color. */
   private static final int CORNERS_HELP_COLOR = 0xff434343;
@@ -38,7 +39,7 @@ public class ImageView extends android.widget.ImageView {
 
   public ImageView(final Context context) {
     super(context);
-    init();
+    init(context, null);
   }
 
   public ImageView(final Context context, final AttributeSet attrs) {
@@ -47,12 +48,16 @@ public class ImageView extends android.widget.ImageView {
 
   public ImageView(final Context context, final AttributeSet attrs, final int defStyle) {
     super(context, attrs, defStyle);
-    init();
+    init(context, attrs);
   }
 
-  private void init() {
+  private void init(final Context context, final AttributeSet attrs) {
     paint.setAntiAlias(true);
     paint.setColor(CORNERS_HELP_COLOR);
+
+    final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ImageView);
+    cornersRadius = a.getDimensionPixelSize(R.styleable.ImageView_android_radius, 0);
+    a.recycle();
   }
 
   /**

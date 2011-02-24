@@ -11,4 +11,8 @@
     <attr name="bubbleOffsetY" format="dimension" />
   </declare-styleable>
 
+  <declare-styleable name="ImageView">
+    <attr name="android:radius" />
+  </declare-styleable>
+
 </resources>
