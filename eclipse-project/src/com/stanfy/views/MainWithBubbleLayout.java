@@ -76,12 +76,17 @@ public class MainWithBubbleLayout extends ViewGroup {
     if (childCount == 0) { return; }
     final int w = getMeasuredWidth() - getPaddingLeft() - getPaddingRight(), h = getMeasuredHeight() - getPaddingBottom() - getPaddingTop();
     final int centerX = w >> 1, centerY = h >> 1;
-    View view = getChildAt(0);
-    layoutCenter(view, centerX, centerY);
-    if (childCount > 1) {
-      view = getChildAt(1);
-      layoutCenterTopWithOffset(view, centerX, centerY, bubbleOffsetX, bubbleOffsetY);
+
+    if (childCount == 1) {
+      layoutCenter(getChildAt(0), centerX, centerY);
+      return;
     }
+
+    for (int i = 0; i < childCount - 1; i++) {
+      layoutCenter(getChildAt(i), centerX, centerY);
+    }
+    final View view = getChildAt(childCount - 1);
+    layoutCenterTopWithOffset(view, centerX, centerY, bubbleOffsetX, bubbleOffsetY);
   }
 
 }
