@@ -20,6 +20,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import com.stanfy.DebugFlags;
@@ -106,24 +108,43 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   /**
-   * Populate the requested image to the specified image view.
-   * @param imageView image view instance
+   * Populate the requested image to the specified view.
+   * @param view view instance
    * @param url image URL
    * @param imagesDAO images DAO
    * @param downloader downloader instance
    */
-  public void populateImage(final ImageView imageView, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
+  public <VT extends View> void populateImage(final VT view, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
+    final Object tag = view.getTag();
+    ImageHolder<?> imageHolder = null;
+    if (tag == null) {
+      imageHolder = createImageHolder(view);
+      view.setTag(imageHolder);
+    } else {
+      if (!(tag instanceof ImageHolder)) { throw new IllegalStateException("View already has a tag " + tag); }
+      imageHolder = (ImageHolder<?>)tag;
+    }
+    populateImage(imageHolder, url, imagesDAO, downloader);
+  }
+
+  protected ImageHolder<?> createImageHolder(final View view) {
+    if (view instanceof ImageView) { return new ImageViewHolder((ImageView)view); }
+    if (view instanceof CompoundButton) { return new CompoundButtonHolder((CompoundButton)view); }
+    return null;
+  }
+
+  protected void populateImage(final ImageHolder<?> imageHolder, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
     if (TextUtils.isEmpty(url)) {
-      setImage(imageView, getLoadingDrawable(imageView.getContext()));
+      setImage(imageHolder, getLoadingDrawable(imageHolder.view.getContext()));
       return;
     }
     final Drawable memCached = getFromMemCache(url);
     if (memCached != null) {
-      setImage(imageView, memCached);
+      setImage(imageHolder, memCached);
       return;
     }
-    setImage(imageView, getLoadingDrawable(imageView.getContext()));
-    final ImageLoader<T> loader = createImageLoaderTask(imageView, url, imagesDAO, downloader);
+    setImage(imageHolder, getLoadingDrawable(imageHolder.view.getContext()));
+    final ImageLoader<T> loader = createImageLoaderTask(imageHolder, url, imagesDAO, downloader);
     cancelTasks(loader);
     getImageTaskExecutor().execute(loader);
   }
@@ -173,9 +194,10 @@ public class ImagesManager<T extends CachedImage> {
    * @param imageView image view instance
    * @param drawable incoming drawable
    */
-  protected final void setImage(final ImageView imageView, final Drawable drawable) {
-    imageView.setImageDrawable(decorateDrawable(imageView.getContext(), drawable));
-    imageView.setTag(null);
+  protected final void setImage(final ImageHolder<?> imageHolder, final Drawable drawable) {
+    final Drawable d = decorateDrawable(imageHolder.view.getContext(), drawable);
+    imageHolder.setImage(d);
+    imageHolder.cachedImageId = -1;
   }
 
   /**
@@ -185,14 +207,14 @@ public class ImagesManager<T extends CachedImage> {
   protected Drawable getFromMemCache(final String url) { return memCache.getElement(url); }
 
   /**
-   * @param imageView image view to process
+   * @param imageHolder image holder to process
    * @param url image URL
    * @param imagesDAO images DAO
    * @param downloader downloader instance
    * @return loader task instance
    */
-  protected ImageLoader<T> createImageLoaderTask(final ImageView imageView, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
-    return new ImageLoader<T>(imageView, url, this, imagesDAO, downloader);
+  protected ImageLoader<T> createImageLoaderTask(final ImageHolder<?> imageHolder, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
+    return new ImageLoader<T>(imageHolder, url, this, imagesDAO, downloader);
   }
 
   /**
@@ -296,7 +318,7 @@ public class ImagesManager<T extends CachedImage> {
   protected static class ImageLoader<T extends CachedImage> extends Task {
 
     /** GUI view. */
-    private final ImageView imageView;
+    private final ImageHolder<?> imageHolder;
 
     /** Image URL. */
     private final String url;
@@ -310,33 +332,33 @@ public class ImagesManager<T extends CachedImage> {
     /** Downloader. */
     private final Downloader downloader;
 
-    public ImageLoader(final ImageView imageView, final String url, final ImagesManager<T> imagesManager,
+    public ImageLoader(final ImageHolder<?> imageHolder, final String url, final ImagesManager<T> imagesManager,
         final ImagesDAO<T> imagesDAO, final Downloader downloader) {
-      super("image-" + imageView.hashCode());
+      super("image-" + imageHolder.view.hashCode());
       this.imagesManager = imagesManager;
       this.url = url;
-      this.imageView = imageView;
+      this.imageHolder = imageHolder;
       this.downloader = downloader;
       this.imagesDAO = imagesDAO;
     }
 
     protected void safeImageSet(final T cachedImage, final Drawable d) {
       if (d == null) { return; }
-      final ImageView imageView = this.imageView;
+      final ImageHolder<?> imageHolder = this.imageHolder;
       final long id = cachedImage.getId();
-      imageView.post(new Runnable() {
+      imageHolder.view.post(new Runnable() {
         @Override
         public void run() {
-          synchronized (imageView) {
-            final Object tag = imageView.getTag();
-            if (tag != null && id == ((Long)tag).longValue()) { imagesManager.setImage(imageView, d); }
+          synchronized (imageHolder) {
+            final long savedId = imageHolder.cachedImageId;
+            if (id == savedId) { imagesManager.setImage(imageHolder, d); }
           }
         }
       });
     }
 
     protected Drawable setLocalImage(final T cachedImage) throws IOException {
-      final Drawable d = imagesManager.readLocal(cachedImage, imageView.getContext());
+      final Drawable d = imagesManager.readLocal(cachedImage, imageHolder.view.getContext());
       safeImageSet(cachedImage, d);
       return d;
     }
@@ -348,7 +370,8 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     private BitmapDrawable prepare(final BitmapDrawable bd) {
-      int dstW = imageView.getWidth(), dstH = imageView.getHeight();
+      final View view = imageHolder.view;
+      int dstW = view.getWidth(), dstH = view.getHeight();
 
       final Bitmap map = bd.getBitmap();
       final int w = map.getWidth(), h = map.getHeight();
@@ -389,7 +412,7 @@ public class ImagesManager<T extends CachedImage> {
           }
         }
 
-        imageView.setTag(cachedImage.getId());
+        imageHolder.cachedImageId = cachedImage.getId();
 
         Drawable d = null;
 
@@ -400,7 +423,7 @@ public class ImagesManager<T extends CachedImage> {
 
         if (d == null) {
           d = setRemoteImage(cachedImage);
-          imagesManager.saveCachedImage(imagesDAO, imageView.getContext(), cachedImage, d);
+          imagesManager.saveCachedImage(imagesDAO, imageHolder.view.getContext(), cachedImage, d);
           if (DEBUG) { Log.d(TAG, "Image " + cachedImage.getId() + "-remote"); }
         }
 
@@ -414,5 +437,39 @@ public class ImagesManager<T extends CachedImage> {
     }
 
   }
+
+  /**
+   * Image holder view.
+   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
+   * @param <T> view type
+   */
+  abstract static class ImageHolder<T extends View> {
+    /** View instance. */
+    T view;
+    /** Tag. */
+    long cachedImageId;
+    /** @param view view instance */
+    public ImageHolder(final T view) { this.view = view; }
+    public abstract void setImage(final Drawable d);
+  }
+
+  /**
+   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
+   */
+  static class ImageViewHolder extends ImageHolder<ImageView> {
+    public ImageViewHolder(final ImageView view) { super(view); }
+    @Override
+    public void setImage(final Drawable d) { view.setImageDrawable(d); }
+  }
+
+  /**
+   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
+   */
+  static class CompoundButtonHolder extends ImageHolder<CompoundButton> {
+    public CompoundButtonHolder(final CompoundButton view) { super(view); }
+    @Override
+    public void setImage(final Drawable d) { view.setButtonDrawable(d); }
+  }
+
 
 }

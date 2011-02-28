@@ -19,4 +19,8 @@
     <attr name="android:layout" />
   </declare-styleable>
 
+  <declare-styleable name="LoadableComppoundButton">
+    <attr name="android:src" />
+  </declare-styleable>
+
 </resources>
