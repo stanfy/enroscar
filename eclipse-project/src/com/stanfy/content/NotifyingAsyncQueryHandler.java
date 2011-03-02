@@ -26,6 +26,7 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
    */
   public interface AsyncQueryListener {
     void onQueryComplete(int token, Object cookie, Cursor cursor);
+    void onUpdateComplete(int token, Object cookie, int resultCount);
   }
 
   public NotifyingAsyncQueryHandler(final ContentResolver resolver, final AsyncQueryListener listener) {
@@ -104,7 +105,6 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
     startDelete(-1, null, uri, null, null);
   }
 
-  /** {@inheritDoc} */
   @Override
   protected void onQueryComplete(final int token, final Object cookie, final Cursor cursor) {
     final AsyncQueryListener listener = mListener == null ? null : mListener.get();
@@ -114,4 +114,13 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
       cursor.close();
     }
   }
+
+  @Override
+  protected void onUpdateComplete(final int token, final Object cookie, final int result) {
+    final AsyncQueryListener listener = mListener == null ? null : mListener.get();
+    if (listener != null) {
+      listener.onUpdateComplete(token, cookie, result);
+    }
+  }
+
 }
