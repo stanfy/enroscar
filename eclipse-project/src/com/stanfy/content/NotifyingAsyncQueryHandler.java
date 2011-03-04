@@ -25,8 +25,27 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
    * Interface to listen for completed query operations.
    */
   public interface AsyncQueryListener {
+    /**
+     * Is called when an sync query is completed (after startQuery).
+     * @param token unique token
+     * @param cookie object associated with the current request
+     * @param cursor resulting cursor
+     */
     void onQueryComplete(int token, Object cookie, Cursor cursor);
+    /**
+     * Is called when an async update is completed (after startUpdate).
+     * @param token unique token
+     * @param cookie object associated with the current request
+     * @param resultCount result of update operation
+     */
     void onUpdateComplete(int token, Object cookie, int resultCount);
+    /**
+     * Is called when an async delete is completed (after startDelete).
+     * @param token unique token
+     * @param cookie object associated with the current request
+     * @param resultCount result of delete operation
+     */
+    void onDeleteComplete(int token, Object cookie, int resultCount);
   }
 
   public NotifyingAsyncQueryHandler(final ContentResolver resolver, final AsyncQueryListener listener) {
@@ -120,6 +139,14 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
     final AsyncQueryListener listener = mListener == null ? null : mListener.get();
     if (listener != null) {
       listener.onUpdateComplete(token, cookie, result);
+    }
+  }
+
+  @Override
+  protected void onDeleteComplete(final int token, final Object cookie, final int result) {
+    final AsyncQueryListener listener = mListener == null ? null : mListener.get();
+    if (listener != null) {
+      listener.onDeleteComplete(token, cookie, result);
     }
   }
 
