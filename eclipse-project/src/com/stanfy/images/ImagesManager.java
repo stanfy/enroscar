@@ -427,7 +427,11 @@ public class ImagesManager<T extends CachedImage> {
           if (DEBUG) { Log.d(TAG, "Image " + cachedImage.getId() + "-remote"); }
         }
 
-        memCacheImage(d);
+        if (d != null) {
+          memCacheImage(d);
+        } else {
+          Log.w(TAG, "Image " + cachedImage.getUrl() + " is not resolved");
+        }
 
       } catch (final MalformedURLException e) {
         Log.e(TAG, "Bad URL: " + url + ". Loading canceled.", e);
