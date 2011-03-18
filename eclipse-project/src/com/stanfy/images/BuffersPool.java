@@ -96,4 +96,13 @@ public class BuffersPool {
     if (DEBUG) { Log.d(TAG, "Buffers in use: " + usedBuffersCount + "/" + buffersCount); }
   }
 
+  /**
+   * Destroy buffers.
+   */
+  public void destroy() {
+    synchronized (lock) {
+      buffers.clear();
+    }
+  }
+
 }

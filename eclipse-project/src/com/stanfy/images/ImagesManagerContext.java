@@ -51,4 +51,13 @@ public class ImagesManagerContext<T extends CachedImage> {
     populate(view, url);
   }
 
+  /**
+   * Destroy the context.
+   */
+  public void destroy() {
+    if (imagesManager != null) {
+      imagesManager.destroy();
+    }
+  }
+
 }

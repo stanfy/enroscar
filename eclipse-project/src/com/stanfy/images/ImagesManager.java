@@ -108,6 +108,14 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   /**
+   * Destroy the context.
+   */
+  public void destroy() {
+    memCache.clear();
+    buffersPool.destroy();
+  }
+
+  /**
    * Populate the requested image to the specified view.
    * @param view view instance
    * @param url image URL
