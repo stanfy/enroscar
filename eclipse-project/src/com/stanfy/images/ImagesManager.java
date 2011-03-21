@@ -55,11 +55,8 @@ public class ImagesManager<T extends CachedImage> {
   /** Empty drawable. */
   protected static final ColorDrawable EMPTY_DRAWABLE = new ColorDrawable(0xeeeeee);
 
-  /** MB. */
-  private static final int MB = 20;
-
   /** Memory cache. */
-  private final ImageMemoryCache memCache = new ImageMemoryCache(2 << MB);
+  private final ImageMemoryCache memCache = new ImageMemoryCache();
 
   /** Buffers pool. */
   private final BuffersPool buffersPool = new BuffersPool(new int[][] {
@@ -113,6 +110,7 @@ public class ImagesManager<T extends CachedImage> {
   public void destroy() {
     memCache.clear();
     buffersPool.destroy();
+    System.gc();
   }
 
   /**
@@ -212,7 +210,10 @@ public class ImagesManager<T extends CachedImage> {
    * @param url image URL
    * @return cached drawable
    */
-  protected Drawable getFromMemCache(final String url) { return memCache.getElement(url); }
+  protected Drawable getFromMemCache(final String url) {
+    final Bitmap map = memCache.getElement(url);
+    return map != null ? new BitmapDrawable(map) : null;
+  }
 
   /**
    * @param imageHolder image holder to process
@@ -278,7 +279,7 @@ public class ImagesManager<T extends CachedImage> {
 
   protected void memCacheImage(final String url, final Drawable d) {
     if (d instanceof BitmapDrawable) {
-      memCache.putElement(url, (BitmapDrawable)d);
+      memCache.putElement(url, ((BitmapDrawable)d).getBitmap());
     }
   }
 
