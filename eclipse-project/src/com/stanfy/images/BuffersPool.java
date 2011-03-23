@@ -102,6 +102,7 @@ public class BuffersPool {
   public void destroy() {
     synchronized (lock) {
       buffers.clear();
+      buffers = null;
     }
   }
 
