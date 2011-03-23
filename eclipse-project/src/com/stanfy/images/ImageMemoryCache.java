@@ -46,10 +46,17 @@ public class ImageMemoryCache {
   }
 
   public void remove(final String url) {
-    cacheMap.remove(url);
+    final SoftReference<Bitmap> ref = cacheMap.remove(url);
+    if (ref == null) { return; }
+    final Bitmap map = ref.get();
+    if (map != null) { map.recycle(); }
   }
 
   public void clear() {
+    for (final SoftReference<Bitmap> ref : cacheMap.values()) {
+      final Bitmap map = ref.get();
+      if (map != null) { map.recycle(); }
+    }
     cacheMap.clear();
   }
 

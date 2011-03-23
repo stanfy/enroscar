@@ -110,6 +110,7 @@ public class ImagesManager<T extends CachedImage> {
   public void destroy() {
     memCache.clear();
     buffersPool.destroy();
+    EMPTY_DRAWABLE.setCallback(null);
     System.gc();
   }
 
