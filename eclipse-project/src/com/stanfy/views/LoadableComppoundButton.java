@@ -104,6 +104,7 @@ public class LoadableComppoundButton extends CompoundButton {
   protected void onDraw(final Canvas canvas) {
     super.onDraw(canvas);
     final Drawable d = buttonDrawable;
+    if (d == null) { return; }
     int l = getPaddingLeft(), t = getPaddingTop();
     final int r = getPaddingRight(), b = getPaddingBottom();
     final int w = d.getIntrinsicWidth(), h = d.getIntrinsicHeight(), ww = getWidth() - l - r, hh = getHeight() - t - b;
