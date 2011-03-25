@@ -2,6 +2,8 @@ package com.stanfy.preferences;
 
 import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -50,8 +52,8 @@ public class FontPreference extends DialogPreference {
 
     testText = a.getString(R.styleable.FontPreference_testText);
     if (testText == null) { testText = DEFAULT_TEXT; }
-    fromSize = a.getDimensionPixelSize(R.styleable.FontPreference_fromSize, DEFAULT_FROM_SIZE);
-    toSize = a.getDimensionPixelSize(R.styleable.FontPreference_toSize, DEFAULT_TO_SIZE);
+    fromSize = a.getInt(R.styleable.FontPreference_fromSize, DEFAULT_FROM_SIZE);
+    toSize = a.getInt(R.styleable.FontPreference_toSize, DEFAULT_TO_SIZE);
 
     a.recycle();
   }
@@ -78,6 +80,19 @@ public class FontPreference extends DialogPreference {
   }
 
   @Override
+  public CharSequence getSummary() {
+    final int v = getValue();
+    final CharSequence summary = super.getSummary();
+    if (summary == null || v == 0) { return summary; }
+    return String.format(summary.toString(), v);
+  }
+
+  private void setText(final TextView text, final int size) {
+    text.setText(testText + " " + size);
+    text.setTextSize(size);
+  }
+
+  @Override
   protected void onPrepareDialogBuilder(final Builder builder) {
     super.onPrepareDialogBuilder(builder);
     selectedValue = getValue();
@@ -86,8 +101,7 @@ public class FontPreference extends DialogPreference {
     final View view = inflater.inflate(R.layout.font_preference, null);
     final TextView text = (TextView)view.findViewById(android.R.id.text1);
     if (text != null) {
-      text.setText(testText);
-      text.setTextSize(selectedValue);
+      setText(text, selectedValue);
     }
     final SeekBar bar = (SeekBar)view.findViewById(android.R.id.content);
     if (bar != null) {
@@ -101,23 +115,32 @@ public class FontPreference extends DialogPreference {
         @Override
         public void onProgressChanged(final SeekBar seekBar, final int progress, final boolean fromUser) {
           selectedValue = progress + fromSize;
-          if (text != null) { text.setTextSize(selectedValue); }
+          if (text != null) { setText(text, selectedValue); }
         }
       });
     }
 
     builder
-        .setView(view)
-        .setPositiveButton(android.R.string.ok, null);
+      .setView(view)
+      .setNeutralButton(R.string.reset, new OnClickListener() {
+        @Override
+        public void onClick(final DialogInterface dialog, final int which) {
+          if (bar != null) { bar.setProgress(DEFAULT_VALUE - fromSize); }
+          storeSelected();
+        }
+      });
+  }
+
+  private void storeSelected() {
+    if (callChangeListener(selectedValue)) {
+      setValue(selectedValue);
+    }
   }
 
   @Override
   protected void onDialogClosed(final boolean positiveResult) {
     super.onDialogClosed(positiveResult);
-
-    if (positiveResult && callChangeListener(selectedValue)) {
-      setValue(selectedValue);
-    }
+    if (positiveResult) { storeSelected(); }
   }
 
   @Override
