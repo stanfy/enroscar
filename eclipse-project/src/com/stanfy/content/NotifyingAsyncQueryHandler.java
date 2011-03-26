@@ -5,6 +5,7 @@ import java.lang.ref.WeakReference;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -46,6 +47,13 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
      * @param resultCount result of delete operation
      */
     void onDeleteComplete(int token, Object cookie, int resultCount);
+    /**
+     * Is called when an async insert is completed (after startInsert).
+     * @param token unique token
+     * @param cookie object associated with the current request
+     * @param uri result URI
+     */
+    void onInsertComplete(int token, Object cookie, Uri uri);
   }
 
   public NotifyingAsyncQueryHandler(final ContentResolver resolver, final AsyncQueryListener listener) {
@@ -147,6 +155,14 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
     final AsyncQueryListener listener = mListener == null ? null : mListener.get();
     if (listener != null) {
       listener.onDeleteComplete(token, cookie, result);
+    }
+  }
+
+  @Override
+  protected void onInsertComplete(final int token, final Object cookie, final Uri uri) {
+    final AsyncQueryListener listener = mListener == null ? null : mListener.get();
+    if (listener != null) {
+      listener.onInsertComplete(token, cookie, uri);
     }
   }
 

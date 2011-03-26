@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -70,6 +71,20 @@ public class AppUtils {
     } else {
       view.setText(text);
       view.setVisibility(View.VISIBLE);
+    }
+  }
+
+  public static void logIntent(final String tag, final Intent intent) {
+    Log.d(tag, "========================================================");
+    Log.d(tag, "action=" + intent.getAction());
+    Log.d(tag, "data=" + intent.getData());
+    Log.d(tag, "type=" + intent.getType());
+    Log.d(tag, "categories=" + intent.getCategories());
+    Log.d(tag, "sourceBounds=" + intent.getSourceBounds());
+    Log.d(tag, "extras:");
+    for (final String key : intent.getExtras().keySet()) {
+      final Object o = intent.getExtras().get(key);
+      Log.d(tag, "  " + key + "=" + o.getClass() + "/" + o);
     }
   }
 

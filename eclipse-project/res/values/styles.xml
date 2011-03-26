@@ -1,41 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-  
-  <!-- General -->
+
   <style name="WrapContent">
     <item name="android:layout_width">wrap_content</item>
     <item name="android:layout_height">wrap_content</item>
-  </style>
-  <style name="MainContainer">
-    <item name="android:layout_width">match_parent</item>
-    <item name="android:layout_height">match_parent</item>
-    <item name="android:orientation">vertical</item>
-  </style>
-  <style name="MainContainer.Padded">
-    <item name="android:padding">10dp</item>
-  </style>
-
-  <!-- Containers. -->
-  <style name="StretchHorizontallyContainer">
-    <item name="android:layout_width">match_parent</item>
-    <item name="android:layout_height">wrap_content</item>
-  </style>
-  <style name="LinearVerticalContainer" parent="StretchHorizontallyContainer">
-    <item name="android:orientation">vertical</item>
-  </style>
-  <style name="LinearHorizontalContainer" parent="StretchHorizontallyContainer">
-    <item name="android:orientation">horizontal</item>
-  </style>
-  <style name="LinearGap" parent="WrapContent">
-    <item name="android:layout_weight">1</item>
-  </style>
-  <style name="PaddedContainer" parent="WrapContent">
-    <item name="android:padding">10dp</item>
-  </style>
-  <style name="LinearVerticalContainer.Padded">
-    <item name="android:padding">10dp</item>
-  </style>
-  <style name="LinearHorizontalContainer.Padded">
-    <item name="android:padding">10dp</item>
   </style>
 
 </resources>
