@@ -9,10 +9,10 @@ public final class DebugFlags {
   private DebugFlags() { /* hidden */ }
 
   /** Debug buffers flag. */
-  public static final boolean DEBUG_BUFFERS = true; // @debug.buffers@
+  public static final boolean DEBUG_BUFFERS = false; // @debug.buffers@
 
   /** IO debug flag. */
-  public static final boolean DEBUG_IO = false; // @debug.io@
+  public static final boolean DEBUG_IO = true; // @debug.io@
 
   /** Images debug flag. */
   public static final boolean DEBUG_IMAGES = true; // @debug.images@

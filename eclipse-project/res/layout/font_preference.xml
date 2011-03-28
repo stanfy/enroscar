@@ -13,6 +13,7 @@
       />
   
   <SeekBar
+      style="@style/StretchHorizontallyContainer"
       android:id="@android:id/content"
       android:layout_below="@android:id/text1"
       android:layout_marginTop="6dp"

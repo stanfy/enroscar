@@ -38,6 +38,9 @@ public class FontPreference extends DialogPreference {
   /** Value. */
   private int value, selectedValue;
 
+  /** Summary. */
+  private CharSequence summary;
+
   public FontPreference(final Context context, final AttributeSet attrs) {
     super(context, attrs);
     init(context, attrs, 0);
@@ -56,6 +59,8 @@ public class FontPreference extends DialogPreference {
     toSize = a.getInt(R.styleable.FontPreference_toSize, DEFAULT_TO_SIZE);
 
     a.recycle();
+
+    summary = super.getSummary();
   }
 
   public void setTestText(final CharSequence testText) { this.testText = testText; }
@@ -79,10 +84,16 @@ public class FontPreference extends DialogPreference {
     persistInt(value);
   }
 
+
+  @Override
+  public void setSummary(final CharSequence summary) {
+    super.setSummary(summary);
+    this.summary = summary;
+  }
   @Override
   public CharSequence getSummary() {
     final int v = getValue();
-    final CharSequence summary = super.getSummary();
+    final CharSequence summary = this.summary;
     if (summary == null || v == 0) { return summary; }
     return String.format(summary.toString(), v);
   }
@@ -105,7 +116,9 @@ public class FontPreference extends DialogPreference {
     }
     final SeekBar bar = (SeekBar)view.findViewById(android.R.id.content);
     if (bar != null) {
-      bar.setProgress(selectedValue - fromSize);
+      final int p = selectedValue - fromSize;
+      bar.setProgress(p);
+      bar.setSecondaryProgress(p);
       bar.setMax(toSize - fromSize);
       bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         @Override
@@ -134,6 +147,7 @@ public class FontPreference extends DialogPreference {
   private void storeSelected() {
     if (callChangeListener(selectedValue)) {
       setValue(selectedValue);
+      super.setSummary(getSummary()); // renew
     }
   }
 

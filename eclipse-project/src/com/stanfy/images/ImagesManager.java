@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -39,9 +38,6 @@ public class ImagesManager<T extends CachedImage> {
 
   /** Logging tag. */
   private static final String TAG = "ImagesManager";
-
-  /** Images quality. */
-  private static final int IMAGES_QUALITY = 80;
 
   /** Pattern to cut the images sources from HTML. */
   protected static final Pattern IMG_URL_PATTERN = Pattern.compile("<img.*?src=\"(.*?)\".*?>");
@@ -84,8 +80,7 @@ public class ImagesManager<T extends CachedImage> {
     for (final T image : images) {
       if (image.isLoaded() && new File(imagesDir, image.getPath()).exists()) { continue; }
       try {
-        final Drawable d = download(image, downloader);
-        saveCachedImage(imagesDao, context, image, d);
+        сacheImage(imagesDao, context, image, downloader);
       } catch (final IOException e) {
         if (DEBUG_IO) { Log.e(TAG, "IO error for " + image.getUrl() + ": " + e.getMessage()); }
       }
@@ -247,13 +242,7 @@ public class ImagesManager<T extends CachedImage> {
     }
   }
 
-  protected void saveCachedImage(final ImagesDAO<T> imagesDao, final Context context, final T image, final Drawable d) throws IOException {
-    if (d == null) { return; }
-    if (!(d instanceof BitmapDrawable)) {
-      Log.w(TAG, "Unsupported drawable " + d.getClass() + ". Local image won't be saved.");
-      return;
-    }
-    final BitmapDrawable bd = (BitmapDrawable)d;
+  protected void сacheImage(final ImagesDAO<T> imagesDao, final Context context, final T image, final Downloader downloader) throws IOException {
     final String path = setCachedImagePath(image);
 
     final File f = new File(getImageDir(context), path);
@@ -264,14 +253,20 @@ public class ImagesManager<T extends CachedImage> {
       return;
     }
 
-    final Bitmap bm = bd.getBitmap();
-    if (bm == null) {
-      Log.e(TAG, "Broken drawable " + bd + ", bitmap is null");
-      return;
-    }
+    final InputStream in = new PoolableBufferedInputStream(downloader.download(image.getUrl()), BuffersPool.DEFAULT_SIZE_FOR_IMAGES, buffersPool);
     final FileOutputStream out = new FileOutputStream(f);
-    bm.compress(CompressFormat.JPEG, IMAGES_QUALITY, out);
-    out.close();
+    final byte[] buffer = buffersPool.get(BuffersPool.DEFAULT_SIZE_FOR_IMAGES);
+    int cnt;
+    try {
+      do {
+        cnt = in.read(buffer);
+        if (cnt != -1) { out.write(buffer, 0, cnt); }
+      } while (cnt != -1);
+    } finally {
+      in.close();
+      out.close();
+      buffersPool.release(buffer);
+    }
 
     image.setLoaded(true);
     image.setTimestamp(System.currentTimeMillis());
@@ -282,14 +277,6 @@ public class ImagesManager<T extends CachedImage> {
     if (d instanceof BitmapDrawable) {
       memCache.putElement(url, ((BitmapDrawable)d).getBitmap());
     }
-  }
-
-  protected Drawable download(final T cachedImage, final Downloader downloader) throws IOException {
-    final String url = cachedImage.getUrl();
-    final InputStream imageInput = downloader.download(url);
-    final Drawable d = decodeStream(imageInput);
-    downloader.finish(url);
-    return d;
   }
 
   protected Drawable readLocal(final T cachedImage, final Context context) throws IOException {
@@ -316,6 +303,8 @@ public class ImagesManager<T extends CachedImage> {
     // recycle
     bp.release(opts.inTempStorage);
     src.close();
+
+    if (DEBUG_IO) { Log.d(TAG, "Bitmap " + bm); }
 
     return bm != null ? new BitmapDrawable(bm) : null;
   }
@@ -374,9 +363,8 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     protected Drawable setRemoteImage(final T cachedImage) throws IOException {
-      final Drawable d = imagesManager.download(cachedImage, downloader);
-      safeImageSet(cachedImage, d);
-      return d;
+      imagesManager.сacheImage(imagesDAO, imageHolder.view.getContext(), cachedImage, downloader);
+      return setLocalImage(cachedImage);
     }
 
     private BitmapDrawable prepare(final BitmapDrawable bd) {
@@ -433,7 +421,6 @@ public class ImagesManager<T extends CachedImage> {
 
         if (d == null) {
           d = setRemoteImage(cachedImage);
-          imagesManager.saveCachedImage(imagesDAO, imageHolder.view.getContext(), cachedImage, d);
           if (DEBUG) { Log.d(TAG, "Image " + cachedImage.getId() + "-remote"); }
         }
 
