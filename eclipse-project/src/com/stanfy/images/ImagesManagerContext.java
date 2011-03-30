@@ -58,6 +58,9 @@ public class ImagesManagerContext<T extends CachedImage> {
     if (imagesManager != null) {
       imagesManager.destroy();
     }
+    imagesDAO = null;
+    imagesManager = null;
+    downloader = null;
   }
 
 }
