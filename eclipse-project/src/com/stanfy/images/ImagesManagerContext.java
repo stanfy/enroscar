@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 
+import com.stanfy.images.ImagesManager.ImageHolder;
 import com.stanfy.images.model.CachedImage;
 
 /**
@@ -41,6 +42,15 @@ public class ImagesManagerContext<T extends CachedImage> {
     final ImagesManager<T> imagesManager = this.imagesManager;
     if (imagesDAO != null && downloader != null && imagesManager != null) {
       imagesManager.populateImage(view, url, imagesDAO, downloader);
+    }
+  }
+
+  public void populate(final ImageHolder imageHolder, final String url) {
+    final ImagesDAO<T> imagesDAO = this.imagesDAO;
+    final Downloader downloader = this.downloader;
+    final ImagesManager<T> imagesManager = this.imagesManager;
+    if (imagesDAO != null && downloader != null && imagesManager != null) {
+      imagesManager.populateImage(imageHolder, url, imagesDAO, downloader);
     }
   }
 
