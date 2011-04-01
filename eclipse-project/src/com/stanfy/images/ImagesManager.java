@@ -80,7 +80,7 @@ public class ImagesManager<T extends CachedImage> {
     for (final T image : images) {
       if (image.isLoaded() && new File(imagesDir, image.getPath()).exists()) { continue; }
       try {
-        сacheImage(imagesDao, context, image, downloader);
+        cacheImage(imagesDao, context, image, downloader);
       } catch (final IOException e) {
         if (DEBUG_IO) { Log.e(TAG, "IO error for " + image.getUrl() + ": " + e.getMessage()); }
       }
@@ -242,7 +242,7 @@ public class ImagesManager<T extends CachedImage> {
     }
   }
 
-  protected void сacheImage(final ImagesDAO<T> imagesDao, final Context context, final T image, final Downloader downloader) throws IOException {
+  protected void cacheImage(final ImagesDAO<T> imagesDao, final Context context, final T image, final Downloader downloader) throws IOException {
     final String path = setCachedImagePath(image);
 
     final File f = new File(getImageDir(context), path);
@@ -363,7 +363,7 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     protected Drawable setRemoteImage(final T cachedImage) throws IOException {
-      imagesManager.сacheImage(imagesDAO, imageHolder.context, cachedImage, downloader);
+      imagesManager.cacheImage(imagesDAO, imageHolder.context, cachedImage, downloader);
       return setLocalImage(cachedImage);
     }
 
