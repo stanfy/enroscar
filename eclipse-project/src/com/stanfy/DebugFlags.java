@@ -12,9 +12,9 @@ public final class DebugFlags {
   public static final boolean DEBUG_BUFFERS = false; // @debug.buffers@
 
   /** IO debug flag. */
-  public static final boolean DEBUG_IO = true; // @debug.io@
+  public static final boolean DEBUG_IO = false; // @debug.io@
 
   /** Images debug flag. */
-  public static final boolean DEBUG_IMAGES = true; // @debug.images@
+  public static final boolean DEBUG_IMAGES = false; // @debug.images@
 
 }
