@@ -77,7 +77,7 @@ public class BuffersPool {
    * @param buffer unused buffer
    */
   public void release(final byte[] buffer) {
-    if (buffer == null) { return; }
+    if (buffer == null || buffers == null) { return; }
     final int capacity = buffer.length;
     if (capacity == 0) { return; }
 
