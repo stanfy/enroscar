@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.regex.Pattern;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -80,7 +81,7 @@ public class ImagesManager<T extends CachedImage> {
     for (final T image : images) {
       if (image.isLoaded() && new File(imagesDir, image.getPath()).exists()) { continue; }
       try {
-        cacheImage(imagesDao, context, image, downloader);
+        makeImageLocal(imagesDao, context, image, downloader);
       } catch (final IOException e) {
         if (DEBUG_IO) { Log.e(TAG, "IO error for " + image.getUrl() + ": " + e.getMessage()); }
       }
@@ -140,7 +141,7 @@ public class ImagesManager<T extends CachedImage> {
       setImage(imageHolder, getLoadingDrawable(imageHolder.context));
       return;
     }
-    final Drawable memCached = getFromMemCache(url);
+    final Drawable memCached = getFromMemCache(url, imageHolder);
     if (memCached != null) {
       setImage(imageHolder, memCached);
       return;
@@ -206,9 +207,10 @@ public class ImagesManager<T extends CachedImage> {
    * @param url image URL
    * @return cached drawable
    */
-  protected Drawable getFromMemCache(final String url) {
+  protected Drawable getFromMemCache(final String url, final ImageHolder holder) {
     final Bitmap map = memCache.getElement(url);
-    return map != null ? new BitmapDrawable(map) : null;
+    return map != null && holder.getRequiredWidth() <= map.getWidth() && holder.getRequiredHeight() <= map.getHeight()
+        ? new BitmapDrawable(map) : null;
   }
 
   /**
@@ -242,7 +244,7 @@ public class ImagesManager<T extends CachedImage> {
     }
   }
 
-  protected void cacheImage(final ImagesDAO<T> imagesDao, final Context context, final T image, final Downloader downloader) throws IOException {
+  protected void makeImageLocal(final ImagesDAO<T> imagesDao, final Context context, final T image, final Downloader downloader) throws IOException {
     final String path = setCachedImagePath(image);
 
     final File f = new File(getImageDir(context), path);
@@ -304,8 +306,6 @@ public class ImagesManager<T extends CachedImage> {
     bp.release(opts.inTempStorage);
     src.close();
 
-    if (DEBUG_IO) { Log.d(TAG, "Bitmap " + bm); }
-
     return bm != null ? new BitmapDrawable(bm) : null;
   }
 
@@ -341,16 +341,22 @@ public class ImagesManager<T extends CachedImage> {
       this.imagesDAO = imagesDAO;
     }
 
-    protected void safeImageSet(final T cachedImage, final Drawable d) {
-      if (d == null) { return; }
+    protected void safeImageSet(final T cachedImage, final Drawable source) {
+      if (source == null) { return; }
+      final Drawable d = memCacheImage(source);
       final ImageHolder imageHolder = this.imageHolder;
       final long id = cachedImage.getId();
       imageHolder.post(new Runnable() {
         @Override
         public void run() {
+          if (DEBUG) { Log.d(TAG, "Try to set " + imageHolder); }
           synchronized (imageHolder) {
             final long savedId = imageHolder.cachedImageId;
-            if (id == savedId) { imagesManager.setImage(imageHolder, d); }
+            if (id == savedId) {
+              imagesManager.setImage(imageHolder, d);
+            } else {
+              if (DEBUG) { Log.d(TAG, "Skip set for " + imageHolder); }
+            }
           }
         }
       });
@@ -363,7 +369,7 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     protected Drawable setRemoteImage(final T cachedImage) throws IOException {
-      imagesManager.cacheImage(imagesDAO, imageHolder.context, cachedImage, downloader);
+      imagesManager.makeImageLocal(imagesDAO, imageHolder.context, cachedImage, downloader);
       return setLocalImage(cachedImage);
     }
 
@@ -388,12 +394,15 @@ public class ImagesManager<T extends CachedImage> {
       return new BitmapDrawable(scaled);
     }
 
-    protected void memCacheImage(final Drawable d) {
+    private Drawable memCacheImage(final Drawable d) {
       Drawable result = d;
       if (d instanceof BitmapDrawable) {
-        result = prepare((BitmapDrawable)d);
+        final BitmapDrawable bmd = (BitmapDrawable)d;
+        result = prepare(bmd);
+        if (result != bmd) { bmd.getBitmap().recycle(); }
       }
       imagesManager.memCacheImage(url, result);
+      return result;
     }
 
     @Override
@@ -423,9 +432,7 @@ public class ImagesManager<T extends CachedImage> {
           if (DEBUG) { Log.d(TAG, "Image " + cachedImage.getId() + "-remote"); }
         }
 
-        if (d != null) {
-          memCacheImage(d);
-        } else {
+        if (d == null) {
           Log.w(TAG, "Image " + cachedImage.getUrl() + " is not resolved");
         }
 
@@ -472,7 +479,13 @@ public class ImagesManager<T extends CachedImage> {
       this.view = view;
     }
     @Override
-    public void post(final Runnable r) { view.post(r); }
+    public void post(final Runnable r) {
+      if (context instanceof Activity) {
+        ((Activity)context).runOnUiThread(r);
+      } else {
+        view.post(r);
+      }
+    }
     @Override
     public int getRequiredHeight() { return view.getHeight(); }
     @Override
