@@ -53,6 +53,7 @@ public class BuffersPool {
    * @return buffer with length greater on equal than <code>minCapacity</code>
    */
   public byte[] get(final int minCapacity) {
+    if (buffers == null) { return null; }
     ++usedBuffersCount;
     final SortedMap<Integer, List<Object>> map = buffers.tailMap(minCapacity);
     if (map == null || map.isEmpty()) {

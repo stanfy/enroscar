@@ -34,8 +34,8 @@ public class LoadableImageView extends ImageView {
 
   @Override
   public void setImageURI(final Uri uri) {
-    if (imagesManagerContext != null && uri != null && uri.getScheme() != null && uri.getScheme().startsWith("http")) {
-      imagesManagerContext.populateImageView(this, uri.toString());
+    if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
+      imagesManagerContext.populateImageView(this, uri != null ? uri.toString() : null);
       return;
     }
     super.setImageURI(uri);

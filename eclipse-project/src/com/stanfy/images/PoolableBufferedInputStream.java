@@ -48,6 +48,10 @@ public class PoolableBufferedInputStream extends FilterInputStream {
     if (size <= 0) { throw new IllegalArgumentException("Size must be greater than zero"); }
     this.pool = pool;
     buf = pool.get(size);
+    if (buf == null) {
+      final int s = 8192;
+      buf = new byte[s];
+    }
   }
 
   /**

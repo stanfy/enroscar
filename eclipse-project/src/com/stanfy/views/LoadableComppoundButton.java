@@ -78,8 +78,8 @@ public class LoadableComppoundButton extends CompoundButton {
   }
 
   public void setButtonDrawableUri(final Uri uri) {
-    if (imagesManagerContext != null && uri != null && uri.getScheme().startsWith("http")) {
-      imagesManagerContext.populateCompoundButton(this, uri.toString());
+    if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
+      imagesManagerContext.populateCompoundButton(this, uri != null ? uri.toString() : null);
     }
   }
 

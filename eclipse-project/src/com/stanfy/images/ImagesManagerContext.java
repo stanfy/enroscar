@@ -1,5 +1,6 @@
 package com.stanfy.images;
 
+import android.net.Uri;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -52,6 +53,10 @@ public class ImagesManagerContext<T extends CachedImage> {
     if (imagesDAO != null && downloader != null && imagesManager != null) {
       imagesManager.populateImage(imageHolder, url, imagesDAO, downloader);
     }
+  }
+
+  public static boolean check(final Uri uri) {
+    return uri == null || (uri.getScheme() != null && uri.getScheme().startsWith("http"));
   }
 
   public void populateImageView(final ImageView view, final String url) {
