@@ -211,7 +211,7 @@ public class ImagesManager<T extends CachedImage> {
     final Bitmap map = memCache.getElement(url);
     final int gap = 5;
     return map != null && Math.abs(holder.getRequiredWidth() - map.getWidth()) < gap && Math.abs(holder.getRequiredHeight() - map.getHeight()) < gap
-        ? new BitmapDrawable(map) : null;
+        ? new BitmapDrawable(holder.context.getResources(), map) : null;
   }
 
   /**
