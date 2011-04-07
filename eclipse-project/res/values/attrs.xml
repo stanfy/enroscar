@@ -15,10 +15,6 @@
     <attr name="android:radius" />
   </declare-styleable>
 
-  <declare-styleable name="InfoPanel">
-    <attr name="android:layout" />
-  </declare-styleable>
-
   <declare-styleable name="LoadableComppoundButton">
     <attr name="android:src" />
   </declare-styleable>
