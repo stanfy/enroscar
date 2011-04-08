@@ -259,6 +259,7 @@ public class ImagesManager<T extends CachedImage> {
     final InputStream in = new PoolableBufferedInputStream(downloader.download(image.getUrl()), BuffersPool.DEFAULT_SIZE_FOR_IMAGES, buffersPool);
     final FileOutputStream out = new FileOutputStream(f);
     final byte[] buffer = buffersPool.get(BuffersPool.DEFAULT_SIZE_FOR_IMAGES);
+    if (buffer == null) { return; }
     int cnt;
     try {
       do {
@@ -364,13 +365,17 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     protected Drawable setLocalImage(final T cachedImage) throws IOException {
-      final Drawable d = imagesManager.readLocal(cachedImage, imageHolder.context);
+      final Context x = imageHolder.context;
+      if (x == null) { throw new IOException("Context is null"); }
+      final Drawable d = imagesManager.readLocal(cachedImage, x);
       safeImageSet(cachedImage, d);
       return d;
     }
 
     protected Drawable setRemoteImage(final T cachedImage) throws IOException {
-      imagesManager.makeImageLocal(imagesDAO, imageHolder.context, cachedImage, downloader);
+      final Context x = imageHolder.context;
+      if (x == null) { throw new IOException("Context is null"); }
+      imagesManager.makeImageLocal(imagesDAO, x, cachedImage, downloader);
       return setLocalImage(cachedImage);
     }
 
