@@ -72,8 +72,15 @@ public class ImageView extends android.widget.ImageView {
     if (d == null) { return; }
     final int r = cornersRadius;
     if (r > 0 && d instanceof BitmapDrawable) {
+
       final int pl = getPaddingLeft(), pt = getPaddingTop();
-      final Bitmap bitmap = Bitmap.createBitmap(getMeasuredWidth() - pl - getPaddingRight(), getMeasuredHeight() - pt - getPaddingBottom(), Bitmap.Config.ARGB_8888);
+      final int resultW = getMeasuredWidth() - pl - getPaddingRight(), resultH = getMeasuredHeight() - pt - getPaddingBottom();
+      if (resultW <= 0 || resultH <= 0) {
+        super.onDraw(canvas);
+        return;
+      }
+
+      final Bitmap bitmap = Bitmap.createBitmap(resultW, resultH, Bitmap.Config.ARGB_8888);
       final Canvas c = new Canvas(bitmap);
       final RectF rectF = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
 
