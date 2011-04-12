@@ -13,7 +13,7 @@ import android.graphics.Bitmap;
 public class ImageMemoryCache {
 
   /** Cache map. */
-  private Map<String, SoftReference<Bitmap>> cacheMap;
+  private final Map<String, SoftReference<Bitmap>> cacheMap;
 
   /**
    * Constructor.
@@ -28,7 +28,7 @@ public class ImageMemoryCache {
    * @param url URL
    * @param image image instance
    */
-  public synchronized void putElement(final String url, final Bitmap image) {
+  public void putElement(final String url, final Bitmap image) {
     cacheMap.put(url, new SoftReference<Bitmap>(image));
   }
 
@@ -59,5 +59,8 @@ public class ImageMemoryCache {
     }
     cacheMap.clear();
   }
+
+  @Override
+  public String toString() { return cacheMap.toString(); }
 
 }

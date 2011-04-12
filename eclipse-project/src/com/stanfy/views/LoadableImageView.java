@@ -12,6 +12,8 @@ import com.stanfy.images.ImagesManagerContext;
  */
 public class LoadableImageView extends ImageView {
 
+  /** Image URI. */
+  private Uri loadImageUri;
   /** Images manager context. */
   private ImagesManagerContext<?> imagesManagerContext;
 
@@ -34,6 +36,8 @@ public class LoadableImageView extends ImageView {
 
   @Override
   public void setImageURI(final Uri uri) {
+    if (loadImageUri != null && loadImageUri.equals(uri)) { return; }
+    loadImageUri = uri;
     if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
       imagesManagerContext.populateImageView(this, uri != null ? uri.toString() : null);
       return;

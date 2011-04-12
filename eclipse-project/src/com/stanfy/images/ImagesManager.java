@@ -279,6 +279,7 @@ public class ImagesManager<T extends CachedImage> {
 
   protected void memCacheImage(final String url, final Drawable d) {
     if (d instanceof BitmapDrawable) {
+      if (DEBUG) { Log.d(TAG, "Memcache for " + url); }
       memCache.putElement(url, ((BitmapDrawable)d).getBitmap());
     }
   }
@@ -381,6 +382,10 @@ public class ImagesManager<T extends CachedImage> {
 
     private BitmapDrawable prepare(final BitmapDrawable bd) {
       int dstW = imageHolder.getRequiredWidth(), dstH = imageHolder.getRequiredHeight();
+      if (dstW <= 0 || dstH <= 0) {
+        if (DEBUG) { Log.d(TAG, "Skip scaling for " + imageHolder); }
+        return bd;
+      }
 
       final Bitmap map = bd.getBitmap();
       final int w = map.getWidth(), h = map.getHeight();
@@ -493,9 +498,17 @@ public class ImagesManager<T extends CachedImage> {
       }
     }
     @Override
-    public int getRequiredHeight() { return view.getHeight(); }
+    public int getRequiredHeight() {
+      final int h = view.getLayoutParams().height;
+      if (h > 0) { return h; }
+      return -1;
+    }
     @Override
-    public int getRequiredWidth() { return view.getWidth(); }
+    public int getRequiredWidth() {
+      final int w = view.getLayoutParams().width;
+      if (w > 0) { return w; }
+      return -1;
+    }
     @Override
     public void destroy() {
       super.destroy();
