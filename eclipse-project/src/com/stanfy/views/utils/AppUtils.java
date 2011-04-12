@@ -66,8 +66,11 @@ public class AppUtils {
   }
 
   public static void setTextOrHide(final TextView view, final String text) {
+    setTextOrHide(view, text, View.GONE);
+  }
+  public static void setTextOrHide(final TextView view, final String text, final int hvisibility) {
     if (TextUtils.isEmpty(text)) {
-      view.setVisibility(View.GONE);
+      view.setVisibility(hvisibility);
     } else {
       view.setText(text);
       view.setVisibility(View.VISIBLE);
