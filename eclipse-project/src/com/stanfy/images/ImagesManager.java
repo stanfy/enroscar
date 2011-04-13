@@ -137,6 +137,7 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   public void populateImage(final ImageHolder imageHolder, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
+    if (DEBUG) { Log.d(TAG, "Process url" + url); }
     if (TextUtils.isEmpty(url)) {
       setImage(imageHolder, getLoadingDrawable(imageHolder.context));
       return;
@@ -146,6 +147,7 @@ public class ImagesManager<T extends CachedImage> {
       setImage(imageHolder, memCached);
       return;
     }
+    if (DEBUG) { Log.d(TAG, "Set loading for " + url); }
     setImage(imageHolder, getLoadingDrawable(imageHolder.context));
     final ImageLoader<T> loader = createImageLoaderTask(imageHolder, url, imagesDAO, downloader);
     cancelTasks(loader);
@@ -352,7 +354,7 @@ public class ImagesManager<T extends CachedImage> {
       imageHolder.post(new Runnable() {
         @Override
         public void run() {
-          if (DEBUG) { Log.d(TAG, "Try to set " + imageHolder); }
+          if (DEBUG) { Log.d(TAG, "Try to set " + imageHolder + " - " + url); }
           synchronized (imageHolder) {
             final long savedId = imageHolder.cachedImageId;
             if (id == savedId) {
