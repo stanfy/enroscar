@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 
 /**
  * This layout centers that main view (number one in children list) and locate the bubble (number two) on the top
@@ -12,7 +11,7 @@ import android.view.ViewGroup;
  * Its width and height cannot be defined as UNSPECIFIED.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class MainWithBubbleLayout extends ViewGroup {
+public class MainWithBubbleLayout extends FixedSizeViewGroup {
 
   /** Bubble offset. */
   private int bubbleOffsetX, bubbleOffsetY;
@@ -32,26 +31,6 @@ public class MainWithBubbleLayout extends ViewGroup {
     bubbleOffsetX = a.getDimensionPixelOffset(R.styleable.MainWithBubbleLayout_bubbleOffsetX, 0);
     bubbleOffsetY = a.getDimensionPixelOffset(R.styleable.MainWithBubbleLayout_bubbleOffsetY, 0);
     a.recycle();
-  }
-
-  @Override
-  protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-    final int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
-    final int widthSpecSize =  MeasureSpec.getSize(widthMeasureSpec);
-    final int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
-    final int heightSpecSize =  MeasureSpec.getSize(heightMeasureSpec);
-
-    if (widthSpecMode == MeasureSpec.UNSPECIFIED || heightSpecMode == MeasureSpec.UNSPECIFIED) {
-      throw new IllegalStateException("MainWithBubbleLayout cannot have UNSPECIFIED dimensions");
-    }
-
-    final int childCount = getChildCount();
-    for (int i = 0; i < childCount; i++) {
-      final View child = getChildAt(i);
-      child.measure(MeasureSpec.makeMeasureSpec(widthSpecSize, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(heightSpecSize, MeasureSpec.AT_MOST));
-    }
-
-    setMeasuredDimension(widthSpecSize, heightSpecSize);
   }
 
   static void layoutCenter(final View view, final int centerX, final int centerY) {

@@ -20,7 +20,7 @@ import android.view.animation.GridLayoutAnimationController;
  * @author Romain Guy (Android GUI Developer)
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class GridLayout extends ViewGroup {
+public class GridLayout extends FixedSizeViewGroup {
   /** Number of columns. */
   private int numColumns;
   /** Number of rows. */
@@ -76,9 +76,7 @@ public class GridLayout extends ViewGroup {
     final int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
     final int heightSpecSize =  MeasureSpec.getSize(heightMeasureSpec);
 
-    if (widthSpecMode == MeasureSpec.UNSPECIFIED || heightSpecMode == MeasureSpec.UNSPECIFIED) {
-      throw new IllegalStateException("GridLayout cannot have UNSPECIFIED dimensions");
-    }
+    checkParentSpecs(widthSpecMode, heightSpecMode);
 
     final int width = widthSpecSize - getPaddingLeft() - getPaddingRight();
     final int height = heightSpecSize - getPaddingTop() - getPaddingBottom();
