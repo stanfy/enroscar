@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.stanfy.images.ImagesManager.ImageHolder;
 import com.stanfy.images.model.CachedImage;
@@ -65,6 +66,9 @@ public class ImagesManagerContext<T extends CachedImage> {
   public void populateCompoundButton(final CompoundButton view, final String url) {
     populate(view, url);
   }
+  public void populateTextView(final TextView view, final String url) {
+    populate(view, url);
+  }
 
   /**
    * Destroy the context.
@@ -77,5 +81,4 @@ public class ImagesManagerContext<T extends CachedImage> {
     imagesManager = null;
     downloader = null;
   }
-
 }

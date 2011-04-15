@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.images.model.CachedImage;
@@ -133,6 +134,7 @@ public class ImagesManager<T extends CachedImage> {
   protected ImageHolder createImageHolder(final View view) {
     if (view instanceof ImageView) { return new ImageViewHolder((ImageView)view); }
     if (view instanceof CompoundButton) { return new CompoundButtonHolder((CompoundButton)view); }
+    if (view instanceof TextView) { return new TextViewHolder((TextView)view); }
     return null;
   }
 
@@ -534,6 +536,19 @@ public class ImagesManager<T extends CachedImage> {
     public CompoundButtonHolder(final CompoundButton view) { super(view); }
     @Override
     public void setImage(final Drawable d) { view.setButtonDrawable(d); }
+  }
+  
+  /**
+   * @author Olexandr Tereshchuk - Stanfy (http://www.stanfy.com)
+   */
+  static class TextViewHolder extends ViewImageHolder<TextView> {
+    public TextViewHolder(final TextView view) { super(view); }
+    @Override
+    public void setImage(final Drawable d) { view.setCompoundDrawablesWithIntrinsicBounds(d, null, null, null); }
+    @Override
+    public int getRequiredHeight() { return -1; }
+    @Override
+    public int getRequiredWidth() { return -1; }
   }
 
 
