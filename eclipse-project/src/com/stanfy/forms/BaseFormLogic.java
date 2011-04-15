@@ -1,10 +1,10 @@
 package com.stanfy.forms;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,7 +21,7 @@ import com.stanfy.views.R;
 public abstract class BaseFormLogic implements OnClickListener, Destroyable, DialogInterface.OnClickListener {
 
   /** Dialog IDs. */
-  private static final int DIALOG_EDITTEXT = 1;
+  private static final int DIALOG_EDITTEXT = 1, DIALOG_LIST = 2;
 
   /** Owner. */
   private Activity owner;
@@ -54,14 +54,20 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
   }
 
   public Dialog onCreateDialog(final int id) {
-    final Builder builder = new Builder(owner)
-        .setNegativeButton(R.string.cancel, this)
-        .setPositiveButton(R.string.ok, this);
+    final Builder builder = new Builder(owner);
+    builder.setTitle(state.currentDialogTitle);
 
     switch (id) {
 
     case DIALOG_EDITTEXT:
-      builder.setView(LayoutInflater.from(owner).inflate(R.layout.dialog_edit_text, null));
+      builder
+        .setNegativeButton(R.string.cancel, this)
+        .setPositiveButton(R.string.ok, this)
+        .setView(LayoutInflater.from(owner).inflate(R.layout.dialog_edit_text, null));
+      break;
+
+    case DIALOG_LIST:
+      /* nothing */
       break;
 
     default:
@@ -80,6 +86,10 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
       lastEditText = edit;
       break;
 
+    case DIALOG_LIST:
+      final AlertDialog ad = (AlertDialog)d;
+      break;
+
     default:
     }
   }
@@ -89,7 +99,17 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     state.senderId = sender;
     state.currentDialogTitle = title;
     state.currentDialogText = value;
+    state.listItems = null;
     owner.showDialog(DIALOG_EDITTEXT);
+  }
+
+  protected void showListDialog(final CharSequence title, final CharSequence[] items, final int sender) {
+    state.currentDialogId = DIALOG_LIST;
+    state.senderId = sender;
+    state.currentDialogTitle = title;
+    state.currentDialogText = null;
+    state.listItems = items;
+    owner.showDialog(DIALOG_LIST);
   }
 
   @Override
@@ -119,7 +139,6 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
   public Object getState() { return state; }
   public void setState(final Object state) {
     if (state instanceof BaseFormLogic.StateHolder) {
-      Log.d("123123", "new state " + state);
       this.state = (BaseFormLogic.StateHolder)state;
     }
   }
@@ -130,10 +149,12 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
    * State holder.
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  private static class StateHolder {
+  protected static class StateHolder {
     /** Current dialog ID. */
     int currentDialogId, senderId;
     /** Strings. */
     CharSequence currentDialogTitle, currentDialogText;
+    /** List items. */
+    CharSequence[] listItems;
   }
 }

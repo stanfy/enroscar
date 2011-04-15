@@ -6,6 +6,7 @@
 
   <EditText
       style="@style/StretchHorizontallyContainer"
+      android:singleLine="true"
       android:id="@+id/dialog_edit_text"
       />
 
