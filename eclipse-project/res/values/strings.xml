@@ -4,4 +4,7 @@
   
   <string name="reset">Reset</string>
 
+  <string name="ok"><![CDATA[OK]]></string>
+  <string name="cancel"><![CDATA[Cancel]]></string>
+
 </resources>
