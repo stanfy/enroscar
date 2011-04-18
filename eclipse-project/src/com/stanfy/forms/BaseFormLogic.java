@@ -95,21 +95,20 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
   }
 
   protected void showEditTextDialog(final CharSequence title, final CharSequence value, final int sender) {
-    state.currentDialogId = DIALOG_EDITTEXT;
-    state.senderId = sender;
-    state.currentDialogTitle = title;
-    state.currentDialogText = value;
-    state.listItems = null;
-    owner.showDialog(DIALOG_EDITTEXT);
+    showDialog(DIALOG_EDITTEXT, title, value, null, sender);
   }
 
   protected void showListDialog(final CharSequence title, final CharSequence[] items, final int sender) {
-    state.currentDialogId = DIALOG_LIST;
+    showDialog(DIALOG_LIST, title, null, items, sender);
+  }
+
+  protected void showDialog(final int id, final CharSequence title, final CharSequence text, final CharSequence[] items, final int sender) {
+    state.currentDialogId = id;
     state.senderId = sender;
     state.currentDialogTitle = title;
-    state.currentDialogText = null;
+    state.currentDialogText = text;
     state.listItems = items;
-    owner.showDialog(DIALOG_LIST);
+    owner.showDialog(id);
   }
 
   @Override
@@ -156,5 +155,7 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     CharSequence currentDialogTitle, currentDialogText;
     /** List items. */
     CharSequence[] listItems;
+
+
   }
 }
