@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -20,7 +21,7 @@ import com.stanfy.views.R;
 public abstract class BaseFormLogic implements OnClickListener, Destroyable, DialogInterface.OnClickListener {
 
   /** Dialog IDs. */
-  private static final int DIALOG_EDITTEXT = 1;
+  private static final int DIALOG_EDITTEXT = 1, DIALOG_EDITTEXT_LARGE = 2;
 
   /** Owner. */
   private Activity owner;
@@ -43,13 +44,28 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     containers = new View[numberOfContainers];
   }
 
-  protected View addContainer(final int containerId, final int viewId) {
+  protected View addContainer(final int containerId, final int viewId, final boolean addColon, final boolean addStar) {
     final View c = owner.findViewById(containerId);
     containers[cIndex++] = c;
     c.setOnClickListener(this);
     final View result = c.findViewById(viewId);
     if (result instanceof TextView) { ((TextView)result).setFreezesText(true); }
+    if (addColon || addStar && c instanceof ViewGroup) {
+      final ViewGroup g = (ViewGroup)c;
+      if (g.getChildCount() > 0) {
+        final View first = g.getChildAt(0);
+        if (first instanceof TextView) {
+          final TextView tv = (TextView)first;
+          if (addColon) { tv.setText(tv.getText() + ":"); }
+          if (addStar) { tv.setText(tv.getText() + " *"); }
+        }
+      }
+    }
     return result;
+  }
+
+  protected View addContainer(final int containerId, final int viewId) {
+    return addContainer(containerId, viewId, true, false);
   }
 
   protected final Builder initAlertBuilder() {
@@ -69,6 +85,13 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
         .setView(LayoutInflater.from(owner).inflate(R.layout.dialog_edit_text, null));
       break;
 
+    case DIALOG_EDITTEXT_LARGE:
+      builder
+      .setNegativeButton(R.string.cancel, this)
+      .setPositiveButton(R.string.ok, this)
+      .setView(LayoutInflater.from(owner).inflate(R.layout.dialog_edit_text_large, null));
+      break;
+
     default:
       return null;
     }
@@ -79,6 +102,7 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     d.setTitle(state.currentDialogTitle);
     switch (id) {
 
+    case DIALOG_EDITTEXT_LARGE:
     case DIALOG_EDITTEXT:
       final EditText edit = (EditText)d.findViewById(R.id.dialog_edit_text);
       edit.setText(state.currentDialogText);
@@ -91,6 +115,9 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
 
   protected void showEditTextDialog(final CharSequence title, final CharSequence value, final int sender) {
     showDialog(DIALOG_EDITTEXT, title, value, sender);
+  }
+  protected void showEditTextDialogLarge(final CharSequence title, final CharSequence value, final int sender) {
+    showDialog(DIALOG_EDITTEXT_LARGE, title, value, sender);
   }
 
   protected void showDialog(final int id, final CharSequence title, final CharSequence text, final int sender) {
@@ -110,6 +137,7 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
 
   protected void onDialogOk(final int dialogId, final int senderId, final DialogInterface dialog) {
     switch (dialogId) {
+    case DIALOG_EDITTEXT_LARGE:
     case DIALOG_EDITTEXT:
       if (lastEditText != null) { onDialogResult(senderId, lastEditText.getText().toString()); }
       break;
