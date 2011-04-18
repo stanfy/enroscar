@@ -85,9 +85,12 @@ public class AppUtils {
     Log.d(tag, "categories=" + intent.getCategories());
     // Log.d(tag, "sourceBounds=" + intent.getSourceBounds());
     Log.d(tag, "extras:");
-    for (final String key : intent.getExtras().keySet()) {
-      final Object o = intent.getExtras().get(key);
-      Log.d(tag, "  " + key + "=" + o.getClass() + "/" + o);
+    final Bundle extras = intent.getExtras();
+    if (extras != null) {
+      for (final String key : extras.keySet()) {
+        final Object o = intent.getExtras().get(key);
+        Log.d(tag, "  " + key + "=" + o.getClass() + "/" + o);
+      }
     }
   }
 
