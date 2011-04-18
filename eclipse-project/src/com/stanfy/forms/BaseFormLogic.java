@@ -1,7 +1,6 @@
 package com.stanfy.forms;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -21,7 +20,7 @@ import com.stanfy.views.R;
 public abstract class BaseFormLogic implements OnClickListener, Destroyable, DialogInterface.OnClickListener {
 
   /** Dialog IDs. */
-  private static final int DIALOG_EDITTEXT = 1, DIALOG_LIST = 2;
+  private static final int DIALOG_EDITTEXT = 1;
 
   /** Owner. */
   private Activity owner;
@@ -53,9 +52,13 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     return result;
   }
 
+  protected final Builder initAlertBuilder() {
+    return new Builder(owner)
+      .setTitle(state.currentDialogTitle);
+  }
+
   public Dialog onCreateDialog(final int id) {
-    final Builder builder = new Builder(owner);
-    builder.setTitle(state.currentDialogTitle);
+    final Builder builder = initAlertBuilder();
 
     switch (id) {
 
@@ -64,10 +67,6 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
         .setNegativeButton(R.string.cancel, this)
         .setPositiveButton(R.string.ok, this)
         .setView(LayoutInflater.from(owner).inflate(R.layout.dialog_edit_text, null));
-      break;
-
-    case DIALOG_LIST:
-      /* nothing */
       break;
 
     default:
@@ -86,40 +85,35 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
       lastEditText = edit;
       break;
 
-    case DIALOG_LIST:
-      final AlertDialog ad = (AlertDialog)d;
-      break;
-
     default:
     }
   }
 
   protected void showEditTextDialog(final CharSequence title, final CharSequence value, final int sender) {
-    showDialog(DIALOG_EDITTEXT, title, value, null, sender);
+    showDialog(DIALOG_EDITTEXT, title, value, sender);
   }
 
-  protected void showListDialog(final CharSequence title, final CharSequence[] items, final int sender) {
-    showDialog(DIALOG_LIST, title, null, items, sender);
-  }
-
-  protected void showDialog(final int id, final CharSequence title, final CharSequence text, final CharSequence[] items, final int sender) {
+  protected void showDialog(final int id, final CharSequence title, final CharSequence text, final int sender) {
     state.currentDialogId = id;
     state.senderId = sender;
     state.currentDialogTitle = title;
     state.currentDialogText = text;
-    state.listItems = items;
     owner.showDialog(id);
   }
 
   @Override
   public final void onClick(final DialogInterface dialog, final int which) {
     if (which == DialogInterface.BUTTON_POSITIVE) {
-      switch (state.currentDialogId) {
-      case DIALOG_EDITTEXT:
-        if (lastEditText != null) { onDialogResult(state.senderId, lastEditText.getText().toString()); }
-        break;
-      default:
-      }
+      onDialogOk(state.currentDialogId, state.senderId, dialog);
+    }
+  }
+
+  protected void onDialogOk(final int dialogId, final int senderId, final DialogInterface dialog) {
+    switch (dialogId) {
+    case DIALOG_EDITTEXT:
+      if (lastEditText != null) { onDialogResult(senderId, lastEditText.getText().toString()); }
+      break;
+    default:
     }
   }
 
@@ -153,9 +147,5 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     int currentDialogId, senderId;
     /** Strings. */
     CharSequence currentDialogTitle, currentDialogText;
-    /** List items. */
-    CharSequence[] listItems;
-
-
   }
 }
