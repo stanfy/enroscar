@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -109,6 +110,7 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     case DIALOG_EDITTEXT:
       final EditText edit = (EditText)d.findViewById(R.id.dialog_edit_text);
       edit.setText(state.currentDialogText);
+      edit.setInputType(state.inputType);
       lastEditText = edit;
       break;
 
@@ -117,17 +119,27 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
   }
 
   protected void showEditTextDialog(final CharSequence title, final CharSequence value, final int sender) {
-    showDialog(DIALOG_EDITTEXT, title, value, sender);
+    showEditTextDialog(title, value, sender, InputType.TYPE_CLASS_TEXT);
   }
   protected void showEditTextDialogLarge(final CharSequence title, final CharSequence value, final int sender) {
-    showDialog(DIALOG_EDITTEXT_LARGE, title, value, sender);
+    showEditTextDialogLarge(title, value, sender, InputType.TYPE_CLASS_TEXT);
+  }
+  protected void showEditTextDialog(final CharSequence title, final CharSequence value, final int sender, final int inputType) {
+    showDialog(DIALOG_EDITTEXT, title, value, sender, inputType);
+  }
+  protected void showEditTextDialogLarge(final CharSequence title, final CharSequence value, final int sender, final int inputType) {
+    showDialog(DIALOG_EDITTEXT_LARGE, title, value, sender, inputType);
   }
 
   protected void showDialog(final int id, final CharSequence title, final CharSequence text, final int sender) {
+    showDialog(id, title, text, sender, InputType.TYPE_CLASS_TEXT);
+  }
+  protected void showDialog(final int id, final CharSequence title, final CharSequence text, final int sender, final int inputType) {
     state.currentDialogId = id;
     state.senderId = sender;
     state.currentDialogTitle = title;
     state.currentDialogText = text;
+    state.inputType = inputType;
     owner.showDialog(id);
   }
 
@@ -179,6 +191,8 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
   protected static class StateHolder {
     /** Current dialog ID. */
     int currentDialogId, senderId;
+    /** Input type. */
+    int inputType;
     /** Strings. */
     CharSequence currentDialogTitle, currentDialogText;
   }
