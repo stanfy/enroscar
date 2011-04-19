@@ -131,6 +131,7 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
 
   @Override
   public final void onClick(final DialogInterface dialog, final int which) {
+    if (lastEditText != null) { AppUtils.hideSoftInput(lastEditText); }
     if (which == DialogInterface.BUTTON_POSITIVE) {
       onDialogOk(state.currentDialogId, state.senderId, dialog);
     }
@@ -141,7 +142,6 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     case DIALOG_EDITTEXT_LARGE:
     case DIALOG_EDITTEXT:
       if (lastEditText != null) {
-        AppUtils.hideSoftInput(lastEditText);
         onDialogResult(senderId, lastEditText.getText().toString());
       }
       break;
