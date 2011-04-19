@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.stanfy.Destroyable;
 import com.stanfy.views.R;
+import com.stanfy.views.utils.AppUtils;
 
 /**
  * Base step logic.
@@ -139,7 +140,10 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     switch (dialogId) {
     case DIALOG_EDITTEXT_LARGE:
     case DIALOG_EDITTEXT:
-      if (lastEditText != null) { onDialogResult(senderId, lastEditText.getText().toString()); }
+      if (lastEditText != null) {
+        AppUtils.hideSoftInput(lastEditText);
+        onDialogResult(senderId, lastEditText.getText().toString());
+      }
       break;
     default:
     }
