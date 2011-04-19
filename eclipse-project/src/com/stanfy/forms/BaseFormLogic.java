@@ -45,6 +45,8 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     containers = new View[numberOfContainers];
   }
 
+  protected String addStar(final CharSequence in) { return "*" + in; }
+
   protected View addContainer(final int containerId, final int viewId, final boolean addColon, final boolean addStar) {
     final View c = owner.findViewById(containerId);
     containers[cIndex++] = c;
@@ -58,7 +60,7 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
         if (first instanceof TextView) {
           final TextView tv = (TextView)first;
           if (addColon) { tv.setText(tv.getText() + ":"); }
-          if (addStar) { tv.setText(tv.getText() + " *"); }
+          if (addStar) { tv.setText(addStar(tv.getText())); }
         }
       }
     }
