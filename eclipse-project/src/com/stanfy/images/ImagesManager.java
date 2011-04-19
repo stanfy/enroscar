@@ -141,7 +141,7 @@ public class ImagesManager<T extends CachedImage> {
   public void populateImage(final ImageHolder imageHolder, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
     if (DEBUG) { Log.d(TAG, "Process url" + url); }
     if (TextUtils.isEmpty(url)) {
-      setImage(imageHolder, getLoadingDrawable(imageHolder.context));
+      setLoadingImage(imageHolder);
       return;
     }
     final Drawable memCached = getFromMemCache(url, imageHolder);
@@ -150,10 +150,16 @@ public class ImagesManager<T extends CachedImage> {
       return;
     }
     if (DEBUG) { Log.d(TAG, "Set loading for " + url); }
-    setImage(imageHolder, getLoadingDrawable(imageHolder.context));
+    setLoadingImage(imageHolder);
     final ImageLoader<T> loader = createImageLoaderTask(imageHolder, url, imagesDAO, downloader);
     cancelTasks(loader);
     getImageTaskExecutor().execute(loader);
+  }
+
+  private void setLoadingImage(final ImageHolder holder) {
+    if (holder.getRequiredWidth() > 0 && holder.getRequiredHeight() > 0) {
+      setImage(holder, getLoadingDrawable(holder.context));
+    }
   }
 
   /**
@@ -537,7 +543,7 @@ public class ImagesManager<T extends CachedImage> {
     @Override
     public void setImage(final Drawable d) { view.setButtonDrawable(d); }
   }
-  
+
   /**
    * @author Olexandr Tereshchuk - Stanfy (http://www.stanfy.com)
    */
