@@ -111,6 +111,7 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
       final EditText edit = (EditText)d.findViewById(R.id.dialog_edit_text);
       edit.setText(state.currentDialogText);
       edit.setInputType(state.inputType);
+      if (id == DIALOG_EDITTEXT_LARGE) { edit.setLines(3); }
       lastEditText = edit;
       break;
 
