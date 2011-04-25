@@ -57,7 +57,8 @@ public class ImagesManagerContext<T extends CachedImage> {
   }
 
   public static boolean check(final Uri uri) {
-    return uri == null || (uri.getScheme() != null && uri.getScheme().startsWith("http"));
+    return uri == null || (uri.getScheme() != null
+        && (uri.getScheme().startsWith("http") || uri.getScheme().startsWith("content")));
   }
 
   public void populateImageView(final ImageView view, final String url) {

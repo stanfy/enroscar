@@ -166,7 +166,7 @@ public class ImagesManager<T extends CachedImage> {
    * @param image image to process
    * @return local file system path to that image
    */
-  protected String setCachedImagePath(final T image) {
+  public String setCachedImagePath(final T image) {
     if (image.getPath() != null) { return image.getPath(); }
     final long id = image.getId();
     final String path = AppUtils.buildFilePathById(id, "image-" + id);
@@ -239,7 +239,7 @@ public class ImagesManager<T extends CachedImage> {
    * @param context context instance
    * @return base dir to save images
    */
-  protected File getImageDir(final Context context) {
+  public File getImageDir(final Context context) {
     final String eState = Environment.getExternalStorageState();
     if (Environment.MEDIA_MOUNTED.equals(eState)) {
       return AppUtils.getSdkDependentUtils().getExternalCacheDir(context);
@@ -384,6 +384,7 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     protected Drawable setRemoteImage(final T cachedImage) throws IOException {
+      if (!url.startsWith("http")) { return null; }
       final Context x = imageHolder.context;
       if (x == null) { throw new IOException("Context is null"); }
       imagesManager.makeImageLocal(imagesDAO, x, cachedImage, downloader);
