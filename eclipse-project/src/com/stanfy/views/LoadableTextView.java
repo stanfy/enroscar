@@ -62,7 +62,7 @@ public class LoadableTextView extends TextView {
   @Override
   public void setCompoundDrawables(final Drawable left, final Drawable top, final Drawable right, final Drawable bottom) {
     final int lw = drawableLeftWidth, lh = drawableLeftHeight;
-    if (lw != -1 && lh != -1) { left.setBounds(0, 0, lw, lh); }
+    if (left != null && lw != -1 && lh != -1) { left.setBounds(0, 0, lw, lh); }
     super.setCompoundDrawables(left, top, right, bottom);
   }
 
