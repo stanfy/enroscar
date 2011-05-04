@@ -79,8 +79,20 @@ public class AppUtils {
   }
 
   public static void hideSoftInput(final TextView textView) {
-    final InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-    imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+    try {
+      final InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+    } catch (final Exception e) {
+      Log.d(TAG, "Ignore exception", e);
+    }
+  }
+  public static void showSoftInput(final TextView textView) {
+    try {
+      final InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.showSoftInput(textView, InputMethodManager.SHOW_FORCED);
+    } catch (final Exception e) {
+      Log.d(TAG, "Ignore exception", e);
+    }
   }
 
   public static void logIntent(final String tag, final Intent intent) {
