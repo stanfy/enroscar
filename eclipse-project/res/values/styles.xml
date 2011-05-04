@@ -44,5 +44,8 @@
     <item name="android:paddingTop">10dp</item>
     <item name="android:paddingBottom">10dp</item>
   </style>
+  <style name="ScrollForm" parent="MainContainer">
+    <item name="android:fillViewport">true</item>
+  </style>
 
 </resources>
