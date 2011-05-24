@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
 /**
@@ -44,7 +43,7 @@ import android.widget.RelativeLayout;
  *
  * @see RadioButton
  *
- * Based on {@link RadioGroup}.
+ * Based on RadioGroup implementation.
  * @author Olexandr Tereshchuk - Stanfy (http://www.stanfy.com)
  *
  */
