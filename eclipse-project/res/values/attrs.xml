@@ -29,5 +29,9 @@
     <attr name="drawableLeftWidth" format="dimension" />
     <attr name="drawableLeftHeight" format="dimension" />
   </declare-styleable>
+  
+  <declare-styleable name="RelativeRadioGroup">
+    <attr name="checkedButton" format="integer" />
+  </declare-styleable>
 
 </resources>
