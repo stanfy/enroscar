@@ -5,7 +5,6 @@ import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,11 +31,11 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
   /** Containers. */
   private final View[] containers;
 
-  /** Last edit text. */
-  private EditText lastEditText;
-
   /** Container index. */
   private int cIndex = 0;
+
+  /** Lines count. */
+  private final int linesCountForLargeText;
 
   /** State. */
   private BaseFormLogic.StateHolder state;
@@ -45,6 +44,8 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     this.owner = owner;
     this.state = new StateHolder();
     containers = new View[numberOfContainers];
+
+    linesCountForLargeText = owner.getResources().getInteger(R.integer.form_dialog_large_text_lines);
   }
 
   protected String addStar(final CharSequence in) { return "*" + in; }
@@ -85,16 +86,17 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
 
     case DIALOG_EDITTEXT:
       builder
-        .setNegativeButton(R.string.cancel, this)
-        .setPositiveButton(R.string.ok, this)
-        .setView(LayoutInflater.from(owner).inflate(R.layout.dialog_edit_text, null));
+          .setNegativeButton(R.string.cancel, this)
+          .setPositiveButton(R.string.ok, this)
+          .setView(LayoutInflater.from(owner).inflate(R.layout.dialog_edit_text, null));
       break;
 
     case DIALOG_EDITTEXT_LARGE:
+      final View v = LayoutInflater.from(owner).inflate(R.layout.dialog_edit_text_large, null);
       builder
-      .setNegativeButton(R.string.cancel, this)
-      .setPositiveButton(R.string.ok, this)
-      .setView(LayoutInflater.from(owner).inflate(R.layout.dialog_edit_text_large, null));
+          .setNegativeButton(R.string.cancel, this)
+          .setPositiveButton(R.string.ok, this)
+          .setView(v);
       break;
 
     default:
@@ -109,18 +111,20 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
 
     case DIALOG_EDITTEXT_LARGE:
     case DIALOG_EDITTEXT:
-      final EditText edit = (EditText)d.findViewById(R.id.dialog_edit_text);
+      final EditText edit = retrieveDialogEdit(d, id);
       edit.setText(state.currentDialogText);
       edit.setInputType(state.inputType);
       if (id == DIALOG_EDITTEXT_LARGE) {
-        edit.setInputType(state.inputType | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        edit.setLines(3);
+        edit.setLines(linesCountForLargeText);
       }
-      lastEditText = edit;
       break;
 
     default:
     }
+  }
+
+  private static EditText retrieveDialogEdit(final Dialog d, final int dialogType) {
+    return (EditText)d.findViewById(dialogType == DIALOG_EDITTEXT ? R.id.dialog_edit_text : R.id.dialog_edit_text_large);
   }
 
   protected void showEditTextDialog(final CharSequence title, final CharSequence value, final int sender) {
@@ -133,7 +137,7 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     showDialog(DIALOG_EDITTEXT, title, value, sender, inputType);
   }
   protected void showEditTextDialogLarge(final CharSequence title, final CharSequence value, final int sender, final int inputType) {
-    showDialog(DIALOG_EDITTEXT_LARGE, title, value, sender, inputType);
+    showDialog(DIALOG_EDITTEXT_LARGE, title, value, sender, inputType | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
   }
 
   protected void showDialog(final int id, final CharSequence title, final CharSequence text, final int sender) {
@@ -150,27 +154,37 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
 
   @Override
   public final void onClick(final DialogInterface dialog, final int which) {
-    if (lastEditText != null) { AppUtils.hideSoftInput(lastEditText); }
+    final EditText edit;
+    final int dialogType = state.currentDialogId;
+    switch (dialogType) {
+      case DIALOG_EDITTEXT_LARGE:
+      case DIALOG_EDITTEXT:
+        edit = retrieveDialogEdit((Dialog)dialog, dialogType);
+        AppUtils.hideSoftInput(edit);
+        break;
+      default:
+        edit = null;
+    }
     if (which == DialogInterface.BUTTON_POSITIVE) {
-      onDialogOk(state.currentDialogId, state.senderId, dialog);
+      onDialogOk(state.currentDialogId, state.senderId, dialog, edit);
     }
   }
 
-  protected void onDialogOk(final int dialogId, final int senderId, final DialogInterface dialog) {
+  private void onDialogOk(final int dialogId, final int senderId, final DialogInterface dialog, final EditText edit) {
     switch (dialogId) {
     case DIALOG_EDITTEXT_LARGE:
     case DIALOG_EDITTEXT:
-      if (lastEditText != null) {
-        onDialogResult(senderId, lastEditText.getText().toString());
-      }
+      if (edit != null) { onDialogResult(senderId, edit.getText().toString()); }
       break;
     default:
+      onDialogOk(dialogId, senderId, dialog);
     }
   }
 
+  protected void onDialogOk(final int dialogId, final int senderId, final DialogInterface dialog) { /* nothing */ }
+
   @Override
   public void destroy() {
-    lastEditText = null;
     for (int i = containers.length - 1; i >= 0; i--) {
       final View v = containers[i];
       if (v != null) {

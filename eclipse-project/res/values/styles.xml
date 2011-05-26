@@ -48,4 +48,7 @@
     <item name="android:fillViewport">true</item>
   </style>
 
+  <!-- Count of lines for large text. -->
+  <item type="integer" name="form_dialog_large_text_lines">3</item>
+
 </resources>

@@ -8,7 +8,7 @@
       style="@style/StretchHorizontallyContainer"
       android:gravity="left|top"
       android:lines="3"
-      android:id="@+id/dialog_edit_text"
+      android:id="@+id/dialog_edit_text_large"
       />
 
 </FrameLayout>
