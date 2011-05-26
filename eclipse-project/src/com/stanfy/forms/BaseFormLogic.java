@@ -5,6 +5,7 @@ import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -111,7 +112,10 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
       final EditText edit = (EditText)d.findViewById(R.id.dialog_edit_text);
       edit.setText(state.currentDialogText);
       edit.setInputType(state.inputType);
-      if (id == DIALOG_EDITTEXT_LARGE) { edit.setLines(3); }
+      if (id == DIALOG_EDITTEXT_LARGE) {
+        edit.setInputType(state.inputType | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        edit.setLines(3);
+      }
       lastEditText = edit;
       break;
 
