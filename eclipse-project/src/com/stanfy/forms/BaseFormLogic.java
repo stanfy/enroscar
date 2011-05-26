@@ -174,7 +174,11 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     switch (dialogId) {
     case DIALOG_EDITTEXT_LARGE:
     case DIALOG_EDITTEXT:
-      if (edit != null) { onDialogResult(senderId, edit.getText().toString()); }
+      if (edit != null) {
+        final String value = edit.getText().toString();
+        edit.setText(null);
+        onDialogResult(senderId, value);
+      }
       break;
     default:
       onDialogOk(dialogId, senderId, dialog);
