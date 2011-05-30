@@ -32,7 +32,7 @@ import android.widget.RelativeLayout;
  * </p>
  * <p>
  * See {@link android.R.styleable#RadioGroup RadioGroup Attributes},
- * {@link android.R.styleable#LinearLayout LinearLayout Attributes},
+ * {@link android.R.styleable#RelativeLayout RelativeLayout Attributes},
  * {@link android.R.styleable#ViewGroup ViewGroup Attributes},
  * {@link android.R.styleable#View View Attributes}
  * </p>

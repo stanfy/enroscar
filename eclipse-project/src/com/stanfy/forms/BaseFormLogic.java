@@ -1,14 +1,17 @@
 package com.stanfy.forms;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -114,8 +117,21 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
       final EditText edit = retrieveDialogEdit(d, id);
       edit.setText(state.currentDialogText);
       edit.setInputType(state.inputType);
+      edit.setImeOptions(edit.getImeOptions() | EditorInfo.IME_ACTION_DONE);
       if (id == DIALOG_EDITTEXT_LARGE) {
         edit.setLines(linesCountForLargeText);
+      } else {
+        edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+          
+          @Override
+          public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
+            if (actionId == EditorInfo.IME_ACTION_DONE && d instanceof AlertDialog) {
+              ((AlertDialog)d).getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+              return true;
+            }
+            return false;
+          }
+        });
       }
       break;
 
@@ -151,7 +167,7 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     state.inputType = inputType;
     owner.showDialog(id);
   }
-
+  
   @Override
   public final void onClick(final DialogInterface dialog, final int which) {
     final EditText edit;
