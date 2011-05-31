@@ -117,15 +117,20 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
       final EditText edit = retrieveDialogEdit(d, id);
       edit.setText(state.currentDialogText);
       edit.setInputType(state.inputType);
-      edit.setImeOptions(edit.getImeOptions() | EditorInfo.IME_ACTION_DONE);
       if (id == DIALOG_EDITTEXT_LARGE) {
         edit.setLines(linesCountForLargeText);
       } else {
+        edit.setImeOptions(edit.getImeOptions() | EditorInfo.IME_ACTION_DONE);
         edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
           
           @Override
           public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-            if (actionId == EditorInfo.IME_ACTION_DONE && d instanceof AlertDialog) {
+            if (d instanceof AlertDialog
+                && (actionId == EditorInfo.IME_ACTION_DONE
+                    || (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
+                        && event != null
+                        && event.getAction() == KeyEvent.ACTION_DOWN
+                        && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))) {
               ((AlertDialog)d).getButton(AlertDialog.BUTTON_POSITIVE).performClick();
               return true;
             }
