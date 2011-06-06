@@ -1,7 +1,6 @@
 package com.stanfy.images;
 
 import java.lang.ref.SoftReference;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import android.graphics.Bitmap;
@@ -13,7 +12,7 @@ import android.graphics.Bitmap;
 public class ImageMemoryCache {
 
   /** Cache map. */
-  private final Map<String, SoftReference<Bitmap>> cacheMap;
+  private final ConcurrentHashMap<String, SoftReference<Bitmap>> cacheMap;
 
   /**
    * Constructor.
@@ -34,16 +33,21 @@ public class ImageMemoryCache {
 
   /**
    * @param url URL
-   * @return image
+   * @return image bitmap
    */
   public Bitmap getElement(final String url) {
+    final ConcurrentHashMap<String, SoftReference<Bitmap>> cacheMap = this.cacheMap;
     final SoftReference<Bitmap> ref = cacheMap.get(url);
-    return ref != null ? ref.get() : null;
+    if (ref == null) { return null; }
+    final Bitmap bm = ref.get();
+    if (bm == null) {
+      cacheMap.remove(url);
+      return null;
+    }
+    return bm;
   }
 
-  public boolean contains(final String url) {
-    return cacheMap.containsKey(url);
-  }
+  public boolean contains(final String url) { return cacheMap.containsKey(url); }
 
   public void remove(final String url) {
     final SoftReference<Bitmap> ref = cacheMap.remove(url);
@@ -53,6 +57,7 @@ public class ImageMemoryCache {
   }
 
   public void clear() {
+    final ConcurrentHashMap<String, SoftReference<Bitmap>> cacheMap = this.cacheMap;
     for (final SoftReference<Bitmap> ref : cacheMap.values()) {
       final Bitmap map = ref.get();
       if (map != null) { map.recycle(); }
