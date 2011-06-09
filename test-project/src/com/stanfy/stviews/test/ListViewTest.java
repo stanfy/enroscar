@@ -45,9 +45,7 @@ public class ListViewTest extends BaseTestActivity<ListViewActivity> {
       @Override
       public void run() {
         instrumentation.callActivityOnCreate(a, b);
-        instrumentation.callActivityOnStart(a);
         instrumentation.callActivityOnRestoreInstanceState(a, b);
-        instrumentation.callActivityOnResume(a);
         s.release();
       }
     };
