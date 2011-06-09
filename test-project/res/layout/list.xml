@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.stanfy.views.list.ListView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:stanfy="http://schemas.android.com/apk/res/com.stanfy.stviews.test"
+    style="@style/MainContainer"
+    stanfy:frozeScrollPosition="true"
+    android:id="@android:id/list"
+    />
