@@ -37,6 +37,9 @@ public class ImageView extends android.widget.ImageView {
   /** Paint. */
   private final Paint paint = new Paint();
 
+  /** Buffer rectangle. */
+  private static final RectF BUFFER_RECT_F = new RectF();
+
   public ImageView(final Context context) {
     super(context);
     init(context, null);
@@ -66,6 +69,24 @@ public class ImageView extends android.widget.ImageView {
    */
   public void setCornersRadius(final int r) { this.cornersRadius = r; }
 
+  private static RectF prepareSourceRect(final Bitmap source, final Bitmap destination) {
+    final int sw = source.getWidth(), sh = source.getHeight(), dw = destination.getWidth(), dh = destination.getHeight();
+    if (sw >= dw || sh >= dh) { // scaling / stretching
+      BUFFER_RECT_F.left = 0;
+      BUFFER_RECT_F.top = 0;
+      BUFFER_RECT_F.right = dw;
+      BUFFER_RECT_F.bottom = dh;
+    } else { // no scaling, center
+      final int topPadding = (dh - sh) >> 1;
+      final int leftPadding = (dw - sw) >> 1;
+      BUFFER_RECT_F.left = leftPadding;
+      BUFFER_RECT_F.top = topPadding;
+      BUFFER_RECT_F.right = leftPadding + sw;
+      BUFFER_RECT_F.bottom = topPadding + sh;
+    }
+    return BUFFER_RECT_F;
+  }
+
   @Override
   protected void onDraw(final Canvas canvas) {
     final Drawable d = getDrawable();
@@ -80,16 +101,17 @@ public class ImageView extends android.widget.ImageView {
         return;
       }
 
+      final Bitmap source = ((BitmapDrawable)d).getBitmap();
       final Bitmap bitmap = Bitmap.createBitmap(resultW, resultH, Bitmap.Config.ARGB_8888);
       final Canvas c = new Canvas(bitmap);
-      final RectF rectF = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
 
+      final RectF rectF = prepareSourceRect(source, bitmap);
       c.drawARGB(0, 0, 0, 0);
       final Paint p = paint;
       p.setXfermode(null);
       c.drawRoundRect(rectF, r, r, p);
       p.setXfermode(XFERMODE);
-      c.drawBitmap(((BitmapDrawable)d).getBitmap(), null, rectF, p);
+      c.drawBitmap(source, null, rectF, p);
 
       final Rect finalRect = new Rect(pl, pt, pl + bitmap.getWidth(), pt + bitmap.getHeight());
       canvas.drawBitmap(bitmap, null, finalRect, null);
