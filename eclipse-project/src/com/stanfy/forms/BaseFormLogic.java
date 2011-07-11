@@ -149,10 +149,10 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
   }
 
   protected void showEditTextDialog(final CharSequence title, final CharSequence value, final int sender) {
-    showEditTextDialog(title, value, sender, InputType.TYPE_CLASS_TEXT);
+    showEditTextDialog(title, value, sender, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
   }
   protected void showEditTextDialogLarge(final CharSequence title, final CharSequence value, final int sender) {
-    showEditTextDialogLarge(title, value, sender, InputType.TYPE_CLASS_TEXT);
+    showEditTextDialogLarge(title, value, sender, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
   }
   protected void showEditTextDialog(final CharSequence title, final CharSequence value, final int sender, final int inputType) {
     showDialog(DIALOG_EDITTEXT, title, value, sender, inputType);

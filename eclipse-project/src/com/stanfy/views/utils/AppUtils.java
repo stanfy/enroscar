@@ -66,10 +66,10 @@ public class AppUtils {
     return n;
   }
 
-  public static void setTextOrHide(final TextView view, final String text) {
+  public static void setTextOrHide(final TextView view, final CharSequence text) {
     setTextOrHide(view, text, View.GONE);
   }
-  public static void setTextOrHide(final TextView view, final String text, final int hvisibility) {
+  public static void setTextOrHide(final TextView view, final CharSequence text, final int hvisibility) {
     if (TextUtils.isEmpty(text)) {
       view.setVisibility(hvisibility);
     } else {
