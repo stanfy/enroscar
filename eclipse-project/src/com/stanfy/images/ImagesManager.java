@@ -157,9 +157,10 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   private void setLoadingImage(final ImageHolder holder) {
-    if (holder.getRequiredWidth() > 0 && holder.getRequiredHeight() > 0) {
-      setImage(holder, getLoadingDrawable(holder.context));
-    }
+    final Drawable d = holder.getRequiredWidth() > 0 && holder.getRequiredHeight() > 0
+        ? getLoadingDrawable(holder.context)
+        : null;
+    setImage(holder, d);
   }
 
   /**
@@ -210,7 +211,7 @@ public class ImagesManager<T extends CachedImage> {
   protected final void setImage(final ImageHolder imageHolder, final Drawable drawable) {
     final Drawable d = decorateDrawable(imageHolder.context, drawable);
     imageHolder.setImage(d);
-    imageHolder.cachedImageId = -1;
+    imageHolder.reset();
   }
 
   /**
@@ -483,6 +484,7 @@ public class ImagesManager<T extends CachedImage> {
     public abstract void post(final Runnable r);
     public abstract int getRequiredWidth();
     public abstract int getRequiredHeight();
+    public void reset() { cachedImageId = -1; }
     public void destroy() {
       context = null;
     }
