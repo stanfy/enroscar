@@ -4,15 +4,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.Xfermode;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.AttributeSet;
+
+import com.stanfy.images.decorator.ImageDecorator;
+import com.stanfy.images.decorator.MaskImageDecorator;
 
 /**
  * Image view that slightly extends possibilities of a standard image view.
@@ -26,19 +24,14 @@ import android.util.AttributeSet;
  */
 public class ImageView extends android.widget.ImageView {
 
-  /** Round corners flag. */
-  private int cornersRadius;
+  /** Image decorator. */
+  private ImageDecorator imageDecorator;
 
-  /** Help color. */
-  private static final int CORNERS_HELP_COLOR = 0xff434343;
-  /** Xfermode. */
-  private static final Xfermode XFERMODE = new PorterDuffXfermode(Mode.SRC_IN);
+  /** Draw matrix. */
+  private Matrix drawMatrix = null;
 
-  /** Paint. */
-  private final Paint paint = new Paint();
-
-  /** Buffer rectangle. */
-  private static final RectF BUFFER_RECT_F = new RectF();
+  /** @see android.widget.ImageView#mHaveFrame */
+  private boolean haveFrame = false;
 
   public ImageView(final Context context) {
     super(context);
@@ -55,70 +48,104 @@ public class ImageView extends android.widget.ImageView {
   }
 
   private void init(final Context context, final AttributeSet attrs) {
-    paint.setAntiAlias(true);
-    paint.setColor(CORNERS_HELP_COLOR);
-
     final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ImageView);
-    cornersRadius = a.getDimensionPixelSize(R.styleable.ImageView_android_radius, 0);
+    final int cornersRadius = a.getDimensionPixelSize(R.styleable.ImageView_android_radius, 0);
     a.recycle();
+
+    setCornersRadius(cornersRadius);
+  }
+
+  /** @param imageDecorator the imageDecorator to set */
+  public void setImageDecorator(final ImageDecorator imageDecorator) {
+    this.imageDecorator = imageDecorator;
+    setDrawingCacheEnabled(true);
   }
 
   /**
-   * Set a radius of corners when drawing a bitmap image. Works for {@link BitmapDrawable} only.
+   * Set a radius of corners when drawing a bitmap image.
    * @param r radius to set
    */
-  public void setCornersRadius(final int r) { this.cornersRadius = r; }
-
-  private static RectF prepareSourceRect(final Bitmap source, final Bitmap destination) {
-    final int sw = source.getWidth(), sh = source.getHeight(), dw = destination.getWidth(), dh = destination.getHeight();
-    if (sw >= dw || sh >= dh) { // scaling / stretching
-      BUFFER_RECT_F.left = 0;
-      BUFFER_RECT_F.top = 0;
-      BUFFER_RECT_F.right = dw;
-      BUFFER_RECT_F.bottom = dh;
-    } else { // no scaling, center
-      final int topPadding = (dh - sh) >> 1;
-      final int leftPadding = (dw - sw) >> 1;
-      BUFFER_RECT_F.left = leftPadding;
-      BUFFER_RECT_F.top = topPadding;
-      BUFFER_RECT_F.right = leftPadding + sw;
-      BUFFER_RECT_F.bottom = topPadding + sh;
-    }
-    return BUFFER_RECT_F;
+  public void setCornersRadius(final int r) {
+    imageDecorator = r > 0 ? new MaskImageDecorator(r) : null;
   }
+
+  /** @param drawMatrix the drawMatrix to set */
+  void setDrawMatrix(final Matrix drawMatrix) { this.drawMatrix = drawMatrix; }
+  /** @return the haveFrame */
+  boolean isHaveFrame() { return haveFrame; }
 
   @Override
   protected void onDraw(final Canvas canvas) {
+    final ImageDecorator imageDecorator = this.imageDecorator;
+    if (imageDecorator == null) {
+      super.onDraw(canvas);
+      return;
+    }
+
     final Drawable d = getDrawable();
     if (d == null) { return; }
-    final int r = cornersRadius;
-    if (r > 0 && d instanceof BitmapDrawable) {
 
-      final int pl = getPaddingLeft(), pt = getPaddingTop();
-      final int resultW = getMeasuredWidth() - pl - getPaddingRight(), resultH = getMeasuredHeight() - pt - getPaddingBottom();
-      if (resultW <= 0 || resultH <= 0) {
-        super.onDraw(canvas);
-        return;
-      }
-
-      final Bitmap source = ((BitmapDrawable)d).getBitmap();
-      final Bitmap bitmap = Bitmap.createBitmap(resultW, resultH, Bitmap.Config.ARGB_8888);
-      final Canvas c = new Canvas(bitmap);
-
-      final RectF rectF = prepareSourceRect(source, bitmap);
-      c.drawARGB(0, 0, 0, 0);
-      final Paint p = paint;
-      p.setXfermode(null);
-      c.drawRoundRect(rectF, r, r, p);
-      p.setXfermode(XFERMODE);
-      c.drawBitmap(source, null, rectF, p);
-
-      final Rect finalRect = new Rect(pl, pt, pl + bitmap.getWidth(), pt + bitmap.getHeight());
-      canvas.drawBitmap(bitmap, null, finalRect, null);
-      bitmap.recycle();
-    } else {
+    final int pl = getPaddingLeft(), pt = getPaddingTop();
+    final int resultW = getMeasuredWidth() - pl - getPaddingRight(), resultH = getMeasuredHeight() - pt - getPaddingBottom();
+    if (resultW <= 0 || resultH <= 0) {
       super.onDraw(canvas);
+      return;
     }
+    if (d.getIntrinsicWidth() == 0 || d.getIntrinsicHeight() == 0) { return; } // nothing to draw
+    imageDecorator.setup(resultW, resultH);
+
+    final Bitmap bitmap = Bitmap.createBitmap(resultW, resultH, Bitmap.Config.ARGB_8888);
+    final Canvas bitmapCanvas = new Canvas(bitmap);
+    if (drawMatrix == null) {
+      d.draw(bitmapCanvas);
+    } else {
+      final int saveCount = bitmapCanvas.save();
+      bitmapCanvas.concat(drawMatrix);
+      d.draw(bitmapCanvas);
+      bitmapCanvas.restoreToCount(saveCount);
+    }
+
+    final Bitmap decorated = imageDecorator.decorateBitmap(bitmap);
+    if (decorated != bitmap) { bitmap.recycle(); }
+
+    if (pl == 0 && pt == 0) {
+      canvas.drawBitmap(decorated, 0, 0, null);
+    } else {
+      final int saveCount = canvas.save();
+      canvas.translate(pl, pt);
+      canvas.drawBitmap(decorated, 0, 0, null);
+      canvas.restoreToCount(saveCount);
+    }
+    decorated.recycle();
+  }
+
+  @Override
+  public void setImageMatrix(final Matrix matrix) {
+    if ((matrix == null && !getImageMatrix().isIdentity())
+        || (matrix != null && !getImageMatrix().equals(matrix))) {
+      ImageViewHiddenMethods.configureBounds(this);
+    }
+    super.setImageMatrix(matrix);
+  }
+
+  @Override
+  public void setImageDrawable(final Drawable drawable) {
+    super.setImageDrawable(drawable);
+    if (drawable != null) { ImageViewHiddenMethods.configureBounds(this); }
+  }
+
+  @Override
+  public void setImageURI(final Uri uri) {
+    super.setImageURI(uri);
+    if (getDrawable() != null) { ImageViewHiddenMethods.configureBounds(this); }
+  }
+
+  @Override
+  protected boolean setFrame(final int l, final int t, final int r, final int b) {
+    final boolean changed = super.setFrame(l, t, r, b);
+    haveFrame = true;
+    ImageViewHiddenMethods.configureBounds(this);
+    return changed;
   }
 
 }
