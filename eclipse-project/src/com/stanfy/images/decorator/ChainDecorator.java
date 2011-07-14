@@ -1,12 +1,13 @@
 package com.stanfy.images.decorator;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 
 /**
  * Chain of decorators.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class ChainDecorator implements ImageDecorator {
+public class ChainDecorator extends ImageDecoratorAdapter {
 
   /** Internal decorators. */
   private final ImageDecorator[] chain;
@@ -16,11 +17,11 @@ public class ChainDecorator implements ImageDecorator {
   }
 
   @Override
-  public Bitmap decorateBitmap(final Bitmap bitmap) {
+  public Bitmap processBitmap(final Bitmap bitmap, final Canvas bitmapVanvas) {
     Bitmap result = bitmap;
     final ImageDecorator[] chain = this.chain;
     for (int i = 0; i < chain.length; i++) {
-      final Bitmap next = chain[i].decorateBitmap(result);
+      final Bitmap next = chain[i].decorateBitmap(result, bitmapVanvas);
       if (next != result) { result.recycle(); }
       result = next;
     }

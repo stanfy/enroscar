@@ -1,6 +1,7 @@
 package com.stanfy.images.decorator;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 
 /**
  * Image decorator.
@@ -13,9 +14,10 @@ public interface ImageDecorator {
   /**
    * Decorade an image.
    * @param bitmap source bitmap
+   * @param canvas bitmap canvas (can be null)
    * @return decorated bitmap
    */
-  Bitmap decorateBitmap(final Bitmap bitmap);
+  Bitmap decorateBitmap(final Bitmap bitmap, final Canvas canvas);
 
   /**
    * Setup the decorator.

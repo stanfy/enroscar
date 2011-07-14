@@ -8,13 +8,12 @@ import android.graphics.Path;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
-import android.graphics.Xfermode;
 
 /**
  * Decorate an image using mask (for corners rounding, for example).
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class MaskImageDecorator implements ImageDecorator {
+public class MaskImageDecorator extends ImageDecoratorAdapter {
 
   /** Custom mask mode. */
   private static final int CUSTOM_MASK = 0;
@@ -23,8 +22,6 @@ public class MaskImageDecorator implements ImageDecorator {
 
   /** Mask color. */
   private static final int MASK_COLOR = Color.RED;
-  /** Xfermode. */
-  private static final Xfermode XFERMODE = new PorterDuffXfermode(Mode.SRC_IN);
 
   /** Decorator mode. */
   private final int mode;
@@ -52,7 +49,7 @@ public class MaskImageDecorator implements ImageDecorator {
 
   {
     fillPaint.setColor(MASK_COLOR);
-    maskPaint.setXfermode(XFERMODE);
+    maskPaint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
   }
 
   /**
@@ -86,46 +83,46 @@ public class MaskImageDecorator implements ImageDecorator {
   }
 
   @Override
-  public Bitmap decorateBitmap(final Bitmap bitmap) {
-    if (bitmap == null) { return null; }
+  public Bitmap processBitmap(final Bitmap source, final Canvas sourceCanvas) {
+    if (source == null) { return null; }
     final Bitmap buffer = this.bitmap;
-    if (buffer == null) { return bitmap; }
+    if (buffer == null) { return source; }
     buffer.eraseColor(0);
-    final Canvas canvas = this.bitmapCanvas;
+    final Canvas bufferCanvas = this.bitmapCanvas;
 
-    final int width = bitmap.getWidth(), height = bitmap.getHeight();
+    final int width = source.getWidth(), height = source.getHeight();
     rect.set(0, 0, width, height);
 
     // prepare mask
     switch (mode) {
     case CUSTOM_MASK:
-      canvas.drawBitmap(mask, 0, 0, fillPaint);
+      bufferCanvas.drawBitmap(mask, 0, 0, fillPaint);
       break;
     case CORNERS_MASK:
       if (radiusArray == null) {
         float radius = this.radius;
         final float r = Math.min(width, height) * 0.5f;
         if (radius > r) { radius = r; }
-        canvas.drawRoundRect(rect, radius, radius, fillPaint);
+        bufferCanvas.drawRoundRect(rect, radius, radius, fillPaint);
       } else {
         final Path path = this.path;
         path.reset();
         path.addRoundRect(rect, radiusArray, Path.Direction.CW);
-        canvas.drawPath(path, fillPaint);
+        bufferCanvas.drawPath(path, fillPaint);
       }
       break;
-    default: return bitmap;
+    default: return source;
     }
 
     // main drawing
-    canvas.drawBitmap(bitmap, 0, 0, maskPaint);
+    bufferCanvas.drawBitmap(source, 0, 0, maskPaint);
 
     // modify source
-    bitmap.eraseColor(0);
-    new Canvas(bitmap).drawBitmap(buffer, 0, 0, null);
+    source.eraseColor(0);
+    sourceCanvas.drawBitmap(buffer, 0, 0, null);
 
     // return source
-    return bitmap;
+    return source;
   }
 
   @Override

@@ -1,5 +1,8 @@
 package com.stanfy.views;
 
+import java.lang.ref.WeakReference;
+import java.util.TreeMap;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -23,6 +26,9 @@ import com.stanfy.images.decorator.MaskImageDecorator;
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class ImageView extends android.widget.ImageView {
+
+  /** Corners decorators store. */
+  private static final RadiusDecoratorsCache CORNERS_DOCORATORS = new RadiusDecoratorsCache();
 
   /** Image decorator. */
   private ImageDecorator imageDecorator;
@@ -66,7 +72,7 @@ public class ImageView extends android.widget.ImageView {
    * @param r radius to set
    */
   public void setCornersRadius(final int r) {
-    imageDecorator = r > 0 ? new MaskImageDecorator(r) : null;
+    imageDecorator = r > 0 ? CORNERS_DOCORATORS.getDecorator(r) : null;
   }
 
   /** @param drawMatrix the drawMatrix to set */
@@ -105,7 +111,7 @@ public class ImageView extends android.widget.ImageView {
       bitmapCanvas.restoreToCount(saveCount);
     }
 
-    final Bitmap decorated = imageDecorator.decorateBitmap(bitmap);
+    final Bitmap decorated = imageDecorator.decorateBitmap(bitmap, bitmapCanvas);
     if (decorated != bitmap) { bitmap.recycle(); }
 
     if (pl == 0 && pt == 0) {
@@ -146,6 +152,24 @@ public class ImageView extends android.widget.ImageView {
     haveFrame = true;
     ImageViewHiddenMethods.configureBounds(this);
     return changed;
+  }
+
+  /**
+   * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+   */
+  private static class RadiusDecoratorsCache {
+    /** Cache of decorators. */
+    private final TreeMap<Integer, WeakReference<MaskImageDecorator>> decoratorsCache = new TreeMap<Integer, WeakReference<MaskImageDecorator>>();
+
+    public MaskImageDecorator getDecorator(final int radius) {
+      final WeakReference<MaskImageDecorator> ref = decoratorsCache.get(radius);
+      MaskImageDecorator d = ref == null ? null : ref.get();
+      if (d == null) {
+        d = new MaskImageDecorator(radius);
+        decoratorsCache.put(radius, new WeakReference<MaskImageDecorator>(d));
+      }
+      return d;
+    }
   }
 
 }
