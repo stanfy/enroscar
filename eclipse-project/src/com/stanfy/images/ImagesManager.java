@@ -21,6 +21,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -500,9 +501,12 @@ public class ImagesManager<T extends CachedImage> {
   public abstract static class ViewImageHolder<T extends View> extends ImageHolder {
     /** View instance. */
     T view;
+    /** Density. */
+    final float density;
     public ViewImageHolder(final T view) {
       super(view.getContext());
       this.view = view;
+      this.density = context.getResources().getDisplayMetrics().density;
     }
     @Override
     public void post(final Runnable r) {
@@ -514,14 +518,16 @@ public class ImagesManager<T extends CachedImage> {
     }
     @Override
     public int getRequiredHeight() {
-      final int h = view.getLayoutParams().height;
-      if (h > 0) { return h; }
+      final LayoutParams params = view.getLayoutParams();
+      final int h = params == null ? -1 : params.height;
+      if (h > 0) { return Math.round(h * density); }
       return -1;
     }
     @Override
     public int getRequiredWidth() {
-      final int w = view.getLayoutParams().width;
-      if (w > 0) { return w; }
+      final LayoutParams params = view.getLayoutParams();
+      final int w = params == null ? -1 : params.width;
+      if (w > 0) { return Math.round(w * density); }
       return -1;
     }
     @Override
