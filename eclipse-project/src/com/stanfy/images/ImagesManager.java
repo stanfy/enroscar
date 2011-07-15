@@ -322,7 +322,7 @@ public class ImagesManager<T extends CachedImage> {
     final BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inTempStorage = bp.get(bCapacity);
     opts.inPreferredConfig = imagesFormat;
-    opts.inTargetDensity = sourceDensity;
+    opts.inDensity = sourceDensity;
     final Bitmap bm = BitmapFactory.decodeResourceStream(null, null, src, null, opts);
 
     // recycle
