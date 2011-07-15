@@ -402,7 +402,7 @@ public class ImagesManager<T extends CachedImage> {
       final Bitmap map = bd.getBitmap();
       final int w = map.getWidth(), h = map.getHeight();
 
-      if (w <= dstW && h <= dstH) { return bd; }
+      if (w <= dstW || h <= dstH) { return bd; }
 
       final double ratio = (double)w / h;
       if (w > h) {
