@@ -63,6 +63,9 @@ public class ImagesManager<T extends CachedImage> {
     {4, BuffersPool.DEFAULT_SIZE_FOR_IMAGES}
   });
 
+  /** Target density from source. */
+  private int sourceDensity = 0;
+
   /** Images format. */
   private Bitmap.Config imagesFormat = Bitmap.Config.RGB_565;
 
@@ -71,6 +74,9 @@ public class ImagesManager<T extends CachedImage> {
 
   /** @param imagesFormat the imagesFormat to set */
   public void setImagesFormat(final Bitmap.Config imagesFormat) { this.imagesFormat = imagesFormat; }
+
+  /** @param sourceDensity the sourceDensity to set */
+  public void setSourceDensity(final int sourceDensity) { this.sourceDensity = sourceDensity; }
 
   /**
    * Ensure that all the images are loaded. Not loaded images will be downloaded in this thread.
@@ -316,6 +322,7 @@ public class ImagesManager<T extends CachedImage> {
     final BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inTempStorage = bp.get(bCapacity);
     opts.inPreferredConfig = imagesFormat;
+    opts.inTargetDensity = sourceDensity;
     final Bitmap bm = BitmapFactory.decodeResourceStream(null, null, src, null, opts);
 
     // recycle
