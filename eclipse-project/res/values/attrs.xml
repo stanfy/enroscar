@@ -14,6 +14,9 @@
   <declare-styleable name="ImageView">
     <attr name="android:radius" />
   </declare-styleable>
+  <declare-styleable name="LoadableImageView">
+    <attr name="skipScaleBeforeCache" format="boolean" />
+  </declare-styleable>
 
   <declare-styleable name="LoadableComppoundButton">
     <attr name="android:src" />

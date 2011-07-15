@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.images.model.CachedImage;
+import com.stanfy.views.LoadableImageView;
 import com.stanfy.views.utils.AppUtils;
 import com.stanfy.views.utils.Task;
 import com.stanfy.views.utils.ThreadUtils;
@@ -394,7 +395,7 @@ public class ImagesManager<T extends CachedImage> {
 
     private BitmapDrawable prepare(final BitmapDrawable bd) {
       int dstW = imageHolder.getRequiredWidth(), dstH = imageHolder.getRequiredHeight();
-      if (dstW <= 0 || dstH <= 0) {
+      if (dstW <= 0 || dstH <= 0 || imageHolder.skinScaleBeforeCache()) {
         if (DEBUG) { Log.d(TAG, "Skip scaling for " + imageHolder); }
         return bd;
       }
@@ -402,7 +403,7 @@ public class ImagesManager<T extends CachedImage> {
       final Bitmap map = bd.getBitmap();
       final int w = map.getWidth(), h = map.getHeight();
 
-      if (w <= dstW || h <= dstH) { return bd; }
+      if (w <= dstW && h <= dstH) { return bd; }
 
       final double ratio = (double)w / h;
       if (w > h) {
@@ -488,6 +489,7 @@ public class ImagesManager<T extends CachedImage> {
     public void destroy() {
       context = null;
     }
+    public boolean skinScaleBeforeCache() { return false; }
   }
 
   /**
@@ -536,6 +538,10 @@ public class ImagesManager<T extends CachedImage> {
     public ImageViewHolder(final ImageView view) { super(view); }
     @Override
     public void setImage(final Drawable d) { view.setImageDrawable(d); }
+    @Override
+    public boolean skinScaleBeforeCache() {
+      return (view instanceof LoadableImageView) && ((LoadableImageView)view).isSkipScaleBeforeCache();
+    }
   }
 
   /**
