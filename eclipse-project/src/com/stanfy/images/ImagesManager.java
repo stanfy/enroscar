@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -63,6 +64,9 @@ public class ImagesManager<T extends CachedImage> {
     {4, BuffersPool.DEFAULT_SIZE_FOR_IMAGES}
   });
 
+  /** Resources. */
+  private final Resources resources;
+
   /** Target density from source. */
   private int sourceDensity = 0;
 
@@ -70,7 +74,9 @@ public class ImagesManager<T extends CachedImage> {
   private Bitmap.Config imagesFormat = Bitmap.Config.RGB_565;
 
   /** Hidden constructor. */
-  protected ImagesManager() { /* nothing to do */ }
+  protected ImagesManager(final Resources resources) {
+    this.resources = resources;
+  }
 
   /** @param imagesFormat the imagesFormat to set */
   public void setImagesFormat(final Bitmap.Config imagesFormat) { this.imagesFormat = imagesFormat; }
@@ -323,13 +329,17 @@ public class ImagesManager<T extends CachedImage> {
     opts.inTempStorage = bp.get(bCapacity);
     opts.inPreferredConfig = imagesFormat;
     opts.inDensity = sourceDensity;
-    final Bitmap bm = BitmapFactory.decodeResourceStream(null, null, src, null, opts);
-
-    // recycle
-    bp.release(opts.inTempStorage);
-    src.close();
-
-    return bm != null ? new BitmapDrawable(bm) : null;
+    try {
+      final Bitmap bm = BitmapFactory.decodeResourceStream(null, null, src, null, opts);
+      return bm != null ? new BitmapDrawable(resources, bm) : null;
+    } catch (final OutOfMemoryError e) {
+      // I know, it's bad to catch error but files can be VERY big!
+      return null;
+    } finally {
+      // recycle
+      bp.release(opts.inTempStorage);
+      src.close();
+    }
   }
 
   /**
