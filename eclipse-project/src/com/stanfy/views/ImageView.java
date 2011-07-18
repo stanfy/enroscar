@@ -81,6 +81,15 @@ public class ImageView extends android.widget.ImageView {
   boolean isHaveFrame() { return haveFrame; }
 
   @Override
+  protected void drawableStateChanged() {
+    super.drawableStateChanged();
+    final ImageDecorator d = imageDecorator;
+    if (d != null && d.dependsOnDrawableState()) {
+      invalidate();
+    }
+  }
+
+  @Override
   protected void onDraw(final Canvas canvas) {
     final ImageDecorator imageDecorator = this.imageDecorator;
     if (imageDecorator == null) {
