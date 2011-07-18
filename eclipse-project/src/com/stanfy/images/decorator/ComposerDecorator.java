@@ -23,8 +23,14 @@ public class ComposerDecorator extends ImageDecoratorAdapter {
   public static final int CENTER_VERTICAL = 16;
   /** 'Center horizontal' option. */
   public static final int CENTER_HORIZONTAL = 32;
+  /** 'Stretch vertical' option. */
+  public static final int STRETCH_VERTICAL = 64;
+  /** 'Stretch horizontal' option. */
+  public static final int STRETCH_HORIZONTAL = 128;
   /** 'Center' option. */
   public static final int CENTER = CENTER_VERTICAL | CENTER_HORIZONTAL;
+  /** 'Stretch' option. */
+  public static final int STRETCH = STRETCH_VERTICAL | STRETCH_HORIZONTAL;
 
   /** Justify flags. */
   private final int justify;
@@ -62,7 +68,9 @@ public class ComposerDecorator extends ImageDecoratorAdapter {
   public void setup(final int width, final int height, final int[] state, final int level) {
     final int flags = this.justify;
     final Rect bounds = this.bounds;
-    final int dWidth = this.dWidth, dHeight = this.dHeight;
+    int dWidth = this.dWidth, dHeight = this.dHeight;
+    if (dWidth <= 0) { dWidth = width; }
+    if (dHeight <= 0) { dHeight = height; }
 
     final Drawable d = this.drawable;
     d.setState(state);
@@ -79,6 +87,9 @@ public class ComposerDecorator extends ImageDecoratorAdapter {
       final int p = (width - dWidth) / 2;
       bounds.left = p;
       bounds.right = width - p;
+    } else if ((flags & STRETCH_HORIZONTAL) != 0) {
+      bounds.left = 0;
+      bounds.right = width;
     }
 
     // vertical
@@ -92,6 +103,9 @@ public class ComposerDecorator extends ImageDecoratorAdapter {
       final int p = (height - dHeight) / 2;
       bounds.top = p;
       bounds.bottom = height - p;
+    } else if ((flags & STRETCH_VERTICAL) != 0) {
+      bounds.top = 0;
+      bounds.bottom = height;
     }
   }
 
