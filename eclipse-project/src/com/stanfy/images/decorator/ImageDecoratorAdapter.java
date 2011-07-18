@@ -21,4 +21,7 @@ public abstract class ImageDecoratorAdapter implements ImageDecorator {
    */
   protected abstract Bitmap processBitmap(Bitmap bitmap, Canvas canvas);
 
+  @Override
+  public boolean dependsOnDrawableState() { return false; }
+
 }

@@ -48,6 +48,9 @@ public class ComposerDecorator extends ImageDecoratorAdapter {
   }
 
   @Override
+  public boolean dependsOnDrawableState() { return drawable.isStateful(); }
+
+  @Override
   public Bitmap processBitmap(final Bitmap bitmap, final Canvas bitmapVanvas) {
     final Drawable d = this.drawable;
     d.setBounds(bounds);

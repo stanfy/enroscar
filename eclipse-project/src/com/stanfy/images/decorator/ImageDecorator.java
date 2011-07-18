@@ -29,4 +29,9 @@ public interface ImageDecorator {
    */
   void setup(final int width, final int height, final int[] state, final int level);
 
+  /**
+   * @return true if the decorator effect depends on image state
+   */
+  boolean dependsOnDrawableState();
+
 }
