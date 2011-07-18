@@ -109,4 +109,7 @@ public class ComposerDecorator extends ImageDecoratorAdapter {
     }
   }
 
+  /** @return current bounds */
+  protected Rect getBounds() { return bounds; }
+
 }
