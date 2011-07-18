@@ -24,7 +24,9 @@ public interface ImageDecorator {
    * This method is called by image view before the decorator is applied.
    * @param width required image width
    * @param height required image height
+   * @param state current image state
+   * @param level current image level
    */
-  void setup(final int width, final int height);
+  void setup(final int width, final int height, final int[] state, final int level);
 
 }

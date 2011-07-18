@@ -56,10 +56,14 @@ public class ComposerDecorator extends ImageDecoratorAdapter {
   }
 
   @Override
-  public void setup(final int width, final int height) {
+  public void setup(final int width, final int height, final int[] state, final int level) {
     final int flags = this.justify;
     final Rect bounds = this.bounds;
     final int dWidth = this.dWidth, dHeight = this.dHeight;
+
+    final Drawable d = this.drawable;
+    d.setState(state);
+    d.setLevel(level);
 
     // horizontal
     if ((flags & LEFT) != 0) {

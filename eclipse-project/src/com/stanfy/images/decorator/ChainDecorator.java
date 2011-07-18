@@ -29,10 +29,10 @@ public class ChainDecorator extends ImageDecoratorAdapter {
   }
 
   @Override
-  public void setup(final int width, final int height) {
+  public void setup(final int width, final int height, final int[] state, final int level) {
     final ImageDecorator[] chain = this.chain;
     for (int i = 0; i < chain.length; i++) {
-      chain[i].setup(width, height);
+      chain[i].setup(width, height, state, level);
     }
   }
 

@@ -126,7 +126,7 @@ public class MaskImageDecorator extends ImageDecoratorAdapter {
   }
 
   @Override
-  public void setup(final int width, final int height) {
+  public void setup(final int width, final int height, final int[] state, final int level) {
     if (width <= 0 || height <= 0) { this.bitmap = null; return; }
     Bitmap bitmap = this.bitmap;
 
