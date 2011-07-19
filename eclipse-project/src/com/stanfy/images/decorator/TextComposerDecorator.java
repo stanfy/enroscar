@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.TextPaint;
 
 /**
  * @author Vladislav Lipskiy - Stanfy (http://www.stanfy.com)
@@ -29,7 +30,7 @@ public class TextComposerDecorator extends ComposerDecorator {
   
   public TextComposerDecorator(final Drawable drawable, final int justify) {
     super(drawable, justify);
-    this.paint = new Paint();
+    this.paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     paint.setTextAlign(Paint.Align.CENTER);
   }
   
