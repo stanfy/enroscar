@@ -36,4 +36,8 @@ public class ChainDecorator extends ImageDecoratorAdapter {
     }
   }
 
+  public ImageDecorator[] getChain() {
+    return chain;
+  }
+
 }
