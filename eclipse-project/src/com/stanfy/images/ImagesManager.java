@@ -419,7 +419,7 @@ public class ImagesManager<T extends CachedImage> {
       }
 
       final Bitmap map = bd.getBitmap();
-      final int w = map.getWidth(), h = map.getHeight();
+      final int w = bd.getIntrinsicWidth(), h = bd.getIntrinsicHeight();
 
       if (w <= dstW && h <= dstH) { return bd; }
 
@@ -536,16 +536,12 @@ public class ImagesManager<T extends CachedImage> {
     @Override
     public int getRequiredHeight() {
       final LayoutParams params = view.getLayoutParams();
-      final int h = params == null ? -1 : params.height;
-      if (h > 0) { return Math.round(h * density); }
-      return -1;
+      return params == null ? -1 : params.height;
     }
     @Override
     public int getRequiredWidth() {
       final LayoutParams params = view.getLayoutParams();
-      final int w = params == null ? -1 : params.width;
-      if (w > 0) { return Math.round(w * density); }
-      return -1;
+      return params == null ? -1 : params.width;
     }
     @Override
     public void destroy() {
