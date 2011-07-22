@@ -12,8 +12,18 @@ public class ChainDecorator extends ImageDecoratorAdapter {
   /** Internal decorators. */
   private final ImageDecorator[] chain;
 
+  /** Stateful flag. */
+  private final boolean stateful;
+
   public ChainDecorator(final ImageDecorator... decorators) {
     this.chain = decorators;
+    for (final ImageDecorator d : decorators) {
+      if (d.dependsOnDrawableState()) {
+        this.stateful = true;
+        return;
+      }
+    }
+    this.stateful = false;
   }
 
   @Override
@@ -27,6 +37,9 @@ public class ChainDecorator extends ImageDecoratorAdapter {
     }
     return result;
   }
+
+  @Override
+  public boolean dependsOnDrawableState() { return stateful; }
 
   @Override
   public void setup(final int width, final int height, final int[] state, final int level) {
