@@ -235,8 +235,11 @@ public class ImagesManager<T extends CachedImage> {
   protected Drawable getFromMemCache(final String url, final ImageHolder holder) {
     final Bitmap map = memCache.getElement(url);
     final int gap = 5;
-    return map != null && Math.abs(holder.getRequiredWidth() - map.getWidth()) < gap && Math.abs(holder.getRequiredHeight() - map.getHeight()) < gap
-        ? new BitmapDrawable(holder.context.getResources(), map) : null;
+    return map != null && (
+        holder.isDynamicHeight()
+        || Math.abs(holder.getRequiredWidth() - map.getWidth()) < gap
+        || Math.abs(holder.getRequiredHeight() - map.getHeight()) < gap
+    ) ? new BitmapDrawable(holder.context.getResources(), map) : null;
   }
 
   /**
@@ -508,6 +511,7 @@ public class ImagesManager<T extends CachedImage> {
       context = null;
     }
     public boolean skinScaleBeforeCache() { return false; }
+    public boolean isDynamicHeight() { return getRequiredWidth() <= 0 || getRequiredHeight() <= 0; }
   }
 
   /**
