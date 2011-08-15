@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.images.model.CachedImage;
+import com.stanfy.views.ImagesLoadListenerProvider;
 import com.stanfy.views.LoadableImageView;
 import com.stanfy.views.utils.AppUtils;
 import com.stanfy.views.utils.Task;
@@ -502,6 +503,7 @@ public class ImagesManager<T extends CachedImage> {
     protected void safeSQLRun() {
       if (DEBUG) { Log.d(TAG, "Start image task"); }
       try {
+        imageHolder.start(url);
         T cachedImage = imagesDAO.getCachedImage(url);
         if (cachedImage == null) {
           cachedImage = imagesDAO.createCachedImage(url);
@@ -528,11 +530,14 @@ public class ImagesManager<T extends CachedImage> {
         if (d == null) {
           Log.w(TAG, "Image " + cachedImage.getUrl() + " is not resolved");
         }
+        imageHolder.finish(url, d);
 
       } catch (final MalformedURLException e) {
         Log.e(TAG, "Bad URL: " + url + ". Loading canceled.", e);
+        imageHolder.error(url, e);
       } catch (final IOException e) {
         if (DEBUG_IO) { Log.e(TAG, "IO error for " + url + ": " + e.getMessage()); }
+        imageHolder.error(url, e);
       }
     }
 
@@ -548,8 +553,13 @@ public class ImagesManager<T extends CachedImage> {
     Context context;
     /** Tag. */
     long cachedImageId;
+    /** Listener. */
+    ImagesLoadListener listener;
     /** @param context context instance */
     public ImageHolder(final Context context) { this.context = context; }
+
+    /** @param listener the listener to set */
+    public final void setListener(final ImagesLoadListener listener) { this.listener = listener; }
 
     /* actions */
     public abstract void setImage(final Drawable d);
@@ -557,6 +567,15 @@ public class ImagesManager<T extends CachedImage> {
     public void reset() { cachedImageId = -1; }
     public void destroy() {
       context = null;
+    }
+    final void start(final String url) {
+      if (listener != null) { listener.onLoadStart(this, url); }
+    }
+    final void finish(final String url, final Drawable drawable) {
+      if (listener != null) { listener.onLoadFinished(this, url, drawable); }
+    }
+    final void error(final String url, final Throwable exception) {
+      if (listener != null) { listener.onLoadError(this, url, exception); }
     }
 
     /* parameters */
@@ -578,12 +597,12 @@ public class ImagesManager<T extends CachedImage> {
   public abstract static class ViewImageHolder<T extends View> extends ImageHolder {
     /** View instance. */
     T view;
-    /** Density. */
-    final float density;
     public ViewImageHolder(final T view) {
       super(view.getContext());
       this.view = view;
-      this.density = context.getResources().getDisplayMetrics().density;
+      if (view instanceof ImagesLoadListenerProvider) {
+        this.listener = ((ImagesLoadListenerProvider)view).getImagesLoadListener();
+      }
     }
     @Override
     public void post(final Runnable r) {

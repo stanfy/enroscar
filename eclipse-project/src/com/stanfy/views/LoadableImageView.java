@@ -5,13 +5,14 @@ import android.content.res.TypedArray;
 import android.net.Uri;
 import android.util.AttributeSet;
 
+import com.stanfy.images.ImagesLoadListener;
 import com.stanfy.images.ImagesManagerContext;
 
 /**
  * Image view that can load a remote image.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class LoadableImageView extends ImageView {
+public class LoadableImageView extends ImageView implements ImagesLoadListenerProvider {
 
   /** Skip scaling before caching flag. */
   private boolean skipScaleBeforeCache;
@@ -19,6 +20,9 @@ public class LoadableImageView extends ImageView {
   private boolean skipLoadingImage;
   /** Use sampling flag. Sampling can affect the image quality. */
   private boolean useSampling;
+
+  /** Images load listener. */
+  private ImagesLoadListener listener;
 
   /** Image URI. */
   private Uri loadImageUri;
@@ -67,6 +71,12 @@ public class LoadableImageView extends ImageView {
   public void setUseSampling(final boolean useSampling) { this.useSampling = useSampling; }
   /** @return the useSampling */
   public boolean isUseSampling() { return useSampling; }
+
+  /** @param listener load listener */
+  public void setImagesLoadListener(final ImagesLoadListener listener) { this.listener = listener; }
+  /** @return images load listener */
+  @Override
+  public ImagesLoadListener getImagesLoadListener() { return listener; }
 
   @Override
   public void setImageURI(final Uri uri) {
