@@ -162,9 +162,16 @@ public class ImagesManager<T extends CachedImage> {
 
   /**
    * @param url image URL
+   * @param view that contains an image holder
    * @return image bitmap from memory cache
    */
-  public Bitmap getMemCached(final String url) { return memCache.getElement(url); }
+  public Drawable getMemCached(final String url, final View view) {
+    final Object tag = view.getTag();
+    if (tag == null || !(tag instanceof ImageHolder)) { return null; }
+    final Drawable res = getFromMemCache(url, (ImageHolder)tag);
+    if (res == null) { return null; }
+    return decorateDrawable(view.getContext(), res);
+  }
 
   public void populateImage(final ImageHolder imageHolder, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
     if (DEBUG) { Log.d(TAG, "Process url" + url); }
