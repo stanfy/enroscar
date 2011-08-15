@@ -627,13 +627,19 @@ public class ImagesManager<T extends CachedImage> {
     }
     @Override
     public int getRequiredHeight() {
+      final View view = this.view;
       final LayoutParams params = view.getLayoutParams();
-      return params == null ? -1 : params.height;
+      if (params == null || params.height == LayoutParams.WRAP_CONTENT) { return -1; }
+      final int h = view.getHeight();
+      return h > 0 ? h : params.height;
     }
     @Override
     public int getRequiredWidth() {
+      final View view = this.view;
       final LayoutParams params = view.getLayoutParams();
-      return params == null ? -1 : params.width;
+      if (params == null || params.width == LayoutParams.WRAP_CONTENT) { return -1; }
+      final int w = view.getWidth();
+      return w > 0 ? w : params.width;
     }
     @Override
     public void destroy() {
