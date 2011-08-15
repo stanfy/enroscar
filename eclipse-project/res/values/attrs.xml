@@ -16,6 +16,7 @@
   </declare-styleable>
   <declare-styleable name="LoadableImageView">
     <attr name="skipScaleBeforeCache" format="boolean" />
+    <attr name="skipLoadingImage" format="boolean" />
   </declare-styleable>
 
   <declare-styleable name="LoadableComppoundButton">

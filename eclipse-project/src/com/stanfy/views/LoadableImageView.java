@@ -13,8 +13,13 @@ import com.stanfy.images.ImagesManagerContext;
  */
 public class LoadableImageView extends ImageView {
 
-  /** Skip scaling before caching. */
+  /** Skip scaling before caching flag. */
   private boolean skipScaleBeforeCache;
+  /** Skip loading indicator flag.  */
+  private boolean skipLoadingImage;
+  /** Use sampling flag. Sampling can affect the image quality. */
+  private boolean useSampling;
+
   /** Image URI. */
   private Uri loadImageUri;
   /** Images manager context. */
@@ -36,9 +41,11 @@ public class LoadableImageView extends ImageView {
   private void init(final Context context, final AttributeSet attrs) {
     final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LoadableImageView);
     final boolean skipCache = a.getBoolean(R.styleable.LoadableImageView_skipScaleBeforeCache, false);
+    final boolean skipLoadIndicator = a.getBoolean(R.styleable.LoadableImageView_skipLoadingImage, false);
     a.recycle();
 
     setSkipScaleBeforeCache(skipCache);
+    setSkipLoadingImage(skipLoadIndicator);
   }
 
   /** @param imagesManagerContext the imagesManager context to set */
@@ -48,9 +55,18 @@ public class LoadableImageView extends ImageView {
 
   /** @param skipScaleBeforeCache the skipScaleBeforeCache to set */
   public void setSkipScaleBeforeCache(final boolean skipScaleBeforeCache) { this.skipScaleBeforeCache = skipScaleBeforeCache; }
-
   /** @return the skipScaleBeforeCache */
   public boolean isSkipScaleBeforeCache() { return skipScaleBeforeCache; }
+
+  /** @param skipLoadingImage the skipLoadingImage to set */
+  public void setSkipLoadingImage(final boolean skipLoadingImage) { this.skipLoadingImage = skipLoadingImage; }
+  /** @return the skipLoadingImage */
+  public boolean isSkipLoadingImage() { return skipLoadingImage; }
+
+  /** @param useSampling the useSampling to set */
+  public void setUseSampling(final boolean useSampling) { this.useSampling = useSampling; }
+  /** @return the useSampling */
+  public boolean isUseSampling() { return useSampling; }
 
   @Override
   public void setImageURI(final Uri uri) {

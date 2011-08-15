@@ -146,6 +146,7 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   protected ImageHolder createImageHolder(final View view) {
+    if (view instanceof LoadableImageView) { return new LoadableImageViewHolder((LoadableImageView)view); }
     if (view instanceof ImageView) { return new ImageViewHolder((ImageView)view); }
     if (view instanceof CompoundButton) { return new CompoundButtonHolder((CompoundButton)view); }
     if (view instanceof TextView) { return new TextViewHolder((TextView)view); }
@@ -171,10 +172,10 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   private void setLoadingImage(final ImageHolder holder) {
-    final Drawable d = holder.getRequiredWidth() > 0 && holder.getRequiredHeight() > 0
-        ? getLoadingDrawable(holder.context)
-        : null;
-    setImage(holder, d);
+    if (!holder.skipLoadingImage()) {
+      final Drawable d = !holder.isDynamicSize() ? getLoadingDrawable(holder.context) : null;
+      setImage(holder, d);
+    }
   }
 
   /**
@@ -236,7 +237,7 @@ public class ImagesManager<T extends CachedImage> {
     final Bitmap map = memCache.getElement(url);
     final int gap = 5;
     return map != null && (
-        holder.isDynamicHeight()
+        holder.isDynamicSize()
         || Math.abs(holder.getRequiredWidth() - map.getWidth()) < gap
         || Math.abs(holder.getRequiredHeight() - map.getHeight()) < gap
     ) ? new BitmapDrawable(holder.context.getResources(), map) : null;
@@ -312,26 +313,74 @@ public class ImagesManager<T extends CachedImage> {
     }
   }
 
-  protected Drawable readLocal(final T cachedImage, final Context context) throws IOException {
+  protected Drawable readLocal(final T cachedImage, final Context context, final ImageHolder holder) throws IOException {
     final File file = new File(getImageDir(context), cachedImage.getPath());
     if (!file.exists()) {
       if (DEBUG_IO) { Log.w(TAG, "Local file " + file.getAbsolutePath() + "does not exist."); }
       return null;
     }
-    final Drawable d = decodeStream(new FileInputStream(file));
+    final BitmapFactory.Options options = new BitmapFactory.Options();
+    if (holder.useSampling() && !holder.isDynamicSize()) {
+      options.inSampleSize = resolveSampleFactor(new FileInputStream(file), holder.getRequiredWidth(), holder.getRequiredHeight());
+    }
+    final Drawable d = decodeStream(new FileInputStream(file), options);
     return d;
   }
 
-  protected Drawable decodeStream(final InputStream is) throws IOException {
+  private InputStream prepareImageOptionsAndInput(final InputStream is, final BitmapFactory.Options options) {
     final BuffersPool bp = buffersPool;
     final int bCapacity = BuffersPool.DEFAULT_SIZE_FOR_IMAGES;
     InputStream src = is;
     if (!src.markSupported()) { src = new PoolableBufferedInputStream(src, bCapacity, bp); }
-
-    final BitmapFactory.Options opts = new BitmapFactory.Options();
+    final BitmapFactory.Options opts = options != null ? options : new BitmapFactory.Options();
     opts.inTempStorage = bp.get(bCapacity);
     opts.inPreferredConfig = imagesFormat;
     opts.inDensity = sourceDensity;
+    return src;
+  }
+
+  private void onImageDecodeFinish(final InputStream src, final BitmapFactory.Options opts) throws IOException {
+    buffersPool.release(opts.inTempStorage);
+    src.close();
+  }
+
+  static int nearestPowerOf2(final int value) {
+    if (value <= 0) { return -1; }
+    int result = -1, x = value;
+    while (x > 0) {
+      ++result;
+      x >>>= 1;
+    }
+    return 1 << result;
+  }
+
+  protected int resolveSampleFactor(final InputStream is, final int width, final int height) throws IOException {
+    final BitmapFactory.Options opts = new BitmapFactory.Options();
+    opts.inJustDecodeBounds = true;
+    final InputStream src = prepareImageOptionsAndInput(is, opts);
+    int result = 1;
+    try {
+      BitmapFactory.decodeResourceStream(null, null, src, null, opts);
+      final int inW = opts.outWidth, inH = opts.outHeight;
+      if (inW > width || inH > height) {
+        final int factor = inW > inH ? inW / width : inH / height;
+        if (factor > 1) {
+          result = factor;
+          final int p = nearestPowerOf2(factor);
+          final int maxDistance = 3;
+          if (result - p < maxDistance) { result = p; }
+        }
+      }
+    } finally {
+      // recycle
+      onImageDecodeFinish(src, opts);
+    }
+    return result;
+  }
+
+  protected Drawable decodeStream(final InputStream is, final BitmapFactory.Options options) throws IOException {
+    final BitmapFactory.Options opts = options != null ? options : new BitmapFactory.Options();
+    final InputStream src = prepareImageOptionsAndInput(is, opts);
     try {
       final Bitmap bm = BitmapFactory.decodeResourceStream(null, null, src, null, opts);
       return bm != null ? new BitmapDrawable(resources, bm) : null;
@@ -340,8 +389,7 @@ public class ImagesManager<T extends CachedImage> {
       return null;
     } finally {
       // recycle
-      bp.release(opts.inTempStorage);
-      src.close();
+      onImageDecodeFinish(src, opts);
     }
   }
 
@@ -401,7 +449,7 @@ public class ImagesManager<T extends CachedImage> {
     protected Drawable setLocalImage(final T cachedImage) throws IOException {
       final Context x = imageHolder.context;
       if (x == null) { throw new IOException("Context is null"); }
-      final Drawable d = imagesManager.readLocal(cachedImage, x);
+      final Drawable d = imagesManager.readLocal(cachedImage, x, imageHolder);
       safeImageSet(cachedImage, d);
       return d;
     }
@@ -416,7 +464,7 @@ public class ImagesManager<T extends CachedImage> {
 
     private BitmapDrawable prepare(final BitmapDrawable bd) {
       int dstW = imageHolder.getRequiredWidth(), dstH = imageHolder.getRequiredHeight();
-      if (dstW <= 0 || dstH <= 0 || imageHolder.skinScaleBeforeCache()) {
+      if (dstW <= 0 || dstH <= 0 || imageHolder.skipScaleBeforeCache()) {
         if (DEBUG) { Log.d(TAG, "Skip scaling for " + imageHolder); }
         return bd;
       }
@@ -502,16 +550,24 @@ public class ImagesManager<T extends CachedImage> {
     long cachedImageId;
     /** @param context context instance */
     public ImageHolder(final Context context) { this.context = context; }
+
+    /* actions */
     public abstract void setImage(final Drawable d);
     public abstract void post(final Runnable r);
-    public abstract int getRequiredWidth();
-    public abstract int getRequiredHeight();
     public void reset() { cachedImageId = -1; }
     public void destroy() {
       context = null;
     }
-    public boolean skinScaleBeforeCache() { return false; }
-    public boolean isDynamicHeight() { return getRequiredWidth() <= 0 || getRequiredHeight() <= 0; }
+
+    /* parameters */
+    public abstract int getRequiredWidth();
+    public abstract int getRequiredHeight();
+    public boolean isDynamicSize() { return getRequiredWidth() <= 0 || getRequiredHeight() <= 0; }
+
+    /* options */
+    public boolean skipScaleBeforeCache() { return false; }
+    public boolean skipLoadingImage() { return false; }
+    public boolean useSampling() { return false; }
   }
 
   /**
@@ -555,19 +611,31 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   /**
+   * Image holder for {@link ImageView}.
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
   static class ImageViewHolder extends ViewImageHolder<ImageView> {
     public ImageViewHolder(final ImageView view) { super(view); }
     @Override
     public void setImage(final Drawable d) { view.setImageDrawable(d); }
-    @Override
-    public boolean skinScaleBeforeCache() {
-      return (view instanceof LoadableImageView) && ((LoadableImageView)view).isSkipScaleBeforeCache();
-    }
   }
 
   /**
+   * Image holder for {@link ImageView}.
+   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
+   */
+  static class LoadableImageViewHolder extends ImageViewHolder {
+    public LoadableImageViewHolder(final LoadableImageView view) { super(view); }
+    @Override
+    public boolean skipScaleBeforeCache() { return ((LoadableImageView)view).isSkipScaleBeforeCache(); }
+    @Override
+    public boolean skipLoadingImage() { return ((LoadableImageView)view).isSkipLoadingImage(); }
+    @Override
+    public boolean useSampling() { return ((LoadableImageView)view).isUseSampling(); }
+  }
+
+  /**
+   * Image holder for {@link CompoundButton}.
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
   static class CompoundButtonHolder extends ViewImageHolder<CompoundButton> {
@@ -577,6 +645,7 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   /**
+   * Image holder for {@link TextView}.
    * @author Olexandr Tereshchuk - Stanfy (http://www.stanfy.com)
    */
   static class TextViewHolder extends ViewImageHolder<TextView> {
