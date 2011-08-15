@@ -569,6 +569,7 @@ public class ImagesManager<T extends CachedImage> {
     public final void setListener(final ImagesLoadListener listener) { this.listener = listener; }
 
     /* actions */
+    public void touch() { }
     public abstract void setImage(final Drawable d);
     public abstract void post(final Runnable r);
     public void reset() { cachedImageId = -1; }
@@ -607,7 +608,12 @@ public class ImagesManager<T extends CachedImage> {
     public ViewImageHolder(final T view) {
       super(view.getContext());
       this.view = view;
-      if (view instanceof ImagesLoadListenerProvider) {
+      touch();
+    }
+    @Override
+    public void touch() {
+      final T view = this.view;
+      if (view != null && view instanceof ImagesLoadListenerProvider) {
         this.listener = ((ImagesLoadListenerProvider)view).getImagesLoadListener();
       }
     }

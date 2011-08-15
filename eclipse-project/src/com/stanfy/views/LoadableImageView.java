@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.util.AttributeSet;
 
 import com.stanfy.images.ImagesLoadListener;
+import com.stanfy.images.ImagesManager.ImageHolder;
 import com.stanfy.images.ImagesManagerContext;
 
 /**
@@ -73,7 +74,11 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   public boolean isUseSampling() { return useSampling; }
 
   /** @param listener load listener */
-  public void setImagesLoadListener(final ImagesLoadListener listener) { this.listener = listener; }
+  public void setImagesLoadListener(final ImagesLoadListener listener) {
+    this.listener = listener;
+    final Object tag = getTag();
+    if (tag != null && tag instanceof ImageHolder) { ((ImageHolder) tag).touch(); }
+  }
   /** @return images load listener */
   @Override
   public ImagesLoadListener getImagesLoadListener() { return listener; }
