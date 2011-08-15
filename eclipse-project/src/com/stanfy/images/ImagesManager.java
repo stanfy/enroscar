@@ -154,6 +154,12 @@ public class ImagesManager<T extends CachedImage> {
     return null;
   }
 
+  /**
+   * @param url image URL
+   * @return true if image is cached in memory
+   */
+  public boolean isMemCached(final String url) { return memCache.contains(url); }
+
   public void populateImage(final ImageHolder imageHolder, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
     if (DEBUG) { Log.d(TAG, "Process url" + url); }
     if (TextUtils.isEmpty(url)) {
