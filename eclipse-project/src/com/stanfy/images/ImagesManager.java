@@ -160,11 +160,15 @@ public class ImagesManager<T extends CachedImage> {
       setLoadingImage(imageHolder);
       return;
     }
+
     final Drawable memCached = getFromMemCache(url, imageHolder);
     if (memCached != null) {
+      imageHolder.start(url);
       setImage(imageHolder, memCached);
+      imageHolder.finish(url, memCached);
       return;
     }
+
     if (DEBUG) { Log.d(TAG, "Set loading for " + url); }
     setLoadingImage(imageHolder);
     final ImageLoader<T> loader = createImageLoaderTask(imageHolder, url, imagesDAO, downloader);
@@ -370,6 +374,7 @@ public class ImagesManager<T extends CachedImage> {
           final int p = nearestPowerOf2(factor);
           final int maxDistance = 3;
           if (result - p < maxDistance) { result = p; }
+          if (DEBUG) { Log.d(TAG, "Sampling: factor=" + factor + ", p=" + p + ", result=" + result); }
         }
       }
     } finally {
@@ -384,7 +389,9 @@ public class ImagesManager<T extends CachedImage> {
     final InputStream src = prepareImageOptionsAndInput(is, opts);
     try {
       final Bitmap bm = BitmapFactory.decodeResourceStream(null, null, src, null, opts);
-      return bm != null ? new BitmapDrawable(resources, bm) : null;
+      final Drawable res = bm != null ? new BitmapDrawable(resources, bm) : null;
+      if (DEBUG) { Log.d(TAG, "Image decoded: " + opts.outWidth + "x" + opts.outHeight + ", res=" + res); }
+      return res;
     } catch (final OutOfMemoryError e) {
       // I know, it's bad to catch error but files can be VERY big!
       return null;
