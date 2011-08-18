@@ -25,6 +25,8 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   /** Images load listener. */
   private ImagesLoadListener listener;
 
+  /** Image URI. */
+  private Uri loadImageUri;
   /** Images manager context. */
   private ImagesManagerContext<?> imagesManagerContext;
 
@@ -83,6 +85,8 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
 
   @Override
   public void setImageURI(final Uri uri) {
+    if (loadImageUri != null && loadImageUri.equals(uri)) { return; }
+    loadImageUri = uri;
     if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
       imagesManagerContext.populateImageView(this, uri != null ? uri.toString() : null);
       return;

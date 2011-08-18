@@ -17,6 +17,8 @@ import com.stanfy.images.ImagesManagerContext;
  */
 public class LoadableTextView extends TextView {
 
+  /** Image URI. */
+  private Uri imageUri;
   /** Images manager context. */
   private ImagesManagerContext<?> imagesManagerContext;
 
@@ -50,6 +52,8 @@ public class LoadableTextView extends TextView {
   }
 
   public void setDrawableLeft(final Uri uri) {
+    if (imageUri != null && imageUri.equals(uri)) { return; }
+    imageUri = uri;
     if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
       imagesManagerContext.populateTextView(this, uri != null ? uri.toString() : null);
     }
