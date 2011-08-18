@@ -22,9 +22,6 @@ public class LoadableComppoundButton extends CompoundButton {
   /** Buttton drawable. */
   private Drawable buttonDrawable;
 
-  /** Image URI. */
-  private Uri imageUri;
-
   /** Images manager context. */
   private ImagesManagerContext<?> imagesManagerContext;
 
@@ -81,8 +78,6 @@ public class LoadableComppoundButton extends CompoundButton {
   }
 
   public void setButtonDrawableUri(final Uri uri) {
-    if (imageUri != null && imageUri.equals(uri)) { return; }
-    imageUri = uri;
     if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
       imagesManagerContext.populateCompoundButton(this, uri != null ? uri.toString() : null);
     }
