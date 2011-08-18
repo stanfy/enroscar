@@ -98,12 +98,12 @@ public class BuffersPool {
   }
 
   /**
-   * Destroy buffers.
+   * Flush resources.
    */
-  public void destroy() {
+  public void flush() {
     synchronized (lock) {
       buffers.clear();
-      buffers = null;
+      if (DEBUG) { Log.d(TAG, "Buffers flushed"); }
     }
   }
 

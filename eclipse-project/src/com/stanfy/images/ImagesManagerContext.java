@@ -1,5 +1,8 @@
 package com.stanfy.images;
 
+import java.util.List;
+
+import android.content.Context;
 import android.net.Uri;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -38,6 +41,10 @@ public class ImagesManagerContext<T extends CachedImage> {
   /** @param imagesManager the imagesManager to set */
   public void setImagesManager(final ImagesManager<T> imagesManager) { this.imagesManager = imagesManager; }
 
+  public void ensureImages(final Context context, final List<T> images) {
+    imagesManager.ensureImages(imagesDAO, downloader, context, images);
+  }
+
   private <VT extends View> void populate(final VT view, final String url) {
     final ImagesDAO<T> imagesDAO = this.imagesDAO;
     final Downloader downloader = this.downloader;
@@ -72,14 +79,11 @@ public class ImagesManagerContext<T extends CachedImage> {
   }
 
   /**
-   * Destroy the context.
+   * Flush resources.
    */
-  public void destroy() {
+  public void flush() {
     if (imagesManager != null) {
-      imagesManager.destroy();
+      imagesManager.flush();
     }
-    imagesDAO = null;
-    imagesManager = null;
-    downloader = null;
   }
 }

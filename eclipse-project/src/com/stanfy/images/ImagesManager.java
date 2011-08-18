@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.images.ImageMemoryCache.CacheRecord;
 import com.stanfy.images.model.CachedImage;
 import com.stanfy.views.ImagesLoadListenerProvider;
 import com.stanfy.views.LoadableImageView;
@@ -117,13 +118,11 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   /**
-   * Destroy the context.
+   * Flush resources.
    */
-  public void destroy() {
-    memCache.clear();
-    buffersPool.destroy();
-    EMPTY_DRAWABLE.setCallback(null);
-    System.gc();
+  public void flush() {
+    memCache.clear(false);
+    buffersPool.flush();
   }
 
   /**
@@ -258,7 +257,11 @@ public class ImagesManager<T extends CachedImage> {
    * @return cached drawable
    */
   protected Drawable getFromMemCache(final String url, final ImageHolder holder) {
-    final Bitmap map = memCache.getElement(url);
+    final CacheRecord record = memCache.getElement(url);
+    synchronized (holder) {
+      if (record == null || (holder.cachedImageId > 0 && record.getImageId() != holder.cachedImageId)) { return null; }
+    }
+    final Bitmap map = record.getBitmap();
     final int gap = 5;
     return map != null && (
         holder.isDynamicSize()
@@ -330,10 +333,10 @@ public class ImagesManager<T extends CachedImage> {
     imagesDao.updateImage(image);
   }
 
-  protected void memCacheImage(final String url, final Drawable d) {
+  protected void memCacheImage(final String url, final Drawable d, final long id) {
     if (d instanceof BitmapDrawable) {
       if (DEBUG) { Log.d(TAG, "Memcache for " + url); }
-      memCache.putElement(url, ((BitmapDrawable)d).getBitmap());
+      memCache.putElement(url, ((BitmapDrawable)d).getBitmap(), id);
     }
   }
 
@@ -454,9 +457,9 @@ public class ImagesManager<T extends CachedImage> {
 
     protected void safeImageSet(final T cachedImage, final Drawable source) {
       if (source == null) { return; }
-      final Drawable d = memCacheImage(source);
-      final ImageHolder imageHolder = this.imageHolder;
       final long id = cachedImage.getId();
+      final Drawable d = memCacheImage(source, id);
+      final ImageHolder imageHolder = this.imageHolder;
       imageHolder.post(new Runnable() {
         @Override
         public void run() {
@@ -514,14 +517,14 @@ public class ImagesManager<T extends CachedImage> {
       return new BitmapDrawable(scaled);
     }
 
-    private Drawable memCacheImage(final Drawable d) {
+    private Drawable memCacheImage(final Drawable d, final long id) {
       Drawable result = d;
       if (d instanceof BitmapDrawable) {
         final BitmapDrawable bmd = (BitmapDrawable)d;
         result = prepare(bmd);
         if (result != bmd) { bmd.getBitmap().recycle(); }
       }
-      imagesManager.memCacheImage(url, result);
+      imagesManager.memCacheImage(url, result, id);
       return result;
     }
 
@@ -539,7 +542,9 @@ public class ImagesManager<T extends CachedImage> {
           }
         }
 
-        imageHolder.cachedImageId = cachedImage.getId();
+        synchronized (imageHolder) {
+          imageHolder.cachedImageId = cachedImage.getId();
+        }
 
         Drawable d = null;
 
