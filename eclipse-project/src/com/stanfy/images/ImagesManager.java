@@ -600,8 +600,11 @@ public class ImagesManager<T extends CachedImage> {
     /** @param context context instance */
     public ImageHolder(final Context context) { this.context = context; }
 
+    /* access */
     /** @param listener the listener to set */
     public final void setListener(final ImagesLoadListener listener) { this.listener = listener; }
+    /** @return the context */
+    public Context getContext() { return context; }
 
     /* actions */
     public void touch() { }
