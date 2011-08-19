@@ -120,8 +120,10 @@ public class MaskImageDecorator extends BufferBitmapDecorator {
 
   @Override
   public void setup(final int width, final int height, final int[] state, final int level, final int sourceWidth, final int sourceHeight) {
-    rect.set(0, 0, Math.min(width, sourceWidth), Math.min(height, sourceHeight));
-    if (width <= 0 || height <= 0) { this.bitmap = null; return; }
+    final int w = fitSourcePolicy ? Math.min(width, sourceWidth) : width;
+    final int h = fitSourcePolicy ? Math.min(height, sourceHeight) : height;
+    rect.set(0, 0, w, h);
+    if (w <= 0 || h <= 0) { this.bitmap = null; return; }
     Bitmap bitmap = this.bitmap;
 
     // need a new buffer?

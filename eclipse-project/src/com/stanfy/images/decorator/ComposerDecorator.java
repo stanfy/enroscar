@@ -69,8 +69,8 @@ public class ComposerDecorator extends ImageDecoratorAdapter {
     final int flags = this.justify;
     final Rect bounds = this.bounds;
     int dWidth = this.dWidth, dHeight = this.dHeight;
-    final int width = Math.min(canvasWidth, sourceWidth);
-    final int height = Math.min(canvasHeight, sourceHeight);
+    final int width = fitSourcePolicy ? Math.min(canvasWidth, sourceWidth) : canvasWidth;
+    final int height = fitSourcePolicy ? Math.min(canvasHeight, sourceHeight) : canvasHeight;
     if (dWidth <= 0) { dWidth = width; }
     if (dHeight <= 0) { dHeight = height; }
 

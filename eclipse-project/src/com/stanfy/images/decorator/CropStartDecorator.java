@@ -26,7 +26,9 @@ public class CropStartDecorator extends BufferBitmapDecorator {
   @Override
   protected Bitmap processBitmap(final Bitmap bitmap, final Canvas canvas) {
     final Rect srcBounds = this.srcBounds, dstBounds = this.dstBounds;
-    srcBounds.set(0, 0, Math.min(bitmap.getWidth(), dstBounds.right), Math.min(bitmap.getHeight(), dstBounds.bottom));
+    final int w = fitSourcePolicy ? Math.min(bitmap.getWidth(), dstBounds.right) : dstBounds.right;
+    final int h = fitSourcePolicy ? Math.min(bitmap.getHeight(), dstBounds.bottom) : dstBounds.bottom;
+    srcBounds.set(0, 0, w, h);
     bitmapCanvas.drawBitmap(bitmap, srcBounds, dstBounds, null);
     return this.bitmap;
   }

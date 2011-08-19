@@ -9,7 +9,7 @@ import android.graphics.Rect;
 
 /**
  * Shadow decorator.
- * TODO find a way to do it faster
+ * Always behaves like  #fitSourcePolicy = true.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class ShadowDecorator extends BufferBitmapDecorator {
