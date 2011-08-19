@@ -2,6 +2,7 @@ package com.stanfy.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 
@@ -30,6 +31,9 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   /** Images manager context. */
   private ImagesManagerContext<?> imagesManagerContext;
 
+  /** Loading image. */
+  private Drawable loadingImage;
+
   public LoadableImageView(final Context context) {
     super(context);
   }
@@ -47,10 +51,14 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LoadableImageView);
     final boolean skipCache = a.getBoolean(R.styleable.LoadableImageView_skipScaleBeforeCache, false);
     final boolean skipLoadIndicator = a.getBoolean(R.styleable.LoadableImageView_skipLoadingImage, false);
+    final Drawable loadingImage = a.getDrawable(R.styleable.LoadableImageView_loadingImage);
     a.recycle();
 
     setSkipScaleBeforeCache(skipCache);
     setSkipLoadingImage(skipLoadIndicator);
+    if (loadingImage != null) {
+      setLoadingImageDrawable(loadingImage);
+    }
   }
 
   /** @param imagesManagerContext the imagesManager context to set */
@@ -82,6 +90,16 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   /** @return images load listener */
   @Override
   public ImagesLoadListener getImagesLoadListener() { return listener; }
+
+  /** @param loadingImage the loadingImage to set */
+  public void setLoadingImageDrawable(final Drawable loadingImage) {
+    if (this.loadingImage != null) { this.loadingImage.setCallback(null); }
+    this.loadingImage = loadingImage;
+  }
+  /** @param loadingImage the loadingImage to set */
+  public void setLoadingImageResourceId(final int loadingImage) { setLoadingImageDrawable(getResources().getDrawable(loadingImage)); }
+  /** @return the loadingImage */
+  public Drawable getLoadingImage() { return loadingImage; }
 
   @Override
   public void setImageURI(final Uri uri) {

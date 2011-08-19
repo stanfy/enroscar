@@ -196,7 +196,7 @@ public class ImagesManager<T extends CachedImage> {
 
   private void setLoadingImage(final ImageHolder holder) {
     if (!holder.skipLoadingImage()) {
-      final Drawable d = !holder.isDynamicSize() ? getLoadingDrawable(holder.context) : null;
+      final Drawable d = !holder.isDynamicSize() ? getLoadingDrawable(holder) : null;
       setImage(holder, d);
     }
   }
@@ -226,7 +226,10 @@ public class ImagesManager<T extends CachedImage> {
    * @param context context
    * @return a drawable to display while the image is loading
    */
-  protected Drawable getLoadingDrawable(@SuppressWarnings("unused") final Context context) { return EMPTY_DRAWABLE; }
+  protected Drawable getLoadingDrawable(final ImageHolder holder) {
+    final Drawable d = holder.getLoadingImage();
+    return d != null ? d : EMPTY_DRAWABLE;
+  }
 
   /**
    * @param context context instance
@@ -614,6 +617,7 @@ public class ImagesManager<T extends CachedImage> {
     public abstract int getRequiredWidth();
     public abstract int getRequiredHeight();
     public boolean isDynamicSize() { return getRequiredWidth() <= 0 || getRequiredHeight() <= 0; }
+    public Drawable getLoadingImage() { return null; }
 
     /* options */
     public boolean skipScaleBeforeCache() { return false; }
@@ -694,6 +698,8 @@ public class ImagesManager<T extends CachedImage> {
     public boolean skipLoadingImage() { return ((LoadableImageView)view).isSkipLoadingImage(); }
     @Override
     public boolean useSampling() { return ((LoadableImageView)view).isUseSampling(); }
+    @Override
+    public Drawable getLoadingImage() { return ((LoadableImageView)view).getLoadingImage(); }
   }
 
   /**
