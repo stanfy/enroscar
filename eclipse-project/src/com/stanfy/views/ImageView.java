@@ -42,6 +42,9 @@ public class ImageView extends android.widget.ImageView {
   /** Flag to block layout requests. */
   private boolean blockLayoutRequests = false;
 
+  /** Stored scale type. */
+  private ScaleType storedScaleType = null;
+
   public ImageView(final Context context) {
     super(context);
     init(context, null);
@@ -83,6 +86,15 @@ public class ImageView extends android.widget.ImageView {
     setScaleType(type);
     blockLayoutRequests = false;
     return result;
+  }
+
+  /**
+   * Set a scale type and store a previous one that will be restores after the next call to {@link #setImageDrawable(Drawable)}.
+   * @param scaleType
+   */
+  public void setTemporaryScaleType(final ScaleType scaleType) {
+    final ScaleType old = replaceScaleType(scaleType);
+    if (storedScaleType == null) { storedScaleType = old; }
   }
 
   /** @param imageDecorator the imageDecorator to set */
@@ -170,6 +182,10 @@ public class ImageView extends android.widget.ImageView {
 
   @Override
   public void setImageDrawable(final Drawable drawable) {
+    if (storedScaleType != null) {
+      replaceScaleType(storedScaleType);
+      storedScaleType = null;
+    }
     super.setImageDrawable(drawable);
     if (drawable != null) { ImageViewHiddenMethods.configureBounds(this); }
   }

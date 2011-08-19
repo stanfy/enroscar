@@ -712,9 +712,8 @@ public class ImagesManager<T extends CachedImage> {
     @Override
     public void setLoadingImage(final Drawable d) {
       final LoadableImageView view = (LoadableImageView)this.view;
-      final ScaleType old = view.replaceScaleType(ScaleType.FIT_XY);
+      view.setTemporaryScaleType(ScaleType.FIT_XY);
       setImage(d);
-      view.replaceScaleType(old);
     }
   }
 
