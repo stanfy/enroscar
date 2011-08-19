@@ -252,7 +252,9 @@ public class ImagesManager<T extends CachedImage> {
   protected final void setImage(final ImageHolder imageHolder, final Drawable drawable) {
     final Drawable d = decorateDrawable(imageHolder.context, drawable);
     imageHolder.setImage(d);
-    imageHolder.reset();
+    synchronized (imageHolder) {
+      imageHolder.reset();
+    }
   }
 
   /**
