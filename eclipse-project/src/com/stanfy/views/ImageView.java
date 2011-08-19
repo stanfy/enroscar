@@ -39,6 +39,9 @@ public class ImageView extends android.widget.ImageView {
   /** @see android.widget.ImageView#mHaveFrame */
   private boolean haveFrame = false;
 
+  /** Flag to block layout requests. */
+  private boolean blockLayoutRequests = false;
+
   public ImageView(final Context context) {
     super(context);
     init(context, null);
@@ -59,6 +62,27 @@ public class ImageView extends android.widget.ImageView {
     a.recycle();
 
     setCornersRadius(cornersRadius);
+  }
+
+  /** @param blockLayoutRequests the blockLayoutRequests to set */
+  protected void setBlockLayoutRequests(final boolean blockLayoutRequests) { this.blockLayoutRequests = blockLayoutRequests; }
+
+  @Override
+  public void requestLayout() {
+    if (!blockLayoutRequests) { super.requestLayout(); }
+  }
+
+  /**
+   * This method replaces the scale type of an image view without call to layout requests.
+   * @param type new scale type
+   * @return previous scale type
+   */
+  public ScaleType replaceScaleType(final ScaleType type) {
+    blockLayoutRequests = true;
+    final ScaleType result = getScaleType();
+    setScaleType(type);
+    blockLayoutRequests = false;
+    return result;
   }
 
   /** @param imageDecorator the imageDecorator to set */

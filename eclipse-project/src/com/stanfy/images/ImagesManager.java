@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import com.stanfy.DebugFlags;
@@ -169,7 +170,7 @@ public class ImagesManager<T extends CachedImage> {
     if (tag == null || !(tag instanceof ImageHolder)) { return null; }
     final Drawable res = getFromMemCache(url, (ImageHolder)tag);
     if (res == null) { return null; }
-    return decorateDrawable(view.getContext(), res);
+    return decorateDrawable((ImageHolder)tag, res);
   }
 
   public void populateImage(final ImageHolder imageHolder, final String url, final ImagesDAO<T> imagesDAO, final Downloader downloader) {
@@ -182,7 +183,7 @@ public class ImagesManager<T extends CachedImage> {
     final Drawable memCached = getFromMemCache(url, imageHolder);
     if (memCached != null) {
       imageHolder.start(url);
-      setImage(imageHolder, memCached);
+      setImage(imageHolder, memCached, false);
       imageHolder.finish(url, memCached);
       return;
     }
@@ -197,7 +198,7 @@ public class ImagesManager<T extends CachedImage> {
   private void setLoadingImage(final ImageHolder holder) {
     if (!holder.skipLoadingImage()) {
       final Drawable d = !holder.isDynamicSize() ? getLoadingDrawable(holder) : null;
-      setImage(holder, d);
+      setImage(holder, d, true);
     }
   }
 
@@ -236,7 +237,7 @@ public class ImagesManager<T extends CachedImage> {
    * @param drawable resulting drawable
    * @return decorated drawable
    */
-  protected Drawable decorateDrawable(@SuppressWarnings("unused") final Context context, final Drawable drawable) { return drawable; }
+  protected Drawable decorateDrawable(final ImageHolder holder, final Drawable drawable) { return drawable; }
 
   /**
    * @param loader load instance
@@ -248,10 +249,15 @@ public class ImagesManager<T extends CachedImage> {
   /**
    * @param imageView image view instance
    * @param drawable incoming drawable
+   * @param preloader preloading image flag
    */
-  protected final void setImage(final ImageHolder imageHolder, final Drawable drawable) {
-    final Drawable d = decorateDrawable(imageHolder.context, drawable);
-    imageHolder.setImage(d);
+  protected final void setImage(final ImageHolder imageHolder, final Drawable drawable, final boolean preloader) {
+    final Drawable d = decorateDrawable(imageHolder, drawable);
+    if (preloader) {
+      imageHolder.setLoadingImage(d);
+    } else {
+      imageHolder.setImage(d);
+    }
     synchronized (imageHolder) {
       imageHolder.reset();
     }
@@ -472,7 +478,7 @@ public class ImagesManager<T extends CachedImage> {
           synchronized (imageHolder) {
             final long savedId = imageHolder.cachedImageId;
             if (id == savedId) {
-              imagesManager.setImage(imageHolder, d);
+              imagesManager.setImage(imageHolder, d, false);
             } else {
               if (DEBUG) { Log.d(TAG, "Skip set for " + imageHolder); }
             }
@@ -600,6 +606,7 @@ public class ImagesManager<T extends CachedImage> {
     /* actions */
     public void touch() { }
     public abstract void setImage(final Drawable d);
+    public void setLoadingImage(final Drawable d) { setImage(d); }
     public abstract void post(final Runnable r);
     public void reset() { cachedImageId = -1; }
     public void destroy() {
@@ -702,6 +709,13 @@ public class ImagesManager<T extends CachedImage> {
     public boolean useSampling() { return ((LoadableImageView)view).isUseSampling(); }
     @Override
     public Drawable getLoadingImage() { return ((LoadableImageView)view).getLoadingImage(); }
+    @Override
+    public void setLoadingImage(final Drawable d) {
+      final LoadableImageView view = (LoadableImageView)this.view;
+      final ScaleType old = view.replaceScaleType(ScaleType.FIT_XY);
+      setImage(d);
+      view.replaceScaleType(old);
+    }
   }
 
   /**
