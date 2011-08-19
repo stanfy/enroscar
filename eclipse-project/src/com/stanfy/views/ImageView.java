@@ -45,6 +45,9 @@ public class ImageView extends android.widget.ImageView {
   /** Stored scale type. */
   private ScaleType storedScaleType = null;
 
+  /** Flag to minimize count of layout requests. */
+  private boolean minimizeLayoutRequests = false;
+
   public ImageView(final Context context) {
     super(context);
     init(context, null);
@@ -69,6 +72,9 @@ public class ImageView extends android.widget.ImageView {
 
   /** @param blockLayoutRequests the blockLayoutRequests to set */
   protected void setBlockLayoutRequests(final boolean blockLayoutRequests) { this.blockLayoutRequests = blockLayoutRequests; }
+
+  /** @param minimizeLayoutRequests the minimizeLayoutRequests to set */
+  public void setMinimizeLayoutRequests(final boolean minimizeLayoutRequests) { this.minimizeLayoutRequests = minimizeLayoutRequests; }
 
   @Override
   public void requestLayout() {
@@ -186,8 +192,10 @@ public class ImageView extends android.widget.ImageView {
       replaceScaleType(storedScaleType);
       storedScaleType = null;
     }
+    if (minimizeLayoutRequests) { blockLayoutRequests = true; }
     super.setImageDrawable(drawable);
     if (drawable != null) { ImageViewHiddenMethods.configureBounds(this); }
+    blockLayoutRequests = false;
   }
 
   @Override
