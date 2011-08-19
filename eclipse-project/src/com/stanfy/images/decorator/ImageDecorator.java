@@ -26,8 +26,10 @@ public interface ImageDecorator {
    * @param height required image height
    * @param state current image state
    * @param level current image level
+   * @param sourceWidth source width
+   * @param sourceHeight source width
    */
-  void setup(final int width, final int height, final int[] state, final int level);
+  void setup(final int width, final int height, final int[] state, final int level, final int sourceWidth, final int sourceHeight);
 
   /**
    * @return true if the decorator effect depends on image state

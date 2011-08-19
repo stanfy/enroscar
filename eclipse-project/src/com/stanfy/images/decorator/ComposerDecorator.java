@@ -65,10 +65,12 @@ public class ComposerDecorator extends ImageDecoratorAdapter {
   }
 
   @Override
-  public void setup(final int width, final int height, final int[] state, final int level) {
+  public void setup(final int canvasWidth, final int canvasHeight, final int[] state, final int level, final int sourceWidth, final int sourceHeight) {
     final int flags = this.justify;
     final Rect bounds = this.bounds;
     int dWidth = this.dWidth, dHeight = this.dHeight;
+    final int width = Math.min(canvasWidth, sourceWidth);
+    final int height = Math.min(canvasHeight, sourceHeight);
     if (dWidth <= 0) { dWidth = width; }
     if (dHeight <= 0) { dHeight = height; }
 

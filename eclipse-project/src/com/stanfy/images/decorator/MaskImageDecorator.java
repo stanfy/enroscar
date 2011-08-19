@@ -13,7 +13,7 @@ import android.graphics.RectF;
  * Decorate an image using mask (for corners rounding, for example).
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class MaskImageDecorator extends ImageDecoratorAdapter {
+public class MaskImageDecorator extends BufferBitmapDecorator {
 
   /** Custom mask mode. */
   private static final int CUSTOM_MASK = 0;
@@ -25,11 +25,6 @@ public class MaskImageDecorator extends ImageDecoratorAdapter {
 
   /** Decorator mode. */
   private final int mode;
-
-  /** Buffer bitmap. */
-  private Bitmap bitmap;
-  /** Buffer canvas. */
-  private Canvas bitmapCanvas;
 
   /** Mask bitmap. */
   private final Bitmap mask;
@@ -90,9 +85,7 @@ public class MaskImageDecorator extends ImageDecoratorAdapter {
     buffer.eraseColor(0);
     final Canvas bufferCanvas = this.bitmapCanvas;
 
-    final int width = source.getWidth(), height = source.getHeight();
-    rect.set(0, 0, width, height);
-
+    final RectF rect = this.rect;
     // prepare mask
     switch (mode) {
     case CUSTOM_MASK:
@@ -101,7 +94,7 @@ public class MaskImageDecorator extends ImageDecoratorAdapter {
     case CORNERS_MASK:
       if (radiusArray == null) {
         float radius = this.radius;
-        final float r = Math.min(width, height) * 0.5f;
+        final float r = Math.min(rect.width(), rect.height()) * 0.5f;
         if (radius > r) { radius = r; }
         bufferCanvas.drawRoundRect(rect, radius, radius, fillPaint);
       } else {
@@ -126,7 +119,8 @@ public class MaskImageDecorator extends ImageDecoratorAdapter {
   }
 
   @Override
-  public void setup(final int width, final int height, final int[] state, final int level) {
+  public void setup(final int width, final int height, final int[] state, final int level, final int sourceWidth, final int sourceHeight) {
+    rect.set(0, 0, Math.min(width, sourceWidth), Math.min(height, sourceHeight));
     if (width <= 0 || height <= 0) { this.bitmap = null; return; }
     Bitmap bitmap = this.bitmap;
 

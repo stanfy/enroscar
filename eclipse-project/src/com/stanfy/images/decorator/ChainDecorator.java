@@ -42,10 +42,10 @@ public class ChainDecorator extends ImageDecoratorAdapter {
   public boolean dependsOnDrawableState() { return stateful; }
 
   @Override
-  public void setup(final int width, final int height, final int[] state, final int level) {
+  public void setup(final int width, final int height, final int[] state, final int level, final int sourceWidth, final int sourceHeight) {
     final ImageDecorator[] chain = this.chain;
     for (int i = 0; i < chain.length; i++) {
-      chain[i].setup(width, height, state, level);
+      chain[i].setup(width, height, state, level, sourceWidth, sourceHeight);
     }
   }
 

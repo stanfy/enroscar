@@ -106,8 +106,9 @@ public class ImageView extends android.widget.ImageView {
       super.onDraw(canvas);
       return;
     }
-    if (d.getIntrinsicWidth() == 0 || d.getIntrinsicHeight() == 0) { return; } // nothing to draw
-    imageDecorator.setup(resultW, resultH, getDrawableState(), d.getLevel());
+    final int realW = d.getIntrinsicWidth(), realH = d.getIntrinsicHeight();
+    if (realW == 0 || realH == 0) { return; } // nothing to draw
+    imageDecorator.setup(resultW, resultH, getDrawableState(), d.getLevel(), realW, realH);
 
     final Bitmap bitmap = Bitmap.createBitmap(resultW, resultH, Bitmap.Config.ARGB_8888);
     final Canvas bitmapCanvas = new Canvas(bitmap);
