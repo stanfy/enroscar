@@ -51,7 +51,10 @@ public class ScrollView extends android.widget.ScrollView {
     if (!frozeScrollPosition) { super.onRestoreInstanceState(state); }
     final SavedState myState = (SavedState)state;
     super.onRestoreInstanceState(myState.getSuperState());
-    scrollTo(myState.positionX, myState.positionY);
+    post(new Runnable() {
+      @Override
+      public void run() { scrollTo(myState.positionX, myState.positionY); }
+    });
   }
 
   /**
