@@ -50,9 +50,9 @@ public class ImageMemoryCache {
 
   public boolean contains(final String url) { return cacheMap.containsKey(url); }
 
-  public void remove(final String url) {
+  public void remove(final String url, final boolean recycle) {
     final SoftReference<CacheRecord> ref = cacheMap.remove(url);
-    if (ref == null) { return; }
+    if (ref == null || !recycle) { return; }
     final CacheRecord record = ref.get();
     if (record != null && record.bitmap != null) { record.bitmap.recycle(); }
   }
