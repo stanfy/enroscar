@@ -114,8 +114,10 @@ public class ImagesManager<T extends CachedImage> {
    */
   public void clearCache(final Context context, final String path, final String url) {
     memCache.remove(url);
-    final File f = new File(getImageDir(context), path);
-    delete(f);
+    if (path != null) {
+      final File f = new File(getImageDir(context), path);
+      delete(f);
+    }
   }
 
   /**
