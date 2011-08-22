@@ -129,7 +129,7 @@ public class ImagesManager<T extends CachedImage> {
   }
 
   /**
-   * Populate the requested image to the specified view.
+   * Populate the requested image to the specified view. Called from the GUI thread.
    * @param view view instance
    * @param url image URL
    * @param imagesDAO images DAO
@@ -191,6 +191,7 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     if (DEBUG) { Log.d(TAG, "Set loading for " + url); }
+    imageHolder.currentUrl = url; // we are in GUI thread
     setLoadingImage(imageHolder);
     final ImageLoader<T> loader = createImageLoaderTask(imageHolder, url, imagesDAO, downloader);
     cancelTasks(loader);
@@ -556,6 +557,7 @@ public class ImagesManager<T extends CachedImage> {
         }
 
         synchronized (imageHolder) {
+          if (!imageHolder.currentUrl.equals(url)) { return; }
           imageHolder.cachedImageId = cachedImage.getId();
         }
 
@@ -597,10 +599,15 @@ public class ImagesManager<T extends CachedImage> {
     Context context;
     /** Tag. */
     long cachedImageId;
+    /** Current image URL. Set this field from the GUI thread only! */
+    String currentUrl;
     /** Listener. */
     ImagesLoadListener listener;
     /** @param context context instance */
-    public ImageHolder(final Context context) { this.context = context; }
+    public ImageHolder(final Context context) {
+      this.context = context;
+      reset();
+    }
 
     /* access */
     /** @param listener the listener to set */
