@@ -13,7 +13,7 @@ import android.util.AttributeSet;
 public class ScrollView extends android.widget.ScrollView {
 
   /** Froze scroll position flag. */
-  private boolean frozeScrollPosition = true;
+  private boolean frozeScrollPosition;
 
   public ScrollView(final Context context) {
     this(context, null);
@@ -31,7 +31,7 @@ public class ScrollView extends android.widget.ScrollView {
 
   private void init(final Context context, final AttributeSet attrs) {
     final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ScrollView);
-    final boolean frozeSPos = a.getBoolean(R.styleable.ScrollView_frozeScrollPosition, false);
+    final boolean frozeSPos = a.getBoolean(R.styleable.ScrollView_frozeScrollPosition, true);
     a.recycle();
     setFrozeScrollPosition(frozeSPos);
   }
