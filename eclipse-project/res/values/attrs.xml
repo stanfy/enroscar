@@ -39,4 +39,8 @@
     <attr name="checkedButton" format="integer" />
   </declare-styleable>
 
+  <declare-styleable name="ScrollView">
+    <attr name="frozeScrollPosition" format="boolean" />
+  </declare-styleable>
+
 </resources>
