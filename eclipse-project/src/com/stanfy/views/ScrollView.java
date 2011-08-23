@@ -61,7 +61,7 @@ public class ScrollView extends android.widget.ScrollView {
    * Saved state for our scroll view.
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  static class SavedState extends BaseSavedState {
+  private static class SavedState extends BaseSavedState {
 
     /** Creator. */
     public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
