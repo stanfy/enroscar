@@ -272,8 +272,9 @@ public class ImagesManager<T extends CachedImage> {
    */
   protected Drawable getFromMemCache(final String url, final ImageHolder holder) {
     final CacheRecord record = memCache.getElement(url);
+    if (record == null) { return null; }
     synchronized (holder) {
-      if (record == null || (holder.cachedImageId > 0 && record.getImageId() != holder.cachedImageId)) { return null; }
+      if (holder.currentUrl != null && !holder.currentUrl.equals(record.getImageUrl())) { return null; }
     }
     final Bitmap map = record.getBitmap();
     final int gap = 5;
@@ -347,10 +348,10 @@ public class ImagesManager<T extends CachedImage> {
     imagesDao.updateImage(image);
   }
 
-  protected void memCacheImage(final String url, final Drawable d, final long id) {
+  protected void memCacheImage(final String url, final Drawable d) {
     if (d instanceof BitmapDrawable) {
       if (DEBUG) { Log.d(TAG, "Memcache for " + url); }
-      memCache.putElement(url, ((BitmapDrawable)d).getBitmap(), id);
+      memCache.putElement(url, ((BitmapDrawable)d).getBitmap(), url);
     }
   }
 
@@ -471,16 +472,16 @@ public class ImagesManager<T extends CachedImage> {
 
     protected void safeImageSet(final T cachedImage, final Drawable source) {
       if (source == null) { return; }
-      final long id = cachedImage.getId();
-      final Drawable d = memCacheImage(source, id);
+      final Drawable d = memCacheImage(source);
       final ImageHolder imageHolder = this.imageHolder;
+      final String url = this.url;
       imageHolder.post(new Runnable() {
         @Override
         public void run() {
           if (DEBUG) { Log.d(TAG, "Try to set " + imageHolder + " - " + url); }
           synchronized (imageHolder) {
-            final long savedId = imageHolder.cachedImageId;
-            if (id == savedId) {
+            final String currentUrl = imageHolder.currentUrl;
+            if (currentUrl != null && currentUrl.equals(url)) {
               imagesManager.setImage(imageHolder, d, false);
             } else {
               if (DEBUG) { Log.d(TAG, "Skip set for " + imageHolder); }
@@ -531,14 +532,14 @@ public class ImagesManager<T extends CachedImage> {
       return new BitmapDrawable(scaled);
     }
 
-    private Drawable memCacheImage(final Drawable d, final long id) {
+    private Drawable memCacheImage(final Drawable d) {
       Drawable result = d;
       if (d instanceof BitmapDrawable) {
         final BitmapDrawable bmd = (BitmapDrawable)d;
         result = prepare(bmd);
         if (result != bmd) { bmd.getBitmap().recycle(); }
       }
-      imagesManager.memCacheImage(url, result, id);
+      imagesManager.memCacheImage(url, result);
       return result;
     }
 
@@ -558,7 +559,6 @@ public class ImagesManager<T extends CachedImage> {
 
         synchronized (imageHolder) {
           if (!imageHolder.currentUrl.equals(url)) { return; }
-          imageHolder.cachedImageId = cachedImage.getId();
         }
 
         Drawable d = null;
@@ -597,8 +597,6 @@ public class ImagesManager<T extends CachedImage> {
   public abstract static class ImageHolder {
     /** Context instance. */
     Context context;
-    /** Tag. */
-    long cachedImageId;
     /** Current image URL. Set this field from the GUI thread only! */
     String currentUrl;
     /** Listener. */
@@ -616,11 +614,11 @@ public class ImagesManager<T extends CachedImage> {
     public Context getContext() { return context; }
 
     /* actions */
+    void reset() { currentUrl = null; }
     public void touch() { }
     public abstract void setImage(final Drawable d);
     public void setLoadingImage(final Drawable d) { setImage(d); }
     public abstract void post(final Runnable r);
-    public void reset() { cachedImageId = -1; }
     public void destroy() {
       context = null;
     }

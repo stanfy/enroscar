@@ -26,10 +26,10 @@ public class ImageMemoryCache {
   /**
    * @param url URL
    * @param image image instance
-   * @param imageId image ID
+   * @param imageUrl image URL
    */
-  public void putElement(final String url, final Bitmap image, final long imageId) {
-    cacheMap.put(url, new SoftReference<CacheRecord>(new CacheRecord(image, imageId)));
+  public void putElement(final String url, final Bitmap image, final String imageUrl) {
+    cacheMap.put(url, new SoftReference<CacheRecord>(new CacheRecord(image, imageUrl)));
   }
 
   /**
@@ -76,18 +76,18 @@ public class ImageMemoryCache {
   public static class CacheRecord {
     /** A bitmap. */
     private final Bitmap bitmap;
-    /** Image identifier. */
-    private final long imageId;
+    /** Image URL. */
+    private final String imageUrl;
 
-    public CacheRecord(final Bitmap bitmap, final long imageId) {
+    public CacheRecord(final Bitmap bitmap, final String url) {
       this.bitmap = bitmap;
-      this.imageId = imageId;
+      this.imageUrl = url;
     }
 
     /** @return the bitmap */
     public Bitmap getBitmap() { return bitmap; }
-    /** @return the imageId */
-    public long getImageId() { return imageId; }
+    /** @return the imageUrl */
+    public String getImageUrl() { return imageUrl; }
   }
 
 }
