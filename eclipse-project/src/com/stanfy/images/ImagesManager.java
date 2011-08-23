@@ -191,8 +191,8 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     if (DEBUG) { Log.d(TAG, "Set loading for " + url); }
-    imageHolder.currentUrl = url; // we are in GUI thread
     setLoadingImage(imageHolder);
+    imageHolder.currentUrl = url; // we are in GUI thread
     final ImageLoader<T> loader = createImageLoaderTask(imageHolder, url, imagesDAO, downloader);
     cancelTasks(loader);
     getImageTaskExecutor().execute(loader);
@@ -547,6 +547,7 @@ public class ImagesManager<T extends CachedImage> {
     protected void safeSQLRun() {
       if (DEBUG) { Log.d(TAG, "Start image task"); }
       try {
+        final ImageHolder imageHolder = this.imageHolder;
         imageHolder.start(url);
         T cachedImage = imagesDAO.getCachedImage(url);
         if (cachedImage == null) {
@@ -558,7 +559,7 @@ public class ImagesManager<T extends CachedImage> {
         }
 
         synchronized (imageHolder) {
-          if (!imageHolder.currentUrl.equals(url)) { return; }
+          if (imageHolder.currentUrl == null || !imageHolder.currentUrl.equals(url)) { return; }
         }
 
         Drawable d = null;
