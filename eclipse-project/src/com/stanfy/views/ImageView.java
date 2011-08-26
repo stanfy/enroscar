@@ -141,6 +141,7 @@ public class ImageView extends android.widget.ImageView {
     super.drawableStateChanged();
     final ImageDecorator d = imageDecorator;
     if (d != null && d.dependsOnDrawableState()) {
+      clearDecorateCache();
       invalidate();
     }
   }
