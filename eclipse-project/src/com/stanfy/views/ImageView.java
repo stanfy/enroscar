@@ -1,5 +1,6 @@
 package com.stanfy.views;
 
+import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.TreeMap;
 
@@ -47,6 +48,11 @@ public class ImageView extends android.widget.ImageView {
 
   /** Flag to minimize count of layout requests. */
   private boolean minimizeLayoutRequests = false;
+
+  /** Decorated cache bitmap. */
+  private SoftReference<Bitmap> decoratedCache;
+  /** Flag that decorated cache bitmap is actual. */
+  private boolean decoratedCacheActual;
 
   public ImageView(final Context context) {
     super(context);
@@ -118,7 +124,15 @@ public class ImageView extends android.widget.ImageView {
   }
 
   /** @param drawMatrix the drawMatrix to set */
-  void setDrawMatrix(final Matrix drawMatrix) { this.drawMatrix = drawMatrix; }
+  void setDrawMatrix(final Matrix drawMatrix) {
+    this.drawMatrix = drawMatrix;
+    clearDecorateCache();
+  }
+  private void clearDecorateCache() {
+    final Bitmap cache = decoratedCache != null ? decoratedCache.get() : null;
+    if (cache != null) { cache.eraseColor(0); }
+    decoratedCacheActual = false;
+  }
   /** @return the haveFrame */
   boolean isHaveFrame() { return haveFrame; }
 
@@ -150,21 +164,40 @@ public class ImageView extends android.widget.ImageView {
     }
     final int realW = d.getIntrinsicWidth(), realH = d.getIntrinsicHeight();
     if (realW == 0 || realH == 0) { return; } // nothing to draw
-    imageDecorator.setup(resultW, resultH, getDrawableState(), d.getLevel(), realW, realH);
 
-    final Bitmap bitmap = Bitmap.createBitmap(resultW, resultH, Bitmap.Config.ARGB_8888);
-    final Canvas bitmapCanvas = new Canvas(bitmap);
-    if (drawMatrix == null) {
-      d.draw(bitmapCanvas);
-    } else {
-      final int saveCount = bitmapCanvas.save();
-      bitmapCanvas.concat(drawMatrix);
-      d.draw(bitmapCanvas);
-      bitmapCanvas.restoreToCount(saveCount);
+    final Bitmap decorated;
+
+    Bitmap bitmap = decoratedCache != null ? decoratedCache.get() : null;
+    if (bitmap == null || bitmap.getWidth() != resultW || bitmap.getHeight() != resultH) {
+      final Bitmap old = bitmap;
+      bitmap = Bitmap.createBitmap(resultW, resultH, Bitmap.Config.ARGB_8888);
+      if (old != null) { old.recycle(); }
+      decoratedCache = new SoftReference<Bitmap>(bitmap);
+      decoratedCacheActual = false;
     }
 
-    final Bitmap decorated = imageDecorator.decorateBitmap(bitmap, bitmapCanvas);
-    if (decorated != bitmap) { bitmap.recycle(); }
+    if (!decoratedCacheActual) {
+      imageDecorator.setup(resultW, resultH, getDrawableState(), d.getLevel(), realW, realH);
+
+      final Canvas bitmapCanvas = new Canvas(bitmap);
+      if (drawMatrix == null) {
+        d.draw(bitmapCanvas);
+      } else {
+        final int saveCount = bitmapCanvas.save();
+        bitmapCanvas.concat(drawMatrix);
+        d.draw(bitmapCanvas);
+        bitmapCanvas.restoreToCount(saveCount);
+      }
+
+      decorated = imageDecorator.decorateBitmap(bitmap, bitmapCanvas);
+      if (decorated != bitmap) {
+        bitmap.recycle();
+        decoratedCache = new SoftReference<Bitmap>(decorated);
+      }
+      decoratedCacheActual = true;
+    } else {
+      decorated = bitmap;
+    }
 
     if (pl == 0 && pt == 0) {
       canvas.drawBitmap(decorated, 0, 0, null);
@@ -174,7 +207,6 @@ public class ImageView extends android.widget.ImageView {
       canvas.drawBitmap(decorated, 0, 0, null);
       canvas.restoreToCount(saveCount);
     }
-    decorated.recycle();
   }
 
   @Override
@@ -210,6 +242,14 @@ public class ImageView extends android.widget.ImageView {
     haveFrame = true;
     ImageViewHiddenMethods.configureBounds(this);
     return changed;
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    // destroy cache
+    final Bitmap cache = decoratedCache != null ? decoratedCache.get() : null;
+    if (cache != null) { cache.recycle(); }
   }
 
   /**
