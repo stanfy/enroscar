@@ -251,6 +251,8 @@ public class ImageView extends android.widget.ImageView {
     // destroy cache
     final Bitmap cache = decoratedCache != null ? decoratedCache.get() : null;
     if (cache != null) { cache.recycle(); }
+    decoratedCache = null;
+    decoratedCacheActual = false;
   }
 
   /**
