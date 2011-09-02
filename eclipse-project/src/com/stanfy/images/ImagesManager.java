@@ -585,6 +585,9 @@ public class ImagesManager<T extends CachedImage> {
       } catch (final IOException e) {
         if (DEBUG_IO) { Log.e(TAG, "IO error for " + url + ": " + e.getMessage()); }
         imageHolder.error(url, e);
+      } catch (final Exception e) {
+        Log.e(TAG, "Cannot load image " + url, e);
+        imageHolder.error(url, e);
       }
     }
 
