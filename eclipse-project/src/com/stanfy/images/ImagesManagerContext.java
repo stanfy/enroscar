@@ -27,7 +27,7 @@ public class ImagesManagerContext<T extends CachedImage> {
   private ImagesManager<T> imagesManager;
 
   /** @param count count image loading of executors */
-  public void configureExecutorsCount(final int count) {
+  public static void configureExecutorsCount(final int count) {
     Threading.configureImageTasksExecutor(count);
   }
 
