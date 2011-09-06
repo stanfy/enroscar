@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.stanfy.images.ImagesManager.ImageHolder;
 import com.stanfy.images.model.CachedImage;
@@ -31,6 +30,11 @@ public class ImagesManagerContext<T extends CachedImage> {
     Threading.configureImageTasksExecutor(count);
   }
 
+  public static boolean check(final Uri uri) {
+    return uri == null || (uri.getScheme() != null
+        && (uri.getScheme().startsWith("http") || uri.getScheme().startsWith("content")));
+  }
+
   /** @return the imagesDAO */
   public ImagesDAO<T> getImagesDAO() { return imagesDAO; }
   /** @param imagesDAO the imagesDAO to set */
@@ -48,7 +52,16 @@ public class ImagesManagerContext<T extends CachedImage> {
     imagesManager.ensureImages(imagesDAO, downloader, context, images);
   }
 
-  private <VT extends View> void populate(final VT view, final String url) {
+  /**
+   * Cancel loading for a view.
+   * @param view the view to manipulate
+   */
+  public void cancel(final View view) {
+    final ImagesManager<T> imagesManager = this.imagesManager;
+    if (imagesManager != null) { imagesManager.cancelImageLoading(view); }
+  }
+
+  public void populate(final View view, final String url) {
     final ImagesDAO<T> imagesDAO = this.imagesDAO;
     final Downloader downloader = this.downloader;
     final ImagesManager<T> imagesManager = this.imagesManager;
@@ -66,19 +79,9 @@ public class ImagesManagerContext<T extends CachedImage> {
     }
   }
 
-  public static boolean check(final Uri uri) {
-    return uri == null || (uri.getScheme() != null
-        && (uri.getScheme().startsWith("http") || uri.getScheme().startsWith("content")));
-  }
-
-  public void populateImageView(final ImageView view, final String url) {
-    populate(view, url);
-  }
-  public void populateCompoundButton(final CompoundButton view, final String url) {
-    populate(view, url);
-  }
-  public void populateTextView(final TextView view, final String url) {
-    populate(view, url);
+  public void cancel(final ImageHolder imageHolder) {
+    final ImagesManager<T> imagesManager = this.imagesManager;
+    if (imagesManager != null) { imagesManager.cancelImageLoading(imageHolder); }
   }
 
   /**
@@ -89,4 +92,5 @@ public class ImagesManagerContext<T extends CachedImage> {
       imagesManager.flush();
     }
   }
+
 }

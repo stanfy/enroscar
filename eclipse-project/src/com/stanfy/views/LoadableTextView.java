@@ -55,7 +55,7 @@ public class LoadableTextView extends TextView {
     if (imageUri != null && imageUri.equals(uri)) { return; }
     imageUri = uri;
     if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
-      imagesManagerContext.populateTextView(this, uri != null ? uri.toString() : null);
+      imagesManagerContext.populate(this, uri != null ? uri.toString() : null);
     }
   }
 
@@ -64,6 +64,14 @@ public class LoadableTextView extends TextView {
     final int lw = drawableLeftWidth, lh = drawableLeftHeight;
     if (left != null && lw != -1 && lh != -1) { left.setBounds(0, 0, lw, lh); }
     super.setCompoundDrawables(left, top, right, bottom);
+  }
+
+  @Override
+  public void onStartTemporaryDetach() {
+    super.onStartTemporaryDetach();
+    if (imageUri != null && imagesManagerContext != null) {
+      imagesManagerContext.cancel(this);
+    }
   }
 
 }

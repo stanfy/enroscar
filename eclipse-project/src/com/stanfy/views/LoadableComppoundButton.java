@@ -84,7 +84,7 @@ public class LoadableComppoundButton extends CompoundButton {
     if (imageUri != null && imageUri.equals(uri)) { return; }
     imageUri = uri;
     if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
-      imagesManagerContext.populateCompoundButton(this, uri != null ? uri.toString() : null);
+      imagesManagerContext.populate(this, uri != null ? uri.toString() : null);
     }
   }
 
@@ -121,6 +121,14 @@ public class LoadableComppoundButton extends CompoundButton {
       d.setBounds(l, t, l + w, t + h);
     }
     d.draw(canvas);
+  }
+
+  @Override
+  public void onStartTemporaryDetach() {
+    super.onStartTemporaryDetach();
+    if (imageUri != null && imagesManagerContext != null) {
+      imagesManagerContext.cancel(this);
+    }
   }
 
 }

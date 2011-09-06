@@ -135,7 +135,7 @@ public class ImagesManager<T extends CachedImage> {
    * @param imagesDAO images DAO
    * @param downloader downloader instance
    */
-  public <VT extends View> void populateImage(final VT view, final String url, final ImagesManagerContext<T> imagesContext) {
+  public void populateImage(final View view, final String url, final ImagesManagerContext<T> imagesContext) {
     final Object tag = view.getTag();
     ImageHolder imageHolder = null;
     if (tag == null) {
@@ -147,6 +147,22 @@ public class ImagesManager<T extends CachedImage> {
     }
     populateImage(imageHolder, url, imagesContext);
   }
+
+  /**
+   * Cancel image loading for a view.
+   * @param view view that hold an image
+   */
+  public void cancelImageLoading(final View view) {
+    final Object tag = view.getTag();
+    if (tag != null && tag instanceof ImageHolder) {
+      cancelImageLoading((ImageHolder)tag);
+    }
+  }
+  /**
+   * Cancel image loading for a holder.
+   * @param holder image holder instance
+   */
+  public void cancelImageLoading(final ImageHolder holder) { holder.cancelLoader(); }
 
   protected ImageHolder createImageHolder(final View view) {
     if (view instanceof LoadableImageView) { return new LoadableImageViewHolder((LoadableImageView)view); }
@@ -768,6 +784,5 @@ public class ImagesManager<T extends CachedImage> {
     @Override
     public int getRequiredWidth() { return -1; }
   }
-
 
 }

@@ -106,10 +106,18 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     if (loadImageUri != null && loadImageUri.equals(uri)) { return; }
     loadImageUri = uri;
     if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
-      imagesManagerContext.populateImageView(this, uri != null ? uri.toString() : null);
+      imagesManagerContext.populate(this, uri != null ? uri.toString() : null);
       return;
     }
     super.setImageURI(uri);
+  }
+
+  @Override
+  public void onStartTemporaryDetach() {
+    super.onStartTemporaryDetach();
+    if (loadImageUri != null && imagesManagerContext != null) {
+      imagesManagerContext.cancel(this);
+    }
   }
 
 }
