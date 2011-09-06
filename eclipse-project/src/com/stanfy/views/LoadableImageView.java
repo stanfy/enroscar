@@ -112,12 +112,21 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     super.setImageURI(uri);
   }
 
+  private void cancelLoading() {
+    if (loadImageUri != null && imagesManagerContext != null) {
+      imagesManagerContext.cancel(this);
+      loadImageUri = null;
+    }
+  }
   @Override
   public void onStartTemporaryDetach() {
     super.onStartTemporaryDetach();
-    if (loadImageUri != null && imagesManagerContext != null) {
-      imagesManagerContext.cancel(this);
-    }
+    cancelLoading();
+  }
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    cancelLoading();
   }
 
 }

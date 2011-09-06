@@ -66,12 +66,21 @@ public class LoadableTextView extends TextView {
     super.setCompoundDrawables(left, top, right, bottom);
   }
 
+  private void cancelLoading() {
+    if (imageUri != null && imagesManagerContext != null) {
+      imagesManagerContext.cancel(this);
+      imageUri = null;
+    }
+  }
   @Override
   public void onStartTemporaryDetach() {
     super.onStartTemporaryDetach();
-    if (imageUri != null && imagesManagerContext != null) {
-      imagesManagerContext.cancel(this);
-    }
+    cancelLoading();
+  }
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    cancelLoading();
   }
 
 }
