@@ -9,6 +9,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
@@ -54,6 +55,9 @@ public class ImageView extends android.widget.ImageView {
   /** Flag that decorated cache bitmap is actual. */
   private boolean decoratedCacheActual;
 
+  /** Flag to respect {@link Drawable#getIntrinsicWidth()} and {@link Drawable#getIntrinsicHeight()} values. */
+  private boolean respectIntrinsicDrawableSize = true;
+
   public ImageView(final Context context) {
     super(context);
     init(context, null);
@@ -85,6 +89,11 @@ public class ImageView extends android.widget.ImageView {
   @Override
   public void requestLayout() {
     if (!blockLayoutRequests) { super.requestLayout(); }
+  }
+
+  /** @param respectIntrinsicDrawableSize the respectIntrinsicDrawableSize to set */
+  public void setRespectIntrinsicDrawableSize(final boolean respectIntrinsicDrawableSize) {
+    this.respectIntrinsicDrawableSize = respectIntrinsicDrawableSize;
   }
 
   /**
@@ -163,8 +172,13 @@ public class ImageView extends android.widget.ImageView {
       super.onDraw(canvas);
       return;
     }
-    final int realW = d.getIntrinsicWidth(), realH = d.getIntrinsicHeight();
-    if (realW == 0 || realH == 0) { return; } // nothing to draw
+
+    int realW = resultW, realH = resultH;
+    if (respectIntrinsicDrawableSize || d instanceof BitmapDrawable) {
+      realW = d.getIntrinsicWidth();
+      realH = d.getIntrinsicHeight();
+      if (realW == 0 || realH == 0) { return; } // nothing to draw
+    }
 
     final Bitmap decorated;
 
