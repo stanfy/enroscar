@@ -56,7 +56,7 @@ public class ImageView extends android.widget.ImageView {
   private boolean decoratedCacheActual;
 
   /** Flag to respect {@link Drawable#getIntrinsicWidth()} and {@link Drawable#getIntrinsicHeight()} values. */
-  private boolean respectIntrinsicDrawableSize = true;
+  private boolean respectIntrinsicDrawableSize = false;
 
   public ImageView(final Context context) {
     super(context);
