@@ -21,12 +21,15 @@ public class ImagesManagerContext<T extends CachedImage> {
 
   /** Images DAO. */
   private ImagesDAO<T> imagesDAO;
-
   /** Downloader. */
   private Downloader downloader;
-
   /** Images manager. */
   private ImagesManager<T> imagesManager;
+
+  /** @param count count image loading of executors */
+  public void configureExecutorsCount(final int count) {
+    Threading.configureImageTasksExecutor(count);
+  }
 
   /** @return the imagesDAO */
   public ImagesDAO<T> getImagesDAO() { return imagesDAO; }

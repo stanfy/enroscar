@@ -13,7 +13,7 @@ import android.os.Process;
  * Thread utilities used by images manager.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public final class Threading {
+final class Threading {
   /** Thread factory. */
   private static final ThreadFactory THREAD_FACTORY = new ThreadFactory();
   /** Tasks queue. */
