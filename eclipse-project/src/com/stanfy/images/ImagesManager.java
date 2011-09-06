@@ -588,8 +588,6 @@ public class ImagesManager<T extends CachedImage> {
       } catch (final Exception e) {
         Log.e(TAG, "Cannot load image " + url, e);
         imageHolder.error(url, e);
-      } finally {
-        imageHolder.reset();
       }
       return null;
     }
