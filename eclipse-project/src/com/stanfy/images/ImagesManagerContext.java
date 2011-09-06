@@ -50,7 +50,7 @@ public class ImagesManagerContext<T extends CachedImage> {
     final Downloader downloader = this.downloader;
     final ImagesManager<T> imagesManager = this.imagesManager;
     if (imagesDAO != null && downloader != null && imagesManager != null) {
-      imagesManager.populateImage(view, url, imagesDAO, downloader);
+      imagesManager.populateImage(view, url, this);
     }
   }
 
@@ -59,7 +59,7 @@ public class ImagesManagerContext<T extends CachedImage> {
     final Downloader downloader = this.downloader;
     final ImagesManager<T> imagesManager = this.imagesManager;
     if (imagesDAO != null && downloader != null && imagesManager != null) {
-      imagesManager.populateImage(imageHolder, url, imagesDAO, downloader);
+      imagesManager.populateImage(imageHolder, url, this);
     }
   }
 

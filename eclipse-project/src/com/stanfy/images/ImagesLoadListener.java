@@ -16,4 +16,6 @@ public interface ImagesLoadListener {
 
   void onLoadError(final ImageHolder holder, final String url, final Throwable exception);
 
+  void onLoadCancel(final ImageHolder holder, final String url);
+
 }
