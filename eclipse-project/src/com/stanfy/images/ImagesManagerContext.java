@@ -5,14 +5,13 @@ import java.util.List;
 import android.content.Context;
 import android.net.Uri;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 
 import com.stanfy.images.ImagesManager.ImageHolder;
 import com.stanfy.images.model.CachedImage;
 
 /**
- * Images manager context. Supported views: {@link ImageView}, {@link CompoundButton}.
+ * Images manager context.
+ * Supported views: {@link android.widget.ImageView}, {@link android.widget.CompoundButton}, {@link android.widget.TextView}.
  * @param <T> cached image type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */

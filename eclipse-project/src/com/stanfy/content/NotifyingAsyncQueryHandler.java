@@ -5,7 +5,6 @@ import java.lang.ref.WeakReference;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -15,7 +14,7 @@ import android.net.Uri;
  * {@link Cursor} if the listener ceases to exist.
  * <p>
  * This pattern can be used to perform background queries without leaking
- * {@link Context} objects.
+ * {@link android.app.Context} objects.
  */
 public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
 
