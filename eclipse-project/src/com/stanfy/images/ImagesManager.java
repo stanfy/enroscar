@@ -520,6 +520,7 @@ public class ImagesManager<T extends CachedImage> {
       if (!url.startsWith("http")) { return null; }
       final Context x = imageHolder.context;
       if (x == null) { throw new IOException("Context is null"); }
+      cachedImage.setType(imageHolder.getImageType());
       imagesManager.makeImageLocal(imagesDAO, x, cachedImage, downloader);
       return setLocalImage(cachedImage);
     }
@@ -634,6 +635,7 @@ public class ImagesManager<T extends CachedImage> {
     ImagesLoadListener listener;
     /** Current loader. */
     ImageLoader<?> currentLoader;
+
     /** @param context context instance */
     public ImageHolder(final Context context) {
       this.context = context;
@@ -681,6 +683,7 @@ public class ImagesManager<T extends CachedImage> {
     public abstract int getRequiredHeight();
     public boolean isDynamicSize() { return getRequiredWidth() <= 0 || getRequiredHeight() <= 0; }
     public Drawable getLoadingImage() { return null; }
+    public int getImageType() { return 0; }
 
     /* options */
     public boolean skipScaleBeforeCache() { return false; }
@@ -769,6 +772,8 @@ public class ImagesManager<T extends CachedImage> {
       setImage(d);
       view.setTemporaryScaleType(ScaleType.FIT_XY);
     }
+    @Override
+    public int getImageType() { return ((LoadableImageView)this.view).getImageType(); }
   }
 
   /**

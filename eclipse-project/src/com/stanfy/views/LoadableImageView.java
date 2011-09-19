@@ -22,6 +22,8 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   private boolean skipLoadingImage;
   /** Use sampling flag. Sampling can affect the image quality. */
   private boolean useSampling;
+  /** Image type. */
+  private int imageType;
 
   /** Images load listener. */
   private ImagesLoadListener listener;
@@ -52,6 +54,7 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     final boolean skipCache = a.getBoolean(R.styleable.LoadableImageView_skipScaleBeforeCache, false);
     final boolean skipLoadIndicator = a.getBoolean(R.styleable.LoadableImageView_skipLoadingImage, false);
     final Drawable loadingImage = a.getDrawable(R.styleable.LoadableImageView_loadingImage);
+    final int type = a.getInt(R.styleable.LoadableImageView_imageType, 0);
     a.recycle();
 
     setSkipScaleBeforeCache(skipCache);
@@ -59,12 +62,18 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     if (loadingImage != null) {
       setLoadingImageDrawable(loadingImage);
     }
+    setImageType(type);
   }
 
   /** @param imagesManagerContext the imagesManager context to set */
   public void setImagesManagerContext(final ImagesManagerContext<?> imagesManagerContext) {
     this.imagesManagerContext = imagesManagerContext;
   }
+
+  /** @param imageType the imageType to set */
+  public void setImageType(final int imageType) { this.imageType = imageType; }
+  /** @return the imageType */
+  public int getImageType() { return imageType; }
 
   /** @param skipScaleBeforeCache the skipScaleBeforeCache to set */
   public void setSkipScaleBeforeCache(final boolean skipScaleBeforeCache) { this.skipScaleBeforeCache = skipScaleBeforeCache; }

@@ -25,10 +25,12 @@ public class CachedImage {
                                LOADED = "loaded",
                                REMOVED = "removed",
                                TIMESTAMP = "ts",
-                               USAGE_TIMESTAMP = "usage_ts";
+                               USAGE_TIMESTAMP = "usage_ts",
+                               TYPE = "type";
 
     /** Column indexes. */
-    public static final int INDEX_ID = 0, INDEX_URL = 1, INDEX_PATH = 2, INDEX_LOADED = 3, INDEX_TIMESTAMP = 4, INDEX_USAGE_TIMESTAMP = 5;
+    public static final int INDEX_ID = 0, INDEX_URL = 1, INDEX_PATH = 2, INDEX_LOADED = 3,
+                            INDEX_TIMESTAMP = 4, INDEX_USAGE_TIMESTAMP = 5, INDEX_TYPE = 6;
 
     /** Column names. */
     public static final String[] COLUMNS = new String[] {
@@ -37,7 +39,8 @@ public class CachedImage {
       PATH,
       LOADED,
       TIMESTAMP,
-      USAGE_TIMESTAMP
+      USAGE_TIMESTAMP,
+      TYPE
     };
 
     /** DDL script identifier. */
@@ -55,6 +58,7 @@ public class CachedImage {
       instance.setLoaded(cursor.getInt(INDEX_LOADED) == 1);
       instance.setTimestamp(cursor.getLong(INDEX_TIMESTAMP));
       instance.setUsageTimestamp(cursor.getLong(INDEX_USAGE_TIMESTAMP));
+      instance.setType(cursor.getInt(INDEX_TYPE));
       return instance;
     }
 
@@ -70,6 +74,7 @@ public class CachedImage {
       cv.put(LOADED, image.isLoaded() ? 1 : 0);
       cv.put(TIMESTAMP, image.getTimestamp());
       cv.put(USAGE_TIMESTAMP, image.getUsageTimestamp());
+      cv.put(TYPE, image.getType());
       return cv;
     }
 
@@ -87,6 +92,8 @@ public class CachedImage {
   private long timestamp;
   /** Usage timestamp. */
   private long usageTimestamp;
+  /** Image type. */
+  private int type;
 
   public CachedImage() { /* nothing */ }
 
@@ -124,12 +131,18 @@ public class CachedImage {
   /** @return the usageTimestamp */
   public long getUsageTimestamp() { return usageTimestamp; }
 
+  /** @param type the type to set */
+  public void setType(final int type) { this.type = type; }
+  /** @return the type */
+  public int getType() { return type; }
+
   public void set(final CachedImage image) {
     setLoaded(image.isLoaded());
     setPath(image.getPath());
     setUrl(image.getUrl());
     setTimestamp(image.getTimestamp());
     setUsageTimestamp(image.getUsageTimestamp());
+    setType(image.getType());
   }
 
 }

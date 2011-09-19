@@ -91,23 +91,25 @@ public class ToolsApplicationService extends IntentService {
     if (iContext == null) { return; }
     final long time = System.currentTimeMillis();
     final ImagesDAO<?> dao = iContext.getImagesDAO();
-    final Cursor c = dao.getOldImages(time);
-    if (c == null) { return; }
-    if (DEBUG) { Log.i(TAG, "Have images to clean " + c.getCount()); }
+
     final ImagesManager<?> manager = iContext.getImagesManager();
     final CachedImage image = createCachedImage();
     final Context context = getApplicationContext();
 
-    try {
-      while (c.moveToNext()) {
-        readCachedImage(image, c);
-        manager.clearCache(context, image.getPath(), image.getUrl());
+    final Cursor c = dao.getOldImages(time);
+    if (c != null) {
+      if (DEBUG) { Log.i(TAG, "Have images to clean " + c.getCount()); }
+      try {
+        while (c.moveToNext()) {
+          readCachedImage(image, c);
+          manager.clearCache(context, image.getPath(), image.getUrl());
+        }
+      } finally {
+        c.close();
       }
-    } finally {
-      c.close();
+      final int count = dao.deleteOldImages(time);
+      if (DEBUG) { Log.i(TAG, "Deleted " + count + "images"); }
     }
-    int count = dao.deleteOldImages(time);
-    if (DEBUG) { Log.i(TAG, "Deleted " + count + "images"); }
 
     long dirSize = AppUtils.sizeOfDirectory(manager.getImageDir(context));
     if (DEBUG) { Log.i(TAG, "Caches size: " + dirSize); }
@@ -119,7 +121,7 @@ public class ToolsApplicationService extends IntentService {
       return;
     }
 
-    count = 0;
+    int count = 0;
     try {
       while (dirSize > maxCacheSize && candidates.moveToNext()) {
         readCachedImage(image, candidates);

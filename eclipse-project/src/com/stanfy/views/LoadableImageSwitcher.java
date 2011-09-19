@@ -98,6 +98,7 @@ public class LoadableImageSwitcher extends ImageSwitcher implements ViewFactory,
   public void setImagePreview(final Drawable d, final String url) {
     final LoadableImageView view = getNextView();
     view.setImageDrawable(d);
+    view.setImageURI(null);
     view.setImageURI(Uri.parse(url));
     showNext();
     hideProgress();
