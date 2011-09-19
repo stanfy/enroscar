@@ -35,9 +35,19 @@ public interface ImagesDAO<T extends CachedImage> {
   Cursor getOldImages(final long time);
 
   /**
+   * @return less recently used images
+   */
+  Cursor getLessUsedImages();
+
+  /**
    * @param time current time
    * @return count of deleted images
    */
   int deleteOldImages(final long time);
+
+  /**
+   * @param id image identifier
+   */
+  void deleteImage(final long id);
 
 }

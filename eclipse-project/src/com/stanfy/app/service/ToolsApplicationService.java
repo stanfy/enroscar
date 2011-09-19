@@ -3,6 +3,7 @@ package com.stanfy.app.service;
 import java.io.File;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
@@ -12,6 +13,7 @@ import com.stanfy.images.ImagesDAO;
 import com.stanfy.images.ImagesManager;
 import com.stanfy.images.ImagesManagerContext;
 import com.stanfy.images.model.CachedImage;
+import com.stanfy.views.utils.AppUtils;
 
 /**
  * Application service that helps to perform different auxiliary tasks.
@@ -22,8 +24,17 @@ import com.stanfy.images.model.CachedImage;
  */
 public class ToolsApplicationService extends IntentService {
 
+  /** Megabyte. */
+  private static final int MB = 20;
+
+  /** Maximum images cache size (defult value). */
+  public static final long DEFAULT_MAX_IMAGES_CACHE_SIZE = 3 << MB;
+
   /** Images cache cleanup. */
   public static final String ACTION_IMAGES_CACHE_CLEANUP = "com.stanfy.images.CLEANUP";
+
+  /** Max cache size key. */
+  public static final String EXTRA_MAX_CACHE_SIZE = "max_cache_s";
 
   /** Logging tag. */
   private static final String TAG = "ToolsService";
@@ -51,7 +62,7 @@ public class ToolsApplicationService extends IntentService {
     if (action == null) { return; }
 
     if (ACTION_IMAGES_CACHE_CLEANUP.equals(action)) {
-      cleanupImagesCache();
+      cleanupImagesCache(intent.getLongExtra(EXTRA_MAX_CACHE_SIZE, DEFAULT_MAX_IMAGES_CACHE_SIZE));
     }
 
   }
@@ -60,7 +71,7 @@ public class ToolsApplicationService extends IntentService {
   protected ImagesManagerContext<?> getImagesContext() { return null; }
 
   /** @return cached image instance */
-  protected CachedImage createCachedImage() { return new CachedImage(0); }
+  protected CachedImage createCachedImage() { return new CachedImage(); }
 
   /**
    * @param image cached image instance
@@ -72,8 +83,9 @@ public class ToolsApplicationService extends IntentService {
 
   /**
    * Clean old image cache entries.
+   * @param maxCacheSize maximum cache size
    */
-  protected void cleanupImagesCache() {
+  protected void cleanupImagesCache(final long maxCacheSize) {
     if (DEBUG) { Log.i(TAG, "Start images cleanup"); }
     final ImagesManagerContext<?> iContext = getImagesContext();
     if (iContext == null) { return; }
@@ -83,17 +95,44 @@ public class ToolsApplicationService extends IntentService {
     if (c == null) { return; }
     if (DEBUG) { Log.i(TAG, "Have images to clean " + c.getCount()); }
     final ImagesManager<?> manager = iContext.getImagesManager();
+    final CachedImage image = createCachedImage();
+    final Context context = getApplicationContext();
+
     try {
-      final CachedImage image = createCachedImage();
       while (c.moveToNext()) {
         readCachedImage(image, c);
-        manager.clearCache(getApplicationContext(), image.getPath(), image.getUrl());
+        manager.clearCache(context, image.getPath(), image.getUrl());
       }
     } finally {
       c.close();
     }
-    final int count = dao.deleteOldImages(time);
+    int count = dao.deleteOldImages(time);
     if (DEBUG) { Log.i(TAG, "Deleted " + count + "images"); }
+
+    long dirSize = AppUtils.sizeOfDirectory(manager.getImageDir(context));
+    if (DEBUG) { Log.i(TAG, "Caches size: " + dirSize); }
+    if (dirSize <= maxCacheSize) { return; }
+    if (DEBUG) { Log.i(TAG, "Caches is too large"); }
+    final Cursor candidates = dao.getLessUsedImages();
+    if (candidates == null) {
+      if (DEBUG) { Log.i(TAG, "Nothing to delete"); }
+      return;
+    }
+
+    count = 0;
+    try {
+      while (dirSize > maxCacheSize && candidates.moveToNext()) {
+        readCachedImage(image, candidates);
+        dirSize -= manager.clearCache(context, image.getPath(), image.getUrl());
+        ++count;
+        dao.deleteImage(image.getId());
+      }
+    } catch (final Exception e) {
+      Log.e(TAG, "Cannot reduce cache size", e);
+    } finally {
+      candidates.close();
+    }
+    if (DEBUG) { Log.i(TAG, "Removed " + count + " images, cache size: " + dirSize); }
   }
 
 }

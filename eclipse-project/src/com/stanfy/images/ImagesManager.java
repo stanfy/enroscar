@@ -111,13 +111,17 @@ public class ImagesManager<T extends CachedImage> {
    * @param context context instance
    * @param path image file system path
    * @param url image URL
+   * @return size of the deleted file
    */
-  public void clearCache(final Context context, final String path, final String url) {
+  public long clearCache(final Context context, final String path, final String url) {
     memCache.remove(url, false);
+    long size = 0;
     if (path != null) {
       final File f = new File(getImageDir(context), path);
+      size = f.length();
       delete(f);
     }
+    return size;
   }
 
   /**
@@ -351,7 +355,9 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     image.setLoaded(true);
-    image.setTimestamp(System.currentTimeMillis());
+    final long time = System.currentTimeMillis();
+    image.setTimestamp(time);
+    image.setUsageTimestamp(time);
     imagesDao.updateImage(image);
   }
 
@@ -502,6 +508,10 @@ public class ImagesManager<T extends CachedImage> {
       final Context x = imageHolder.context;
       if (x == null) { throw new IOException("Context is null"); }
       final Drawable d = imagesManager.readLocal(cachedImage, x, imageHolder);
+      if (d != null) {
+        cachedImage.setUsageTimestamp(System.currentTimeMillis());
+        imagesDAO.updateImage(cachedImage);
+      }
       safeImageSet(cachedImage, d);
       return d;
     }

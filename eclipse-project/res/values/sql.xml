@@ -8,8 +8,21 @@
       path TEXT,
       loaded INTEGER,
       removed INTEGER,
-      ts INTEGER
+      ts INTEGER,
+      usage_ts INTEGER
     );
+  ]]>
+  </string>
+
+  <string name="sql_ddl_cached_image_index_url">
+  <![CDATA[
+    CREATE INDEX IF NOT EXISTS %1$s_index_url ON %1$s (url); 
+  ]]>
+  </string>
+
+  <string name="sql_ddl_cached_image_index_usage_ts">
+  <![CDATA[
+    CREATE INDEX IF NOT EXISTS %1$s_index_usage_ts ON %1$s (usage_ts); 
   ]]>
   </string>
 

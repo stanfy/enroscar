@@ -1,5 +1,6 @@
 package com.stanfy.views.utils;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -179,6 +180,25 @@ public class AppUtils {
   public static int pixelsOffset(final DisplayMetrics displayMetrics, final int dip) {
     final float scale = displayMetrics.density;
     return (int)(dip * scale);
+  }
+
+  /**
+   * @param directory directory
+   * @return directory size
+   */
+  public static long sizeOfDirectory(final File directory) {
+    if (directory == null || !directory.exists()) { return 0; }
+    if (!directory.isDirectory()) { return directory.length(); }
+    final File[] files = directory.listFiles();
+    int result = 0;
+    for (final File f : files) {
+      if (f.isDirectory()) {
+        result += sizeOfDirectory(f);
+      } else {
+        result += f.length();
+      }
+    }
+    return result;
   }
 
   /**

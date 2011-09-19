@@ -24,10 +24,11 @@ public class CachedImage {
                                PATH = "path",
                                LOADED = "loaded",
                                REMOVED = "removed",
-                               TIMESTAMP = "ts";
+                               TIMESTAMP = "ts",
+                               USAGE_TIMESTAMP = "usage_ts";
 
     /** Column indexes. */
-    public static final int INDEX_ID = 0, INDEX_URL = 1, INDEX_PATH = 2, INDEX_LOADED = 3, INDEX_TIMESTAMP = 4;
+    public static final int INDEX_ID = 0, INDEX_URL = 1, INDEX_PATH = 2, INDEX_LOADED = 3, INDEX_TIMESTAMP = 4, INDEX_USAGE_TIMESTAMP = 5;
 
     /** Column names. */
     public static final String[] COLUMNS = new String[] {
@@ -35,7 +36,8 @@ public class CachedImage {
       URL,
       PATH,
       LOADED,
-      TIMESTAMP
+      TIMESTAMP,
+      USAGE_TIMESTAMP
     };
 
     /** DDL script identifier. */
@@ -52,6 +54,7 @@ public class CachedImage {
       instance.setPath(cursor.getString(INDEX_PATH));
       instance.setLoaded(cursor.getInt(INDEX_LOADED) == 1);
       instance.setTimestamp(cursor.getLong(INDEX_TIMESTAMP));
+      instance.setUsageTimestamp(cursor.getLong(INDEX_USAGE_TIMESTAMP));
       return instance;
     }
 
@@ -66,68 +69,49 @@ public class CachedImage {
       cv.put(PATH, image.getPath());
       cv.put(LOADED, image.isLoaded() ? 1 : 0);
       cv.put(TIMESTAMP, image.getTimestamp());
+      cv.put(USAGE_TIMESTAMP, image.getUsageTimestamp());
       return cv;
     }
 
   }
 
-
   /** Identifier. */
   private long id;
-
   /** Image URL. */
   private String url;
-
   /** Local image path. */
   private String path;
-
   /** Loaded flag. */
   private boolean loaded = false;
-
   /** Timestamp. */
   private long timestamp;
+  /** Usage timestamp. */
+  private long usageTimestamp;
+
+  public CachedImage() { /* nothing */ }
 
   public CachedImage(final long id) {
     this.id = id;
   }
 
-  /**
-   * @return the url
-   */
+  /** @return the url */
   public String getUrl() { return url; }
-
-  /**
-   * @param url the url to set
-   */
+  /** @param url the url to set */
   public void setUrl(final String url) { this.url = url; }
 
-  /**
-   * @return the path
-   */
+  /** @return the path */
   public String getPath() { return path; }
-
-  /**
-   * @param path the path to set
-   */
+  /** @param path the path to the cache file */
   public void setPath(final String path) { this.path = path; }
 
-  /**
-   * @return the id
-   */
+  /** @return the id */
   public long getId() { return id; }
-  /**
-   * @param id the id to set
-   */
+  /** @param id the id to set */
   public void setId(final long id) { this.id = id; }
 
-  /**
-   * @return the loaded
-   */
+  /** @return the loaded */
   public boolean isLoaded() { return loaded; }
-
-  /**
-   * @param loaded the loaded to set
-   */
+  /** @param loaded the loaded to set */
   public void setLoaded(final boolean loaded) { this.loaded = loaded; }
 
   /** @param timestamp the timestamp to set */
@@ -135,11 +119,17 @@ public class CachedImage {
   /** @return the timestamp */
   public long getTimestamp() { return timestamp; }
 
+  /** @param usageTimestamp the usageTimestamp to set */
+  public void setUsageTimestamp(final long usageTimestamp) { this.usageTimestamp = usageTimestamp; }
+  /** @return the usageTimestamp */
+  public long getUsageTimestamp() { return usageTimestamp; }
+
   public void set(final CachedImage image) {
     setLoaded(image.isLoaded());
     setPath(image.getPath());
     setUrl(image.getUrl());
     setTimestamp(image.getTimestamp());
+    setUsageTimestamp(image.getUsageTimestamp());
   }
 
 }
