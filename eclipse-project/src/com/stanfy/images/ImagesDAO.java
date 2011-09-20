@@ -50,4 +50,9 @@ public interface ImagesDAO<T extends CachedImage> {
    */
   void deleteImage(final long id);
 
+  /**
+   * @param image image instance
+   */
+  void updateUsageTimestamp(final T image);
+
 }

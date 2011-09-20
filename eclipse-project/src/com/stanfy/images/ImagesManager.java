@@ -509,8 +509,7 @@ public class ImagesManager<T extends CachedImage> {
       if (x == null) { throw new IOException("Context is null"); }
       final Drawable d = imagesManager.readLocal(cachedImage, x, imageHolder);
       if (d != null) {
-        cachedImage.setUsageTimestamp(System.currentTimeMillis());
-        imagesDAO.updateImage(cachedImage);
+        imagesDAO.updateUsageTimestamp(cachedImage);
       }
       safeImageSet(cachedImage, d);
       return d;
