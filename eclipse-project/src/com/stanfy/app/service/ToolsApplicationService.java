@@ -24,11 +24,8 @@ import com.stanfy.views.utils.AppUtils;
  */
 public class ToolsApplicationService extends IntentService {
 
-  /** Megabyte. */
-  private static final int MB = 20;
-
   /** Maximum images cache size (defult value). */
-  public static final long DEFAULT_MAX_IMAGES_CACHE_SIZE = 3 << MB;
+  public static final long DEFAULT_MAX_IMAGES_CACHE_SIZE = 10 * 1024 * 1024;
 
   /** Images cache cleanup. */
   public static final String ACTION_IMAGES_CACHE_CLEANUP = "com.stanfy.images.CLEANUP";
@@ -112,9 +109,9 @@ public class ToolsApplicationService extends IntentService {
     }
 
     long dirSize = AppUtils.sizeOfDirectory(manager.getImageDir(context));
-    if (DEBUG) { Log.i(TAG, "Caches size: " + dirSize); }
+    if (DEBUG) { Log.i(TAG, "Cache size: " + dirSize); }
     if (dirSize <= maxCacheSize) { return; }
-    if (DEBUG) { Log.i(TAG, "Caches is too large"); }
+    if (DEBUG) { Log.i(TAG, "Cache is too large"); }
     final Cursor candidates = dao.getLessUsedImages();
     if (candidates == null) {
       if (DEBUG) { Log.i(TAG, "Nothing to delete"); }
@@ -122,11 +119,13 @@ public class ToolsApplicationService extends IntentService {
     }
 
     int count = 0;
+    int defaultTypeCount = 0;
     try {
       while (dirSize > maxCacheSize && candidates.moveToNext()) {
         readCachedImage(image, candidates);
         dirSize -= manager.clearCache(context, image.getPath(), image.getUrl());
         ++count;
+        if (image.getType() == 0) { ++defaultTypeCount; }
         dao.deleteImage(image.getId());
       }
     } catch (final Exception e) {
@@ -134,7 +133,7 @@ public class ToolsApplicationService extends IntentService {
     } finally {
       candidates.close();
     }
-    if (DEBUG) { Log.i(TAG, "Removed " + count + " images, cache size: " + dirSize); }
+    if (DEBUG) { Log.i(TAG, "Removed " + count + " images (default type - " + defaultTypeCount + "), cache size: " + dirSize); }
   }
 
 }

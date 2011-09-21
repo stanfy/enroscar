@@ -6,8 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
 import java.util.regex.Pattern;
@@ -75,6 +77,9 @@ public class ImagesManager<T extends CachedImage> {
 
   /** Images format. */
   private Bitmap.Config imagesFormat = Bitmap.Config.RGB_565;
+
+  /** Current loads. */
+  private final ConcurrentHashMap<String, ImageLoader<T>> currentLoads = new ConcurrentHashMap<String, ImageLoader<T>>(Threading.imagesWorkersCount);
 
   /** Hidden constructor. */
   protected ImagesManager(final Resources resources) {
@@ -166,7 +171,10 @@ public class ImagesManager<T extends CachedImage> {
    * Cancel image loading for a holder.
    * @param holder image holder instance
    */
-  public void cancelImageLoading(final ImageHolder holder) { holder.cancelLoader(); }
+  public void cancelImageLoading(final ImageHolder holder) {
+    if (DEBUG) { Log.d(TAG, "Cancel " + holder.currentUrl); }
+    holder.cancelLoader();
+  }
 
   protected ImageHolder createImageHolder(final View view) {
     if (view instanceof LoadableImageView) { return new LoadableImageViewHolder((LoadableImageView)view); }
@@ -214,7 +222,7 @@ public class ImagesManager<T extends CachedImage> {
     if (DEBUG) { Log.d(TAG, "Set loading for " + url); }
     setLoadingImage(imageHolder);
     imageHolder.currentUrl = url; // we are in GUI thread
-    startImageLoaderTask(imageHolder, url, imagesContext);
+    startImageLoaderTask(imageHolder, imagesContext);
   }
 
   private void setLoadingImage(final ImageHolder holder) {
@@ -295,16 +303,28 @@ public class ImagesManager<T extends CachedImage> {
 
   /**
    * @param imageHolder image holder to process
-   * @param url image URL
    * @param imagesDAO images DAO
    * @param downloader downloader instance
    * @return loader task instance
    */
-  protected void startImageLoaderTask(final ImageHolder imageHolder, final String url, final ImagesManagerContext<T> imagesContext) {
-    final ImageLoader<?> loader = new ImageLoader<T>(imageHolder, url, imagesContext);
-    imageHolder.cancelLoader();
-    final Executor executor = getImageTaskExecutor();
-    executor.execute(loader.future);
+  protected void startImageLoaderTask(final ImageHolder imageHolder, final ImagesManagerContext<T> imagesContext) {
+    final String key = imageHolder.getLoaderKey();
+    ImageLoader<T> loader = currentLoads.get(key);
+    if (loader != null) {
+      final boolean added = loader.addTarget(imageHolder);
+      if (!added) { loader = null; }
+    }
+    if (loader == null) {
+      if (DEBUG) { Log.d(TAG, "Start a new task"); }
+      loader = new ImageLoader<T>(imageHolder.currentUrl, key, imagesContext);
+      final boolean added = loader.addTarget(imageHolder);
+      if (!added) { throw new IllegalStateException("Cannot add target to the new loader"); }
+      currentLoads.put(key, loader);
+      final Executor executor = getImageTaskExecutor();
+      executor.execute(loader.future);
+    } else if (DEBUG) {
+      Log.d(TAG, "Joined to the existing task");
+    }
   }
 
   /**
@@ -458,11 +478,10 @@ public class ImagesManager<T extends CachedImage> {
    */
   protected static class ImageLoader<T extends CachedImage> implements Callable<Void> {
 
-    /** GUI view. */
-    private final ImageHolder imageHolder;
-
     /** Image URL. */
     private final String url;
+    /** Loader key. */
+    private final String key;
 
     /** Images manager. */
     private final ImagesManager<T> imagesManager;
@@ -474,40 +493,92 @@ public class ImagesManager<T extends CachedImage> {
     /** Future task instance. */
     final FutureTask<Void> future;
 
-    public ImageLoader(final ImageHolder imageHolder, final String url, final ImagesManagerContext<T> imagesContext) {
+    /** Targets. */
+    private final ArrayList<ImageHolder> targets = new ArrayList<ImageHolder>();
+    /** Main GUI view. */
+    private ImageHolder mainTarget;
+    /** Result drawable. */
+    private Drawable resultDrawable;
+    /** Resolved result flag. */
+    private boolean resultResolved = false, started = false;
+
+    public ImageLoader(final String url, final String key, final ImagesManagerContext<T> imagesContext) {
       this.url = url;
-      this.imageHolder = imageHolder;
+      this.key = key;
       this.imagesManager = imagesContext.getImagesManager();
       this.downloader = imagesContext.getDownloader();
       this.imagesDAO = imagesContext.getImagesDAO();
       this.future = new FutureTask<Void>(this);
     }
 
+    /** Called from UI thread. */
+    public boolean addTarget(final ImageHolder imageHolder) {
+      if (future.isCancelled()) { return false; } // we should start a new task
+      if (!future.isDone()) {
+        // normal case
+        synchronized (this) {
+          if (started) { imageHolder.start(this, url); }
+          if (resultResolved) {
+            imagesManager.setImage(imageHolder, resultDrawable, false);
+            imageHolder.finish(url, resultDrawable);
+          } else {
+            targets.add(imageHolder);
+            if (mainTarget == null) { mainTarget = imageHolder; }
+          }
+        }
+      } else {
+        // we finished
+        imagesManager.setImage(imageHolder, resultDrawable, false);
+      }
+      return true;
+    }
+
+    public void removeTarget(final ImageHolder imageHolder) {
+      synchronized (this) {
+        targets.remove(imageHolder);
+        if (targets.isEmpty()) { future.cancel(true); }
+      }
+    }
+
     protected void safeImageSet(final T cachedImage, final Drawable source) {
-      if (source == null) { return; }
-      final Drawable d = memCacheImage(source);
-      final ImageHolder imageHolder = this.imageHolder;
+      final Drawable d;
+      synchronized (this) {
+        resultResolved = true;
+        if (source == null) { return; }
+        d = memCacheImage(source);
+        resultDrawable = d;
+      }
+
       final String url = this.url;
-      imageHolder.post(new Runnable() {
+      mainTarget.post(new Runnable() {
         @Override
         public void run() {
-          if (DEBUG) { Log.d(TAG, "Try to set " + imageHolder + " - " + url); }
-          synchronized (imageHolder) {
-            final String currentUrl = imageHolder.currentUrl;
-            if (currentUrl != null && currentUrl.equals(url)) {
-              imagesManager.setImage(imageHolder, d, false);
-            } else {
-              if (DEBUG) { Log.d(TAG, "Skip set for " + imageHolder); }
+
+          final ArrayList<ImageHolder> targets = ImageLoader.this.targets;
+          final int count = targets.size();
+          for (int i = 0; i < count; i++) {
+            final ImageHolder imageHolder = targets.get(i);
+            if (DEBUG) { Log.d(TAG, "Try to set " + imageHolder + " - " + url); }
+
+            synchronized (imageHolder) {
+              final String currentUrl = imageHolder.currentUrl;
+              if (currentUrl != null && currentUrl.equals(url)) {
+                imagesManager.setImage(imageHolder, d, false);
+              } else {
+                if (DEBUG) { Log.d(TAG, "Skip set for " + imageHolder); }
+              }
             }
+
           }
+
         }
       });
     }
 
     protected Drawable setLocalImage(final T cachedImage) throws IOException {
-      final Context x = imageHolder.context;
+      final Context x = mainTarget.context;
       if (x == null) { throw new IOException("Context is null"); }
-      final Drawable d = imagesManager.readLocal(cachedImage, x, imageHolder);
+      final Drawable d = imagesManager.readLocal(cachedImage, x, mainTarget);
       if (d != null) {
         imagesDAO.updateUsageTimestamp(cachedImage);
       }
@@ -517,17 +588,17 @@ public class ImagesManager<T extends CachedImage> {
 
     protected Drawable setRemoteImage(final T cachedImage) throws IOException {
       if (!url.startsWith("http")) { return null; }
-      final Context x = imageHolder.context;
+      final Context x = mainTarget.context;
       if (x == null) { throw new IOException("Context is null"); }
-      cachedImage.setType(imageHolder.getImageType());
+      cachedImage.setType(mainTarget.getImageType());
       imagesManager.makeImageLocal(imagesDAO, x, cachedImage, downloader);
       return setLocalImage(cachedImage);
     }
 
     private BitmapDrawable prepare(final BitmapDrawable bd) {
-      int dstW = imageHolder.getRequiredWidth(), dstH = imageHolder.getRequiredHeight();
-      if (dstW <= 0 || dstH <= 0 || imageHolder.skipScaleBeforeCache()) {
-        if (DEBUG) { Log.d(TAG, "Skip scaling for " + imageHolder); }
+      int dstW = mainTarget.getRequiredWidth(), dstH = mainTarget.getRequiredHeight();
+      if (dstW <= 0 || dstH <= 0 || mainTarget.skipScaleBeforeCache()) {
+        if (DEBUG) { Log.d(TAG, "Skip scaling for " + mainTarget); }
         return bd;
       }
 
@@ -560,13 +631,51 @@ public class ImagesManager<T extends CachedImage> {
       return result;
     }
 
+    private void start() {
+      synchronized (this) {
+        final ArrayList<ImageHolder> targets = this.targets;
+        final int count = targets.size();
+        final String url = this.url;
+        for (int i = 0; i < count; i++) {
+          targets.get(i).start(this, url);
+        }
+        started = true;
+      }
+    }
+
+    private void finish() {
+      final ArrayList<ImageHolder> targets = this.targets;
+      final int count = targets.size();
+      final Drawable d = this.resultDrawable;
+      for (int i = 0; i < count; i++) {
+        targets.get(i).finish(url, d);
+      }
+    }
+
+    private void cancel() {
+      final ArrayList<ImageHolder> targets = this.targets;
+      final int count = targets.size();
+      final String url = this.url;
+      for (int i = 0; i < count; i++) {
+        targets.get(i).cancel(url);
+      }
+    }
+
+    private void error(final Throwable e) {
+      final ArrayList<ImageHolder> targets = this.targets;
+      final int count = targets.size();
+      final String url = this.url;
+      for (int i = 0; i < count; i++) {
+        targets.get(i).error(url, e);
+      }
+    }
+
     @Override
     public Void call() {
       if (DEBUG) { Log.d(TAG, "Start image task"); }
-      final ImageHolder imageHolder = this.imageHolder;
       final String url = this.url;
       try {
-        imageHolder.start(this, url);
+        start();
         T cachedImage = imagesDAO.getCachedImage(url);
         if (cachedImage == null) {
           cachedImage = imagesDAO.createCachedImage(url);
@@ -576,15 +685,11 @@ public class ImagesManager<T extends CachedImage> {
           }
         }
 
-        synchronized (imageHolder) {
-          if (imageHolder.currentUrl == null || !imageHolder.currentUrl.equals(url)) { return null; }
-        }
-
         Drawable d = null;
 
         if (cachedImage.isLoaded()) {
           if (Thread.interrupted()) {
-            imageHolder.cancel(url);
+            cancel();
             return null;
           }
           d = setLocalImage(cachedImage);
@@ -593,7 +698,7 @@ public class ImagesManager<T extends CachedImage> {
 
         if (d == null) {
           if (Thread.interrupted()) {
-            imageHolder.cancel(url);
+            cancel();
             return null;
           }
           d = setRemoteImage(cachedImage);
@@ -603,17 +708,22 @@ public class ImagesManager<T extends CachedImage> {
         if (d == null) {
           Log.w(TAG, "Image " + cachedImage.getUrl() + " is not resolved");
         }
-        imageHolder.finish(url, d);
+        finish();
 
       } catch (final MalformedURLException e) {
         Log.e(TAG, "Bad URL: " + url + ". Loading canceled.", e);
-        imageHolder.error(url, e);
+        error(e);
       } catch (final IOException e) {
         if (DEBUG_IO) { Log.e(TAG, "IO error for " + url + ": " + e.getMessage()); }
-        imageHolder.error(url, e);
+        error(e);
       } catch (final Exception e) {
         Log.e(TAG, "Cannot load image " + url, e);
-        imageHolder.error(url, e);
+        error(e);
+      } finally {
+        final ImageLoader<?> loader = imagesManager.currentLoads.remove(key);
+        if (loader != this) {
+          Log.w(TAG, "Incorrect loader in currents " + loader);
+        }
       }
       return null;
     }
@@ -634,6 +744,8 @@ public class ImagesManager<T extends CachedImage> {
     ImagesLoadListener listener;
     /** Current loader. */
     ImageLoader<?> currentLoader;
+    /** Loader key. */
+    private String loaderKey;
 
     /** @param context context instance */
     public ImageHolder(final Context context) {
@@ -648,7 +760,10 @@ public class ImagesManager<T extends CachedImage> {
     public Context getContext() { return context; }
 
     /* actions */
-    void reset() { currentUrl = null; }
+    void reset() {
+      currentUrl = null;
+      loaderKey = null;
+    }
     public void touch() { }
     public abstract void setImage(final Drawable d);
     public void setLoadingImage(final Drawable d) { setImage(d); }
@@ -658,7 +773,7 @@ public class ImagesManager<T extends CachedImage> {
     }
     final void cancelLoader() {
       final ImageLoader<?> loader = this.currentLoader;
-      if (loader != null) { loader.future.cancel(true); }
+      if (loader != null) { loader.removeTarget(this); }
     }
     final void start(final ImageLoader<?> loader, final String url) {
       this.currentLoader = loader;
@@ -683,6 +798,12 @@ public class ImagesManager<T extends CachedImage> {
     public boolean isDynamicSize() { return getRequiredWidth() <= 0 || getRequiredHeight() <= 0; }
     public Drawable getLoadingImage() { return null; }
     public int getImageType() { return 0; }
+    String getLoaderKey() {
+      if (loaderKey == null) {
+        loaderKey = currentUrl + "!" + getRequiredWidth() + "x" + getRequiredWidth() + "!" + getImageType();
+      }
+      return loaderKey;
+    }
 
     /* options */
     public boolean skipScaleBeforeCache() { return false; }

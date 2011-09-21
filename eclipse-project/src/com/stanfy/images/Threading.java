@@ -19,7 +19,7 @@ final class Threading {
   /** Tasks queue. */
   private static final LinkedBlockingQueue<Runnable> IMAGE_TASKS_QUEUE = new LinkedBlockingQueue<Runnable>();
   /** Workers count. */
-  private static int imagesWorkersCount = 2;
+  static int imagesWorkersCount = 2;
 
   /** executors. */
   private static Executor imageTasksExecutor;
