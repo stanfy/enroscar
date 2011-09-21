@@ -309,6 +309,7 @@ public class ImagesManager<T extends CachedImage> {
    */
   protected void startImageLoaderTask(final ImageHolder imageHolder, final ImagesManagerContext<T> imagesContext) {
     final String key = imageHolder.getLoaderKey();
+    if (DEBUG) { Log.d(TAG, "Key " + key); }
     ImageLoader<T> loader = currentLoads.get(key);
     if (loader != null) {
       final boolean added = loader.addTarget(imageHolder);
@@ -800,7 +801,7 @@ public class ImagesManager<T extends CachedImage> {
     public int getImageType() { return 0; }
     String getLoaderKey() {
       if (loaderKey == null) {
-        loaderKey = currentUrl + "!" + getRequiredWidth() + "x" + getRequiredWidth() + "!" + getImageType();
+        loaderKey = currentUrl + "!" + getRequiredWidth() + "x" + getRequiredWidth();
       }
       return loaderKey;
     }
