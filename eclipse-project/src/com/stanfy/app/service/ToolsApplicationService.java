@@ -118,8 +118,8 @@ public class ToolsApplicationService extends IntentService {
       return;
     }
 
-    int count = 0;
-    int defaultTypeCount = 0;
+    @SuppressWarnings("unused")
+    int count = 0, defaultTypeCount = 0;
     try {
       while (dirSize > maxCacheSize && candidates.moveToNext()) {
         readCachedImage(image, candidates);
