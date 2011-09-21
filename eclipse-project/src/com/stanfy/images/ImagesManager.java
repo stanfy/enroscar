@@ -172,7 +172,6 @@ public class ImagesManager<T extends CachedImage> {
    * @param holder image holder instance
    */
   public void cancelImageLoading(final ImageHolder holder) {
-    if (DEBUG) { Log.d(TAG, "Cancel " + holder.currentUrl); }
     holder.cancelLoader();
   }
 
@@ -385,7 +384,7 @@ public class ImagesManager<T extends CachedImage> {
   protected void memCacheImage(final String url, final Drawable d) {
     if (d instanceof BitmapDrawable) {
       if (DEBUG) { Log.d(TAG, "Memcache for " + url); }
-      memCache.putElement(url, ((BitmapDrawable)d).getBitmap(), url);
+      memCache.putElement(url, ((BitmapDrawable)d).getBitmap());
     }
   }
 
@@ -535,6 +534,7 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     public void removeTarget(final ImageHolder imageHolder) {
+      imageHolder.cancel(url);
       synchronized (this) {
         targets.remove(imageHolder);
         if (targets.isEmpty()) { future.cancel(true); }
@@ -721,9 +721,9 @@ public class ImagesManager<T extends CachedImage> {
         Log.e(TAG, "Cannot load image " + url, e);
         error(e);
       } finally {
-        final ImageLoader<?> loader = imagesManager.currentLoads.remove(key);
-        if (loader != this) {
-          Log.w(TAG, "Incorrect loader in currents " + loader);
+        final boolean removed = imagesManager.currentLoads.remove(key, this);
+        if (!removed && DEBUG) {
+          Log.w(TAG, "Incorrect loader in currents for " + key);
         }
       }
       return null;
@@ -773,8 +773,12 @@ public class ImagesManager<T extends CachedImage> {
       context = null;
     }
     final void cancelLoader() {
-      final ImageLoader<?> loader = this.currentLoader;
-      if (loader != null) { loader.removeTarget(this); }
+      final String url = currentUrl;
+      if (url != null) {
+        if (DEBUG) { Log.d(TAG, "Cancel " + url); }
+        final ImageLoader<?> loader = this.currentLoader;
+        if (loader != null) { loader.removeTarget(this); }
+      }
     }
     final void start(final ImageLoader<?> loader, final String url) {
       this.currentLoader = loader;
