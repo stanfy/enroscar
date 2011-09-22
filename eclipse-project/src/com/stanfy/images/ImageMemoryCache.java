@@ -77,7 +77,7 @@ public class ImageMemoryCache {
     final CacheRecord record;
     synchronized (cacheMap) {
       record = cacheMap.remove(url);
-      currentSize -= record.size;
+      if (record != null) { currentSize -= record.size; }
     }
     if (recycle && record != null && record.bitmap != null) { record.bitmap.recycle(); }
   }
