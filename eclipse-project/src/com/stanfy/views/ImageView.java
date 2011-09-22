@@ -235,7 +235,7 @@ public class ImageView extends android.widget.ImageView {
 
   @Override
   public void setImageDrawable(final Drawable drawable) {
-    if (storedScaleType != null) {
+    if (storedScaleType != null && drawable != getDrawable()) {
       replaceScaleType(storedScaleType);
       storedScaleType = null;
     }

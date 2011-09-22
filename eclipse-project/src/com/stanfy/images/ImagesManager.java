@@ -599,7 +599,7 @@ public class ImagesManager<T extends CachedImage> {
     private BitmapDrawable prepare(final BitmapDrawable bd) {
       int dstW = mainTarget.getRequiredWidth(), dstH = mainTarget.getRequiredHeight();
       if (dstW <= 0 || dstH <= 0 || mainTarget.skipScaleBeforeCache()) {
-        if (DEBUG) { Log.d(TAG, "Skip scaling for " + mainTarget); }
+        if (DEBUG) { Log.d(TAG, "Skip scaling for " + mainTarget + " skip flag: " + mainTarget.skipScaleBeforeCache()); }
         return bd;
       }
 
