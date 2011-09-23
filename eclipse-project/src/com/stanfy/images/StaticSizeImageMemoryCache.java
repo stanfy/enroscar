@@ -15,7 +15,7 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
   /** Default clean factor. */
   private static final float DEFAULT_CLEAN_FACTOR = 0.9f;
   /** Default max size. */
-  private static final int DEFAULT_MAX_SIZE = 5 * 1024 * 1024;
+  private static final int DEFAULT_MAX_SIZE = 3 * 1024 * 1024;
   /** Cache map. */
   private final LinkedHashMap<String, CacheRecord> cacheMap;
 
