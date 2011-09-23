@@ -12,7 +12,7 @@ import android.graphics.Bitmap;
 public class SoftImageMemoryCache implements ImageMemoryCache {
 
   /** Cache map. */
-  private final ConcurrentHashMap<String, SoftReference<CacheRecord>> cacheMap;
+  private final ConcurrentHashMap<String, SoftReference<Bitmap>> cacheMap;
 
   /**
    * Constructor.
@@ -20,25 +20,25 @@ public class SoftImageMemoryCache implements ImageMemoryCache {
    */
   public SoftImageMemoryCache() {
     final int capacity = 50;
-    this.cacheMap = new ConcurrentHashMap<String, SoftReference<CacheRecord>>(capacity);
+    this.cacheMap = new ConcurrentHashMap<String, SoftReference<Bitmap>>(capacity);
   }
 
   @Override
   public void putElement(final String url, final Bitmap image) {
-    cacheMap.put(url, new SoftReference<CacheRecord>(new CacheRecord(image, url)));
+    cacheMap.put(url, new SoftReference<Bitmap>(image));
   }
 
   @Override
-  public CacheRecord getElement(final String url) {
-    final ConcurrentHashMap<String, SoftReference<CacheRecord>> cacheMap = this.cacheMap;
-    final SoftReference<CacheRecord> ref = cacheMap.get(url);
+  public Bitmap getElement(final String url) {
+    final ConcurrentHashMap<String, SoftReference<Bitmap>> cacheMap = this.cacheMap;
+    final SoftReference<Bitmap> ref = cacheMap.get(url);
     if (ref == null) { return null; }
-    final CacheRecord record = ref.get();
-    if (record == null) {
+    final Bitmap bitmap = ref.get();
+    if (bitmap == null) {
       cacheMap.remove(url);
       return null;
     }
-    return record;
+    return bitmap;
   }
 
   @Override
@@ -46,19 +46,18 @@ public class SoftImageMemoryCache implements ImageMemoryCache {
 
   @Override
   public void remove(final String url, final boolean recycle) {
-    final SoftReference<CacheRecord> ref = cacheMap.remove(url);
+    final SoftReference<Bitmap> ref = cacheMap.remove(url);
     if (ref == null || !recycle) { return; }
-    final CacheRecord record = ref.get();
-    if (record != null && record.bitmap != null) { record.bitmap.recycle(); }
+    final Bitmap bitmap = ref.get();
+    if (bitmap != null) { bitmap.recycle(); }
   }
 
   @Override
   public void clear(final boolean recycle) {
-    final ConcurrentHashMap<String, SoftReference<CacheRecord>> cacheMap = this.cacheMap;
+    final ConcurrentHashMap<String, SoftReference<Bitmap>> cacheMap = this.cacheMap;
     if (recycle) {
-      for (final SoftReference<CacheRecord> ref : cacheMap.values()) {
-        final CacheRecord record = ref.get();
-        final Bitmap map = record != null ? record.bitmap : null;
+      for (final SoftReference<Bitmap> ref : cacheMap.values()) {
+        final Bitmap map = ref.get();
         if (map != null) { map.recycle(); }
       }
     }

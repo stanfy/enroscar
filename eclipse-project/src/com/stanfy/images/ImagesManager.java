@@ -33,7 +33,6 @@ import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.images.ImageMemoryCache.CacheRecord;
 import com.stanfy.images.model.CachedImage;
 import com.stanfy.views.ImagesLoadListenerProvider;
 import com.stanfy.views.LoadableImageView;
@@ -289,12 +288,10 @@ public class ImagesManager<T extends CachedImage> {
    * @return cached drawable
    */
   protected Drawable getFromMemCache(final String url, final ImageHolder holder) {
-    final CacheRecord record = memCache.getElement(url);
-    if (record == null) { return null; }
     synchronized (holder) {
-      if (holder.currentUrl != null && !holder.currentUrl.equals(record.getImageUrl())) { return null; }
+      if (holder.currentUrl != null && !holder.currentUrl.equals(url)) { return null; }
     }
-    final Bitmap map = record.getBitmap();
+    final Bitmap map = memCache.getElement(url);
     final int gap = 5;
     return map != null && (
         holder.isDynamicSize()

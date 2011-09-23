@@ -54,7 +54,7 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
   @Override
   public void putElement(final String url, final Bitmap image) {
     synchronized (cacheMap) {
-      final CacheRecord record = new CacheRecord(image, url);
+      final CacheRecord record = new CacheRecord(image);
       cacheMap.put(url, record);
       currentSize += record.size;
       final float factor = 0.9f;
@@ -67,12 +67,12 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
    * @return image bitmap
    */
   @Override
-  public CacheRecord getElement(final String url) {
+  public Bitmap getElement(final String url) {
     final LinkedHashMap<String, CacheRecord> cacheMap = this.cacheMap;
     synchronized (cacheMap) {
       final CacheRecord r = cacheMap.remove(url);
       if (r != null) { cacheMap.put(url, r); }
-      return r;
+      return r.bitmap;
     }
   }
 
@@ -112,6 +112,19 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
   public String toString() {
     synchronized (cacheMap) {
       return cacheMap.toString();
+    }
+  }
+
+  /** Cache record. */
+  private static class CacheRecord {
+    /** A bitmap. */
+    final Bitmap bitmap;
+    /** Size. */
+    final int size;
+
+    public CacheRecord(final Bitmap bitmap) {
+      this.bitmap = bitmap;
+      this.size = bitmap.getRowBytes() * bitmap.getHeight();
     }
   }
 

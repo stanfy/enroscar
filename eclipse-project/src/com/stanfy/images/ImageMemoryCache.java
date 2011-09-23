@@ -18,33 +18,12 @@ public interface ImageMemoryCache {
    * @param url URL
    * @return image bitmap
    */
-  CacheRecord getElement(final String url);
+  Bitmap getElement(final String url);
 
   boolean contains(final String url);
 
   void remove(final String url, final boolean recycle);
 
   void clear(final boolean recycle);
-
-  /** Cache record. */
-  public static class CacheRecord {
-    /** A bitmap. */
-    final Bitmap bitmap;
-    /** Image URL. */
-    final String imageUrl;
-    /** Size. */
-    final int size;
-
-    public CacheRecord(final Bitmap bitmap, final String url) {
-      this.bitmap = bitmap;
-      this.imageUrl = url;
-      this.size = bitmap.getRowBytes() * bitmap.getHeight();
-    }
-
-    /** @return the bitmap */
-    public Bitmap getBitmap() { return bitmap; }
-    /** @return the imageUrl */
-    public String getImageUrl() { return imageUrl; }
-  }
 
 }
