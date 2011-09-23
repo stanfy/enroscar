@@ -62,7 +62,7 @@ public class ImagesManager<T extends CachedImage> {
   protected static final ColorDrawable EMPTY_DRAWABLE = new ColorDrawable(0xeeeeee);
 
   /** Memory cache. */
-  private final ImageMemoryCache memCache = new ImageMemoryCache();
+  private ImageMemoryCache memCache;
 
   /** Buffers pool. */
   private final BuffersPool buffersPool = new BuffersPool(new int[][] {
@@ -82,12 +82,12 @@ public class ImagesManager<T extends CachedImage> {
   private final ConcurrentHashMap<String, ImageLoader<T>> currentLoads = new ConcurrentHashMap<String, ImageLoader<T>>(Threading.imagesWorkersCount);
 
   /** Hidden constructor. */
-  protected ImagesManager(final Resources resources) {
+  public ImagesManager(final Resources resources) {
     this.resources = resources;
   }
 
-  /** @param size memory cache limit */
-  public void setMemCacheSize(final int size) { memCache.setMaxSize(size); }
+  /** @param memCache the memCache to set */
+  public void setMemCache(final ImageMemoryCache memCache) { this.memCache = memCache; }
 
   /** @param imagesFormat the imagesFormat to set */
   public void setImagesFormat(final Bitmap.Config imagesFormat) { this.imagesFormat = imagesFormat; }

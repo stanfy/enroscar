@@ -24,6 +24,15 @@ public class ImagesManagerContext<T extends CachedImage> {
   /** Images manager. */
   private ImagesManager<T> imagesManager;
 
+  /**
+   * Memcache modes.
+   * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+   */
+  public static enum MemCacheMode {
+    /** Variants of the cache. */
+    STATIC, SOFT;
+  }
+
   /** @param count count image loading of executors */
   public static void configureExecutorsCount(final int count) {
     Threading.configureImageTasksExecutor(count);
@@ -47,11 +56,15 @@ public class ImagesManagerContext<T extends CachedImage> {
   /** @param imagesManager the imagesManager to set */
   public void setImagesManager(final ImagesManager<T> imagesManager) { this.imagesManager = imagesManager; }
 
-  /** @param size memory cache limit */
-  public void setMemCacheSize(final int size) {
-    final ImagesManager<T> imagesManager = this.imagesManager;
-    if (imagesManager != null) {
-      imagesManager.setMemCacheSize(size);
+  /** @param mode memcache mode */
+  public void setMemCache(final MemCacheMode mode) {
+    switch (mode) {
+    case STATIC:
+      imagesManager.setMemCache(new StaticSizeImageMemoryCache());
+      break;
+    case SOFT: // fall through
+    default:
+      imagesManager.setMemCache(new SoftImageMemoryCache());
     }
   }
 
