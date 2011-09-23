@@ -13,12 +13,15 @@ import android.graphics.Bitmap;
 public class ImageMemoryCache {
 
   /** Max cache size. */
-  private static final int MAX_SIZE = 3 * 1024 * 1024;
+  private static final int DEFUALT_MAX_SIZE = 5 * 1024 * 1024;
   /** Cache map. */
   private final LinkedHashMap<String, CacheRecord> cacheMap;
 
   /** Current size. */
   private int currentSize = 0;
+
+  /** Maximum size. */
+  private int maxSize = DEFUALT_MAX_SIZE;
 
   /**
    * Constructor.
@@ -28,6 +31,9 @@ public class ImageMemoryCache {
     final int capacity = 50;
     this.cacheMap = new LinkedHashMap<String, CacheRecord>(capacity);
   }
+
+  /** @param maxSize the maxSize to set */
+  public void setMaxSize(final int maxSize) { this.maxSize = maxSize; }
 
   private void cleanup(final int requiredSize) {
     int currentSize = this.currentSize;
@@ -50,7 +56,7 @@ public class ImageMemoryCache {
       final CacheRecord record = new CacheRecord(image, url);
       cacheMap.put(url, record);
       currentSize += record.size;
-      if (currentSize > MAX_SIZE) { cleanup(MAX_SIZE / 2); }
+      if (currentSize > maxSize) { cleanup(maxSize / 2); }
     }
   }
 

@@ -47,6 +47,14 @@ public class ImagesManagerContext<T extends CachedImage> {
   /** @param imagesManager the imagesManager to set */
   public void setImagesManager(final ImagesManager<T> imagesManager) { this.imagesManager = imagesManager; }
 
+  /** @param size memory cache limit */
+  public void setMemCacheSize(final int size) {
+    final ImagesManager<T> imagesManager = this.imagesManager;
+    if (imagesManager != null) {
+      imagesManager.setMemCacheSize(size);
+    }
+  }
+
   public void ensureImages(final Context context, final List<T> images) {
     imagesManager.ensureImages(imagesDAO, downloader, context, images);
   }

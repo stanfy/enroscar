@@ -86,6 +86,9 @@ public class ImagesManager<T extends CachedImage> {
     this.resources = resources;
   }
 
+  /** @param size memory cache limit */
+  public void setMemCacheSize(final int size) { memCache.setMaxSize(size); }
+
   /** @param imagesFormat the imagesFormat to set */
   public void setImagesFormat(final Bitmap.Config imagesFormat) { this.imagesFormat = imagesFormat; }
 
