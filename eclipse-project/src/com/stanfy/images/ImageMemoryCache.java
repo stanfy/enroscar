@@ -56,7 +56,8 @@ public class ImageMemoryCache {
       final CacheRecord record = new CacheRecord(image, url);
       cacheMap.put(url, record);
       currentSize += record.size;
-      if (currentSize > maxSize) { cleanup(maxSize / 2); }
+      final float factor = 0.9f;
+      if (currentSize > maxSize) { cleanup((int)(maxSize * factor)); }
     }
   }
 
