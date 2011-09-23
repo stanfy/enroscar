@@ -117,7 +117,7 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
   @Override
   public String toString() {
     synchronized (cacheMap) {
-      return cacheMap.toString();
+      return currentSize + "/" + maxSize + ":" + cacheMap.size();
     }
   }
 
