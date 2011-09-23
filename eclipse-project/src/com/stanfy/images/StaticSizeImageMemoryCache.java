@@ -74,8 +74,11 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
     final LinkedHashMap<String, CacheRecord> cacheMap = this.cacheMap;
     synchronized (cacheMap) {
       final CacheRecord r = cacheMap.remove(url);
-      if (r != null) { cacheMap.put(url, r); }
-      return r.bitmap;
+      if (r != null) {
+        cacheMap.put(url, r);
+        return r.bitmap;
+      }
+      return null;
     }
   }
 
