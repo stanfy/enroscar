@@ -14,6 +14,8 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
 
   /** Default clean factor. */
   private static final float DEFAULT_CLEAN_FACTOR = 0.9f;
+  /** Default max size. */
+  private static final int DEFAULT_MAX_SIZE = 5 * 1024 * 1024;
   /** Cache map. */
   private final LinkedHashMap<String, CacheRecord> cacheMap;
 
@@ -21,7 +23,7 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
   private int currentSize = 0;
 
   /** Maximum size. */
-  private int maxSize;
+  private int maxSize = DEFAULT_MAX_SIZE;
   /** Clean factor. */
   private float cleanFactor = DEFAULT_CLEAN_FACTOR;
 
@@ -32,8 +34,6 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
   public StaticSizeImageMemoryCache() {
     final int capacity = 50;
     this.cacheMap = new LinkedHashMap<String, CacheRecord>(capacity);
-    final long maxMemory = Runtime.getRuntime().maxMemory();
-    maxSize = (int)(maxMemory / 3);
   }
 
   /** @param maxSize the maxSize to set */
