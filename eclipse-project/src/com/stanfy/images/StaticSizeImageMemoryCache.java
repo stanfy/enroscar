@@ -59,7 +59,8 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
   public void putElement(final String url, final Bitmap image) {
     synchronized (cacheMap) {
       final CacheRecord record = new CacheRecord(image);
-      cacheMap.put(url, record);
+      final CacheRecord prev = cacheMap.put(url, record);
+      if (prev != null) { currentSize -= prev.size; }
       currentSize += record.size;
       if (currentSize > maxSize) { cleanup((int)(maxSize * cleanFactor)); }
     }

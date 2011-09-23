@@ -292,12 +292,14 @@ public class ImagesManager<T extends CachedImage> {
       if (holder.currentUrl != null && !holder.currentUrl.equals(url)) { return null; }
     }
     final Bitmap map = memCache.getElement(url);
+    if (map == null) { return null; }
+    final BitmapDrawable result = new BitmapDrawable(holder.context.getResources(), map);
     final int gap = 5;
-    return map != null && (
-        holder.isDynamicSize()
-        || Math.abs(holder.getRequiredWidth() - map.getWidth()) < gap
-        || Math.abs(holder.getRequiredHeight() - map.getHeight()) < gap
-    ) ? new BitmapDrawable(holder.context.getResources(), map) : null;
+    return holder.isDynamicSize()
+        || holder.skipScaleBeforeCache()
+        || Math.abs(holder.getRequiredWidth() - result.getIntrinsicWidth()) < gap
+        || Math.abs(holder.getRequiredHeight() - result.getIntrinsicHeight()) < gap
+      ? result : null;
   }
 
   /**
