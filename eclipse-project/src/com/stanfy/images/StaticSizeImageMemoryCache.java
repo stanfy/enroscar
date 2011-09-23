@@ -12,8 +12,8 @@ import android.graphics.Bitmap;
  */
 public class StaticSizeImageMemoryCache implements ImageMemoryCache {
 
-  /** Max cache size. */
-  private static final int DEFUALT_MAX_SIZE = 5 * 1024 * 1024;
+  /** Default clean factor. */
+  private static final float DEFAULT_CLEAN_FACTOR = 0.9f;
   /** Cache map. */
   private final LinkedHashMap<String, CacheRecord> cacheMap;
 
@@ -21,7 +21,9 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
   private int currentSize = 0;
 
   /** Maximum size. */
-  private int maxSize = DEFUALT_MAX_SIZE;
+  private int maxSize;
+  /** Clean factor. */
+  private float cleanFactor = DEFAULT_CLEAN_FACTOR;
 
   /**
    * Constructor.
@@ -30,6 +32,8 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
   public StaticSizeImageMemoryCache() {
     final int capacity = 50;
     this.cacheMap = new LinkedHashMap<String, CacheRecord>(capacity);
+    final long maxMemory = Runtime.getRuntime().maxMemory();
+    maxSize = (int)(maxMemory / 3);
   }
 
   /** @param maxSize the maxSize to set */
@@ -57,8 +61,7 @@ public class StaticSizeImageMemoryCache implements ImageMemoryCache {
       final CacheRecord record = new CacheRecord(image);
       cacheMap.put(url, record);
       currentSize += record.size;
-      final float factor = 0.9f;
-      if (currentSize > maxSize) { cleanup((int)(maxSize * factor)); }
+      if (currentSize > maxSize) { cleanup((int)(maxSize * cleanFactor)); }
     }
   }
 
