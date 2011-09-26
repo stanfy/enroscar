@@ -3,6 +3,7 @@ package com.stanfy.images;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -407,7 +408,7 @@ public class ImagesManager<T extends CachedImage> {
   private InputStream prepareImageOptionsAndInput(final InputStream is, final BitmapFactory.Options options) {
     final BuffersPool bp = buffersPool;
     final int bCapacity = BuffersPool.DEFAULT_SIZE_FOR_IMAGES;
-    InputStream src = is;
+    InputStream src = new FlushedInputStream(is);
     if (!src.markSupported()) { src = new PoolableBufferedInputStream(src, bCapacity, bp); }
     final BitmapFactory.Options opts = options != null ? options : new BitmapFactory.Options();
     opts.inTempStorage = bp.get(bCapacity);
@@ -731,6 +732,35 @@ public class ImagesManager<T extends CachedImage> {
       return null;
     }
 
+  }
+
+  /**
+   * An InputStream that skips the exact number of bytes provided, unless it reaches EOF.
+   * See http://code.google.com/p/android/issues/detail?id=6066.
+   */
+  static class FlushedInputStream extends FilterInputStream {
+    public FlushedInputStream(final InputStream inputStream) {
+      super(inputStream);
+    }
+
+    @Override
+    public long skip(final long n) throws IOException {
+      long totalBytesSkipped = 0L;
+      final InputStream in = this.in;
+      while (totalBytesSkipped < n) {
+        long bytesSkipped = in.skip(n - totalBytesSkipped);
+        if (bytesSkipped == 0L) {
+          final int b = read();
+          if (b < 0) {
+            break;  // we reached EOF
+          } else {
+            bytesSkipped = 1; // we read one byte
+          }
+        }
+        totalBytesSkipped += bytesSkipped;
+      }
+      return totalBytesSkipped;
+    }
   }
 
   /**
