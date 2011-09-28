@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.view.View;
 
 /**
  * Scroll view that can save its position.
@@ -43,7 +44,7 @@ public class ScrollView extends android.widget.ScrollView {
   protected Parcelable onSaveInstanceState() {
     if (!frozeScrollPosition) { return super.onSaveInstanceState(); }
     final Parcelable parent = super.onSaveInstanceState();
-    return new SavedState(parent, getScrollX(), getScrollY());
+    return new SavedState(parent, (float)getScrollX() / getContentWidth(), (float)getScrollY() / getContentHeight());
   }
 
   @Override
@@ -53,8 +54,17 @@ public class ScrollView extends android.widget.ScrollView {
     super.onRestoreInstanceState(myState.getSuperState());
     post(new Runnable() {
       @Override
-      public void run() { scrollTo(myState.positionX, myState.positionY); }
+      public void run() {
+        scrollTo((int)(myState.positionX * getContentWidth()), (int)(myState.positionY * getContentHeight()));
+      }
     });
+  }
+
+  public int getContentWidth() { return getWidth(); }
+  public int getContentHeight() {
+    if (getChildCount() == 0) { return 0; }
+    final View child = getChildAt(0);
+    return child.getBottom() - child.getTop();
   }
 
   /**
@@ -72,9 +82,9 @@ public class ScrollView extends android.widget.ScrollView {
     };
 
     /** Saved values. */
-    final int positionX, positionY;
+    final float positionX, positionY;
 
-    SavedState(final Parcelable parent, final int positionX, final int positionY) {
+    SavedState(final Parcelable parent, final float positionX, final float positionY) {
       super(parent);
       this.positionX = positionX;
       this.positionY = positionY;
@@ -82,15 +92,15 @@ public class ScrollView extends android.widget.ScrollView {
 
     private SavedState(final Parcel in) {
       super(in);
-      positionX = in.readInt();
-      positionY = in.readInt();
+      positionX = in.readFloat();
+      positionY = in.readFloat();
     }
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
       super.writeToParcel(dest, flags);
-      dest.writeInt(positionX);
-      dest.writeInt(positionY);
+      dest.writeFloat(positionX);
+      dest.writeFloat(positionY);
     }
 
   }
