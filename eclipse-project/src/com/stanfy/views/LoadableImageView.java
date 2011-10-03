@@ -14,7 +14,7 @@ import com.stanfy.images.ImagesManagerContext;
  * Image view that can load a remote image.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class LoadableImageView extends ImageView implements ImagesLoadListenerProvider {
+public class LoadableImageView extends ImageView implements ImagesLoadListenerProvider, RemoteImageDensityProvider {
 
   /** Skip scaling before caching flag. */
   private boolean skipScaleBeforeCache;
@@ -27,6 +27,9 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
 
   /** Images load listener. */
   private ImagesLoadListener listener;
+
+  /** Source density. */
+  private int sourceDensity;
 
   /** Image URI. */
   private Uri loadImageUri;
@@ -55,8 +58,10 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     final boolean skipLoadIndicator = a.getBoolean(R.styleable.LoadableImageView_skipLoadingImage, false);
     final Drawable loadingImage = a.getDrawable(R.styleable.LoadableImageView_loadingImage);
     final int type = a.getInt(R.styleable.LoadableImageView_imageType, 0);
+    final int sourceDensity = a.getInt(R.styleable.LoadableTextView_sourceDensity, -1);
     a.recycle();
 
+    setSourceDensity(sourceDensity);
     setSkipScaleBeforeCache(skipCache);
     setSkipLoadingImage(skipLoadIndicator);
     if (loadingImage != null) {
@@ -96,9 +101,13 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     final Object tag = getTag();
     if (tag != null && tag instanceof ImageHolder) { ((ImageHolder) tag).touch(); }
   }
-  /** @return images load listener */
   @Override
   public ImagesLoadListener getImagesLoadListener() { return listener; }
+
+  /** @param sourceDensity the sourceDensity to set */
+  public void setSourceDensity(final int sourceDensity) { this.sourceDensity = sourceDensity; }
+  @Override
+  public int getSourceDensity() { return sourceDensity; }
 
   /** @param loadingImage the loadingImage to set */
   public void setLoadingImageDrawable(final Drawable loadingImage) {

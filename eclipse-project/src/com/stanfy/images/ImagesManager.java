@@ -393,6 +393,11 @@ public class ImagesManager<T extends CachedImage> {
     }
   }
 
+  protected void setupDensityAndFormat(final BitmapFactory.Options options, final int sourceDensity) {
+    options.inDensity = sourceDensity > 0 ? sourceDensity : this.sourceDensity;
+    options.inPreferredConfig = imagesFormat;
+  }
+
   protected Drawable readLocal(final T cachedImage, final Context context, final ImageHolder holder) throws IOException {
     final File file = new File(getImageDir(context), cachedImage.getPath());
     if (!file.exists()) {
@@ -401,21 +406,20 @@ public class ImagesManager<T extends CachedImage> {
     }
     final BitmapFactory.Options options = new BitmapFactory.Options();
     if (holder.useSampling() && !holder.isDynamicSize()) {
-      options.inSampleSize = resolveSampleFactor(new FileInputStream(file), holder.getRequiredWidth(), holder.getRequiredHeight());
+      options.inSampleSize = resolveSampleFactor(new FileInputStream(file), holder.getSourceDensity(), holder.getRequiredWidth(), holder.getRequiredHeight());
     }
-    final Drawable d = decodeStream(new FileInputStream(file), options);
+    final Drawable d = decodeStream(new FileInputStream(file), holder.getSourceDensity(), options);
     return d;
   }
 
-  private InputStream prepareImageOptionsAndInput(final InputStream is, final BitmapFactory.Options options) {
+  private InputStream prepareImageOptionsAndInput(final InputStream is, final int sourceDensity, final BitmapFactory.Options options) {
     final BuffersPool bp = buffersPool;
     final int bCapacity = BuffersPool.DEFAULT_SIZE_FOR_IMAGES;
     InputStream src = new FlushedInputStream(is);
     if (!src.markSupported()) { src = new PoolableBufferedInputStream(src, bCapacity, bp); }
     final BitmapFactory.Options opts = options != null ? options : new BitmapFactory.Options();
     opts.inTempStorage = bp.get(bCapacity);
-    opts.inPreferredConfig = imagesFormat;
-    opts.inDensity = sourceDensity;
+    setupDensityAndFormat(opts, sourceDensity);
     return src;
   }
 
@@ -434,10 +438,10 @@ public class ImagesManager<T extends CachedImage> {
     return 1 << result;
   }
 
-  protected int resolveSampleFactor(final InputStream is, final int width, final int height) throws IOException {
+  protected int resolveSampleFactor(final InputStream is, final int sourceDensity, final int width, final int height) throws IOException {
     final BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inJustDecodeBounds = true;
-    final InputStream src = prepareImageOptionsAndInput(is, opts);
+    final InputStream src = prepareImageOptionsAndInput(is, sourceDensity, opts);
     int result = 1;
     try {
       BitmapFactory.decodeResourceStream(null, null, src, null, opts);
@@ -459,9 +463,9 @@ public class ImagesManager<T extends CachedImage> {
     return result;
   }
 
-  protected Drawable decodeStream(final InputStream is, final BitmapFactory.Options options) throws IOException {
+  protected Drawable decodeStream(final InputStream is, final int sourceDensity, final BitmapFactory.Options options) throws IOException {
     final BitmapFactory.Options opts = options != null ? options : new BitmapFactory.Options();
-    final InputStream src = prepareImageOptionsAndInput(is, opts);
+    final InputStream src = prepareImageOptionsAndInput(is, sourceDensity, opts);
     try {
       final Bitmap bm = BitmapFactory.decodeResourceStream(null, null, src, null, opts);
       final Drawable res = bm != null ? new BitmapDrawable(resources, bm) : null;
@@ -838,6 +842,7 @@ public class ImagesManager<T extends CachedImage> {
     public boolean isDynamicSize() { return getRequiredWidth() <= 0 || getRequiredHeight() <= 0; }
     public Drawable getLoadingImage() { return null; }
     public int getImageType() { return 0; }
+    public int getSourceDensity() { return -1; }
     String getLoaderKey() {
       if (loaderKey == null) {
         loaderKey = currentUrl + "!" + getRequiredWidth() + "x" + getRequiredWidth();

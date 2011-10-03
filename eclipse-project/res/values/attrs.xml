@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   
+  <attr name="sourceDensity" format="integer">
+    <enum name="ldpi" value="120" />
+    <enum name="mdpi" value="160" />
+    <enum name="hdpi" value="240" />
+    <enum name="xhdpi" value="320" />
+  </attr>
+  
   <declare-styleable name="GridLayout">
     <attr name="numColumns" format="integer" />
     <attr name="numRows" format="integer" />
@@ -19,16 +26,12 @@
     <attr name="skipLoadingImage" format="boolean" />
     <attr name="loadingImage" format="reference" />
     <attr name="imageType" format="integer" />
+    <attr name="sourceDensity" />
   </declare-styleable>
 
   <declare-styleable name="LoadableComppoundButton">
     <attr name="android:src" />
-  </declare-styleable>
-
-  <declare-styleable name="FontPreference">
-    <attr name="testText" format="string" />
-    <attr name="fromSize" format="dimension" />
-    <attr name="toSize" format="dimension" />
+    <attr name="sourceDensity" />
   </declare-styleable>
 
   <declare-styleable name="LoadableTextView">
@@ -40,6 +43,7 @@
       <enum name="right" value="2" />
       <enum name="bottom" value="3" />
     </attr>
+    <attr name="sourceDensity" />
   </declare-styleable>
   
   <declare-styleable name="RelativeRadioGroup">
@@ -48,6 +52,12 @@
 
   <declare-styleable name="ScrollView">
     <attr name="frozeScrollPosition" format="boolean" />
+  </declare-styleable>
+
+  <declare-styleable name="FontPreference">
+    <attr name="testText" format="string" />
+    <attr name="fromSize" format="dimension" />
+    <attr name="toSize" format="dimension" />
   </declare-styleable>
 
 </resources>

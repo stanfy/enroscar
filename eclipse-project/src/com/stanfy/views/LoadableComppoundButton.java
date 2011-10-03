@@ -14,13 +14,16 @@ import com.stanfy.images.ImagesManagerContext;
  * Compound button that can have a drawable to be drawn and scaled on the center.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class LoadableComppoundButton extends CompoundButton {
+public class LoadableComppoundButton extends CompoundButton implements RemoteImageDensityProvider {
 
   /** Button resource. */
   private int buttonResource;
 
   /** Buttton drawable. */
   private Drawable buttonDrawable;
+
+  /** Source density. */
+  private int sourceDensity;
 
   /** Image URI. */
   private Uri imageUri;
@@ -41,14 +44,22 @@ public class LoadableComppoundButton extends CompoundButton {
 
     final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LoadableComppoundButton);
     final Drawable d = a.getDrawable(R.styleable.LoadableComppoundButton_android_src);
-    if (d != null) { setButtonDrawable(d); }
+    final int sourceDensity = a.getInt(R.styleable.LoadableComppoundButton_sourceDensity, -1);
     a.recycle();
+
+    setSourceDensity(sourceDensity);
+    if (d != null) { setButtonDrawable(d); }
   }
 
   /** @param imagesManagerContext the imagesManager context to set */
   public void setImagesManagerContext(final ImagesManagerContext<?> imagesManagerContext) {
     this.imagesManagerContext = imagesManagerContext;
   }
+
+  /** @param sourceDensity the sourceDensity to set */
+  public void setSourceDensity(final int sourceDensity) { this.sourceDensity = sourceDensity; }
+  @Override
+  public int getSourceDensity() { return sourceDensity; }
 
   @Override
   public void setButtonDrawable(final int resid) {

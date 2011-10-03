@@ -15,7 +15,7 @@ import com.stanfy.images.ImagesManagerContext;
  * @author Olexandr Tereshchuk - Stanfy (http://www.stanfy.com)
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class LoadableTextView extends TextView {
+public class LoadableTextView extends TextView implements RemoteImageDensityProvider {
 
   /** Image URI. */
   private Uri imageUri;
@@ -27,6 +27,9 @@ public class LoadableTextView extends TextView {
 
   /** Loadable drawable position. */
   private LoadableImagePosition loadableDrawablePosition;
+
+  /** Source density. */
+  private int sourceDensity;
 
   /**
    * Loadable drawable positions.
@@ -56,8 +59,10 @@ public class LoadableTextView extends TextView {
     setLoadableDrawableWidth(a.getDimensionPixelSize(R.styleable.LoadableTextView_loadableDrawableWidth, -1));
     setLoadableDrawableHeight(a.getDimensionPixelSize(R.styleable.LoadableTextView_loadableDrawableHeight, -1));
     final int pos = a.getInt(R.styleable.LoadableTextView_loadableDrawablePosition, 0);
+    final int sourceDensity = a.getInt(R.styleable.LoadableTextView_sourceDensity, -1);
     a.recycle();
 
+    setSourceDensity(sourceDensity);
     setLoadableDrawablePosition(LoadableImagePosition.values()[pos]);
     if (loadableDrawablePosition != LoadableImagePosition.LEFT) { // reset drawables
       final Drawable[] drawables = getCompoundDrawables();
@@ -69,6 +74,11 @@ public class LoadableTextView extends TextView {
   public void setImagesManagerContext(final ImagesManagerContext<?> imagesManagerContext) {
     this.imagesManagerContext = imagesManagerContext;
   }
+
+  /** @param sourceDensity the sourceDensity to set */
+  public void setSourceDensity(final int sourceDensity) { this.sourceDensity = sourceDensity; }
+  @Override
+  public int getSourceDensity() { return sourceDensity; }
 
   /** @param loadableDrawablePosition the loadableDrawablePosition to set */
   public void setLoadableDrawablePosition(final LoadableImagePosition loadableDrawablePosition) { this.loadableDrawablePosition = loadableDrawablePosition; }
