@@ -527,6 +527,7 @@ public class ImagesManager<T extends CachedImage> {
             imagesManager.setImage(imageHolder, resultDrawable, false);
             imageHolder.finish(url, resultDrawable);
           } else {
+            imageHolder.currentLoader = this;
             targets.add(imageHolder);
             if (mainTarget == null) { mainTarget = imageHolder; }
           }
@@ -808,8 +809,8 @@ public class ImagesManager<T extends CachedImage> {
     }
     final void cancelLoader() {
       final String url = currentUrl;
+      if (DEBUG) { Log.d(TAG, "Cancel " + url); }
       if (url != null) {
-        if (DEBUG) { Log.d(TAG, "Cancel " + url); }
         final ImageLoader<?> loader = this.currentLoader;
         if (loader != null) { loader.removeTarget(this); }
       }
