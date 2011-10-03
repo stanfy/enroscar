@@ -213,9 +213,10 @@ public class ImagesManager<T extends CachedImage> {
       return;
     }
 
+    imageHolder.cancelLoader();
+
     final Drawable memCached = getFromMemCache(url, imageHolder);
     if (memCached != null) {
-      imageHolder.cancelLoader();
       imageHolder.start(null, url);
       setImage(imageHolder, memCached, false);
       imageHolder.finish(url, memCached);
