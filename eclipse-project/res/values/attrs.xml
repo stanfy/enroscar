@@ -32,8 +32,14 @@
   </declare-styleable>
 
   <declare-styleable name="LoadableTextView">
-    <attr name="drawableLeftWidth" format="dimension" />
-    <attr name="drawableLeftHeight" format="dimension" />
+    <attr name="loadableDrawableWidth" format="dimension" />
+    <attr name="loadableDrawableHeight" format="dimension" />
+    <attr name="loadableDrawablePosition" format="integer">
+      <enum name="left" value="0" />
+      <enum name="top" value="1" />
+      <enum name="right" value="2" />
+      <enum name="bottom" value="3" />
+    </attr>
   </declare-styleable>
   
   <declare-styleable name="RelativeRadioGroup">

@@ -37,6 +37,7 @@ import com.stanfy.DebugFlags;
 import com.stanfy.images.model.CachedImage;
 import com.stanfy.views.ImagesLoadListenerProvider;
 import com.stanfy.views.LoadableImageView;
+import com.stanfy.views.LoadableTextView;
 import com.stanfy.views.utils.AppUtils;
 
 /**
@@ -950,7 +951,13 @@ public class ImagesManager<T extends CachedImage> {
   static class TextViewHolder extends ViewImageHolder<TextView> {
     public TextViewHolder(final TextView view) { super(view); }
     @Override
-    public void setImage(final Drawable d) { view.setCompoundDrawablesWithIntrinsicBounds(d, null, null, null); }
+    public void setImage(final Drawable d) {
+      if (view instanceof LoadableTextView) {
+        ((LoadableTextView) view).setLoadedDrawable(d);
+      } else {
+        view.setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
+      }
+    }
     @Override
     public int getRequiredHeight() { return -1; }
     @Override
