@@ -38,6 +38,7 @@ import com.stanfy.images.model.CachedImage;
 import com.stanfy.views.ImagesLoadListenerProvider;
 import com.stanfy.views.LoadableImageView;
 import com.stanfy.views.LoadableTextView;
+import com.stanfy.views.RemoteImageDensityProvider;
 import com.stanfy.views.utils.AppUtils;
 
 /**
@@ -868,6 +869,13 @@ public class ImagesManager<T extends CachedImage> {
       super(view.getContext());
       this.view = view;
       touch();
+    }
+    @Override
+    public int getSourceDensity() {
+      if (view instanceof RemoteImageDensityProvider) {
+        return ((RemoteImageDensityProvider)view).getSourceDensity();
+      }
+      return super.getSourceDensity();
     }
     @Override
     public void touch() {
