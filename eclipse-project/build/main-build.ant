@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="" default="build" basedir=".." xmlns:stanfy="antlib:com.stanfy.anttasks">
+
+  <!-- Home. -->
+  <property name="build.home" value="${basedir}/build"/>
+
+  <!-- Main properties. -->
+  <property environment="env"/>
+  <property name="conf" value="dev" />
+  <loadproperties srcFile="${build.home}/${conf}.properties" />
+  <loadproperties srcFile="${build.home}/build.properties" />
+
+  <!-- Check for sdk.dir -->
+  <fail
+      message="sdk.dir is missing. Make sure to generate local.properties using 'android update project'"
+      unless="sdk.dir"
+      />
+
+  <!-- Keystore -->
+  <property name="keystore.path" value="${env.ANDROID_KEYSTORE}" />
+  <property name="key.store" value="${keystore.path}/${keystore.name}.keystore" />
+  <property file="${keystore.path}/${keystore.name}-access.properties" />
+
+	<!-- ============================= -->
+  <!--          Setup paths          -->
+  <!-- ============================= -->
+  <property name="src.java" value="${basedir}/src"/>
+  <property name="src.test" value="${basedir}/test"/>
+  <property name="src.resources" value="${basedir}/res"/>
+  <property name="src.assets" value="${basedir}/assets"/>
+
+  <property name="output.temp.relative" value="build/output/temp"/>
+
+	<property name="output.home" value="${build.home}/output"/>
+  <property name="output.temp" value="${output.home}/temp"/>
+  <property name="output.temp.resources" value="${output.temp}/res"/>
+  <property name="output.temp.android" value="${output.temp}/android"/>
+  <property name="output.temp.src" value="${output.temp}/src"/>
+  <property name="output.temp.src" value="${output.temp}/src"/>
+  <property name="output.temp.test" value="${output.temp}/test-classes"/>
+  <property name="output.release" value="${output.home}/release" />
+  <property name="release.path" value="${customer.name}/android" />
+  <property name="output.release.app" value="${output.release}/${release.path}" />
+  <property name="output.junit" value="${output.home}/junit"/>
+
+  <property name="lib.ant" value="${basedir}/libs-ext"/>
+  
+  <!-- Override resources dir to have a filter possibility, assets are not overriden. -->
+  <property name="resource.dir" value="${output.temp.relative}/res" />
+  <property name="source.dir" value="${output.temp.relative}/src" />
+  <property name="out.dir" value="${output.temp.relative}/android" />
+  <!-- ============================= -->
+
+  <!-- Project properties. -->
+  <loadproperties srcFile="${basedir}/project.properties" />
+
+	<!-- Files with flags. -->
+	<property name="files.flags" value="**/Defaults.java, **/ErrorCodes.java, **/DebugFlags.java, **/Constants.java" />
+
+  <!-- Properties -> filter. -->
+  <filterset id="filter.main" begintoken="{@" endtoken="}">
+    <filtersfile file="project.properties" />
+    <filtersfile file="${build.home}/build.properties" />
+    <filtersfile file="${build.home}/${conf}.properties" />
+  </filterset>
+  
+  <!-- Additional tasks: xml, stanfy. -->
+  <path id="antlibs.ext">
+    <fileset dir="${lib.ant}" includes="*.jar" />
+  </path>
+  <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="antlibs.ext" />
+  <taskdef uri="antlib:com.stanfy.anttasks" resource="com/stanfy/anttasks/antlib.xml" classpathref="antlibs.ext" />
+
+	<!-- Resolve application package -->
+	<xmltask source="AndroidManifest.xml">
+		<copy path="/manifest/@package" property="application.package" />
+	</xmltask>
+	
+  <!-- Import android build rules, it's a bit tricky. -->
+  <xmltask source="${sdk.dir}/tools/ant/build.xml" dest="${build.home}/android_rules.xml">
+    <attr path="/project" attr="name" value="android_rules"/>
+  </xmltask>
+  <!-- version-tag: custom -->
+  <import file="${build.home}/android_rules.xml" />
+  
+  <echo message="Cofiguration: ${conf}" />
+  
+	<!-- *************** Macros *************** -->
+	
+  <!--
+    macro: SVN Info
+    Generates the svn-info.xml file containing the information about the file as the svn entry.
+  -->
+  <macrodef name="svninfo">
+    <attribute name="file"/>
+    <sequential>
+      <property file="${repo.access.file}" />
+      <echo message="Generating SVN info... ${svn.user}"/>
+      <exec executable="svn" output="${output.temp}/svn-info.xml" failonerror="true">
+        <arg line="info @{file} --xml --username ${svn.user} --password ${svn.password}"/>
+      </exec>
+    </sequential>
+  </macrodef>
+
+  <!--
+    macro: revision
+    Obtains the last revision of the project. Saves it to the property with the specified name.
+  -->
+  <macrodef name="revision">
+    <attribute name="property"/>
+    <sequential>
+      <svninfo file="${svn.url}"/>
+      <xmltask source="${output.temp}/svn-info.xml">
+        <cut path="/info/entry/@revision" attrValue="true" property="@{property}"/>
+      </xmltask>
+    </sequential>
+  </macrodef>
+  
+	<!-- *************** Internal targets *************** -->
+	
+  <!-- Hooks -->
+  <target name="-package-resources" depends="-preprocess, android_rules.-package-resources" />
+  <target name="-pre-build" depends="-prepare-directories, -prepare-sources"/>
+  
+	<!-- Release or debug? -->
+  <target name="-run-release" if="make.release" depends="release" />
+  <target name="-run-debug" unless="make.release" depends="debug" />
+
+  <target name="-prepare-directories">
+    <mkdir dir="${output.temp.resources}"/>
+    <mkdir dir="${output.temp.src}"/>
+    <mkdir dir="${output.temp.android}"/>
+    <mkdir dir="${output.temp.test}"/>
+    <mkdir dir="${output.junit}"/>
+    
+    <copy todir="${output.temp.src}" overwrite="true">
+      <fileset dir="${src.java}" />
+    </copy>
+    <copy todir="${output.temp.resources}" overwrite="true">
+      <fileset dir="${src.resources}" />
+    </copy>
+  </target>
+
+  <target name="-prepare-sources">
+    <echo message="Prepare project constants, flags..."/>
+    <copy todir="${output.temp.src}" overwrite="true">
+      <fileset dir="${src.java}" includes="${files.flags}" />
+      <filterset refid="filter.main"/>
+    </copy>
+    <stanfy:setflags>
+      <fileset dir="${output.temp.src}" includes="${files.flags}" />
+    </stanfy:setflags>
+  </target>
+  
+	<!-- Before packaging resources... -->
+  <target name="-preprocess" depends="-prepare-release, -prepare-map-key" />
+
+  <target name="-prepare-release" if="make.release">
+    <echo>Removing debug attribute from AndroidManifest.xml</echo>
+    <replaceregexp file="AndroidManifest.xml" match="android:debuggable=&quot;.*?&quot;" replace="" />
+  </target>
+  
+  <target name="-prepare-map-key" if="google.map.key">
+    <echo>Set appropriate map key</echo>
+    <!-- Pattern: (<string\s+name="map_key"\s*>).+?(</string>) -->
+    <replaceregexp file="${resource.dir}/values/settings.xml" 
+        match="(&lt;string\s+name=&quot;map_key&quot;\s*&gt;).+?(&lt;/string&gt;)" 
+        replace="\1${google.map.key}\2" 
+        />
+  </target>
+
+   
+  <!-- Send Release Mail -->
+  <target name="-send-release-mail" if="release.mail.list">
+    <echo message="Send mail to ${release.mail.list}"/>
+    <mail mailhost="${smtp.host}" subject="${release.name}." tolist="${release.mail.list}">
+      <from address="build@stanfy.com.ua"/>
+      <replyto address="${smtp.reply}"/>
+      <message>
+        Release name: ${release.name}. Version: ${publish.version}.
+        Download link: ${http.base}/${release.path}/${publish.name}
+      </message>
+    	<!--
+      <attachments>
+        <fileset dir="${output.release.app}" includes="${publish.name}"/>
+      </attachments>  
+      -->
+    </mail>
+  </target>
+
+  <target name="-sync-customer" if="customer.sync.true">
+    <property name="customer.path" value="${scp.customer.dir}/${release.path}"/>
+    <echo>Sync customer directory ${customer.path}...</echo>
+    <sshexec host="${scp.host}" port="${scp.port}" password="${scp.password}" username="${scp.user}" command="rm ${customer.path}/*" failonerror="false" />
+    <scp todir="${scp.user}@${scp.host}:${customer.path}" password="${scp.password}" port="${scp.port}">
+      <fileset dir="${output.release}/${release.path}" />
+    </scp>
+  </target>
+
+	<!-- *************** Public targets *************** -->
+
+  <target name="clean" description="Clean output directories" depends="android_rules.clean">
+    <delete dir="${output.temp}"/>
+  </target>
+ 
+  <target name="build" depends="-run-release, -run-debug" description="--> make a ready for installation package">
+    <mkdir dir="${output.release}" />
+    <copy todir="${output.release}">
+      <fileset dir="${output.temp.android}" includes="*release*, *debug*" />
+    </copy>
+  </target>
+
+  <target name="test" depends="build" description="--> run JUnit tests">
+    <path id="test.classpath">
+      <fileset dir="${external.libs.absolute.dir}" includes="test/*.jar" />
+      <path refid="android.target.classpath"/>
+      <fileset dir="${external.libs.absolute.dir}" includes="*.jar" />
+      <pathelement path="${output.temp.android}/classes" />
+    </path>
+      
+    <javac target="1.5" debug="true" extdirs="" destdir="${output.temp.test}" srcdir="${src.test}"
+        bootclasspathref="android.target.classpath"
+        verbose="${verbose}" 
+        classpathref="test.classpath"
+        />
+    
+    <echo message="Testing..."/>
+    <junit haltonerror="true" haltonfailure="true" fork="true" showoutput="true" printsummary="true">
+      <formatter type="xml"/>
+      <classpath>
+        <path refid="test.classpath"/>
+        <pathelement location="${output.temp.test}" />
+      </classpath>
+      <batchtest todir="${output.junit}">
+        <fileset dir="${output.temp.test}">
+          <exclude name="**/*Abstract*.class"/>
+          <exclude name="**/*$*.class"/>
+          <exclude name="**/activity/**"/>
+          <include name="**/*Test*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <echo message="SUCCESS"/>
+  </target>
+  
+  <target name="publish" depends="build" description="--> publish the built application">
+    <tstamp>
+      <format property="publish.date" pattern="yyyy-MM-dd" />
+    </tstamp>
+    <xmltask source="AndroidManifest.xml">
+      <cut path="/manifest/@android:versionName" property="publish.version" />
+    </xmltask>
+    <revision property="revision.number"/>
+    <property name="publish.name" value="${ant.project.name}-${publish.version}-${publish.date}-r${revision.number}.apk" />
+    <echo message="Create APK ${publish.name}..." />
+    <mkdir dir="${output.release.app}"/>
+    <copy file="${output.release}/${ant.project.name}-release.apk" tofile="${output.release.app}/${publish.name}" />
+    
+    <property file="${repo.access.file}" />
+    <echo message="Sending release to the repository....."/>
+    <scp todir="${scp.user}@${scp.host}:${scp.release.dir}" password="${scp.password}" port="${scp.port}">
+      <fileset dir="${output.release}" includes="${release.path}/**"/>
+    </scp>
+    
+    <antcall target="-send-release-mail" />
+    
+    <condition property="customer.sync.true">
+      <equals arg1="${customer.sync}" arg2="true"/>
+    </condition>
+    <antcall target="-sync-customer"/>
+
+  </target>
+  
+  <target name="export" description="--> export application sources">
+  	<do-only-if-not-library elseText="export target should be called for main project">
+      <stanfy:resolvelib propertiesPrefix="lib.stviews" namePart="${application.library}" />
+      <!-- Build the library --> 
+      <ant antfile="${lib.stviews.path}/build/build.xml" inheritall="false" dir="${lib.stviews.path}" target="clean" />
+      <ant antfile="${lib.stviews.path}/build/build.xml" inheritall="false" dir="${lib.stviews.path}" />
+
+      <!-- Prepare directories -->
+      <mkdir dir="${output.release}/export/${ant.project.name}" />
+      <mkdir dir="${output.release}/export/${application.library}" />
+
+      <!-- Copy main sources, library resources -->
+      <copy todir="${output.release}/export/${ant.project.name}" overwrite="true">
+        <fileset dir="${basedir}" excludes="build/**,gen/**,bin/**,libs-ext/**,*check*style*" />
+      </copy>
+      <copy todir="${output.release}/export/${application.library}" overwrite="true">
+        <fileset dir="${lib.stviews.path}/build/output/release" />
+      </copy>
+
+      <!-- Fix default.properties in the project -->
+      <echo>${lib.stviews.name}</echo>
+      <replaceregexp 
+        file="${output.release}/export/${ant.project.name}/default.properties"
+        match="android\.library\.reference\.(\d+)=.+${lib.stviews.name}.*"
+        replace="android.library.reference.\1=../${application.library}"
+        byline="true"
+        />
+
+      <!-- Fix eclipse projects -->
+      <property name="export.libproject" value="${output.release}/export/${application.library}/.project"/>
+      <property name="export.mainclasspath" value="${output.release}/export/${ant.project.name}/.classpath"/>
+      <property name="export.mainproject" value="${output.release}/export/${ant.project.name}/.project"/>
+      <xmltask source="${export.libproject}" dest="${export.libproject}">
+        <replace path="/projectDescription/name/text()" withText="${application.library}" />
+      </xmltask>
+      <xmltask source="${export.mainproject}" dest="${export.mainproject}">
+        <remove path="/projectDescription/linkedResources[link/name='${lib.stviews.name}_src']" />
+      </xmltask>
+      <xmltask source="${export.mainclasspath}" dest="${export.mainclasspath}">
+        <remove path="/classpath/classpathentry[@path='${lib.stviews.name}_src']" />
+        <attr path="/classpath/classpathentry" attr="sourcepath" remove="true" />
+        <insert path="/classpath">
+        <![CDATA[<classpathentry kind="lib" path="/${application.library}/libs/${application.library}.jar" />]]>
+        </insert>
+      </xmltask>
+      <replaceregexp 
+        file="${export.mainclasspath}"
+        match="${lib.stviews.name}"
+        replace="${application.library}"
+        byline="true"
+        />
+      <zip destfile="${output.release}/${ant.project.name}-export.zip">
+        <fileset dir="${output.release}/export" />
+      </zip>
+  	</do-only-if-not-library>
+  </target>
+
+	<target name="help" description="--> help info">
+		<echo>
+			Android build for Stanfy.
+		</echo>
+	</target>
+	
+</project>
