@@ -197,6 +197,12 @@
     </scp>
   </target>
 
+	<target name="-copy-jar-to-release" if="android.library">
+    <copy todir="${output.release}">
+      <fileset dir="${output.temp.android}" includes="classes.jar" />
+    </copy>
+	</target>
+	
 	<!-- *************** Public targets *************** -->
 
   <target name="clean" description="Clean output directories" depends="android_rules.clean">
@@ -208,6 +214,7 @@
     <copy todir="${output.release}">
       <fileset dir="${output.temp.android}" includes="*release*, *debug*" />
     </copy>
+  	<antcall target="-copy-jar-to-release" />
   </target>
 
   <target name="test" depends="build" description="--> run JUnit tests">
