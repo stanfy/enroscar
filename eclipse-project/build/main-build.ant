@@ -4,10 +4,19 @@
   <!-- Home. -->
   <property name="build.home" value="${basedir}/build"/>
 
-  <!-- Main properties. -->
+  <!-- Project properties. -->
+  <loadproperties srcFile="${basedir}/project.properties" />
+
+	<!-- Main properties. -->
   <property environment="env"/>
   <property name="conf" value="dev" />
-  <loadproperties srcFile="${build.home}/${conf}.properties" />
+	<condition property="realConf" value="${libs.conf}" else="${conf}">
+		<and>
+			<isset property="libs.conf" />
+      <equals arg1="${android.library}" arg2="true" />
+	  </and>
+	</condition>
+  <loadproperties srcFile="${build.home}/${realConf}.properties" />
   <loadproperties srcFile="${build.home}/build.properties" />
 
   <!-- Check for sdk.dir -->
@@ -51,9 +60,6 @@
   <property name="out.dir" value="${output.temp.relative}/android" />
   <!-- ============================= -->
 
-  <!-- Project properties. -->
-  <loadproperties srcFile="${basedir}/project.properties" />
-
 	<!-- Files with flags. -->
 	<property name="files.flags" value="**/Defaults.java, **/ErrorCodes.java, **/DebugFlags.java, **/Constants.java" />
 
@@ -61,7 +67,7 @@
   <filterset id="filter.main" begintoken="{@" endtoken="}">
     <filtersfile file="project.properties" />
     <filtersfile file="${build.home}/build.properties" />
-    <filtersfile file="${build.home}/${conf}.properties" />
+    <filtersfile file="${build.home}/${realConf}.properties" />
   </filterset>
   
   <!-- Additional tasks: xml, stanfy. -->
@@ -83,7 +89,7 @@
   <!-- version-tag: custom -->
   <import file="${build.home}/android_rules.xml" />
   
-  <echo message="Cofiguration: ${conf}" />
+  <echo message="Cofiguration: ${realConf}" />
   
 	<!-- *************** Macros *************** -->
 	
