@@ -8,5 +8,6 @@
 	<classpathentry kind="src" path="stviews_dev_src"/>
 	<classpathentry kind="lib" path="/stviews_dev/libs/FlurryAgent.jar"/>
 	<classpathentry kind="lib" path="/stviews_dev/libs/gson-1.6.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
