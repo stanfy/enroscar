@@ -198,9 +198,9 @@
   </target>
 
 	<target name="-copy-jar-to-release" if="android.library">
-    <copy todir="${output.release}">
-      <fileset dir="${output.temp.android}" includes="classes.jar" />
-    </copy>
+    <fileset id="lib.jar.path" dir="${output.temp.android}" includes="classes.jar" />
+    <copy todir="${output.release}"><fileset refid="lib.jar.path"/></copy>
+    <copy todir="bin"><fileset refid="lib.jar.path"/></copy>
 	</target>
 	
 	<!-- *************** Public targets *************** -->
