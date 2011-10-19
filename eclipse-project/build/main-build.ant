@@ -121,6 +121,7 @@
   <!-- Hooks -->
   <target name="-package-resources" depends="-preprocess, android_rules.-package-resources" />
   <target name="-pre-build" depends="-prepare-directories, -prepare-sources"/>
+	<target name="-post-compile" depends="-copy-jar-to-bin" />
   
 	<!-- Release or debug? -->
   <target name="-run-release" if="make.release" depends="release" />
@@ -197,10 +198,13 @@
     </scp>
   </target>
 
+  <target name="-copy-jar-to-bin" if="android.library">
+    <fileset id="lib.jar.path" dir="${output.temp.android}" includes="classes.jar" />
+    <copy todir="bin"><fileset refid="lib.jar.path"/></copy>
+  </target>
 	<target name="-copy-jar-to-release" if="android.library">
     <fileset id="lib.jar.path" dir="${output.temp.android}" includes="classes.jar" />
     <copy todir="${output.release}"><fileset refid="lib.jar.path"/></copy>
-    <copy todir="bin"><fileset refid="lib.jar.path"/></copy>
 	</target>
 	
 	<!-- *************** Public targets *************** -->
