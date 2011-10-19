@@ -7,17 +7,21 @@
   <!-- Project properties. -->
   <loadproperties srcFile="${basedir}/project.properties" />
 
-	<!-- Main properties. -->
+  <!-- Main properties. -->
   <property environment="env"/>
   <property name="conf" value="dev" />
-	<condition property="realConf" value="${libs.conf}" else="${conf}">
-		<and>
-			<isset property="libs.conf" />
+  <condition property="realConf" value="${libs.conf}" else="${conf}">
+    <and>
+    	<isset property="libs.conf"/>
       <equals arg1="${android.library}" arg2="true" />
-	  </and>
-	</condition>
+    </and>
+  </condition>
   <loadproperties srcFile="${build.home}/${realConf}.properties" />
   <loadproperties srcFile="${build.home}/build.properties" />
+  <condition property="libs.conf" value="${realConf}">
+  	<not><isset property="libs.conf" /></not>
+  </condition>
+  <echo message="Cofiguration: conf=${conf}, real=${realConf}, libs=${libs.conf}" />
 
   <!-- Check for sdk.dir -->
   <fail
@@ -84,12 +88,13 @@
 	
   <!-- Import android build rules, it's a bit tricky. -->
   <xmltask source="${sdk.dir}/tools/ant/build.xml" dest="${build.home}/android_rules.xml">
-    <attr path="/project" attr="name" value="android_rules"/>
+    <attr path="/project" attr="name" value="android_rules" />
+  	<insert path="/project/target[@name='-build-setup']/if/then/subant[@buildpathref='project.libraries']">
+  		<![CDATA[<property name="libs.conf" value="${libs.conf}"/>]]>
+  	</insert>
   </xmltask>
   <!-- version-tag: custom -->
   <import file="${build.home}/android_rules.xml" />
-  
-  <echo message="Cofiguration: ${realConf}" />
   
 	<!-- *************** Macros *************** -->
 	
