@@ -283,28 +283,34 @@
   </target>
   
   <target name="export" description="--> export application sources">
-  	<do-only-if-not-library elseText="export target should be called for main project">
+    <do-only-if-not-library elseText="export target should be called for main project">
+      <delete dir="${output.release}/export" failonerror="false"/>
       <stanfy:resolvelib propertiesPrefix="lib.stviews" namePart="${application.library}" />
       <!-- Build the library --> 
-      <ant antfile="${lib.stviews.path}/build/build.xml" inheritall="false" dir="${lib.stviews.path}" target="clean" />
-      <ant antfile="${lib.stviews.path}/build/build.xml" inheritall="false" dir="${lib.stviews.path}" />
+      <ant antfile="${lib.stviews.path}/build.xml" inheritall="false" dir="${lib.stviews.path}" target="clean" />
+      <ant antfile="${lib.stviews.path}/build.xml" inheritall="false" dir="${lib.stviews.path}" target="build" />
+      <echo message="Library is built"/>
 
       <!-- Prepare directories -->
       <mkdir dir="${output.release}/export/${ant.project.name}" />
       <mkdir dir="${output.release}/export/${application.library}" />
 
       <!-- Copy main sources, library resources -->
+      <property name="export.exclude" value="build/**,gen/**,bin/**,libs-ext/**,*check*style*,build.xml"/>
       <copy todir="${output.release}/export/${ant.project.name}" overwrite="true">
-        <fileset dir="${basedir}" excludes="build/**,gen/**,bin/**,libs-ext/**,*check*style*" />
+        <fileset dir="${basedir}" excludes="${export.exclude}" />
       </copy>
       <copy todir="${output.release}/export/${application.library}" overwrite="true">
-        <fileset dir="${lib.stviews.path}/build/output/release" />
+        <fileset dir="${lib.stviews.path}" excludes="${export.exclude},src/**" />
       </copy>
+      <mkdir dir="${output.release}/export/${application.library}/libs" />
+      <copy tofile="${output.release}/export/${application.library}/libs/${application.library}.jar" overwrite="true" 
+            file="${lib.stviews.path}/bin/classes.jar" />
 
-      <!-- Fix default.properties in the project -->
+      <!-- Fix project.properties in the project -->
       <echo>${lib.stviews.name}</echo>
       <replaceregexp 
-        file="${output.release}/export/${ant.project.name}/default.properties"
+        file="${output.release}/export/${ant.project.name}/project.properties"
         match="android\.library\.reference\.(\d+)=.+${lib.stviews.name}.*"
         replace="android.library.reference.\1=../${application.library}"
         byline="true"
@@ -317,11 +323,7 @@
       <xmltask source="${export.libproject}" dest="${export.libproject}">
         <replace path="/projectDescription/name/text()" withText="${application.library}" />
       </xmltask>
-      <xmltask source="${export.mainproject}" dest="${export.mainproject}">
-        <remove path="/projectDescription/linkedResources[link/name='${lib.stviews.name}_src']" />
-      </xmltask>
       <xmltask source="${export.mainclasspath}" dest="${export.mainclasspath}">
-        <remove path="/classpath/classpathentry[@path='${lib.stviews.name}_src']" />
         <attr path="/classpath/classpathentry" attr="sourcepath" remove="true" />
         <insert path="/classpath">
         <![CDATA[<classpathentry kind="lib" path="/${application.library}/libs/${application.library}.jar" />]]>
@@ -336,7 +338,7 @@
       <zip destfile="${output.release}/${ant.project.name}-export.zip">
         <fileset dir="${output.release}/export" />
       </zip>
-  	</do-only-if-not-library>
+    </do-only-if-not-library>
   </target>
 
 	<target name="help" description="--> help info">
