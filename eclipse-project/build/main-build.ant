@@ -227,6 +227,8 @@
 
   <target name="clean" description="Clean output directories" depends="android_rules.clean">
     <delete dir="${output.temp}"/>
+    <delete dir="${output.release}"/>
+    <delete dir="${output.junit}"/>
   </target>
  
   <target name="build" depends="-run-release, -run-debug" description="--> make a ready for installation package">
