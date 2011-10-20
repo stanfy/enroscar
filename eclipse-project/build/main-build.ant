@@ -55,6 +55,7 @@
   <property name="release.path" value="${customer.name}/android" />
   <property name="output.release.app" value="${output.release}/${release.path}" />
   <property name="output.junit" value="${output.home}/junit"/>
+  <property name="output.proguard.mapping" value="${output.temp.android}/proguard/mapping.txt"/>
 
   <property name="lib.ant" value="${basedir}/libs-ext"/>
   
@@ -218,7 +219,11 @@
     <copy todir="${output.release}"><fileset refid="lib.jar.path"/></copy>
 	</target>
 	
-	<!-- *************** Public targets *************** -->
+  <target name="-grab-proguard-mapping" if="proguard.config">
+    <copy tofile="${output.release}/${ant.project.name}-mapping.txt" file="${output.proguard.mapping}"/>
+  </target>
+
+  <!-- *************** Public targets *************** -->
 
   <target name="clean" description="Clean output directories" depends="android_rules.clean">
     <delete dir="${output.temp}"/>
@@ -230,6 +235,7 @@
       <fileset dir="${output.temp.android}" includes="*release*, *debug*" />
     </copy>
   	<antcall target="-copy-jar-to-release" />
+    <antcall target="-grab-proguard-mapping" />
   </target>
 
   <target name="test" depends="build" description="--> run JUnit tests">
@@ -274,9 +280,11 @@
     </xmltask>
     <revision property="revision.number"/>
     <property name="publish.name" value="${ant.project.name}-${publish.version}-${publish.date}-r${revision.number}.apk" />
+    <property name="publish.name.mapping" value="${publish.name}-mapping.txt" />
     <echo message="Create APK ${publish.name}..." />
     <mkdir dir="${output.release.app}"/>
     <copy file="${output.release}/${ant.project.name}-release.apk" tofile="${output.release.app}/${publish.name}" />
+    <copy file="${output.release}/${ant.project.name}-mapping.txt" tofile="${output.release.app}/${publish.name.mapping}" />
     
     <property file="${repo.access.file}" />
     <echo message="Sending release to the repository....."/>
