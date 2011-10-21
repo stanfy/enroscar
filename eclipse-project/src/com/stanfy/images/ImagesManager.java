@@ -177,7 +177,7 @@ public class ImagesManager<T extends CachedImage> {
    * @param holder image holder instance
    */
   public void cancelImageLoading(final ImageHolder holder) {
-    holder.cancelLoader();
+    holder.performCancellingLoader();
   }
 
   protected ImageHolder createImageHolder(final View view) {
@@ -214,13 +214,13 @@ public class ImagesManager<T extends CachedImage> {
       return;
     }
 
-    imageHolder.cancelLoader();
+    imageHolder.performCancellingLoader();
 
     final Drawable memCached = getFromMemCache(url, imageHolder);
     if (memCached != null) {
-      imageHolder.start(null, url);
+      imageHolder.onStart(null, url);
       setImage(imageHolder, memCached, false);
-      imageHolder.finish(url, memCached);
+      imageHolder.onFinish(url, memCached);
       return;
     }
 
@@ -527,10 +527,10 @@ public class ImagesManager<T extends CachedImage> {
       if (!future.isDone()) {
         // normal case
         synchronized (this) {
-          if (started) { imageHolder.start(this, url); }
+          if (started) { imageHolder.onStart(this, url); }
           if (resultResolved) {
             imagesManager.setImage(imageHolder, resultDrawable, false);
-            imageHolder.finish(url, resultDrawable);
+            imageHolder.onFinish(url, resultDrawable);
           } else {
             imageHolder.currentLoader = this;
             targets.add(imageHolder);
@@ -545,7 +545,7 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     public void removeTarget(final ImageHolder imageHolder) {
-      imageHolder.cancel(url);
+      imageHolder.onCancel(url);
       synchronized (this) {
         targets.remove(imageHolder);
         if (targets.isEmpty()) { future.cancel(true); }
@@ -649,7 +649,7 @@ public class ImagesManager<T extends CachedImage> {
         final int count = targets.size();
         final String url = this.url;
         for (int i = 0; i < count; i++) {
-          targets.get(i).start(this, url);
+          targets.get(i).onStart(this, url);
         }
         started = true;
       }
@@ -660,7 +660,7 @@ public class ImagesManager<T extends CachedImage> {
       final int count = targets.size();
       final Drawable d = this.resultDrawable;
       for (int i = 0; i < count; i++) {
-        targets.get(i).finish(url, d);
+        targets.get(i).onFinish(url, d);
       }
     }
 
@@ -669,7 +669,7 @@ public class ImagesManager<T extends CachedImage> {
       final int count = targets.size();
       final String url = this.url;
       for (int i = 0; i < count; i++) {
-        targets.get(i).cancel(url);
+        targets.get(i).onCancel(url);
       }
     }
 
@@ -678,7 +678,7 @@ public class ImagesManager<T extends CachedImage> {
       final int count = targets.size();
       final String url = this.url;
       for (int i = 0; i < count; i++) {
-        targets.get(i).error(url, e);
+        targets.get(i).onError(url, e);
       }
     }
 
@@ -812,7 +812,7 @@ public class ImagesManager<T extends CachedImage> {
     public void destroy() {
       context = null;
     }
-    final void cancelLoader() {
+    final void performCancellingLoader() {
       final String url = currentUrl;
       if (DEBUG) { Log.d(TAG, "Cancel " + url); }
       if (url != null) {
@@ -820,21 +820,23 @@ public class ImagesManager<T extends CachedImage> {
         if (loader != null) { loader.removeTarget(this); }
       }
     }
-    final void start(final ImageLoader<?> loader, final String url) {
+
+    final void onStart(final ImageLoader<?> loader, final String url) {
       this.currentLoader = loader;
       if (listener != null) { listener.onLoadStart(this, url); }
     }
-    final void finish(final String url, final Drawable drawable) {
+    final void onFinish(final String url, final Drawable drawable) {
       this.currentLoader = null;
       if (listener != null) { listener.onLoadFinished(this, url, drawable); }
     }
-    final void error(final String url, final Throwable exception) {
+    final void onError(final String url, final Throwable exception) {
       this.currentLoader = null;
       if (listener != null) { listener.onLoadError(this, url, exception); }
     }
-    final void cancel(final String url) {
+    final void onCancel(final String url) {
       this.currentLoader = null;
       if (listener != null) { listener.onLoadCancel(this, url); }
+      this.currentUrl = null;
     }
 
     /* parameters */
