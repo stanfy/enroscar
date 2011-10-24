@@ -286,7 +286,7 @@
     <echo message="Create APK ${publish.name}..." />
     <mkdir dir="${output.release.app}"/>
     <copy file="${output.release}/${ant.project.name}-release.apk" tofile="${output.release.app}/${publish.name}" />
-    <copy file="${output.release}/${ant.project.name}-mapping.txt" tofile="${output.release.app}/${publish.name.mapping}" />
+    <copy file="${output.release}/${ant.project.name}-mapping.txt" tofile="${output.release.app}/${publish.name.mapping}" failonerror="false" />
     
     <property file="${repo.access.file}" />
     <echo message="Sending release to the repository....."/>
