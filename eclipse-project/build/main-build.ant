@@ -43,6 +43,7 @@
   <property name="src.assets" value="${basedir}/assets"/>
 
   <property name="output.temp.relative" value="build/output/temp"/>
+  <property name="output.publish.name.prefix" value="" />
 
 	<property name="output.home" value="${build.home}/output"/>
   <property name="output.temp" value="${output.home}/temp"/>
@@ -52,7 +53,7 @@
   <property name="output.temp.src" value="${output.temp}/src"/>
   <property name="output.temp.test" value="${output.temp}/test-classes"/>
   <property name="output.release" value="${output.home}/release" />
-  <property name="release.path" value="${customer.name}/android" />
+  <property name="release.path" value="${customer.name}/android${output.publish.name.prefix}" />
   <property name="output.release.app" value="${output.release}/${release.path}" />
   <property name="output.junit" value="${output.home}/junit"/>
   <property name="output.proguard.mapping" value="${output.temp.android}/proguard/mapping.txt"/>
@@ -281,7 +282,7 @@
       <cut path="/manifest/@android:versionName" property="publish.version" />
     </xmltask>
     <revision property="revision.number"/>
-    <property name="publish.name" value="${ant.project.name}-${publish.version}-${publish.date}-r${revision.number}.apk" />
+    <property name="publish.name" value="${ant.project.name}-${publish.version}-${publish.date}-r${revision.number}${output.publish.name.prefix}.apk" />
     <property name="publish.name.mapping" value="${publish.name}-mapping.txt" />
     <echo message="Create APK ${publish.name}..." />
     <mkdir dir="${output.release.app}"/>
