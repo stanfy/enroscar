@@ -379,6 +379,7 @@ public class ImagesManager<T extends CachedImage> {
       out.close();
       buffersPool.release(buffer);
     }
+    downloader.finish(image.getUrl());
 
     image.setLoaded(true);
     final long time = System.currentTimeMillis();
