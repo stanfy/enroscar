@@ -62,6 +62,7 @@
   
   <!-- Override resources dir to have a filter possibility, assets are not overriden. -->
   <property name="resource.dir" value="${output.temp.relative}/res" />
+  <property name="resource.absolute.dir" value="${basedir}/${resource.dir}" />
   <property name="source.dir" value="${output.temp.relative}/src" />
   <property name="out.dir" value="${output.temp.relative}/android" />
   <!-- ============================= -->
