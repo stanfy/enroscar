@@ -225,9 +225,14 @@
     <copy tofile="${output.release}/${ant.project.name}-mapping.txt" file="${output.proguard.mapping}"/>
   </target>
 
+	<target name="-clean-libs">
+    <stanfy:resolvelib propertiesPrefix="lib.stviews" namePart="${application.library}" />
+    <subant antfile="${lib.stviews.path}/build.xml" dir="${lib.stviews.path}" target="clean" />
+	</target>
+	
   <!-- *************** Public targets *************** -->
 
-  <target name="clean" description="Clean output directories" depends="android_rules.clean">
+  <target name="clean" description="Clean output directories" depends="android_rules.clean, -clean-libs">
     <delete dir="${output.temp}"/>
     <delete dir="${output.release}"/>
     <delete dir="${output.junit}"/>
