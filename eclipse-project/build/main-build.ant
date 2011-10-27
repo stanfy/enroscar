@@ -225,7 +225,7 @@
     <copy tofile="${output.release}/${ant.project.name}-mapping.txt" file="${output.proguard.mapping}"/>
   </target>
 
-	<target name="-clean-libs">
+	<target name="-clean-libs" unless="android.library">
     <stanfy:resolvelib propertiesPrefix="lib.stviews" namePart="${application.library}" />
     <ant antfile="${lib.stviews.path}/build.xml" inheritall="false" dir="${lib.stviews.path}" target="clean" />
 	</target>
