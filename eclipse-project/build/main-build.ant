@@ -227,7 +227,7 @@
 
 	<target name="-clean-libs">
     <stanfy:resolvelib propertiesPrefix="lib.stviews" namePart="${application.library}" />
-    <subant antfile="${lib.stviews.path}/build.xml" dir="${lib.stviews.path}" target="clean" />
+    <ant antfile="${lib.stviews.path}/build.xml" inheritall="false" dir="${lib.stviews.path}" target="clean" />
 	</target>
 	
   <!-- *************** Public targets *************** -->
