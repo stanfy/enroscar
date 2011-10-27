@@ -231,6 +231,7 @@
     <delete dir="${output.temp}"/>
     <delete dir="${output.release}"/>
     <delete dir="${output.junit}"/>
+    <delete dir="bin" failonerror="false" />
   </target>
  
   <target name="build" depends="-run-release, -run-debug" description="--> make a ready for installation package">
