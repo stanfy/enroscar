@@ -12,14 +12,14 @@
   <property name="conf" value="dev" />
   <condition property="realConf" value="${libs.conf}" else="${conf}">
     <and>
-    	<isset property="libs.conf"/>
+      <isset property="libs.conf"/>
       <equals arg1="${android.library}" arg2="true" />
     </and>
   </condition>
   <loadproperties srcFile="${build.home}/${realConf}.properties" />
   <loadproperties srcFile="${build.home}/build.properties" />
   <condition property="libs.conf" value="${realConf}">
-  	<not><isset property="libs.conf" /></not>
+    <not><isset property="libs.conf" /></not>
   </condition>
   <echo message="Cofiguration: conf=${conf}, real=${realConf}, libs=${libs.conf}" />
 
@@ -34,7 +34,7 @@
   <property name="key.store" value="${keystore.path}/${keystore.name}.keystore" />
   <property file="${keystore.path}/${keystore.name}-access.properties" />
 
-	<!-- ============================= -->
+  <!-- ============================= -->
   <!--          Setup paths          -->
   <!-- ============================= -->
   <property name="src.java" value="${basedir}/src"/>
@@ -45,7 +45,7 @@
   <property name="output.temp.relative" value="build/output/temp"/>
   <property name="output.publish.name.prefix" value="" />
 
-	<property name="output.home" value="${build.home}/output"/>
+  <property name="output.home" value="${build.home}/output"/>
   <property name="output.temp" value="${output.home}/temp"/>
   <property name="output.temp.resources" value="${output.temp}/res"/>
   <property name="output.temp.android" value="${output.temp}/android"/>
@@ -58,9 +58,9 @@
   <property name="output.junit" value="${output.home}/junit"/>
   <property name="output.proguard.mapping" value="${output.temp.android}/proguard/mapping.txt"/>
 
-	<condition property="lib.ant" value="${build.library.path}/libs-ext" else="${basedir}/libs-ext">
-		<isset property="build.library.path"/>
-	</condition>
+  <condition property="lib.ant" value="${build.library.path}/libs-ext" else="${basedir}/libs-ext">
+    <isset property="build.library.path"/>
+  </condition>
   
   <!-- Override resources dir to have a filter possibility, assets are not overriden. -->
   <property name="resource.dir" value="${output.temp.relative}/res" />
@@ -69,8 +69,8 @@
   <property name="out.dir" value="${output.temp.relative}/android" />
   <!-- ============================= -->
 
-	<!-- Files with flags. -->
-	<property name="files.flags" value="**/Defaults.java, **/ErrorCodes.java, **/DebugFlags.java, **/Constants.java" />
+  <!-- Files with flags. -->
+  <property name="files.flags" value="**/Defaults.java, **/ErrorCodes.java, **/DebugFlags.java, **/Constants.java" />
 
   <!-- Properties -> filter. -->
   <filterset id="filter.main" begintoken="{@" endtoken="}">
@@ -86,23 +86,23 @@
   <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="antlibs.ext" />
   <taskdef uri="antlib:com.stanfy.anttasks" resource="com/stanfy/anttasks/antlib.xml" classpathref="antlibs.ext" />
 
-	<!-- Resolve application package -->
-	<xmltask source="AndroidManifest.xml">
-		<copy path="/manifest/@package" property="application.package" />
-	</xmltask>
-	
+  <!-- Resolve application package -->
+  <xmltask source="AndroidManifest.xml">
+    <copy path="/manifest/@package" property="application.package" />
+  </xmltask>
+  
   <!-- Import android build rules, it's a bit tricky. -->
   <xmltask source="${sdk.dir}/tools/ant/build.xml" dest="${build.home}/android_rules.xml">
     <attr path="/project" attr="name" value="android_rules" />
-  	<insert path="/project/target[@name='-build-setup']/if/then/subant[@buildpathref='project.libraries']">
-  		<![CDATA[<property name="libs.conf" value="${libs.conf}"/>]]>
-  	</insert>
+    <insert path="/project/target[@name='-build-setup']/if/then/subant[@buildpathref='project.libraries']">
+      <![CDATA[<property name="libs.conf" value="${libs.conf}"/>]]>
+    </insert>
   </xmltask>
   <!-- version-tag: custom -->
   <import file="${build.home}/android_rules.xml" />
   
-	<!-- *************** Macros *************** -->
-	
+  <!-- *************** Macros *************** -->
+  
   <!--
     macro: SVN Info
     Generates the svn-info.xml file containing the information about the file as the svn entry.
@@ -132,14 +132,14 @@
     </sequential>
   </macrodef>
   
-	<!-- *************** Internal targets *************** -->
-	
+  <!-- *************** Internal targets *************** -->
+  
   <!-- Hooks -->
   <target name="-package-resources" depends="-preprocess, android_rules.-package-resources" />
   <target name="-pre-build" depends="-prepare-directories, -prepare-sources"/>
-	<target name="-post-compile" depends="-copy-jar-to-bin" />
+  <target name="-post-compile" depends="-test, -copy-jar-to-bin" />
   
-	<!-- Release or debug? -->
+  <!-- Release or debug? -->
   <target name="-run-release" if="make.release" depends="release" />
   <target name="-run-debug" unless="make.release" depends="debug" />
 
@@ -169,7 +169,7 @@
     </stanfy:setflags>
   </target>
   
-	<!-- Before packaging resources... -->
+  <!-- Before packaging resources... -->
   <target name="-preprocess" depends="-prepare-release, -prepare-map-key" />
 
   <target name="-prepare-release" if="make.release">
@@ -197,7 +197,7 @@
         Release name: ${release.name}. Version: ${publish.version}.
         Download link: ${http.base}/${release.path}/${publish.name}
       </message>
-    	<!--
+      <!--
       <attachments>
         <fileset dir="${output.release.app}" includes="${publish.name}"/>
       </attachments>  
@@ -218,47 +218,35 @@
     <fileset id="lib.jar.path" dir="${output.temp.android}" includes="classes.jar" />
     <copy todir="bin"><fileset refid="lib.jar.path"/></copy>
   </target>
-	<target name="-copy-jar-to-release" if="android.library">
+  <target name="-copy-jar-to-release" if="android.library">
     <fileset id="lib.jar.path" dir="${output.temp.android}" includes="classes.jar" />
     <copy todir="${output.release}"><fileset refid="lib.jar.path"/></copy>
-	</target>
-	
+  </target>
+  
   <target name="-grab-proguard-mapping" if="proguard.config">
     <copy tofile="${output.release}/${ant.project.name}-mapping.txt" file="${output.proguard.mapping}"/>
   </target>
 
-	<target name="-clean-libs" unless="android.library">
+  <target name="-clean-libs" unless="android.library">
     <stanfy:resolvelib propertiesPrefix="lib.stviews" namePart="${application.library}" />
     <ant antfile="${lib.stviews.path}/build.xml" inheritall="false" dir="${lib.stviews.path}" target="clean" />
-	</target>
-	
-  <!-- *************** Public targets *************** -->
-
-  <target name="clean" description="Clean output directories" depends="android_rules.clean, -clean-libs">
-    <delete dir="${output.temp}"/>
-    <delete dir="${output.release}"/>
-    <delete dir="${output.junit}"/>
-    <delete dir="bin" failonerror="false" />
   </target>
- 
-  <target name="build" depends="-run-release, -run-debug" description="--> make a ready for installation package">
-    <mkdir dir="${output.release}" />
-    <copy todir="${output.release}">
-      <fileset dir="${output.temp.android}" includes="*release*, *debug*" />
-    </copy>
-  	<antcall target="-copy-jar-to-release" />
-    <antcall target="-grab-proguard-mapping" />
+  
+  <target name="-check-tests-available">
+    <available file="${src.test}" property="src.test.available" />
   </target>
 
-  <target name="test" depends="build" description="--> run JUnit tests">
+  <target name="-test" depends="-check-tests-available" if="src.test.available">
     <path id="test.classpath">
-      <fileset dir="${external.libs.absolute.dir}" includes="test/*.jar" />
+      <fileset dir="${jar.libs.absolute.dir}" includes="test/*.jar" />
       <path refid="android.target.classpath"/>
-      <fileset dir="${external.libs.absolute.dir}" includes="*.jar" />
+      <fileset dir="${jar.libs.absolute.dir}" includes="*.jar" />
       <pathelement path="${output.temp.android}/classes" />
     </path>
       
+    <echo message="Compiling tests..."/>
     <javac target="1.5" debug="true" extdirs="" destdir="${output.temp.test}" srcdir="${src.test}"
+        includeantruntime="false"
         bootclasspathref="android.target.classpath"
         verbose="${verbose}" 
         classpathref="test.classpath"
@@ -282,7 +270,25 @@
     </junit>
     <echo message="SUCCESS"/>
   </target>
-  
+
+  <!-- *************** Public targets *************** -->
+
+  <target name="clean" description="Clean output directories" depends="android_rules.clean, -clean-libs">
+    <delete dir="${output.temp}"/>
+    <delete dir="${output.release}"/>
+    <delete dir="${output.junit}"/>
+    <delete dir="bin" failonerror="false" />
+  </target>
+ 
+  <target name="build" depends="-run-release, -run-debug" description="--> make a ready for installation package">
+    <mkdir dir="${output.release}" />
+    <copy todir="${output.release}">
+      <fileset dir="${output.temp.android}" includes="*release*, *debug*" />
+    </copy>
+    <antcall target="-copy-jar-to-release" />
+    <antcall target="-grab-proguard-mapping" />
+  </target>
+
   <target name="publish" depends="build" description="--> publish the built application">
     <tstamp>
       <format property="publish.date" pattern="yyyy-MM-dd" />
@@ -372,10 +378,10 @@
     </do-only-if-not-library>
   </target>
 
-	<target name="help" description="--> help info">
-		<echo>
-			Android build for Stanfy.
-		</echo>
-	</target>
-	
+  <target name="help" description="--> help info">
+    <echo>
+      Android build for Stanfy.
+    </echo>
+  </target>
+  
 </project>
