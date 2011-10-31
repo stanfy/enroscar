@@ -58,7 +58,9 @@
   <property name="output.junit" value="${output.home}/junit"/>
   <property name="output.proguard.mapping" value="${output.temp.android}/proguard/mapping.txt"/>
 
-  <property name="lib.ant" value="${basedir}/libs-ext"/>
+	<condition property="lib.ant" value="${build.library.path}/libs-ext" else="${basedir}/libs-ext">
+		<isset property="build.library.path"/>
+	</condition>
   
   <!-- Override resources dir to have a filter possibility, assets are not overriden. -->
   <property name="resource.dir" value="${output.temp.relative}/res" />
