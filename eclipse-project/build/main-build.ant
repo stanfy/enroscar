@@ -21,7 +21,7 @@
   <condition property="libs.conf" value="${realConf}">
     <not><isset property="libs.conf" /></not>
   </condition>
-  <echo message="Cofiguration: conf=${conf}, real=${realConf}, libs=${libs.conf}" />
+  <echo message="Configuration: conf=${conf}, real=${realConf}, libs=${libs.conf}" />
 
   <!-- Check for sdk.dir -->
   <fail
@@ -229,7 +229,9 @@
 
   <target name="-clean-libs" unless="android.library">
     <stanfy:resolvelib propertiesPrefix="lib.stviews" namePart="${application.library}" />
-    <ant antfile="${lib.stviews.path}/build.xml" inheritall="false" dir="${lib.stviews.path}" target="clean" />
+    <ant antfile="${lib.stviews.path}/build.xml" inheritall="false" dir="${lib.stviews.path}" target="clean">
+    	<property name="libs.conf" value="${libs.conf}"/>
+    </ant>
   </target>
   
   <target name="-check-tests-available">
