@@ -15,7 +15,7 @@ public final class DebugFlags {
   public static final boolean DEBUG_IO = false; // @debug.io@
 
   /** Images debug flag. */
-  public static final boolean DEBUG_IMAGES = false; // @debug.images@
+  public static final boolean DEBUG_IMAGES = true; // @debug.images@
 
   /** Debug services flag. */
   public static final boolean DEBUG_SERVICES = false; // @debug.services@

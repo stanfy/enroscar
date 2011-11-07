@@ -1,6 +1,6 @@
 <resources>
   
-  <string name="reset">Сбросить</string>
+  <string name="reset">Сброс</string>
 
   <string name="ok"><![CDATA[OK]]></string>
   <string name="cancel"><![CDATA[Отмена]]></string>
