@@ -55,7 +55,8 @@
   <property name="output.release" value="${output.home}/release" />
   <property name="release.path" value="${customer.name}/android${output.publish.name.prefix}" />
   <property name="output.release.app" value="${output.release}/${release.path}" />
-  <property name="output.junit" value="${output.home}/junit"/>
+  <property name="output.reports" value="${output.home}/reports"/>
+  <property name="output.junit" value="${output.reports}/junit"/>
   <property name="output.proguard.mapping" value="${output.temp.android}/proguard/mapping.txt"/>
 
   <condition property="lib.ant" value="${build.library.path}/libs-ext" else="${basedir}/libs-ext">
@@ -148,6 +149,7 @@
     <mkdir dir="${output.temp.src}"/>
     <mkdir dir="${output.temp.android}"/>
     <mkdir dir="${output.temp.test}"/>
+    <mkdir dir="${output.reports}"/>
     <mkdir dir="${output.junit}"/>
     
     <copy todir="${output.temp.src}" overwrite="true">
@@ -279,6 +281,7 @@
     <delete dir="${output.temp}"/>
     <delete dir="${output.release}"/>
     <delete dir="${output.junit}"/>
+    <delete dir="${output.reports}"/>
     <delete dir="bin" failonerror="false" />
   </target>
  
