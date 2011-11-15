@@ -55,7 +55,7 @@
     on the file names.
     <p/>
     <table>
-    	<tr style="background-color: #444444; color: #DDDDDD;"><td>ID</td><td>Files</td><td>Lines</td></tr>
+    	<tr style="background-color: #444444; color: #DDDDDD;"><td>ID</td><td>Files</td><td>People</td></td><td>Lines</td></tr>
     <xsl:for-each select="//duplication">
         <xsl:sort data-type="number" order="descending" select="@lines"/>
         <tr>
@@ -70,8 +70,8 @@
                       <xsl:value-of select="@path"/>
                     </a>
                   </td>
-                  <td> line <xsl:value-of select="@line"/></td>
-                  <td> 
+                  <td>line <xsl:value-of select="@line"/></td>
+                  <td style="padding-left: 10px;"> 
                     last commit from <i><xsl:value-of select="@committerLast"/></i><br/>
                     most commits from <i><xsl:value-of select="@committerMost"/></i>
                   </td>
