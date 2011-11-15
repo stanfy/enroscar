@@ -369,14 +369,14 @@
         	<contrib:if>
         		<isset property="codecheck.exclude" />
         		<then>
-              <contrib:for list="${codecheck.exclude}" delimiter="," param="pattern">
+              <contrib:foreach list="${codecheck.exclude}" delimiter="," param="pattern">
                 <contrib:if>
                 	<matches string="@{path}" pattern="@{pattern}" />
                 	<then>
                     <contrib:var name="blame.allowed" value="false" />
                 	</then>
               	</contrib:if>
-              </contrib:for>
+              </contrib:foreach>
         		</then>
         	</contrib:if>
         	
