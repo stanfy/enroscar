@@ -358,39 +358,60 @@
       ]]>
     </echo>
     <copy file="${output.reports}/cpd-report.xml" tofile="${output.reports}/cpd-report-blame.xml" overwrite="true" />
+  	
     <xmltask source="${output.reports}/cpd-report.xml">
       <call path="//duplication/file" buffer="duplicationFile">
         <param name="line" path="@line" />
         <param name="path" path="@path" />
         <param name="size" path="../@lines" />
         <actions>
-          <echo level="debug">Blame line @{line} in @{path}</echo>
-          <exec executable="svn" output="${output.temp}/blame">
-            <arg value="blame"/>
-            <arg value="@{path}"/>
-          	<arg value="--username"/>
-            <arg value="${svn.user}"/>
-            <arg value="--password"/>
-            <arg value="${svn.password}"/>
-          </exec>
-          <copy file="${output.temp}/awk" tofile="${output.temp}/awk-prepared" overwrite="true">
-            <filterset begintoken="@{" endtoken="}">
-              <filter token="line" value="@{line}"/>
-              <filter token="size" value="@{size}"/>
-            </filterset>
-          </copy>
-          <exec executable="awk" output="${output.temp}/blame-results">
-            <arg value="-f"/>
-            <arg value="${output.temp}/awk-prepared"/>
-            <arg value="${output.temp}/blame"/>
-          </exec>
-          <contrib:var file="${output.temp}/blame-results" />
-          <contrib:var name="blame.xmlpath" value="/pmd-cpd/duplication[@lines=@{size}]/file[@line=@{line} and @path='@{path}']" />
-          <echo level="debug" message="${blame.xmlpath}"/>
-          <xmltask source="${output.reports}/cpd-report-blame.xml" dest="${output.reports}/cpd-report-blame.xml">
-            <attr path="${blame.xmlpath}" attr="committerLast" value="${blame.last}"/>
-            <attr path="${blame.xmlpath}" attr="committerMost" value="${blame.most}"/>
-          </xmltask>
+        	<contrib:var name="blame.allowed" value="true" />
+        	<contrib:if>
+        		<isser property="codecheck.exclude" />
+        		<then>
+              <contrib:for list="${codecheck.exclude}" delimiter="," param="pattern">
+                <contrib:if>
+                	<matches string="@{path}" pattern="@{pattern}" />
+                	<then>
+                    <contrib:var name="blame.allowed" value="false" />
+                	</then>
+              	</contrib:if>
+              </contrib:for>
+        		</then>
+        	</contrib:if>
+        	
+          <contrib:if>
+          	<equals arg1="${blame.allowed}" arg2="true"/>
+          	<then>
+              <echo level="debug">Blame line @{line} in @{path}</echo>
+              <exec executable="svn" output="${output.temp}/blame">
+                <arg value="blame"/>
+                <arg value="@{path}"/>
+                <arg value="--username"/>
+                <arg value="${svn.user}"/>
+                <arg value="--password"/>
+                <arg value="${svn.password}"/>
+              </exec>
+              <copy file="${output.temp}/awk" tofile="${output.temp}/awk-prepared" overwrite="true">
+                <filterset begintoken="@{" endtoken="}">
+                  <filter token="line" value="@{line}"/>
+                  <filter token="size" value="@{size}"/>
+                </filterset>
+              </copy>
+              <exec executable="awk" output="${output.temp}/blame-results">
+                <arg value="-f"/>
+                <arg value="${output.temp}/awk-prepared"/>
+                <arg value="${output.temp}/blame"/>
+              </exec>
+              <contrib:var file="${output.temp}/blame-results" />
+              <contrib:var name="blame.xmlpath" value="/pmd-cpd/duplication[@lines=@{size}]/file[@line=@{line} and @path='@{path}']" />
+              <echo level="debug" message="${blame.xmlpath}"/>
+              <xmltask source="${output.reports}/cpd-report-blame.xml" dest="${output.reports}/cpd-report-blame.xml">
+                <attr path="${blame.xmlpath}" attr="committerLast" value="${blame.last}"/>
+                <attr path="${blame.xmlpath}" attr="committerMost" value="${blame.most}"/>
+              </xmltask>
+          	</then>
+          </contrib:if>
         </actions>
       </call>
     </xmltask>
