@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="" default="build" basedir=".." xmlns:stanfy="antlib:com.stanfy.anttasks">
+<project name="" default="build" basedir=".." xmlns:stanfy="antlib:com.stanfy.anttasks" xmlns:contrib="antlib:net.sf.antcontrib">
 
   <!-- Home. -->
   <property name="build.home" value="${basedir}/build"/>
@@ -85,12 +85,13 @@
     <filtersfile file="${build.home}/${realConf}.properties" />
   </filterset>
   
-  <!-- Additional tasks: xml, stanfy. -->
+  <!-- Additional tasks: xml, stanfy, antcontrib. -->
   <path id="antlibs.ext">
     <fileset dir="${lib.ant}" includes="*.jar" />
   </path>
   <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="antlibs.ext" />
   <taskdef uri="antlib:com.stanfy.anttasks" resource="com/stanfy/anttasks/antlib.xml" classpathref="antlibs.ext" />
+  <taskdef uri="antlib:net.sf.antcontrib" resource="net/sf/antcontrib/antcontrib.properties" classpathref="antlibs.ext" />
 
   <!-- Resolve application package -->
   <xmltask source="AndroidManifest.xml">
@@ -378,8 +379,8 @@
             <arg value="${output.temp}/awk-prepared"/>
             <arg value="${output.temp}/blame"/>
           </exec>
-          <var file="${output.temp}/blame-results" />
-          <var name="blame.xmlpath" value="/pmd-cpd/duplication[@lines=@{size}]/file[@line=@{line} and @path='@{path}']" />
+          <contrib:var file="${output.temp}/blame-results" />
+          <contrib:var name="blame.xmlpath" value="/pmd-cpd/duplication[@lines=@{size}]/file[@line=@{line} and @path='@{path}']" />
           <echo message="${blame.xmlpath}"/>
           <xmltask source="${output.reports}/cpd-report-blame.xml" dest="${output.reports}/cpd-report-blame.xml">
             <attr path="${blame.xmlpath}" attr="committerLast" value="${blame.last}"/>
