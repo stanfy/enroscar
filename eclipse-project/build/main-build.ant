@@ -390,7 +390,7 @@
       </call>
     </xmltask>
     
-    <xslt in="${output.reports}/cpd-report-blame.xml" style="${lib.ant}/pmd/cpdhtml.xslt" out="${output.reports}/cpd.html" />
+    <xslt in="${output.reports}/cpd-report-blame.xml" style="${lib.ant}/pmd/cpdhtml.xslt" out="${output.reports}/cpd-report.html" />
     
   </target>
 
