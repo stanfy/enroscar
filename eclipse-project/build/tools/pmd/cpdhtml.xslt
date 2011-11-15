@@ -35,7 +35,6 @@
 <body>
     <h2>Summary of duplicated code</h2>
     This page summarizes the code fragments that have been found to be replicated in the code.
-    Only those fragments longer than 30 lines of code are shown.
     <p/>
     <table border="1" class="summary" cellpadding="2">
       <tr style="background-color:#CCCCCC;">
@@ -45,10 +44,10 @@
         <th>Approx # bytes</th>
       </tr>
       <tr>
-        <td class="SummaryNumber"><xsl:value-of select="count(//duplication[@lines>30])"/></td>
-        <td class="SummaryNumber"><xsl:value-of select="sum(//duplication[@lines>30]/@lines)"/></td>
-        <td class="SummaryNumber"><xsl:value-of select="sum(//duplication[@lines>30]/@tokens)"/></td>
-        <td class="SummaryNumber"><xsl:value-of select="sum(//duplication[@lines>30]/@tokens) * 4"/></td>
+        <td class="SummaryNumber"><xsl:value-of select="count(//duplication)"/></td>
+        <td class="SummaryNumber"><xsl:value-of select="sum(//duplication/@lines)"/></td>
+        <td class="SummaryNumber"><xsl:value-of select="sum(//duplication/@tokens)"/></td>
+        <td class="SummaryNumber"><xsl:value-of select="sum(//duplication/@tokens) * 4"/></td>
       </tr>
     </table>
     <p/>
@@ -57,14 +56,26 @@
     <p/>
     <table>
     	<tr style="background-color: #444444; color: #DDDDDD;"><td>ID</td><td>Files</td><td>Lines</td></tr>
-    <xsl:for-each select="//duplication[@lines>30]">
+    <xsl:for-each select="//duplication">
         <xsl:sort data-type="number" order="descending" select="@lines"/>
         <tr>
         	<td class="ItemNumber"><xsl:value-of select="position()"/></td>
         	<td>
         		<table>
         			<xsl:for-each select="file">
-        				<tr><td><a><xsl:attribute name="href">../src/<xsl:value-of select="@path"/>.html#<xsl:value-of select="@line"/></xsl:attribute><xsl:value-of select="@path"/></a></td><td> line <xsl:value-of select="@line"/></td></tr>
+        				<tr>
+                  <td>
+                    <a>
+                      <xsl:attribute name="href">../src/<xsl:value-of select="@path"/>.html#<xsl:value-of select="@line"/></xsl:attribute>
+                      <xsl:value-of select="@path"/>
+                    </a>
+                  </td>
+                  <td> line <xsl:value-of select="@line"/></td>
+                  <td> 
+                    last commit from <i><xsl:value-of select="@committerLast"/></i><br/>
+                    most commits from <i><xsl:value-of select="@committerMost"/></i>
+                  </td>
+                </tr>
         			</xsl:for-each>
         		</table>
         	</td>
