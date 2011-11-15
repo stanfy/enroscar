@@ -367,7 +367,7 @@
         <actions>
         	<contrib:var name="blame.allowed" value="true" />
         	<contrib:if>
-        		<isser property="codecheck.exclude" />
+        		<isset property="codecheck.exclude" />
         		<then>
               <contrib:for list="${codecheck.exclude}" delimiter="," param="pattern">
                 <contrib:if>
