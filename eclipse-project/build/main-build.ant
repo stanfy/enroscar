@@ -367,6 +367,10 @@
           <exec executable="svn" output="${output.temp}/blame">
             <arg value="blame"/>
             <arg value="@{path}"/>
+          	<arg value="--username"/>
+            <arg value="${svn.user}"/>
+            <arg value="--password"/>
+            <arg value="${svn.password}"/>
           </exec>
           <copy file="${output.temp}/awk" tofile="${output.temp}/awk-prepared" overwrite="true">
             <filterset begintoken="@{" endtoken="}">
