@@ -337,6 +337,7 @@
     </cpd>
     
     <echo>Blaming...</echo>
+    <property file="${repo.access.file}" />
     <echo file="${output.temp}/awk">
       <![CDATA[
       BEGIN { maxrev = 0 }
