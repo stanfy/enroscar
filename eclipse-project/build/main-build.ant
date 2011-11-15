@@ -59,7 +59,7 @@
   <property name="output.junit" value="${output.reports}/junit"/>
   <property name="output.proguard.mapping" value="${output.temp.android}/proguard/mapping.txt"/>
 
-  <condition property="lib.ant" value="${build.library.path}/libs-ext" else="${basedir}/libs-ext">
+  <condition property="lib.ant" value="${build.library.path}/build/tools" else="${build.home}/tools">
     <isset property="build.library.path"/>
   </condition>
   
@@ -73,6 +73,11 @@
   <!-- Files with flags. -->
   <property name="files.flags" value="**/Defaults.java, **/ErrorCodes.java, **/DebugFlags.java, **/Constants.java" />
 
+	<!-- Whether it's required to perform  -->
+	<condition property="codecheck.necessary">
+    <equals arg1="${codecheck.perform}" arg2="true" />
+	</condition>
+	
   <!-- Properties -> filter. -->
   <filterset id="filter.main" begintoken="{@" endtoken="}">
     <filtersfile file="project.properties" />
@@ -277,6 +282,9 @@
 
   <!-- *************** Public targets *************** -->
 
+	<!--
+	  Clean all the genrated directories.
+	-->
   <target name="clean" description="Clean output directories" depends="android_rules.clean, -clean-libs">
     <delete dir="${output.temp}"/>
     <delete dir="${output.release}"/>
@@ -285,6 +293,9 @@
     <delete dir="bin" failonerror="false" />
   </target>
  
+  <!--
+    Main target. It performs compilation and packaging in the defined mode (configuration).
+  -->
   <target name="build" depends="-run-release, -run-debug" description="--> make a ready for installation package">
     <mkdir dir="${output.release}" />
     <copy todir="${output.release}">
@@ -294,7 +305,95 @@
     <antcall target="-grab-proguard-mapping" />
   </target>
 
-  <target name="publish" depends="build" description="--> publish the built application">
+	<!--
+	  Perfom code style checks and copy-past detection.
+	-->
+  <target name="codecheck" depends="build" description="Check the code using PMD" if="codecheck.necessary">
+    <path id="pmd.path">
+      <fileset dir="${lib.ant}/pmd" />
+    </path>
+    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.path" />
+    <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="pmd.path" />
+    <fileset id="pmd.src" dir="${src.java}">
+      <include name="**/*.java"/>
+    </fileset>
+    
+    <echo>Running code style checks...</echo>
+    <pmd shortFilenames="true">
+      <ruleset>basic</ruleset>
+      <ruleset>${lib.ant}/pmd/pmd-android-rules.xml</ruleset>
+      <formatter type="html" toFile="${output.reports}/pmd-report.html" linkPrefix="http://pmd.sourceforge.net/xref/" />
+      <fileset refid="pmd.src" />
+      <auxclasspath>
+        <path refid="android.target.classpath" />
+        <path refid="jar.libs.ref"/>
+      </auxclasspath>
+    </pmd>
+    
+    <echo>Running copy-past detector...</echo>
+    <cpd language="java" ignoreliterals="true" minimumtokencount="50" encoding="UTF-8" format="xml" outputfile="${output.reports}/cpd-report.xml">
+      <fileset refid="pmd.src" />
+    </cpd>
+    
+    <echo>Blaming...</echo>
+    <echo file="${output.temp}/awk">
+      <![CDATA[
+      BEGIN { maxrev = 0 }
+      (NR >= @{line}) && (NR < @{line} + @{size}) {
+        if (maxrev < $1) { maxrev = $1; lastcommiter = $2 }
+        freq[$2]++
+      }
+      END {
+        printf "blame.last=%s\n", lastcommiter
+        printf "blame.last.rev=%d\n", maxrev
+        maxCount = 0
+        for (man in freq) {
+          count = freq[man]
+          if (maxCount < count) { most = man; maxCount = count }
+        }
+        printf "blame.most=%s\n", most
+      }
+      ]]>
+    </echo>
+    <copy file="${output.reports}/cpd-report.xml" tofile="${output.reports}/cpd-report-blame.xml" overwrite="true" />
+    <xmltask source="${output.reports}/cpd-report.xml">
+      <call path="//duplication/file" buffer="duplicationFile">
+        <param name="line" path="@line" />
+        <param name="path" path="@path" />
+        <param name="size" path="../@lines" />
+        <actions>
+          <echo level="verbose">Blame line @{line} in @{path}</echo>
+          <exec executable="svn" output="${output.temp}/blame">
+            <arg value="blame"/>
+            <arg value="@{path}"/>
+          </exec>
+          <copy file="${output.temp}/awk" tofile="${output.temp}/awk-prepared" overwrite="true">
+            <filterset begintoken="@{" endtoken="}">
+              <filter token="line" value="@{line}"/>
+              <filter token="size" value="@{size}"/>
+            </filterset>
+          </copy>
+          <exec executable="awk" output="${output.temp}/blame-results">
+            <arg value="-f"/>
+            <arg value="${output.temp}/awk-prepared"/>
+            <arg value="${output.temp}/blame"/>
+          </exec>
+          <var file="${output.temp}/blame-results" />
+          <var name="blame.xmlpath" value="/pmd-cpd/duplication[@lines=@{size}]/file[@line=@{line} and @path='@{path}']" />
+          <echo message="${blame.xmlpath}"/>
+          <xmltask source="${output.reports}/cpd-report-blame.xml" dest="${output.reports}/cpd-report-blame.xml">
+            <attr path="${blame.xmlpath}" attr="committerLast" value="${blame.last}"/>
+            <attr path="${blame.xmlpath}" attr="committerMost" value="${blame.most}"/>
+          </xmltask>
+        </actions>
+      </call>
+    </xmltask>
+    
+    <xslt in="${output.reports}/cpd-report-blame.xml" style="build/cpdhtml.xslt" out="${output.reports}/cpd.html" />
+    
+  </target>
+
+	<target name="publish" depends="build, codecheck" description="--> publish the built application">
     <tstamp>
       <format property="publish.date" pattern="yyyy-MM-dd" />
     </tstamp>
