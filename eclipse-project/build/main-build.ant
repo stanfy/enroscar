@@ -363,7 +363,7 @@
         <param name="path" path="@path" />
         <param name="size" path="../@lines" />
         <actions>
-          <echo level="verbose">Blame line @{line} in @{path}</echo>
+          <echo level="debug">Blame line @{line} in @{path}</echo>
           <exec executable="svn" output="${output.temp}/blame">
             <arg value="blame"/>
             <arg value="@{path}"/>
@@ -381,7 +381,7 @@
           </exec>
           <contrib:var file="${output.temp}/blame-results" />
           <contrib:var name="blame.xmlpath" value="/pmd-cpd/duplication[@lines=@{size}]/file[@line=@{line} and @path='@{path}']" />
-          <echo message="${blame.xmlpath}"/>
+          <echo level="debug" message="${blame.xmlpath}"/>
           <xmltask source="${output.reports}/cpd-report-blame.xml" dest="${output.reports}/cpd-report-blame.xml">
             <attr path="${blame.xmlpath}" attr="committerLast" value="${blame.last}"/>
             <attr path="${blame.xmlpath}" attr="committerMost" value="${blame.most}"/>
