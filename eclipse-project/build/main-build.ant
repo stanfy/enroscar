@@ -311,7 +311,7 @@
 	-->
   <target name="codecheck" depends="build" description="Check the code using PMD" if="codecheck.necessary">
     <path id="pmd.path">
-      <fileset dir="${lib.ant}/pmd" />
+      <fileset dir="${lib.ant}/pmd" includes="*.jar" />
     </path>
     <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.path" />
     <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="pmd.path" />
