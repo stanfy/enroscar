@@ -332,7 +332,7 @@
     </pmd>
     
     <echo>Running copy-past detector...</echo>
-    <cpd language="java" ignoreliterals="true" minimumtokencount="50" encoding="UTF-8" format="xml" outputfile="${output.reports}/cpd-report.xml">
+    <cpd language="java" minimumtokencount="70" encoding="UTF-8" format="xml" outputfile="${output.reports}/cpd-report.xml">
       <fileset refid="pmd.src" />
     </cpd>
     
