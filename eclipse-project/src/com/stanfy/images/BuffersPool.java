@@ -36,7 +36,7 @@ public class BuffersPool {
   private static byte[] allocate(final int size) { return new byte[size]; }
 
   public BuffersPool(final int[][] initDescription) {
-    Log.i(TAG, "Creating buffers. Types count: " + initDescription.length);
+    if (DEBUG) { Log.i(TAG, "Creating buffers. Types count: " + initDescription.length); }
     for (int i = initDescription.length - 1; i >= 0; i--) {
       final int count = initDescription[i][0];
       final int amount = initDescription[i][1];
