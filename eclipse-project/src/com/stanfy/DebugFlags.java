@@ -20,4 +20,7 @@ public final class DebugFlags {
   /** Debug services flag. */
   public static final boolean DEBUG_SERVICES = false; // @debug.services@
 
+  /** Debug C2DM. */
+  public static final boolean DEBUG_C2DM = true; // @debug.c2dm@
+
 }

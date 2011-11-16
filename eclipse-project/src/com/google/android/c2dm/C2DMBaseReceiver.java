@@ -26,16 +26,22 @@ import android.content.Intent;
 import android.os.PowerManager;
 import android.util.Log;
 
+import com.stanfy.DebugFlags;
+
 /**
  * Base class for C2D message receiver. Includes constants for the
  * strings used in the protocol.
  */
 public abstract class C2DMBaseReceiver extends IntentService {
+
+  /** Debug flag. */
+  protected static final boolean DEBUG = DebugFlags.DEBUG_C2DM;
+
   /** Callback intent action. */
   public static final String REGISTRATION_CALLBACK_INTENT = "com.google.android.c2dm.intent.REGISTRATION";
 
   /** Logging tag. */
-  private static final String TAG = "C2DM";
+  protected static final String TAG = "C2DM";
 
   /** Intent actions. */
   private static final String C2DM_RETRY = "com.google.android.c2dm.intent.RETRY",
@@ -156,7 +162,7 @@ public abstract class C2DMBaseReceiver extends IntentService {
     final String error = intent.getStringExtra(EXTRA_ERROR);
     final String removed = intent.getStringExtra(EXTRA_UNREGISTERED);
 
-    if (Log.isLoggable(TAG, Log.DEBUG)) {
+    if (DEBUG) {
       Log.d(TAG, "dmControl: registrationId = " + registrationId + ", error = " + error + ", removed = " + removed);
     }
 
@@ -174,7 +180,7 @@ public abstract class C2DMBaseReceiver extends IntentService {
       if ("SERVICE_NOT_AVAILABLE".equals(error)) {
         long backoffTimeMs = C2DMessaging.getBackoff(context);
 
-        Log.d(TAG, "Scheduling registration retry, backoff = " + backoffTimeMs);
+        if (DEBUG) { Log.d(TAG, "Scheduling registration retry, backoff = " + backoffTimeMs); }
         final Intent retryIntent = new Intent(C2DM_RETRY);
         final PendingIntent retryPIntent = PendingIntent.getBroadcast(context,
             0 /*requestCode*/, retryIntent, 0 /*flags*/);
