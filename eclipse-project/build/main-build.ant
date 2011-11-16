@@ -290,7 +290,6 @@
     <delete dir="${output.temp}"/>
     <delete dir="${output.release}"/>
     <delete dir="${output.junit}"/>
-    <delete dir="${output.reports}"/>
     <delete dir="bin" failonerror="false" />
   </target>
  
