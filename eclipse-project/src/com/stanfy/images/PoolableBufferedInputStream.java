@@ -363,20 +363,18 @@ public class PoolableBufferedInputStream extends FilterInputStream {
     long read = count - pos;
     pos = count;
 
-    if (markpos != -1) {
-      if (amount <= marklimit) {
-        if (fillbuf(localIn, localBuf) == -1) {
-          return read;
-        }
-        if (count - pos >= amount - read) {
-          pos += amount - read;
-          return amount;
-        }
-        // Couldn't get all the bytes, skip what we read
-        read += (count - pos);
-        pos = count;
+    if (markpos != -1 && amount <= marklimit) {
+      if (fillbuf(localIn, localBuf) == -1) {
         return read;
       }
+      if (count - pos >= amount - read) {
+        pos += amount - read;
+        return amount;
+      }
+      // Couldn't get all the bytes, skip what we read
+      read += (count - pos);
+      pos = count;
+      return read;
     }
     return read + localIn.skip(amount - read);
   }
