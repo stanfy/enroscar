@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   
+  <attr name="frozeScrollPosition" format="boolean" />
+  
   <attr name="sourceDensity" format="integer">
     <enum name="ldpi" value="120" />
     <enum name="mdpi" value="160" />
     <enum name="hdpi" value="240" />
     <enum name="xhdpi" value="320" />
   </attr>
-  
+      
   <declare-styleable name="GridLayout">
     <attr name="numColumns" format="integer" />
     <attr name="numRows" format="integer" />
@@ -51,9 +53,12 @@
   </declare-styleable>
 
   <declare-styleable name="ScrollView">
-    <attr name="frozeScrollPosition" format="boolean" />
+    <attr name="frozeScrollPosition" />
   </declare-styleable>
-
+  <declare-styleable name="HorizontalScrollView">
+    <attr name="frozeScrollPosition" />
+  </declare-styleable>
+      
   <declare-styleable name="FontPreference">
     <attr name="testText" format="string" />
     <attr name="fromSize" format="dimension" />

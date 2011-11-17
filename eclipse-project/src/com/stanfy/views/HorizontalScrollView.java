@@ -32,7 +32,7 @@ public class HorizontalScrollView extends android.widget.HorizontalScrollView {
 
   private void init(final Context context, final AttributeSet attrs) {
     final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ScrollView);
-    final boolean frozeSPos = a.getBoolean(R.styleable.ScrollView_frozeScrollPosition, true);
+    final boolean frozeSPos = a.getBoolean(R.styleable.HorizontalScrollView_frozeScrollPosition, true);
     a.recycle();
     setFrozeScrollPosition(frozeSPos);
   }
