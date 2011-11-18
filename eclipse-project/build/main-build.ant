@@ -147,10 +147,6 @@
   <target name="-pre-build" depends="-prepare-directories, -prepare-sources"/>
   <target name="-post-compile" depends="-test, -copy-jar-to-bin" />
   
-  <!-- Release or debug? -->
-  <target name="-run-release" if="make.release" depends="release" />
-  <target name="-run-debug" unless="make.release" depends="debug" />
-
   <target name="-prepare-directories">
     <mkdir dir="${output.temp.resources}"/>
     <mkdir dir="${output.temp.src}"/>
@@ -301,7 +297,7 @@
   <!--
     Main target. It performs compilation and packaging in the defined mode (configuration).
   -->
-  <target name="build" depends="-run-release, -run-debug" description="--> make a ready for installation package">
+  <target name="build" depends="release" description="--> make a ready for installation package">
     <mkdir dir="${output.release}" />
     <copy todir="${output.release}">
       <fileset dir="${output.temp.android}" includes="*release*, *debug*" />
