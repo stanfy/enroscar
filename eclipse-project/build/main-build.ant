@@ -50,7 +50,7 @@
   <property name="output.temp.resources" value="${output.temp}/res"/>
   <property name="output.temp.android" value="${output.temp}/android"/>
   <property name="output.temp.src" value="${output.temp}/src"/>
-  <property name="output.temp.src" value="${output.temp}/src"/>
+  <property name="output.temp.assets" value="${output.temp}/assets"/>
   <property name="output.temp.test" value="${output.temp}/test-classes"/>
   <property name="output.release" value="${output.home}/release" />
   <property name="release.path" value="${customer.name}/android${output.publish.name.prefix}" />
@@ -68,6 +68,7 @@
   <property name="resource.absolute.dir" value="${basedir}/${resource.dir}" />
   <property name="source.dir" value="${output.temp.relative}/src" />
   <property name="out.dir" value="${output.temp.relative}/android" />
+  <property name="asset.absolute.dir" value="${output.temp.assets}"/>
   <!-- ============================= -->
 
   <!-- Files with flags. -->
@@ -153,6 +154,7 @@
   <target name="-prepare-directories">
     <mkdir dir="${output.temp.resources}"/>
     <mkdir dir="${output.temp.src}"/>
+    <mkdir dir="${output.temp.assets}"/>
     <mkdir dir="${output.temp.android}"/>
     <mkdir dir="${output.temp.test}"/>
     <mkdir dir="${output.reports}"/>
@@ -163,6 +165,9 @@
     </copy>
     <copy todir="${output.temp.resources}" overwrite="true">
       <fileset dir="${src.resources}" />
+    </copy>
+    <copy todir="${output.temp.assets}" overwrite="true">
+      <fileset dir="${src.assets}" />
     </copy>
   </target>
 
