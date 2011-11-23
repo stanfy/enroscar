@@ -217,7 +217,7 @@
   <target name="-sync-customer" if="customer.sync.true">
     <property name="customer.path" value="${scp.customer.dir}/${release.path}"/>
     <echo>Sync customer directory ${customer.path}...</echo>
-    <sshexec host="${scp.host}" port="${scp.port}" password="${scp.password}" username="${scp.user}" command="mkdir ${customer.path}" failonerror="false" />
+    <sshexec host="${scp.host}" port="${scp.port}" password="${scp.password}" username="${scp.user}" command="mkdir -p ${customer.path}" failonerror="false" />
     <sshexec host="${scp.host}" port="${scp.port}" password="${scp.password}" username="${scp.user}" command="rm ${customer.path}/*" failonerror="false" />
     <scp todir="${scp.user}@${scp.host}:${customer.path}" password="${scp.password}" port="${scp.port}">
       <fileset dir="${output.release}/${release.path}" />
