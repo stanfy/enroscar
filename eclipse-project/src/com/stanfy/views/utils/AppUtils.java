@@ -79,6 +79,10 @@ public class AppUtils {
     }
   }
 
+  /**
+   * Hide soft keyboard.
+   * @param textView text view containing current window token
+   */
   public static void hideSoftInput(final TextView textView) {
     try {
       final InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -87,10 +91,26 @@ public class AppUtils {
       Log.d(TAG, "Ignore exception", e);
     }
   }
+  /**
+   * Show soft keyboard.
+   * @param textView text view containing current window token
+   */
   public static void showSoftInput(final TextView textView) {
     try {
       final InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
       imm.showSoftInput(textView, InputMethodManager.SHOW_FORCED);
+    } catch (final Exception e) {
+      Log.d(TAG, "Ignore exception", e);
+    }
+  }
+  /**
+   * Toggles keyboard visibility.
+   * @param textView text view containing current window token
+   */
+  public static void toggleSoftInput(final TextView textView) {
+    try {
+      final InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.toggleSoftInputFromWindow(textView.getWindowToken(), 0, 0);
     } catch (final Exception e) {
       Log.d(TAG, "Ignore exception", e);
     }
