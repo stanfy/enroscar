@@ -83,6 +83,9 @@ public class ImagesManager<T extends CachedImage> {
   /** Current loads. */
   private final ConcurrentHashMap<String, ImageLoader<T>> currentLoads = new ConcurrentHashMap<String, ImageLoader<T>>(Threading.imagesWorkersCount);
 
+  /** Paused state. */
+  private boolean paused = false;
+
   /** Hidden constructor. */
   public ImagesManager(final Resources resources) {
     this.resources = resources;
@@ -482,6 +485,23 @@ public class ImagesManager<T extends CachedImage> {
     }
   }
 
+  synchronized boolean waitForPause() {
+    try {
+      while (paused) { wait(); }
+      return true;
+    } catch (final InterruptedException e) {
+      return false;
+    }
+  }
+
+  public synchronized void pauseLoading() {
+    this.paused = true;
+  }
+  public synchronized void resumeLoading() {
+    this.paused = false;
+    notifyAll();
+  }
+
   /**
    * Image loader task.
    * @param <T> image type
@@ -689,6 +709,12 @@ public class ImagesManager<T extends CachedImage> {
       final String url = this.url;
       try {
         start();
+
+        if (!imagesManager.waitForPause()) {
+          cancel();
+          return null;
+        }
+
         T cachedImage = imagesDAO.getCachedImage(url);
         if (cachedImage == null) {
           cachedImage = imagesDAO.createCachedImage(url);
