@@ -485,6 +485,10 @@ public class ImagesManager<T extends CachedImage> {
     }
   }
 
+  /**
+   * This our barrier for images loading tasks.
+   * @return true if task can continue it's work and false if it's interrupted
+   */
   synchronized boolean waitForPause() {
     try {
       while (paused) { wait(); }
@@ -494,9 +498,15 @@ public class ImagesManager<T extends CachedImage> {
     }
   }
 
+  /**
+   * Pause all future loading tasks.
+   */
   public synchronized void pauseLoading() {
     this.paused = true;
   }
+  /**
+   * Resume all the loading tasks.
+   */
   public synchronized void resumeLoading() {
     this.paused = false;
     notifyAll();
