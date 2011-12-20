@@ -314,23 +314,18 @@
     <path id="pmd.path">
       <fileset dir="${lib.ant}/pmd" includes="*.jar" />
     </path>
-    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.path" />
     <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="pmd.path" />
     <fileset id="pmd.src" dir="${src.java}">
       <include name="**/*.java"/>
     </fileset>
     
-    <echo>Running code style checks...</echo>
-    <pmd shortFilenames="true">
-      <ruleset>basic</ruleset>
-      <ruleset>${lib.ant}/pmd/pmd-android-rules.xml</ruleset>
-      <formatter type="html" toFile="${output.reports}/pmd-report.html" linkPrefix="http://pmd.sourceforge.net/xref/" />
-      <fileset refid="pmd.src" />
-      <auxclasspath>
-        <path refid="android.target.classpath" />
-        <path refid="jar.libs.ref"/>
-      </auxclasspath>
-    </pmd>
+    <echo>Running lint...</echo>
+  	<exec executable="${sdk.dir}/tools/lint">
+  		<arg value="--quiet" />
+      <arg value="--html" />
+      <arg value="${output.reports}/lint-report.html" />
+      <arg value="${basedir}" />
+  	</exec>
     
     <echo>Running copy-past detector...</echo>
     <cpd language="java" minimumtokencount="70" encoding="UTF-8" format="xml" outputfile="${output.reports}/cpd-report.xml">
