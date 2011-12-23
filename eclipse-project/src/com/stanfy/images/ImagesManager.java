@@ -660,6 +660,7 @@ public class ImagesManager<T extends CachedImage> {
       if (dstW <= 0 || dstH <= 0) { return bd; }
 
       final Bitmap scaled = Bitmap.createScaledBitmap(map, dstW, dstH, true);
+      scaled.setDensity(imagesManager.resources.getDisplayMetrics().densityDpi);
       return new BitmapDrawable(imagesManager.resources, scaled);
     }
 
