@@ -660,7 +660,7 @@ public class ImagesManager<T extends CachedImage> {
       if (dstW <= 0 || dstH <= 0) { return bd; }
 
       final Bitmap scaled = Bitmap.createScaledBitmap(map, dstW, dstH, true);
-      return new BitmapDrawable(scaled);
+      return new BitmapDrawable(imagesManager.resources, scaled);
     }
 
     private Drawable memCacheImage(final Drawable d) {
