@@ -606,7 +606,7 @@ public class ImagesManager<T extends CachedImage> {
               setImageToHolder(imageHolder, d);
             }
           } else if (DEBUG) {
-            Log.w(TAG, "set drawable: have no targets in list, try to set to main target only");
+            Log.w(TAG, "set drawable: have no targets in list");
           }
 
         }
