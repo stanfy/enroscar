@@ -605,9 +605,8 @@ public class ImagesManager<T extends CachedImage> {
               if (DEBUG) { Log.d(TAG, "Try to set " + imageHolder + " - " + url); }
               setImageToHolder(imageHolder, d);
             }
-          } else {
-            if (DEBUG) { Log.w(TAG, "set drawable: have no targets in list, try to set to main target only"); }
-            setImageToHolder(mainTarget, d);
+          } else if (DEBUG) {
+            Log.w(TAG, "set drawable: have no targets in list, try to set to main target only");
           }
 
         }
