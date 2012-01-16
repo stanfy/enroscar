@@ -599,23 +599,30 @@ public class ImagesManager<T extends CachedImage> {
 
           final ArrayList<ImageHolder> targets = ImageLoader.this.targets;
           final int count = targets.size();
-          for (int i = 0; i < count; i++) {
-            final ImageHolder imageHolder = targets.get(i);
-            if (DEBUG) { Log.d(TAG, "Try to set " + imageHolder + " - " + url); }
-
-            synchronized (imageHolder) {
-              final String currentUrl = imageHolder.currentUrl;
-              if (currentUrl != null && currentUrl.equals(url)) {
-                imagesManager.setImage(imageHolder, d, false);
-              } else {
-                if (DEBUG) { Log.d(TAG, "Skip set for " + imageHolder); }
-              }
+          if (count > 0) {
+            for (int i = 0; i < count; i++) {
+              final ImageHolder imageHolder = targets.get(i);
+              if (DEBUG) { Log.d(TAG, "Try to set " + imageHolder + " - " + url); }
+              setImageToHolder(imageHolder, d);
             }
-
+          } else {
+            if (DEBUG) { Log.w(TAG, "set drawable: have no targets in list, try to set to main target only"); }
+            setImageToHolder(mainTarget, d);
           }
 
         }
       });
+    }
+
+    private void setImageToHolder(final ImageHolder imageHolder, final Drawable d) {
+      synchronized (imageHolder) {
+        final String currentUrl = imageHolder.currentUrl;
+        if (currentUrl != null && currentUrl.equals(url)) {
+          imagesManager.setImage(imageHolder, d, false);
+        } else {
+          if (DEBUG) { Log.d(TAG, "Skip set for " + imageHolder); }
+        }
+      }
     }
 
     protected Drawable setLocalImage(final T cachedImage) throws IOException {
