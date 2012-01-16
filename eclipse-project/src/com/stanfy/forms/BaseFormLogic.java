@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnShowListener;
+import android.os.Build;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -117,12 +119,13 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
       final EditText edit = retrieveDialogEdit(d, id);
       edit.setText(state.currentDialogText);
       edit.setInputType(state.inputType);
+//      AppUtils.showSoftInput(edit); // doesn't have an effect
       if (id == DIALOG_EDITTEXT_LARGE) {
         edit.setLines(linesCountForLargeText);
       } else {
         edit.setImeOptions(edit.getImeOptions() | EditorInfo.IME_ACTION_DONE);
         edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-          
+
           @Override
           public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
             if (d instanceof AlertDialog
@@ -135,6 +138,14 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
               return true;
             }
             return false;
+          }
+        });
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+        d.setOnShowListener(new OnShowListener() {
+          @Override
+          public void onShow(final DialogInterface dialog) {
+           AppUtils.showSoftInput(edit);
           }
         });
       }
@@ -172,7 +183,7 @@ public abstract class BaseFormLogic implements OnClickListener, Destroyable, Dia
     state.inputType = inputType;
     owner.showDialog(id);
   }
-  
+
   @Override
   public final void onClick(final DialogInterface dialog, final int which) {
     final EditText edit;
