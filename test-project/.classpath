@@ -4,9 +4,9 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="libs/robotium-solo-2.3.jar"/>
-	<classpathentry kind="lib" path="/stviews_dev/libs/android-support-v4.jar" sourcepath="/Volumes/macStore/dev/android-sdk/extras/android/compatibility/v4/src"/>
 	<classpathentry kind="lib" path="/stviews_dev/libs/FlurryAgent.jar"/>
-	<classpathentry kind="lib" path="/stviews_dev/libs/gson-1.6.jar"/>
+	<classpathentry kind="lib" path="/stviews_dev/libs/android-support-v4.jar" sourcepath="/Volumes/macStore/dev/android-sdk/extras/android/compatibility/v4/src"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="lib" path="/stviews_dev/libs/gson-2.1.jar" sourcepath="/stviews_dev/libs/src/gson-2.1-sources.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -1,4 +1,4 @@
-package com.stanfy.stviews.test;
+package com.stanfy.enroscar.test;
 
 import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
@@ -15,7 +15,7 @@ public class BaseTestActivity<T extends Activity> extends ActivityInstrumentatio
   private Solo solo;
 
   public BaseTestActivity(final Class<T> activityClass) {
-    super("com.stanfy.stviews.test", activityClass);
+    super("com.stanfy.enroscar.test", activityClass);
   }
 
   @Override

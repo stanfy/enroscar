@@ -1,4 +1,4 @@
-package com.stanfy.stviews.test;
+package com.stanfy.enroscar.test;
 
 import java.util.concurrent.Semaphore;
 

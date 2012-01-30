@@ -1,0 +1,4 @@
+<project name="stviews-tests" basedir="." default="help">
+  <property name="build.library.path" value="${basedir}/../stviews_dev" />
+  <import file="${build.library.path}/build/main-build.ant"/>
+</project>
