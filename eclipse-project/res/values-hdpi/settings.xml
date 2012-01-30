@@ -1,0 +1,6 @@
+<resources>
+  
+  <!-- Remote images densities. -->
+  <item type="integer" name="images_source_density">@integer/density_hdpi</item>
+
+</resources>

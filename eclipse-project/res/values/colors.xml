@@ -1,0 +1,6 @@
+<resources>
+
+ <color name="item_focused">#ffb600</color>
+ <color name="item_pressed">#f07403</color>
+ 
+</resources>

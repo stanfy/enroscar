@@ -1,0 +1,17 @@
+<resources>
+
+  <!-- Fragment container. -->
+  <item type="id" name="fragment_container"/>
+
+  <!-- Quick actions arrows. -->
+  <item type="id" name="qa_tag"/>
+  <item type="id" name="qa_arrow_up"/>
+  <item type="id" name="qa_arrow_down"/>
+  <item type="id" name="qa_scroll"/>
+  <item type="id" name="qa_panel"/>
+  <item type="id" name="qa_container"/>
+
+  <!-- Audio notification. -->
+  <item type="id" name="audio_notification"/>
+
+</resources>

@@ -1,0 +1,12 @@
+<resources>
+  
+  <!-- Density constants. -->
+  <item type="integer" name="density_ldpi">120</item>
+  <item type="integer" name="density_mdpi">160</item>
+  <item type="integer" name="density_hdpi">240</item>
+  <item type="integer" name="density_xhdpi">320</item>
+      
+  <!-- Remote images densities. -->
+  <item type="integer" name="images_source_density">@integer/density_mdpi</item>
+
+</resources>

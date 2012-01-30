@@ -1,0 +1,18 @@
+<resources>
+  
+  <string name="app_name">Always present! ;)</string>
+  
+  <string name="reset">Reset</string>
+
+  <string name="ok"><![CDATA[OK]]></string>
+  <string name="cancel"><![CDATA[Cancel]]></string>
+
+  <string name="progress_loading">Loading...</string>
+
+  <string name="error_connection">Check your Internet connection</string>
+  <string name="error_connection_long">Check your Internet connection</string>
+  <string name="error_server_default">Server communication error</string>
+
+  <string name="video_error">Sorry, this video cannot be played</string>
+
+</resources>

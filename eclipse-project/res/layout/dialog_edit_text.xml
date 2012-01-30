@@ -1,0 +1,13 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/StretchHorizontallyContainer"
+    android:padding="10dp"
+    >
+
+  <EditText
+      style="@style/StretchHorizontallyContainer"
+      android:singleLine="true"
+      android:id="@+id/dialog_edit_text"
+      />
+
+</FrameLayout>

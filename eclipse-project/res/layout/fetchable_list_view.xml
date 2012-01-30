@@ -1,0 +1,12 @@
+<merge 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+  <com.stanfy.views.list.ListView
+      style="@style/FetchableListView"
+      android:id="@+id/fetchable_list"
+      />
+
+  <include layout="@layout/state_panel" />
+
+</merge>
