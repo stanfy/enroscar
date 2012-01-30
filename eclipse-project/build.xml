@@ -1,3 +1,0 @@
-<project name="stviews" basedir="." default="help">
-	<import file="build/main-build.ant"/>
-</project>
