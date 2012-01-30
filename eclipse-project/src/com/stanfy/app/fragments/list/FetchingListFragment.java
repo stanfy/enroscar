@@ -11,6 +11,7 @@ import com.stanfy.views.list.Fetcher.FetcherRequestCallback;
 import com.stanfy.views.list.ModelListAdapter.ElementRenderer;
 
 /**
+ * Fragment that contains a list view with 'lazy load more' feature.
  * @param <AT> application type
  * @param <MT> model type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)

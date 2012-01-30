@@ -11,7 +11,7 @@ import com.stanfy.views.list.OneTimeLoadAdapter;
 import com.stanfy.views.list.RequestBuilderAdapter.RBAdapterCallback;
 
 /**
- * One time load fragment.
+ * Fragment that contains a list view with elements loaded with one request (no paging or 'load more' features).
  * @param <AT> application type
  * @param <MT> model type
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)

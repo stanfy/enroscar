@@ -80,7 +80,7 @@ public class ActionBarSupport implements Destroyable {
    * Switch full screen mode (remove or add action bar).
    * @param fullScreen full screen mode flag
    * @param animate whether to use animation
-   * @param duration animation millis
+   * @param duration animation duration in millis, negative value means using the default value
    */
   public void setFullScreen(final boolean fullScreen, final boolean animate, final long duration) {
     if (mainActionBarContainer == null) { return; }

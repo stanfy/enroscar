@@ -11,6 +11,7 @@ import com.stanfy.utils.ChainedRequestCallback;
 import com.stanfy.utils.LocationMethodsSupport;
 
 /**
+ * Fragment activity with common behavior.
  * @param <AT> application type
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */

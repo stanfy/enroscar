@@ -9,7 +9,9 @@ import com.stanfy.utils.ApiMethodsSupport;
 import com.stanfy.utils.LocationMethodsSupport;
 
 /**
+ * Preference activity with common behavior.
  * @param <AT> application type
+ * @see BaseActivityBehavior
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class BasePreferenceActivity<AT extends Application> extends PreferenceActivity implements ActionBarActivity, RequestExecutorProvider, LocationSupportProvider {

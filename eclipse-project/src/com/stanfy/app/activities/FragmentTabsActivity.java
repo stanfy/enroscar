@@ -25,19 +25,19 @@ public abstract class FragmentTabsActivity<AT extends Application> extends BaseF
   protected static final String SAVE_TAB = "tab";
 
   /** Tab host. */
-  private TabHost mTabHost;
+  private TabHost tabHost;
   /** Tab manager. */
-  private TabManager mTabManager;
+  private TabManager tabManager;
 
   @Override
   protected void onInitialize(final Bundle savedInstanceState) {
     super.onInitialize(savedInstanceState);
     setContentView(getLayoutId());
 
-    mTabHost = (TabHost)findViewById(android.R.id.tabhost);
-    mTabHost.setup();
+    tabHost = (TabHost)findViewById(android.R.id.tabhost);
+    tabHost.setup();
 
-    mTabManager = createTabManager(mTabHost, getFragmentsContainer());
+    tabManager = createTabManager(tabHost, getFragmentsContainer());
   }
 
   protected TabManager createTabManager(final TabHost host, final int containerId) {
@@ -47,17 +47,17 @@ public abstract class FragmentTabsActivity<AT extends Application> extends BaseF
   @Override
   protected void onSaveInstanceState(final Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putString(SAVE_TAB, mTabHost.getCurrentTabTag());
+    outState.putString(SAVE_TAB, tabHost.getCurrentTabTag());
   }
 
   @Override
   protected void onRestoreInstanceState(final Bundle savedInstanceState) {
     super.onRestoreInstanceState(savedInstanceState);
-    mTabManager.setCurrentTabByTag(savedInstanceState.getString(SAVE_TAB));
+    tabManager.setCurrentTabByTag(savedInstanceState.getString(SAVE_TAB));
   }
 
-  public TabManager getTabManager() { return mTabManager; }
-  public TabHost getTabHost() { return mTabHost; }
+  public TabManager getTabManager() { return tabManager; }
+  public TabHost getTabHost() { return tabHost; }
 
   public int getFragmentsContainer() { return android.R.id.tabcontent; }
   public abstract int getLayoutId();

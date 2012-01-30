@@ -12,6 +12,8 @@ import com.stanfy.utils.OneRequestModelBehavior;
 import com.stanfy.views.StateWindowHelper;
 
 /**
+ * Fragment that contains a request builder instance and is oriented on processing
+ * a particular model type.
  * @param <AT> application type
  * @param <RBT> request builder type
  * @param <MT> model type

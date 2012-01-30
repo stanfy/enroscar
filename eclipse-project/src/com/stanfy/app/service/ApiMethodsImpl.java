@@ -30,7 +30,8 @@ import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.views.R;
 
 /**
- * Implementation for {@link ApiMethods}.
+ * Implementation for {@link ApiMethods}. Incoming requests are enqueued and processed
+ * one by one in a separate thread in FIFO order.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class ApiMethodsImpl extends Stub implements Destroyable {

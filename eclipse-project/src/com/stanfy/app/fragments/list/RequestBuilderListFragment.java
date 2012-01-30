@@ -29,7 +29,7 @@ import com.stanfy.views.list.RequestBuilderAdapter;
 import com.stanfy.views.list.RequestBuilderAdapter.RBAdapterCallback;
 
 /**
- * Base fragment that displays fetchable lists. Such fragment retains its state.
+ * Base fragment that displays fetchable lists. This fragment retains its state.
  * @param <AppT> application type
  * @param <MT> model type
  * @param <RBT> request builder type

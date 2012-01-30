@@ -20,6 +20,7 @@ import com.stanfy.views.ScrollView;
 /**
  * Base fragment class.
  * @param <AT> application type
+ * @see BaseActivityBehavior
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class BaseFragment<AT extends Application> extends Fragment {

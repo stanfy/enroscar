@@ -9,7 +9,9 @@ import com.stanfy.utils.ApiMethodsSupport;
 import com.stanfy.utils.LocationMethodsSupport;
 
 /**
+ * Activity with common behavior.
  * @param <AT> application type
+ * @see BaseActivityBehavior
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class BaseActivity<AT extends Application> extends Activity implements ActionBarActivity, RequestExecutorProvider, LocationSupportProvider {

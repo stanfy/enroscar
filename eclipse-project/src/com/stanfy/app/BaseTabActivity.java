@@ -9,7 +9,9 @@ import com.stanfy.utils.ApiMethodsSupport;
 import com.stanfy.utils.LocationMethodsSupport;
 
 /**
+ * Tab activity with common behavior.
  * @param <AT> application type
+ * @see BaseActivityBehavior
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class BaseTabActivity<AT extends Application> extends TabActivity implements ActionBarActivity, RequestExecutorProvider, LocationSupportProvider {

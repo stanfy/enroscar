@@ -15,6 +15,7 @@ import com.stanfy.utils.AppUtils;
 import com.stanfy.utils.LocationMethodsSupport;
 
 /**
+ * Common behavior for all the activities.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class BaseActivityBehavior implements RequestExecutorProvider {

@@ -1,6 +1,7 @@
 package com.stanfy;
 
 /**
+ * Debug flags. They are switched according to build configuration.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public final class DebugFlags {

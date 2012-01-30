@@ -11,6 +11,7 @@ import com.stanfy.location.MapLocationManager;
 import com.stanfy.location.MapLocationManager.LocationUpdateListener;
 
 /**
+ * Implementation of {@link LocationMethods}.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class LocationMethodsImpl extends LocationMethods.Stub implements LocationUpdateListener, Destroyable {

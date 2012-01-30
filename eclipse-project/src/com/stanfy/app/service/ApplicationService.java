@@ -13,7 +13,7 @@ import com.stanfy.DebugFlags;
 import com.stanfy.app.Application;
 
 /**
- * Base application service.
+ * Base application service which provides API and location methods interfaces.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class ApplicationService extends Service {
