@@ -1,3 +1,3 @@
-<project name="stviews" basedir="." default="help">
+<project name="enroscar" basedir="." default="help">
 	<import file="build/main-build.ant"/>
 </project>
