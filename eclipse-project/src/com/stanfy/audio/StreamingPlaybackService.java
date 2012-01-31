@@ -524,7 +524,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
 
   /**
    * Fade volume task. Inspired by lastfm:
-   * https://github.com/mxcl/lastfm-android/blob/master/app/src/fm/last/android/player/RadioPlayerService.java.
+   * https://github.com/c99koder/lastfm-android/blob/master/app/src/fm/last/android/player/RadioPlayerService.java.
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
   class FadeVolumeTask extends TimerTask {
