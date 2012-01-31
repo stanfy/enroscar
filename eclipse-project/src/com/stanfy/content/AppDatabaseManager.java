@@ -10,6 +10,7 @@ import com.stanfy.serverapi.cache.APICacheDAO;
 import com.stanfy.views.R;
 
 /**
+ * Database manager used by {@link AppContentProvider}.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class AppDatabaseManager extends SQLiteOpenHelper {

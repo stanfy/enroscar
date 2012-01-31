@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import android.graphics.Bitmap;
 
 /**
- * Images memory cache.
+ * Images memory cache which tries to keep a restricted amount of memory for storing bitmaps.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class StaticSizeImageMemoryCache implements ImageMemoryCache {

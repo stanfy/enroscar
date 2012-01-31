@@ -10,7 +10,7 @@ import com.stanfy.images.model.CachedImage;
 import com.stanfy.serverapi.cache.APICacheDAO;
 
 /**
- * Provides access to API and images cache.
+ * Default application content provider. Provides access to API and images cache.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class AppContentProvider extends ContentProvider {
@@ -58,8 +58,8 @@ public class AppContentProvider extends ContentProvider {
     uriMatcher.addURI(authority, PATH_API_CACHE, API_CACHE);
     uriMatcher.addURI(authority, PATH_IMAGES_CACHE, IMAGES_CACHE);
   }
-  
-  /** 
+
+  /**
    * Match given URI with internal matcher.
    * @param uri URI
    * @return match result

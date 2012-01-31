@@ -6,8 +6,8 @@ import android.content.Context;
 import android.media.AudioManager;
 
 /**
+ * A helper class that deals with audio focus (used for Android >=2.2).
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
- *
  */
 class AudioFocusHelper implements AudioManager.OnAudioFocusChangeListener, AudioFocusProcessor {
 

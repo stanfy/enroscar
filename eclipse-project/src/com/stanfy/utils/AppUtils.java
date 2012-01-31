@@ -23,7 +23,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 /**
- * Application utils.
+ * Application utilities.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class AppUtils {

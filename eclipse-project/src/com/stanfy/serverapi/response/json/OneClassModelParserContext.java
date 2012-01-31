@@ -8,7 +8,7 @@ import com.stanfy.serverapi.response.Response;
 
 
 /**
- * Parser context oriented to use models.
+ * Parser context focused on using models with Gson library.
  * @param <T> model type
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */

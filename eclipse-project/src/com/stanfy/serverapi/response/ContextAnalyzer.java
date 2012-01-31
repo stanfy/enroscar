@@ -5,6 +5,7 @@ import android.net.Uri;
 
 /**
  * Parser context analyzer.
+ * It can perform additional operations on retrieved after parsing models and store this data with content resolver.
  * @param <T> context type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */

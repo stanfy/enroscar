@@ -5,7 +5,7 @@ import java.util.Map;
 import android.app.Activity;
 
 /**
- * Statistics manager.
+ * Statistics manager, instantiated by application object.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public interface StatsManager {

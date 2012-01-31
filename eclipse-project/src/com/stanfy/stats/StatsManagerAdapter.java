@@ -10,6 +10,7 @@ import com.stanfy.DebugFlags;
 import com.stanfy.utils.AppUtils;
 
 /**
+ * Introduces some additional methods to {@link StatsManager} interface and implements them.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public abstract class StatsManagerAdapter implements StatsManager {

@@ -32,7 +32,7 @@ import com.stanfy.serverapi.response.Response;
 import com.stanfy.serverapi.response.ResponseHanlder;
 
 /**
- * Represents the server API method. Prepares HTTP request (URL and body),
+ * Works with the server API method. Prepares HTTP request (URL and body),
  * executes this request and processes the response.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */

@@ -21,6 +21,7 @@ import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.views.R;
 
 /**
+ * A class that takes responsibility of binding to application service and invoking remote API related methods.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class ApiMethodsSupport extends RequestPerformer {

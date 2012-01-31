@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 /**
- * Decorator that requires a buffer.
+ * Decorator that requires a buffer. It caches the bitmap whenever it's possible.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public abstract class BufferBitmapDecorator extends ImageDecoratorAdapter {

@@ -21,7 +21,7 @@ import com.stanfy.serverapi.response.ResponseHanlder;
 import com.stanfy.serverapi.response.xml.ElementProcessor.Descriptor;
 
 /**
- * XML handler.
+ * XML response handler.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class XMLHandler extends ResponseHanlder {

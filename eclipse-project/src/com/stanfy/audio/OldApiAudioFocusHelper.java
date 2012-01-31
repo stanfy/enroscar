@@ -7,8 +7,9 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
 /**
+ * Helper class that tries to deal with audio focus on devices prior Android 2.2.
+ * All we can do is listening to phone calls.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
- *
  */
 class OldApiAudioFocusHelper implements AudioFocusProcessor {
 

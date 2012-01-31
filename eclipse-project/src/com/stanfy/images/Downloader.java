@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Images downloader.
+ * Interface of images downloader.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public interface Downloader {

@@ -1,6 +1,6 @@
 package com.stanfy.serverapi.request;
 
-/** List of available operations. */
+/** Available operation. */
 public interface Operation {
 
   /** No operation code. */

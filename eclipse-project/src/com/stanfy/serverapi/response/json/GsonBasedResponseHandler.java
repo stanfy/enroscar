@@ -12,6 +12,7 @@ import com.stanfy.serverapi.response.ParserContext;
 import com.stanfy.serverapi.response.ResponseHanlder;
 
 /**
+ * JSON response handler that uses Gson library.
  * @author Roman Mazur (mailto: mazur.roman@gmail.com)
  */
 public class GsonBasedResponseHandler extends ResponseHanlder {

@@ -10,7 +10,7 @@ import android.util.Log;
 import com.stanfy.DebugFlags;
 
 /**
- * A pool of temporary storages required for images decoding.
+ * A pool of temporary storages required for images decoding or other IO operations.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class BuffersPool {

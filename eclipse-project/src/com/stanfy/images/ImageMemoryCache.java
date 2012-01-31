@@ -3,6 +3,7 @@ package com.stanfy.images;
 import android.graphics.Bitmap;
 
 /**
+ * Interface of images memory cache.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public interface ImageMemoryCache {

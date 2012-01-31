@@ -3,7 +3,7 @@ package com.stanfy.content;
 import java.io.Serializable;
 
 /**
- * Fiction object.
+ * Fiction object. Often it's inserted by analyzers to original lists in order to introduce list sections.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public abstract class FictionObject implements UniqueObject, Serializable {

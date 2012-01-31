@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
 import com.stanfy.views.R;
 
 /**
- * Cached image.
+ * Cached image entity.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class CachedImage {

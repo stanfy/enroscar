@@ -32,7 +32,8 @@ import com.stanfy.DebugFlags;
 import com.stanfy.views.R;
 
 /**
- * Service for playing radio. Requires <code>android.permission.WAKE_LOCK"</code> permission.
+ * Service for playing music in background. Successfully used for streaming radio.
+ * Requires <code>android.permission.WAKE_LOCK"</code> permission.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class StreamingPlaybackService extends Service implements OnPreparedListener, OnErrorListener, OnCompletionListener {

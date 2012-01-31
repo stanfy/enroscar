@@ -15,7 +15,7 @@ import android.util.Log;
 import com.stanfy.DebugFlags;
 
 /**
- * Base for streaming service controllers.
+ * Base class for audio streaming service controllers. Use to implement GUI of audio players.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public abstract class StreamingPlaybackController {

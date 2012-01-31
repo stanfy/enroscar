@@ -13,6 +13,7 @@ import com.stanfy.serverapi.response.xml.ElementProcessor.Descriptor;
 import com.stanfy.serverapi.response.xml.XMLHandler;
 
 /**
+ * Request method with {@link XMLHandler}.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class XMLRequestMethod extends RequestMethod {

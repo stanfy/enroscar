@@ -8,6 +8,7 @@ import com.stanfy.serverapi.response.ResponseHanlder;
 import com.stanfy.serverapi.response.json.GsonBasedResponseHandler;
 
 /**
+ * Request method with {@link GsonBasedResponseHandler}.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class JSONRequestMethod extends RequestMethod {

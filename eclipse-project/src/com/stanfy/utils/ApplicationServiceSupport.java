@@ -12,6 +12,7 @@ import com.stanfy.DebugFlags;
 import com.stanfy.app.Application;
 
 /**
+ * Base class for helpers that can bind to application service.
  * @param <T> service object type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */

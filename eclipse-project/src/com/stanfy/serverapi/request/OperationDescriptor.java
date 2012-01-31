@@ -2,7 +2,6 @@ package com.stanfy.serverapi.request;
 
 /**
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
- *
  */
 public class OperationDescriptor implements Operation {
 

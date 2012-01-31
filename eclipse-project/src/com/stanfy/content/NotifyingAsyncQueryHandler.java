@@ -15,6 +15,9 @@ import android.net.Uri;
  * <p>
  * This pattern can be used to perform background queries without leaking
  * {@link android.app.Context} objects.
+ *
+ * This class was taken from <a href="http://code.google.com/p/iosched">Google IO Schedule project</a>
+ * and a bit modified.
  */
 public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
 

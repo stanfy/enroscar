@@ -29,6 +29,7 @@ public class DefaultDownloader implements Downloader {
 
   @Override
   public void finish(final String url) {
+    // XXX we currently do not release http clients, there some issues with reusing them
   }
 
 }

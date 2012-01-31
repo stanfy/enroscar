@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 /**
- * Simple adapter.
+ * Simple adapter for decorators. Ensures that you do not receive null canvas.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public abstract class ImageDecoratorAdapter implements ImageDecorator {

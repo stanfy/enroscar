@@ -22,7 +22,7 @@ import com.stanfy.utils.GUIUtils;
 import com.stanfy.views.R;
 
 /**
- * Base step logic.
+ * Base class describing logic of a set of views that represent input form.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public abstract class BaseFormLogic implements OnClickListener, Destroyable, DialogInterface.OnClickListener {
