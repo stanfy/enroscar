@@ -12,7 +12,7 @@ import com.stanfy.serverapi.response.Response;
  * @param <T> model type
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public abstract class OneClassModelParserContext<T extends Serializable> extends ParserContext {
+public class OneClassModelParserContext<T extends Serializable> extends ParserContext {
 
   /** Model instance. */
   private T model;
@@ -23,6 +23,10 @@ public abstract class OneClassModelParserContext<T extends Serializable> extends
   public OneClassModelParserContext() { this(null); }
 
   public OneClassModelParserContext(final TypeToken<T> type) { this.typeToken = type; }
+
+  public static <MT extends Serializable> OneClassModelParserContext<MT> create(final TypeToken<MT> token) {
+    return new OneClassModelParserContext<MT>(token);
+  }
 
   /** @return the typeToken */
   public TypeToken<T> getTypeToken() { return typeToken; }

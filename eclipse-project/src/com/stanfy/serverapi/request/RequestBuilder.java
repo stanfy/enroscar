@@ -9,6 +9,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.app.Application;
+import com.stanfy.app.RequestExecutorProvider;
 
 /**
  * Base class for request builders.
@@ -33,6 +34,10 @@ public abstract class RequestBuilder {
 
   /** Operation. */
   private final Operation operation = getOperation();
+
+  public RequestBuilder(final Context context) {
+    this(context, context instanceof RequestExecutorProvider ? ((RequestExecutorProvider)context).getRequestExecutor() : null);
+  }
 
   public RequestBuilder(final Context context, final RequestExecutor executor) {
     final Application app = (Application)context.getApplicationContext();

@@ -134,9 +134,9 @@ public class Application extends android.app.Application implements ImagesManage
 
   /**
    * Override this method if you want to achieve custom HTTP requests building and response processing.
-   * @return new instance of {@link RequestMethodHelper} with XML as main API format
+   * @return new instance of {@link RequestMethodHelper} with JSON as main API format
    */
-  protected RequestMethodHelper createRequestMethodHelper() { return new RequestMethodHelper(RequestMethodHelper.TYPE_XML, null); }
+  protected RequestMethodHelper createRequestMethodHelper() { return new RequestMethodHelper(RequestMethodHelper.TYPE_JSON, null); }
 
   /** @return the requestMethodHelper */
   public final synchronized RequestMethodHelper getRequestMethodHelper() {

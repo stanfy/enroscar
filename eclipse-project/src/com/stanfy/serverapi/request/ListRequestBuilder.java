@@ -17,6 +17,10 @@ public abstract class ListRequestBuilder extends RequestBuilder {
   /** Offset value. */
   private ParameterValue offsetValue;
 
+  public ListRequestBuilder(final Context context) {
+    super(context);
+  }
+
   public ListRequestBuilder(final Context context, final RequestExecutor executor) {
     super(context, executor);
   }
