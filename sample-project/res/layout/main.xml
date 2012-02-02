@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MainContainer"
+    >
+
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/hello_fragment" 
+      />
+  
+  <com.stanfy.views.LoadableImageView
+      android:layout_width="180dp"
+      android:layout_height="50dp"
+      android:id="@+id/logo"
+      />
+  
+  <Button
+      style="@style/WrapContent"
+      android:text="@string/tweets" 
+      android:id="@+id/tweets_btn"
+      />
+  
+</LinearLayout>

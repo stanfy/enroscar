@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.stanfy.enroscar.sample"
+    android:versionCode="1"
+    android:versionName="1.0" 
+    >
+
+  <uses-sdk 
+      android:minSdkVersion="7" 
+      android:targetSdkVersion="10" 
+      />
+  
+  <!-- It's obvious. -->
+  <uses-permission android:name="android.permission.INTERNET" />
+  <!-- We try to store cached images on SD card. -->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />  
+  
+  <!-- Application description -->
+  <application
+      android:name=".SampleApplication"
+      android:icon="@drawable/ic_launcher"
+      android:label="@string/app_name"
+      android:theme="@android:style/Theme.Light" 
+      >
+    
+    <!-- Our first activity. -->
+    <activity
+        android:name=".SampleActivity"
+        >
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    
+    <!-- Main application service. Deals with remote server API. -->
+    <service android:name="com.stanfy.app.service.ApplicationService" />
+    
+    <!-- Application content provider -->
+    <!-- Look at android:authorities="com.stanfy.enroscar.sample". 
+         It should be equal to APP_AUTHORITY value which you pass to setImagesDAOAuthority in the application class.  -->
+    <provider
+        android:name="com.stanfy.content.DefaultContentProvider"
+        android:authorities="com.stanfy.enroscar.sample"
+        />
+      
+  </application>
+
+</manifest>

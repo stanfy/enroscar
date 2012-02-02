@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <string name="hello">Hello World!</string>
+  <string name="app_name">Enroscar Sample</string>
+  <string name="hello_fragment">Hello from fragment</string>
+  <string name="tweets">Show tweets</string>
+  
+</resources>
