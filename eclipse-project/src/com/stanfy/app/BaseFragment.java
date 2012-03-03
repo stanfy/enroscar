@@ -44,6 +44,15 @@ public class BaseFragment<AT extends Application> extends Fragment {
   private float scrollX = -1, scrollY = -1;
 
   @Override
+  public void onAttach(final Activity activity) {
+    if (activity instanceof BaseActivity) {
+      throw new IllegalStateException("Incorrect activity class. Enroscar fragments can be attached to activities that extend "
+          + BaseActivity.class.getCanonicalName() + " only");
+    }
+    super.onAttach(activity);
+  }
+
+  @Override
   public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     firstStart = true;
@@ -82,7 +91,7 @@ public class BaseFragment<AT extends Application> extends Fragment {
       XXX I don't know the reason but sometimes after coming back here from other activity all layout requests are blocked. :(
       It looks like some concurrency issue or a views tree traversal bug
      */
-    final View contentView = getOwnerActivity().findViewById(android.R.id.content);
+    final View contentView = getActivity().findViewById(android.R.id.content);
     if (contentView != null) {
       final ViewParent root = contentView.getParent();
       if (contentView.isLayoutRequested() && !root.isLayoutRequested()) {
