@@ -4,8 +4,8 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="/enroscar-sherlock/libs/android-support-v4.jar" sourcepath="/enroscar-sherlock/libs/src/android-support-v4-r6-sources.zip"/>
-	<classpathentry kind="lib" path="/enroscar-sherlock/libs/FlurryAgent.jar"/>
-	<classpathentry kind="lib" path="/enroscar-sherlock/libs/gson-2.1.jar" sourcepath="/enroscar-sherlock/libs/src/gson-2.1-sources.jar"/>
+	<classpathentry kind="lib" path="/enroscar/libs/android-support-v4.jar" sourcepath="/Users/rmazur/dev/android-sdk/extras/android/support/v4/src"/>
+	<classpathentry kind="lib" path="/enroscar/libs/FlurryAgent.jar"/>
+	<classpathentry kind="lib" path="/enroscar/libs/gson-2.1.jar" sourcepath="/enroscar/libs/src/gson-2.1-sources.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

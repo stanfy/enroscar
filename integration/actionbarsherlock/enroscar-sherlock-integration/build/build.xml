@@ -1,0 +1,11 @@
+<project name="enroscar-sherlock-integration" default="build" basedir="./..">
+	
+	<property name="build.library.path" value="${basedir}/../../../eclipse-project" />
+	<import file="${build.library.path}/build/main-build.ant"/>
+	
+	<target name="build" depends="clean, release" description="Build a jar file">
+		<echo message="Copy newly created jar file" />
+		<copy file="${out.library.jar.file}" tofile="${output.release}/${ant.project.name}.jar" />
+	</target>
+	
+</project>
