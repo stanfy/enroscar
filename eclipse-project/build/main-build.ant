@@ -268,16 +268,21 @@
     </mail>
   </target>
 
-  <target name="-sync-customer" if="customer.sync.true">
-    <property name="customer.path" value="${scp.customer.dir}/${release.path}"/>
-    <echo>Sync customer directory ${customer.path}...</echo>
-    <sshexec host="${scp.host}" port="${scp.port}" password="${scp.password}" username="${scp.user}" command="mkdir -p ${customer.path}" failonerror="false" />
-    <sshexec host="${scp.host}" port="${scp.port}" password="${scp.password}" username="${scp.user}" command="rm ${customer.path}/*.apk" failonerror="false" />
-    <scp todir="${scp.user}@${scp.host}:${customer.path}" password="${scp.password}" port="${scp.port}">
-      <fileset dir="${output.release}/${release.path}" />
+	<target name="-publish-client" if="publish.client">
+	  <property name="customer.path" value="${scp.customer.dir}/${customer.name}/releases/android"/>
+	  <echo>Deploy to customer directory ${customer.path}...</echo>
+	  <scp todir="${scp.user}@${scp.host}:${customer.path}" password="${scp.password}" port="${scp.port}">
+	    <fileset dir="${output.release}/${release.path}" />
+	  </scp>
+	</target>
+
+  <target name="-publish-dev" if="publish.dev">
+    <echo message="Sending release to the repository....."/>
+    <scp todir="${scp.user}@${scp.host}:${scp.release.dir}" password="${scp.password}" port="${scp.port}">
+      <fileset dir="${output.release}" includes="${release.path}/**"/>
     </scp>
   </target>
-
+	
   <target name="-copy-jar-to-bin" if="android.library">
     <fileset id="lib.jar.path" dir="${output.temp.android}" includes="classes.jar" />
     <copy todir="bin"><fileset refid="lib.jar.path"/></copy>
@@ -480,36 +485,58 @@
     
   </target>
 
-  <target name="publish" depends="build, codecheck" description="--> publish the built application">
+	<target name="publish" depends="build, codecheck" description="--> publish the built application">
     <tstamp>
-      <format property="publish.date" pattern="yyyy-MM-dd" />
+      <format property="publish.date" pattern="yyyyMMdd-HHmmss" />
     </tstamp>
     <xmltask source="AndroidManifest.xml">
       <cut path="/manifest/@android:versionName" property="publish.version" />
     </xmltask>
     <revision property="revision.number"/>
-    <property name="publish.name" value="${ant.project.name}-${publish.version}-${publish.date}-r${revision.number}${output.publish.name.prefix}.apk" />
+    <!--property name="publish.name" value="${ant.project.name}_trunk_${publish.version}_manual_${publish.date}_r${revision.number}${output.publish.name.prefix}.apk" /-->
+
+    <condition property="tag.name" value="${TAG_NAME}" else="trunk">
+      <isset property="TAG_NAME" />
+    </condition>
+    <condition property="init.type" value="auto" else="manual">
+      <!--isset property="INIT_TYPE" /-->
+      <and>
+        <isset property="env.JOB_NAME" />
+        <contains string="${env.JOB_NAME}" substring="-auto" />
+      </and>
+    </condition>
+    <condition property="build.number" value="${env.BUILD_NUMBER}" else="0">
+      <isset property="env.BUILD_NUMBER" />
+    </condition>
+    
+    <property name="publish.name" value="${ant.project.name}_${tag.name}_${publish.version}_${init.type}_${publish.date}_r${revision.number}b${build.number}.apk" />
     <property name="publish.name.mapping" value="${publish.name}-mapping.txt" />
+
     <echo message="Create APK ${publish.name}..." />
     <mkdir dir="${output.release.app}"/>
     <copy file="${output.release}/${ant.project.name}-release.apk" tofile="${output.release.app}/${publish.name}" />
     <copy file="${output.release}/${ant.project.name}-mapping.txt" tofile="${output.release.app}/${publish.name.mapping}" failonerror="false" />
     
     <property file="${repo.access.file}" />
-    <echo message="Sending release to the repository....."/>
-    <scp todir="${scp.user}@${scp.host}:${scp.release.dir}" password="${scp.password}" port="${scp.port}">
-      <fileset dir="${output.release}" includes="${release.path}/**"/>
-    </scp>
-    
-    <antcall target="-send-release-mail" />
-    
-    <condition property="customer.sync.true">
-      <equals arg1="${customer.sync}" arg2="true"/>
+
+    <condition property="publish.dev">
+      <or>
+        <not><isset property="env.BuildDev" /></not>
+        <equals arg1="${env.BuildDev}" arg2="true"/>
+      </or>
     </condition>
-    <antcall target="-sync-customer"/>
+    <antcall target="-publish-dev"/>
+
+    <condition property="publish.client">
+      <or>
+        <equals arg1="${customer.sync}" arg2="true"/>
+        <equals arg1="${env.BuildClient}" arg2="true"/>
+      </or>
+    </condition>
+    <antcall target="-publish-client"/>
 
   </target>
-  
+	
   <target name="export" description="--> export application sources">
     <do-only-if-not-library elseText="export target should be called for main project">
       <delete dir="${output.release}/export" failonerror="false"/>
@@ -569,7 +596,13 @@
     </do-only-if-not-library>
   </target>
 
-  <target name="help" description="--> help info">
+	<target name="build-jenkins" depends="clean">
+    <antcall target="publish">
+      <param name="customer.sync" value="${BuildClient}"/>
+    </antcall>
+  </target>
+	
+	<target name="help" description="--> help info">
     <echo>
       Android build for Stanfy.
     </echo>
