@@ -5,6 +5,9 @@ import android.app.Activity;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.internal.view.menu.MenuItemMule;
+import com.actionbarsherlock.internal.view.menu.MenuMule;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -12,9 +15,9 @@ import com.actionbarsherlock.view.MenuItem;
 public class SherlockListFragment extends ListFragment {
   private static final String TAG = "SherlockListFragment";
 
-  private SherlockFragmentActivity<?> mActivity;
+  private SherlockFragmentActivity mActivity;
 
-  public SherlockFragmentActivity<?> getSherlockActivity() {
+  public SherlockFragmentActivity getSherlockActivity() {
     return mActivity;
   }
 
@@ -23,7 +26,7 @@ public class SherlockListFragment extends ListFragment {
     if (!(activity instanceof SherlockFragmentActivity)) {
       throw new IllegalStateException(TAG + " must be attached to a SherlockFragmentActivity.");
     }
-    mActivity = (SherlockFragmentActivity<?>)activity;
+    mActivity = (SherlockFragmentActivity)activity;
 
     super.onAttach(activity);
   }

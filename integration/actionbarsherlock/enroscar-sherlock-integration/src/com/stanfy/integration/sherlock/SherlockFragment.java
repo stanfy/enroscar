@@ -4,6 +4,8 @@ import static com.stanfy.integration.sherlock.SherlockFragmentActivity.DEBUG;
 import android.app.Activity;
 import android.util.Log;
 
+import com.actionbarsherlock.internal.view.menu.MenuItemMule;
+import com.actionbarsherlock.internal.view.menu.MenuMule;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -16,11 +18,15 @@ public class SherlockFragment<AT extends Application> extends BaseFragment<AT> {
   @Override
   protected SherlockFragmentActivity<AT> getOwnerActivity() { return (SherlockFragmentActivity<AT>)super.getOwnerActivity(); }
 
+  private SherlockFragmentActivity<?> mActivity;
+
   @Override
   public void onAttach(final Activity activity) {
     if (!(activity instanceof SherlockFragmentActivity)) {
       throw new IllegalStateException(TAG + " must be attached to a SherlockFragmentActivity.");
     }
+    mActivity = (SherlockFragmentActivity<?>)activity;
+
     super.onAttach(activity);
   }
 
@@ -29,7 +35,7 @@ public class SherlockFragment<AT extends Application> extends BaseFragment<AT> {
     if (DEBUG) Log.d(TAG, "[onCreateOptionsMenu] menu: " + menu + ", inflater: " + inflater);
 
     if (menu instanceof MenuMule) {
-      onCreateOptionsMenu(((MenuMule)menu).unwrap(), getOwnerActivity().getSupportMenuInflater());
+      onCreateOptionsMenu(((MenuMule)menu).unwrap(), mActivity.getSupportMenuInflater());
     }
   }
 

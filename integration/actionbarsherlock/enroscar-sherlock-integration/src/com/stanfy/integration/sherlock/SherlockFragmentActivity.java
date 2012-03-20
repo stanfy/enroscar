@@ -16,11 +16,12 @@ import com.actionbarsherlock.ActionBarSherlock.OnCreatePanelMenuListener;
 import com.actionbarsherlock.ActionBarSherlock.OnMenuItemSelectedListener;
 import com.actionbarsherlock.ActionBarSherlock.OnPreparePanelListener;
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.internal.view.menu.MenuItemMule;
+import com.actionbarsherlock.internal.view.menu.MenuMule;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.stanfy.DebugFlags;
 import com.stanfy.app.Application;
 import com.stanfy.app.BaseFragmentActivity;
 
@@ -29,7 +30,7 @@ import com.stanfy.app.BaseFragmentActivity;
  */
 public abstract class SherlockFragmentActivity<AT extends Application> extends BaseFragmentActivity<AT> implements OnCreatePanelMenuListener, OnPreparePanelListener, OnMenuItemSelectedListener, OnActionModeStartedListener, OnActionModeFinishedListener {
 
-  static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  static final boolean DEBUG = false;
   private static final String TAG = "SherlockFragmentActivity";
 
   private ActionBarSherlock mSherlock;
