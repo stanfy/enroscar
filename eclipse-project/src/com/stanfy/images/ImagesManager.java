@@ -35,6 +35,7 @@ import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.images.cache.ImageMemoryCache;
 import com.stanfy.images.model.CachedImage;
 import com.stanfy.utils.AppUtils;
 import com.stanfy.views.ImagesLoadListenerProvider;
@@ -50,7 +51,7 @@ import com.stanfy.views.RemoteImageDensityProvider;
 public class ImagesManager<T extends CachedImage> {
 
   /** Logging tag. */
-  private static final String TAG = "ImagesManager";
+  static final String TAG = "ImagesManager";
 
   /** Pattern to cut the images sources from HTML. */
   protected static final Pattern IMG_URL_PATTERN = Pattern.compile("<img.*?src=\"(.*?)\".*?>");

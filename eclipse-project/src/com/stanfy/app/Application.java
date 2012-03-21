@@ -108,7 +108,7 @@ public class Application extends android.app.Application implements ImagesManage
     result.setDownloader(downloader);
     result.setImagesManager(imagesManager);
     result.setImagesDAO(imagesDAO);
-    result.setMemCache(MemCacheMode.STATIC);
+    result.setMemCache(MemCacheMode.LRU);
     return result;
   }
 

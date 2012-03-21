@@ -1,7 +1,8 @@
-package com.stanfy.images;
+package com.stanfy.images.cache;
 
 import java.lang.ref.SoftReference;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 import android.graphics.Bitmap;
 

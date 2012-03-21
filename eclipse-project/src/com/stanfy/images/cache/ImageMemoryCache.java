@@ -1,4 +1,4 @@
-package com.stanfy.images;
+package com.stanfy.images.cache;
 
 import android.graphics.Bitmap;
 

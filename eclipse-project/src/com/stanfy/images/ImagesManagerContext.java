@@ -7,6 +7,10 @@ import android.net.Uri;
 import android.view.View;
 
 import com.stanfy.images.ImagesManager.ImageHolder;
+import com.stanfy.images.cache.ImageMemoryCache;
+import com.stanfy.images.cache.SoftImageMemoryCache;
+import com.stanfy.images.cache.StaticSizeImageMemoryCache;
+import com.stanfy.images.cache.SupportLruImageMemoryCache;
 import com.stanfy.images.model.CachedImage;
 
 /**
@@ -29,8 +33,29 @@ public class ImagesManagerContext<T extends CachedImage> {
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
   public static enum MemCacheMode {
-    /** Variants of the cache. */
-    STATIC, SOFT;
+    /** Based on hash map. */
+    STATIC {
+      @Override
+      public ImageMemoryCache createCache() {
+        return new StaticSizeImageMemoryCache();
+      }
+    },
+    /** Based on soft references. */
+    SOFT {
+      @Override
+      public ImageMemoryCache createCache() {
+        return new SoftImageMemoryCache();
+      }
+    },
+    /** Based on LRU cache class. */
+    LRU {
+      @Override
+      public ImageMemoryCache createCache() {
+        return new SupportLruImageMemoryCache();
+      }
+    };
+
+    public abstract ImageMemoryCache createCache();
   }
 
   /** @param count count image loading of executors */
@@ -58,14 +83,10 @@ public class ImagesManagerContext<T extends CachedImage> {
 
   /** @param mode memcache mode */
   public void setMemCache(final MemCacheMode mode) {
-    switch (mode) {
-    case STATIC:
-      imagesManager.setMemCache(new StaticSizeImageMemoryCache());
-      break;
-    case SOFT: // fall through
-    default:
-      imagesManager.setMemCache(new SoftImageMemoryCache());
+    if (mode == null) {
+      throw new IllegalArgumentException("Mem cache mode cannot be null");
     }
+    imagesManager.setMemCache(mode.createCache());
   }
 
   public void ensureImages(final Context context, final List<T> images) {

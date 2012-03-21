@@ -1,8 +1,9 @@
-package com.stanfy.images;
+package com.stanfy.images.cache;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+
 
 import android.graphics.Bitmap;
 
