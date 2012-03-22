@@ -14,6 +14,7 @@ import com.stanfy.utils.LocationMethodsSupport;
  * @see BaseActivityBehavior
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
+@SuppressWarnings("deprecation")
 public class BaseTabActivity<AT extends Application> extends TabActivity implements ActionBarActivity, RequestExecutorProvider, LocationSupportProvider {
 
   /** Behavior. */
