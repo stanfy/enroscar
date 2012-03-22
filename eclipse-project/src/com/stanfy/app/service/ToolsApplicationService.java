@@ -119,6 +119,7 @@ public class ToolsApplicationService extends IntentService {
       return;
     }
 
+    @SuppressWarnings("unused")
     int count = 0, defaultTypeCount = 0;
     try {
       while (dirSize > maxCacheSize && candidates.moveToNext()) {

@@ -24,6 +24,9 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
   /** Reference. */
   private WeakReference<AsyncQueryListener> mListener;
 
+  /** Flag to automatically close cursor. */
+  private final boolean closeCursor;
+
   /**
    * Interface to listen for completed query operations.
    */
@@ -59,8 +62,12 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
   }
 
   public NotifyingAsyncQueryHandler(final ContentResolver resolver, final AsyncQueryListener listener) {
+    this(resolver, listener, true);
+  }
+  public NotifyingAsyncQueryHandler(final ContentResolver resolver, final AsyncQueryListener listener, final boolean closeCursor) {
     super(resolver);
     setQueryListener(listener);
+    this.closeCursor = closeCursor;
   }
 
   /**

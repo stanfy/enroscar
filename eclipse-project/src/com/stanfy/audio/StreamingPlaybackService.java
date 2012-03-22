@@ -76,7 +76,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
   public static final int DEFAULT_VOLUME = 75;
 
   /** Binder. */
-  private final StreamingPlaybackImpl interfaceImpl = new StreamingPlaybackImpl(this);
+  private final StreamingPlaybackImpl interfaceImpl = createPlaybackImpl();
 
   /** Stream URL. */
   Uri streamUrl;
@@ -199,6 +199,8 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     return null;
   }
 
+  protected StreamingPlaybackImpl createPlaybackImpl() { return new StreamingPlaybackImpl(this); }
+
   /** @param allowPause the allowPause to set */
   public void setAllowPause(final boolean allowPause) { this.allowPause = allowPause; }
 
@@ -301,12 +303,12 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     }
   }
 
-  private float trasformVolume() {
+  protected float trasformVolume() {
     final int max = 100;
     return (float)Math.exp((max - volume) * VOLUME_BASE);
   }
 
-  private void volumeSetup() {
+  protected void volumeSetup() {
     if (mediaPlayer != null) {
       final float v = trasformVolume();
       if (DEBUG) { Log.v(TAG, "Set volume " + v + "/" + volume); }
@@ -321,41 +323,45 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     }
   }
 
-  private void start() {
+  protected void start() {
     preparing = false;
     volumeSetup();
     mediaPlayer.start();
     startForeground(NOTIFICATION_ID, setupNotification(buildNotification()));
   }
 
-  private void stopInfoGetter() {
+  protected void stopInfoGetter() {
     if (infoGetter != null) {
       infoGetter.interrupt();
       infoGetter = null;
     }
   }
 
-  private void startInfoGetter() {
+  protected void startInfoGetter() {
     if (getInfo && infoGetter == null) {
       infoGetter = new GetAudioInfoThread(this);
       infoGetter.start();
     }
   }
 
-  void play(final Uri url) {
+  protected String prepareUrl(final Uri uri) {
+    String convertedUrl = uri.toString();
+    // It's strange but media player can't play some encoded URIs
+    if (convertedUrl.startsWith("file://")) {
+      convertedUrl = Uri.decode(convertedUrl);
+      if (DEBUG) { Log.d(TAG, "Decoded URI: " + convertedUrl); }
+    }
+    return convertedUrl;
+  }
+
+  public void play(final Uri url) {
     killCurrentMedaiPlayer();
     ensureMediaPlayer();
     streamUrl = url;
     stopInfoGetter();
     if (url == null) { return; }
     try {
-      String convertedUrl = streamUrl.toString();
-      // It's strange but media player can't play some encoded URIs
-      if (convertedUrl.startsWith("file://")) {
-        convertedUrl = Uri.decode(convertedUrl);
-        Log.d(TAG, "Decoded URI: " + convertedUrl);
-      }
-      mediaPlayer.setDataSource(convertedUrl);
+      mediaPlayer.setDataSource(prepareUrl(url));
       mediaPlayer.prepareAsync();
       preparing = true;
       if (!wifiLock.isHeld()) { wifiLock.acquire(); }
@@ -370,7 +376,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     }
   }
 
-  private void killCurrentMedaiPlayer() {
+  protected void killCurrentMedaiPlayer() {
     preparing = false;
     paused = false;
     if (mediaPlayer != null) {
@@ -379,7 +385,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     }
   }
 
-  void stop() {
+  public void stop() {
     if (mediaPlayer != null) {
       stopForeground(true);
       if (mediaPlayer.isPlaying()) { mediaPlayer.stop(); }
@@ -391,7 +397,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     }
   }
 
-  void pause() {
+  public void pause() {
     if (!isPlayerReady()) { return; }
     if (allowPause) {
       paused = true;
@@ -405,7 +411,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     stopInfoGetter();
   }
 
-  void resume() {
+  public void resume() {
     if (!isPlayerReady()) { return; }
     paused = false;
     if (allowPause) {
@@ -416,23 +422,23 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     }
   }
 
-  private boolean isPlayerReady() { return mediaPlayer != null && streamUrl != null && !preparing; }
+  protected boolean isPlayerReady() { return mediaPlayer != null && streamUrl != null && !preparing; }
 
-  void seekTo(final int position) {
+  public void seekTo(final int position) {
     if (isPlayerReady()) {
       mediaPlayer.seekTo(position);
     }
   }
 
-  void setListener(final StreamingPlaybackListener listener) { this.listener = listener; }
+  public void setListener(final StreamingPlaybackListener listener) { this.listener = listener; }
 
-  private void resetAudioInfo() {
+  public void resetAudioInfo() {
     title = null;
     author = null;
     album = null;
   }
 
-  void updateAudioInfo(final String metadata) {
+  public void updateAudioInfo(final String metadata) {
     if (DEBUG) { Log.i(TAG, metadata); }
     final Matcher m = METADATA_PATTERN.matcher(metadata);
     if (m.matches()) {
@@ -446,7 +452,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     handler.sendEmptyMessage(MSG_META_UPDATED);
   }
 
-  void notifyListener() {
+  public void notifyListener() {
     if (listener != null) {
       try {
         listener.onAudioInfo(title, author, album);
@@ -456,7 +462,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     }
   }
 
-  void calmDown() {
+  public void calmDown() {
     if (mediaPlayer != null) {
       lastSavedVolume = volume;
       final int duration = 1500;
@@ -464,7 +470,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
       currentVolumeTask = new FadeVolumeTask(FadeVolumeTask.MODE_FADE_OUT, duration);
     }
   }
-  void restoreVolume() {
+  protected void restoreVolume() {
     if (mediaPlayer != null) {
       if (currentVolumeTask != null) { currentVolumeTask.cancel(); }
       if (lastSavedVolume > 0) {
@@ -474,23 +480,17 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     }
   }
 
-  void setVolume(final int value) {
+  public void setVolume(final int value) {
     this.volume = value;
     volumeSetup();
   }
 
   /** @return the title */
-  public String getTitle() {
-    return title;
-  }
+  public String getTitle() { return title; }
   /** @return the album */
-  public String getAlbum() {
-    return album;
-  }
+  public String getAlbum() { return album; }
   /** @return the author */
-  public String getAuthor() {
-    return author;
-  }
+  public String getAuthor() { return author; }
 
   /** @return duration in milliseconds */
   public int getDuration() { return isPlayerReady() ? mediaPlayer.getDuration() : 0; }
@@ -510,7 +510,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
   /**
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  private class InternalHandler extends Handler {
+  protected class InternalHandler extends Handler {
     @Override
     public void handleMessage(final Message msg) {
       switch (msg.what) {
@@ -527,7 +527,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
    * https://github.com/c99koder/lastfm-android/blob/master/app/src/fm/last/android/player/RadioPlayerService.java.
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  class FadeVolumeTask extends TimerTask {
+  protected class FadeVolumeTask extends TimerTask {
 
     /** Fade in mode. */
     public static final int MODE_FADE_IN = 0;

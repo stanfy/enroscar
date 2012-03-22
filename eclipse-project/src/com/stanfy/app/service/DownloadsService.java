@@ -22,10 +22,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.content.ModernAsyncTask;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -226,13 +226,16 @@ public class DownloadsService extends Service {
    * Download task.
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  public class DownloadTask extends ModernAsyncTask<Request, Float, Request> {
+  public class DownloadTask extends AsyncTask<Request, Float, Void> {
     /** Notification ID. */
     private Request request;
     /** Click intent. */
     private Intent clickIntent = new Intent(ACTION_DOWNLOAD_CLICK);
     /** Notification time. */
     private long notificationTime = System.currentTimeMillis();
+
+    /** @return the request */
+    public Request getRequest() { return request; }
 
     protected void updateDownloadProgress(final Float progress) {
       final RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification_download);
@@ -252,7 +255,7 @@ public class DownloadsService extends Service {
     }
 
     @Override
-    protected Request doInBackground(final Request... params) {
+    protected Void doInBackground(final Request... params) {
       final Request request = params[0];
       request.success = false;
 
@@ -269,7 +272,7 @@ public class DownloadsService extends Service {
         destination = new File(new URI(request.destinationUri.toString()));
       } catch (final URISyntaxException e) {
         Log.e(TAG, "Bad URI", e);
-        return request;
+        return null;
       }
 
       InputStream input = null;
@@ -303,10 +306,10 @@ public class DownloadsService extends Service {
           }
         } while (count != -1);
         request.success = true;
-        return request;
+        return null;
       } catch (final Exception e) {
         Log.e(TAG, "Cannot download " + request.uri, e);
-        return request;
+        return null;
       } finally {
           try {
             if (input != null) { input.close(); }
@@ -318,12 +321,12 @@ public class DownloadsService extends Service {
       }
     }
     @Override
-    protected void onCancelled(final Request result) {
-      onTaskFinish(this, result);
+    protected void onCancelled() {
+      onTaskFinish(this, request);
     }
     @Override
-    protected void onPostExecute(final Request result) {
-      onTaskFinish(this, result);
+    protected void onPostExecute(final Void result) {
+      onTaskFinish(this, request);
     }
   }
 

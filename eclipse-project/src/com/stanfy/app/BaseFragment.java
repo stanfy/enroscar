@@ -3,7 +3,6 @@ package com.stanfy.app;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NoSaveStateFrameLayout;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +36,9 @@ public class BaseFragment<AT extends Application> extends Fragment {
   private static final String STATE_SCROLL_X = "_state_scroll_x",
                               STATE_SCROLL_Y = "_state_scroll_y";
 
+  /** Class name of NoSaveStateFrameLayout. */
+  private static final String CLASS_NOSAVE_STATE_FRAME_LAYOUT = "NoSaveStateFrameLayout";
+
   /** First start flag. */
   private boolean firstStart = false;
 
@@ -69,8 +71,9 @@ public class BaseFragment<AT extends Application> extends Fragment {
 
   protected View getMainView() {
     View view = getView();
-    if (view != null && view instanceof NoSaveStateFrameLayout) {
-      view = ((NoSaveStateFrameLayout)view).getChildAt(0);
+    // XXX last versions of Android support package (starting with rev6) removed public visibility of NoSaveStateFrameLayout class
+    if (view != null && view instanceof FrameLayout && CLASS_NOSAVE_STATE_FRAME_LAYOUT.equals(view.getClass().getSimpleName())) {
+      view = ((FrameLayout)view).getChildAt(0);
     }
     if (view != null && view instanceof ProgressWrapperFrameLayout) {
       view = ((ProgressWrapperFrameLayout) view).getMainView();

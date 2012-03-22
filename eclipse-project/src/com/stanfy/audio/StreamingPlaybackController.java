@@ -119,6 +119,8 @@ public abstract class StreamingPlaybackController {
   protected void setPlaying(final boolean playing) { this.playing = playing; }
   /** @param paused the paused to set */
   protected void setPaused(final boolean paused) { this.paused = paused; }
+  /** @param preparing the preparing to set */
+  protected void setPreparing(final boolean preparing) { this.preparing = preparing; }
 
   public void start() {
     if (context instanceof Activity) {

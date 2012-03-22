@@ -3,6 +3,7 @@ package com.stanfy.utils;
 import java.io.File;
 
 import android.content.Context;
+import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.util.Log;
@@ -19,7 +20,7 @@ public class GingerbreadUtils extends EclairUtils {
 
   @Override
   public File getMusicDirectory() { return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC); }
-  
+
   @Override
   public void setOverscrollNever(final View view) { view.setOverScrollMode(View.OVER_SCROLL_NEVER); }
 
@@ -36,6 +37,11 @@ public class GingerbreadUtils extends EclairUtils {
       .penaltyLog()
       .build()
     );
+  }
+
+  @Override
+  public void applySharedPreferences(final Editor editor) {
+    editor.apply();
   }
 
 }

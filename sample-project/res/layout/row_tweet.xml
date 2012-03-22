@@ -1,0 +1,25 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:enroscar="http://schemas.android.com/apk/res/com.stanfy.enroscar.sample"
+    style="@style/StretchHorizontallyContainer"
+    android:padding="10dp"
+    >
+  
+  <com.stanfy.views.LoadableImageView
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      enroscar:sourceDensity="1"
+      enroscar:loadingImage="@drawable/no_image"
+      android:layout_marginRight="10dp"
+      android:id="@+id/tweet_image"
+      />
+  
+  <TextView
+      style="@style/WrapContent"
+      android:id="@+id/tweet_text"
+      android:layout_toRightOf="@id/tweet_image"
+      android:layout_alignParentRight="true"
+      android:lines="4"
+      />
+  
+</RelativeLayout>

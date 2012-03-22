@@ -14,6 +14,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -213,13 +214,23 @@ public class AppUtils {
   /** Utils instance. */
   private static SDKDependentUtils sdkDependentUtils;
 
+  /**
+   * Call to {@link SDKDependentUtils#applySharedPreferences(android.content.SharedPreferences.Editor)}.
+   * @param editor
+   */
+  public static void applySharedPreferences(final Editor editor) {
+    sdkDependentUtils.applySharedPreferences(editor);
+  }
+
   /** @return SDK depended utils */
   public static SDKDependentUtils getSdkDependentUtils() { return sdkDependentUtils; }
 
   static {
     final int version = Build.VERSION.SDK_INT;
     String classsName = null;
-    if (version >= Build.VERSION_CODES.GINGERBREAD) {
+    if (version >= Build.VERSION_CODES.HONEYCOMB) {
+      classsName = "com.stanfy.utils.HoneycombUtils";
+    } else if (version >= Build.VERSION_CODES.GINGERBREAD) {
       classsName = "com.stanfy.utils.GingerbreadUtils";
     } else if (version >= Build.VERSION_CODES.ECLAIR) {
       classsName = "com.stanfy.utils.EclairUtils";

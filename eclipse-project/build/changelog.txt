@@ -1,0 +1,3 @@
+Version 0.1.1
+  * SDKDependentUtils interface contains applySharedPreferences method 
+  * Small enhancement for StreamingPlaybackService

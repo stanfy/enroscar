@@ -22,4 +22,12 @@ public class TweetsRequestBuilder extends ListRequestBuilder {
     return this;
   }
 
+  @Override
+  public ListRequestBuilder setOffset(final int offset) {
+    return super.setOffset(offset + 1);
+  }
+
+  @Override
+  public String getOffsetParamName() { return "page"; }
+
 }

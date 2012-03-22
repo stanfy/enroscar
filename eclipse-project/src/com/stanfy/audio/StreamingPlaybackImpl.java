@@ -10,7 +10,7 @@ import com.stanfy.audio.StreamingPlaybackService.FadeVolumeTask;
  * Implementation of {@link StreamingPlayback}.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-class StreamingPlaybackImpl extends StreamingPlayback.Stub {
+public class StreamingPlaybackImpl extends StreamingPlayback.Stub {
 
   /** Service instance. */
   private final StreamingPlaybackService service;

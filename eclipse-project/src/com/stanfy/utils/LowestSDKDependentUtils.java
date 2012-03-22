@@ -3,8 +3,10 @@ package com.stanfy.utils;
 import java.io.File;
 
 import android.content.Context;
+import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.view.View;
+import android.webkit.WebView;
 
 /**
  * Implementation for old versions.
@@ -21,13 +23,22 @@ public class LowestSDKDependentUtils implements SDKDependentUtils {
   public File getMusicDirectory() {
     return new File(Environment.getExternalStorageDirectory(), "Music");
   }
-  
+
   @Override
   public void setOverscrollNever(final View view) { /* not implemented */ }
 
   @Override
-  public void enableStrictMode() {
-    // not implemented
+  public void enableStrictMode() { /* not implemented */ }
+
+  @Override
+  public void applySharedPreferences(final Editor editor) {
+    editor.commit();
   }
+
+  @Override
+  public void webViewOnPause(final WebView webView) { /* not implemented */ }
+
+  @Override
+  public void webViewOnResume(final WebView webView) { /* not implemented */ }
 
 }

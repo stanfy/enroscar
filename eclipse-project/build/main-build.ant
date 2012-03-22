@@ -33,6 +33,13 @@
     <isset property="conf.lang.libDefaultMapping"/>
   </condition>
   <echo message="Default language will be changed: ${conf.lang.performTransform.value} (${conf.lang.default})" />
+  <condition property="conf.lang.indicateDefaultFlag" value="true" else="false">
+  	<and>
+      <isset property="conf.lang.performTransform"/>
+  		<equals arg1="${conf.lang.indicateDefault}" arg2="true" />
+    </and>
+  </condition>
+  <echo message="Default string resources will be copied to: ${conf.lang.default}" />
 
   <!-- Check for sdk.dir -->
   <fail
@@ -224,10 +231,22 @@
           </copy>
         </then>
       </if>
-      <copy todir="${resource.absolute.dir}/values" overwrite="true">
+      <copy todir="${resource.absolute.dir}/values" overwrite="true" failonerror="false">
         <fileset dir="${lib.stviews.path}/res/values-${conf.lang.default}" includes="*.xml" />
         <mapper type="regexp" from="(.*)\.xml$$" to="\1_from_lib_default_${conf.lang.default}.xml"/>
       </copy>
+			
+      <if condition="${conf.lang.indicateDefaultFlag}">
+        <then>
+        	<echo>Force default language to be indicated</echo>
+        	<mkdir dir="${resource.absolute.dir}/values-${conf.lang.default}" />
+          <copy todir="${resource.absolute.dir}/values-${conf.lang.default}">
+            <fileset dir="${resource.absolute.dir}/values" includes="string*.xml" />
+            <mapper type="regexp" from="(.*)\.xml$$" to="\1_from_default_strings.xml"/>
+          </copy>
+        </then>
+      </if>
+			
 		</do-only-if-not-library>
 	</target>
 	
