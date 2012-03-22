@@ -48,10 +48,11 @@
       />
 
 	<!-- Proguard configuration -->
+	<property name="proguard.config.sdk" value="${sdk.dir}/tools/proguard/proguard-android.txt" />
 	<condition property="proguard.config.main" value="${build.library.path}/build/proguard-lib.cfg" else="${build.home}/proguard-lib.cfg">
     <isset property="build.library.path" />
   </condition>
-  <condition property="proguard.config" value="${proguard.config.main}:${proguard.config.project}">
+  <condition property="proguard.config" value="${proguard.config.sdk}:${proguard.config.main}:${proguard.config.project}">
   	<and>
       <isset property="proguard.config.project" />
   		<equals arg1="${proguard.config.enabled}" arg2="true" />
