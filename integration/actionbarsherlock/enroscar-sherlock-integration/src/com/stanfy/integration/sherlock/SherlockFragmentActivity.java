@@ -146,7 +146,8 @@ public abstract class SherlockFragmentActivity<AT extends Application> extends B
     getSherlock().dispatchInvalidateOptionsMenu();
   }
 
-  protected void supportInvalidateOptionsMenu() {
+  @Override
+  public void supportInvalidateOptionsMenu() {
     if (DEBUG) Log.d(TAG, "[supportInvalidateOptionsMenu]");
 
     invalidateOptionsMenu();
