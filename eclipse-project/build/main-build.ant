@@ -48,10 +48,10 @@
       />
 
 	<!-- Proguard configuration -->
-	<condition property="proguard.config.main" value="${build.library.path}/build/proguard.cfg" else="${build.home}/proguard.cfg">
+	<condition property="proguard.config.main" value="${build.library.path}/build/proguard-lib.cfg" else="${build.home}/proguard-lib.cfg">
     <isset property="build.library.path" />
   </condition>
-  <condition property="proguard.config" value="${proguard.config.main} @${proguard.config.project}">
+  <condition property="proguard.config" value="${proguard.config.main}:${proguard.config.project}">
   	<and>
       <isset property="proguard.config.project" />
   		<equals arg1="${proguard.config.enabled}" arg2="true" />
@@ -74,6 +74,7 @@
   <!--          Setup paths          -->
   <!-- ============================= -->
   <property name="src.java" value="${basedir}/src"/>
+  <property name="src.libs" value="${basedir}/libs"/>
   <property name="src.test" value="${basedir}/test"/>
   <property name="src.resources" value="${basedir}/res"/>
   <property name="src.assets" value="${basedir}/assets"/>
@@ -86,6 +87,7 @@
   <property name="output.temp.resources" value="${output.temp}/res"/>
   <property name="output.temp.android" value="${output.temp}/android"/>
   <property name="output.temp.src" value="${output.temp}/src"/>
+  <property name="output.temp.libs" value="${output.temp}/libs"/>
   <property name="output.temp.assets" value="${output.temp}/assets"/>
   <property name="output.temp.test" value="${output.temp}/test-classes"/>
   <property name="output.release" value="${output.home}/release" />
@@ -105,6 +107,7 @@
   <property name="source.dir" value="${output.temp.relative}/src" />
   <property name="out.dir" value="${output.temp.relative}/android" />
   <property name="asset.absolute.dir" value="${output.temp.assets}"/>
+  <property name="jar.libs.absolute.dir" value="${output.temp.libs}" />
   <!-- ============================= -->
 
   <!-- Files with flags. -->
@@ -137,7 +140,6 @@
   
   <!-- Import android build rules, it's a bit tricky. -->
   <xmltask source="${sdk.dir}/tools/ant/build.xml" dest="${build.home}/android_rules.xml">
-    <attr path="/project" attr="name" value="android_rules" />
     <insert path="/project/target[@name='-build-setup']/if/then/subant[@buildpathref='project.libraries']">
       <![CDATA[
     	<property name="libs.conf" value="${libs.conf}"/>
@@ -189,6 +191,7 @@
   <target name="-prepare-directories">
     <mkdir dir="${output.temp.resources}"/>
     <mkdir dir="${output.temp.src}"/>
+    <mkdir dir="${output.temp.libs}"/>
     <mkdir dir="${output.temp.assets}"/>
     <mkdir dir="${output.temp.android}"/>
     <mkdir dir="${output.temp.test}"/>
@@ -197,6 +200,9 @@
     
     <copy todir="${output.temp.src}" overwrite="true">
       <fileset dir="${src.java}" />
+    </copy>
+    <copy todir="${output.temp.libs}" overwrite="true">
+      <fileset dir="${src.libs}" />
     </copy>
     <copy todir="${output.temp.resources}" overwrite="true">
       <fileset dir="${src.resources}" />
@@ -323,7 +329,7 @@
   </target>
   
   <target name="-check-tests-available">
-    <available file="${src.test}" property="src.test.available" />
+	  <available file="${src.test}" property="src.test.available" />
   </target>
 
   <target name="-test" depends="-check-tests-available" if="src.test.available">
