@@ -2,8 +2,10 @@ package com.stanfy.utils;
 
 import java.io.File;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.View;
  * Gingerbread utilities (API level 9).
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
+@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class GingerbreadUtils extends EclairUtils {
 
   @Override

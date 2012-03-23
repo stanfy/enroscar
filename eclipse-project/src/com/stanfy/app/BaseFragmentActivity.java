@@ -15,7 +15,7 @@ import com.stanfy.utils.LocationMethodsSupport;
  * @param <AT> application type
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class BaseFragmentActivity<AT extends Application> extends FragmentActivity implements ActionBarActivity, RequestExecutorProvider, LocationSupportProvider {
+public abstract class BaseFragmentActivity<AT extends Application> extends FragmentActivity implements ActionBarActivity, RequestExecutorProvider, LocationSupportProvider {
 
   /** Behavior. */
   private BaseActivityBehavior behavior;

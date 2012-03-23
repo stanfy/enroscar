@@ -159,6 +159,11 @@ public class ImageView extends android.widget.ImageView {
     }
   }
 
+  // XXX this is a separate method only to avoid lint warnings
+  private void updateDecorationCacheReference(final Bitmap decorated) {
+    decoratedCache = new SoftReference<Bitmap>(decorated);
+  }
+
   @Override
   protected void onDraw(final Canvas canvas) {
     final ImageDecorator imageDecorator = this.imageDecorator;
@@ -225,7 +230,7 @@ public class ImageView extends android.widget.ImageView {
       decorated = imageDecorator.decorateBitmap(bitmap, bitmapCanvas);
       if (decorated != bitmap) {
         bitmap.recycle();
-        decoratedCache = new SoftReference<Bitmap>(decorated);
+        updateDecorationCacheReference(decorated);
       }
       decoratedCacheActual = true;
     } else {

@@ -14,7 +14,7 @@ import com.stanfy.utils.LocationMethodsSupport;
  * @see BaseActivityBehavior
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class BaseListActivity<AT extends Application> extends ListActivity implements ActionBarActivity, RequestExecutorProvider, LocationSupportProvider {
+public abstract class BaseListActivity<AT extends Application> extends ListActivity implements ActionBarActivity, RequestExecutorProvider, LocationSupportProvider {
 
   /** Behavior. */
   private BaseActivityBehavior behavior;
