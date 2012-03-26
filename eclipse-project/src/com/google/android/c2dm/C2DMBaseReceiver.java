@@ -110,6 +110,7 @@ public abstract class C2DMBaseReceiver extends IntentService {
 
   @Override
   public final void onHandleIntent(final Intent intent) {
+    if (onInterceptIntent(intent)) { return; }
     try {
       final Context context = getApplicationContext();
       if (intent.getAction().equals(REGISTRATION_CALLBACK_INTENT)) {
@@ -130,6 +131,14 @@ public abstract class C2DMBaseReceiver extends IntentService {
     }
   }
 
+  /**
+   * Called at first from {@link #onHandleIntent(Intent)}.
+   * @param intent incoming intent instance
+   * @return true if intent is processed
+   */
+  protected boolean onInterceptIntent(final Intent intent) {
+    return false;
+  }
 
   /**
    * Called from the broadcast receiver.
@@ -137,7 +146,7 @@ public abstract class C2DMBaseReceiver extends IntentService {
    * in background threads, with a wake lock, while keeping the service
    * alive.
    */
-  static void runIntentInService(final Context context, final Intent intent) {
+  protected static void runIntentInService(final Context context, final Intent intent) {
     if (mWakeLock == null) {
       // This is called from BroadcastReceiver, there is no init.
       final PowerManager pm =
