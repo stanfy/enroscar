@@ -91,7 +91,7 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
   }
 
   @Override
-  public final void onServiceConnected(final ComponentName name, final IBinder service) {
+  public void onServiceConnected(final ComponentName name, final IBinder service) {
     serviceObject = ApiMethods.Stub.asInterface(service);
     if (DEBUG) { Log.d(TAG, "apiMethods = " + serviceObject + " thread " + Thread.currentThread()); }
     if (!registered) { registerListener(); }
@@ -106,7 +106,7 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
   }
 
   @Override
-  public final void onServiceDisconnected(final ComponentName name) {
+  public void onServiceDisconnected(final ComponentName name) {
     if (DEBUG) { Log.d(TAG, "apiMethods = " + serviceObject + " thread " + Thread.currentThread()); }
     registered = false;
   }
