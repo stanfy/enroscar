@@ -3,7 +3,6 @@ package com.stanfy.utils;
 import java.io.Serializable;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -23,22 +22,16 @@ public class ServiceRequestPerformer extends RequestPerformer  {
   /** Debug flag. */
   private static final boolean DEBUG = DebugFlags.DEBUG_SERVICES;
 
-  /** Connectivity manager. */
-  private final ConnectivityManager connectivityManager;
-
   public ServiceRequestPerformer(final Context a, final RequestCallback callback) {
     super(a, callback);
     callback.performer = this;
-    connectivityManager = (ConnectivityManager)a.getSystemService(Context.CONNECTIVITY_SERVICE);
   }
 
   @Override
   public void performRequest(final RequestDescription description) {
-    if (connectivityManager.getBackgroundDataSetting()) {
-      bind();
-      registerListener();
-      super.performRequest(description);
-    }
+    bind();
+    registerListener();
+    super.performRequest(description);
   }
 
   @Override
