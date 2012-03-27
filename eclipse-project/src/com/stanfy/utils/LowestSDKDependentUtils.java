@@ -4,6 +4,7 @@ import java.io.File;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.view.View;
 import android.webkit.WebView;
@@ -40,5 +41,11 @@ public class LowestSDKDependentUtils implements SDKDependentUtils {
 
   @Override
   public void webViewOnResume(final WebView webView) { /* not implemented */ }
+
+  @Override
+  public <P> void executeAsyncTaskParallel(final AsyncTask<P, ?, ?> task, final P... params) {
+    // DONUT..GINGERBREAD - its parallel
+    task.execute(params);
+  }
 
 }

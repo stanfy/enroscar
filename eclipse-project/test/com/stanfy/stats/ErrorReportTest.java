@@ -1,18 +1,25 @@
 package com.stanfy.stats;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
 
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import android.app.Activity;
+
+import com.stanfy.EnroscarTestRunner;
 
 /**
  * Tests for error reports messages.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
+@RunWith(EnroscarTestRunner.class)
 public class ErrorReportTest {
 
   /** Example stack trace. */
@@ -38,11 +45,11 @@ public class ErrorReportTest {
   @Test
   public void testStackTraceTrim() {
     final String trimmed = StatsManagerAdapter.trimStackTrace(EXAMPLE_ST);
-    assertTrue("Stack trace is not trimmed", trimmed.length() < EXAMPLE_ST.length());
-    assertEquals("Stack trace has \\n", -1, trimmed.indexOf('\n'));
-    assertEquals("Stack trace has \\r", -1, trimmed.indexOf('\r'));
-    assertEquals("Stack trace has \\t", -1, trimmed.indexOf('\t'));
-    assertEquals("Exception class has not been cut", 0, trimmed.indexOf("SQLiteConstraintException"));
+    assertThat("Stack trace is not trimmed", trimmed.length(), lessThan(EXAMPLE_ST.length()));
+    assertThat("Stack trace has \\n", -1, equalTo(trimmed.indexOf('\n')));
+    assertThat("Stack trace has \\r", -1, equalTo(trimmed.indexOf('\r')));
+    assertThat("Stack trace has \\t", -1, equalTo(trimmed.indexOf('\t')));
+    assertThat("Exception class has not been cut", 0, equalTo(trimmed.indexOf("SQLiteConstraintException")));
   }
 
   @Test
@@ -66,8 +73,8 @@ public class ErrorReportTest {
       }
     }
     .readException(new Throwable(), maxLen);
-    assertTrue(msg.length() <= maxLen);
-    assertTrue(msg.startsWith("Throwable"));
+    assertThat(msg.length(), lessThanOrEqualTo(maxLen));
+    assertThat(msg, startsWith("Throwable"));
   }
 
 }

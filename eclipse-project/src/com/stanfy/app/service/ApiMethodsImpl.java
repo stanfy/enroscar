@@ -1,13 +1,13 @@
 package com.stanfy.app.service;
 
-import static com.stanfy.app.service.ApplicationService.DEBUG;
-
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -16,31 +16,61 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.stanfy.DebugFlags;
 import com.stanfy.Destroyable;
 import com.stanfy.app.Application;
 import com.stanfy.app.service.ApiMethods.Stub;
+import com.stanfy.app.service.serverapi.RequestDescriptionProcessor;
+import com.stanfy.app.service.serverapi.RequestDescriptionProcessor.RequestProcessorHooks;
 import com.stanfy.serverapi.RequestMethod;
-import com.stanfy.serverapi.RequestMethod.RequestMethodException;
-import com.stanfy.serverapi.RequestMethodHelper;
 import com.stanfy.serverapi.request.Operation;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.response.ParserContext;
 import com.stanfy.serverapi.response.RequestConfigurableContext;
 import com.stanfy.serverapi.response.ResponseData;
-import com.stanfy.views.R;
+import com.stanfy.utils.AppUtils;
 
 /**
- * Implementation for {@link ApiMethods}. Incoming requests are enqueued and processed
- * one by one in a separate thread in FIFO order.
+ * Implementation for {@link ApiMethods}.
+ * <p>
+ *   There are two options how to handle incoming remote API request:
+ *   <ol>
+ *     <li>enqueue it so that incoming requests are processed one by one in a separate thread in FIFO order</li>
+ *     <li>run it in parallel to other requests</li>
+ *   </ol>
+ * </p>
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class ApiMethodsImpl extends Stub implements Destroyable {
 
   /** Logging tag. */
   static final String TAG = "ApiMethodsImpl";
+  /** Debug flag. */
+  private static final boolean DEBUG = DebugFlags.DEBUG_SERVICES;
+
+  /** Main worker thread. */
+  private static final String THREAD_NAME = "remote-api-thread";
+
+  /** Main worker. */
+  private static final HandlerThread MAIN_WORKER = new HandlerThread(THREAD_NAME);
+
+  /** Message code. */
+  private static final int MSG_REQUEST = 0, MSG_FINISH = 1;
 
   /** Null operation data. */
-  private static final APICallInfoData NULL_OPERATION_DATA = new APICallInfoData();
+  static final APICallInfoData NULL_OPERATION_DATA = new APICallInfoData();
+
+  /**
+   * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+   */
+  private abstract static class CallbackReporter {
+    /** Reporter name. */
+    final String name;
+    protected CallbackReporter(final String name) {
+      this.name = name;
+    }
+    abstract void report(final ApiMethodCallback callback, final int token, final int operation, final ResponseData responseData) throws RemoteException;
+  }
 
   /** Calls {@link ApiMethodCallback#reportSuccess(int, int, String, Uri, ResponseData)}. */
   private static final CallbackReporter SUCCESS_REPORTER = new CallbackReporter("success") {
@@ -57,146 +87,181 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     }
   };
 
-  /** Message code. */
-  private static final int MSG_REQUEST = 0, MSG_FINISH = 1;
+  /** Handler instance for main worker. */
+  private final ApiMethodsHandler mainHandler;
+  /** Working flag. */
+  private final AtomicInteger activeWorkersCount = new AtomicInteger(0);
+  /** Initialization sync point. */
+  private final CountDownLatch initSync = new CountDownLatch(1);
+
+  /** Request description processing strategy. */
+  private final RequestDescriptionProcessor rdProcessor;
+  /** Processor hooks. */
+  private final RequestProcessorHooks queuedProcessorHooks, parallelProcessorHooks;
 
   /** API callbacks. */
   private final RemoteCallbackList<ApiMethodCallback> apiCallbacks = new RemoteCallbackList<ApiMethodCallback>();
 
   /** Application service. */
-  private ApplicationService appService;
-
-  /** Working flag. */
-  private AtomicBoolean workingFlag = new AtomicBoolean(false);
-
-  /** Main worker. */
-  private HandlerThread mainWorker;
-  /** Handler instance for main worker. */
-  private ApiMethodsHandler mainHandler;
+  private final ApplicationService appService;
 
   /** Last operation dump. */
-  private SharedPreferences lastOperationDump;
+  private final SharedPreferences lastOperationStore;
 
   /** Operations info. */
   final APICallInfoData pending = new APICallInfoData(), lastOperation = new APICallInfoData();
 
-  /** Default error message. */
-  final String defaultErrorMessage;
-
   /** Special handler. */
-  class ApiMethodsHandler extends Handler {
+  protected class ApiMethodsHandler extends Handler {
+
     public ApiMethodsHandler(final Looper looper) {
       super(looper);
     }
+
     @Override
     public void handleMessage(final Message msg) {
       final ApplicationService appService = ApiMethodsImpl.this.appService;
       if (appService == null) { return; } // we are destroyed
 
       if (msg.what == MSG_FINISH) {
-        workingFlag.set(false);
         appService.checkForStop();
         return;
       }
-      workingFlag.set(true);
 
-      final Application app = appService.getApp();
-      final RequestMethodHelper h = app.getRequestMethodHelper();
-
-      final RequestDescription description = (RequestDescription)msg.obj;
-
-      final ParserContext pContext = h.createParserContext(description);
-      pContext.setSystemContext(appService);
-      final int opCode = description.getOperationCode();
-      if (DEBUG) { Log.d(TAG, "Current context: " + pContext + ", op " + opCode); }
-      final int token = description.getToken();
-
-      before(description, pContext, appService);
-
-      pending.set(NULL_OPERATION_DATA);
-      pending.set(opCode, token);
       try {
-        // execute request method
-        final RequestMethod rm = h.createRequestMethod(description);
-        rm.setup(app);
-        rm.start(appService, description, pContext);
-        rm.stop(app);
-
-        // process results
-        final ResponseData response = pContext.processResults();
-
-        // report results
-        if (pContext.isSuccessful()) {
-          reportApiSuccess(token, opCode, response);
-        } else {
-          Log.e(TAG, "Server error: " + response.getErrorCode() + ", " + response.getMessage());
-          reportError(token, opCode, response);
-        }
-
-      } catch (final RequestMethodException e) {
-        Log.e(TAG, "Request method error", e);
-        pContext.defineResponse(e);
-        reportError(token, opCode, pContext.processResults());
-      } finally {
-        after(description, pContext, appService);
-        dumpLastOperation(lastOperation);
-        pending.set(NULL_OPERATION_DATA);
-        pContext.destroy();
+        initSync.await();
+      } catch (final InterruptedException e) {
+        Log.e(TAG, "Worker was interrupted", e);
+        appService.checkForStop();
+        return;
       }
+
+      activeWorkersCount.incrementAndGet();
+      rdProcessor.process(appService, (RequestDescription)msg.obj, queuedProcessorHooks);
+      activeWorkersCount.decrementAndGet();
+    }
+
+  }
+
+  /**
+   * Main hooks implementation. Performs request callbacks reporting and optional configuration for {@link RequestConfigurableContext}s.
+   * @author Roman Mazur (Stanfy - http://stanfy.com)
+   */
+  protected class MainHooks implements RequestProcessorHooks {
+    @Override
+    public void beforeRequestProcessingStarted(final RequestDescription requestDescription, final ParserContext pContext, final RequestMethod requestMethod) {
+      if (pContext instanceof RequestConfigurableContext) {
+        ((RequestConfigurableContext)pContext).configureContext(requestDescription, appService);
+      }
+    }
+    @Override
+    public void afterRequestProcessingFinished(final RequestDescription requestDescription, final ParserContext pContext, final RequestMethod requestMethod) {
+    }
+
+    @Override
+    public void onRequestSuccess(final RequestDescription requestDescription, final ResponseData responseData) {
+      reportApiSuccess(requestDescription.getOperationCode(), requestDescription.getToken(), responseData);
+    }
+    @Override
+    public void onRequestError(final RequestDescription requestDescription, final ResponseData responseData) {
+      reportError(requestDescription.getOperationCode(), requestDescription.getToken(), responseData);
     }
   }
 
+  /**
+   * Hooks used by {@link ApiMethodsHandler}.
+   * @author Roman Mazur (Stanfy - http://stanfy.com)
+   */
+  private class QueueRequestHooks implements RequestProcessorHooks {
+    /** Main hooks. */
+    private final RequestProcessorHooks mainHooks;
+
+    public QueueRequestHooks(final RequestProcessorHooks mainHooks) {
+      this.mainHooks = mainHooks;
+    }
+
+    @Override
+    public void beforeRequestProcessingStarted(final RequestDescription requestDescription, final ParserContext pContext, final RequestMethod requestMethod) {
+
+      mainHooks.beforeRequestProcessingStarted(requestDescription, pContext, requestMethod);
+
+      pending.set(NULL_OPERATION_DATA);
+      pending.set(requestDescription.getOperationCode(), requestDescription.getToken());
+
+    }
+    @Override
+    public void afterRequestProcessingFinished(final RequestDescription requestDescription, final ParserContext pContext, final RequestMethod requestMethod) {
+
+      mainHooks.afterRequestProcessingFinished(requestDescription, pContext, requestMethod);
+
+      if (DEBUG) { Log.d(TAG, "Dump " + lastOperation.operation); }
+      lastOperation.save(lastOperationStore);
+      pending.set(NULL_OPERATION_DATA);
+
+    }
+
+    @Override
+    public void onRequestSuccess(final RequestDescription requestDescription, final ResponseData responseData) {
+      mainHooks.onRequestSuccess(requestDescription, responseData);
+    }
+    @Override
+    public void onRequestError(final RequestDescription requestDescription, final ResponseData responseData) {
+      mainHooks.onRequestError(requestDescription, responseData);
+    }
+  }
+
+  /**
+   * Constructs remote API methods implementation.<br/>
+   * It creates instances of {@link RequestDescriptionProcessor} and {@link RequestProcessorHooks}.
+   * @param appService application service
+   */
   public ApiMethodsImpl(final ApplicationService appService) {
     this.appService = appService;
 
-    this.lastOperationDump = appService.getSharedPreferences("last-operation", Context.MODE_PRIVATE);
+    this.lastOperationStore = appService.getSharedPreferences("last-operation", Context.MODE_PRIVATE);
     loadLastOperation();
 
-    defaultErrorMessage = appService.getString(R.string.error_server_default);
-    mainWorker = new HandlerThread("api-thread");
-    mainWorker.start();
-    mainHandler = new ApiMethodsHandler(mainWorker.getLooper());
+    this.parallelProcessorHooks = createRequestDescriptionHooks();
+    this.queuedProcessorHooks = new QueueRequestHooks(this.parallelProcessorHooks);
+    this.rdProcessor = createRequestDescriptionProcessor(appService.getApp());
+
+    mainHandler = createApiMethodsHandler(MAIN_WORKER.getLooper());
     if (DEBUG) { Log.d(TAG, "Worker thread is now alive " + this); }
   }
 
-  protected void before(final RequestDescription rd, final ParserContext context, final ApplicationService service) {
-    if (context instanceof RequestConfigurableContext) {
-      ((RequestConfigurableContext) context).configureContext(rd, service);
-    }
-  }
-  protected void after(final RequestDescription rd, final ParserContext context, final ApplicationService service) {
-    /* nothing */
-  }
-
-  private void dumpLastOperation(final APICallInfoData data) {
-    if (DEBUG) { Log.d(TAG, "Dump " + data.operation); }
-    final Editor lastOperationEditor = lastOperationDump.edit();
-    lastOperationEditor
-        .putInt("op", data.operation)
-        .putInt("token", data.token);
-    final ResponseData rd = data.responseData;
-    if (rd != null) {
-      final Uri dataUri = rd.getData();
-      lastOperationEditor
-        .putString("msg", rd.getMessage())
-        .putInt("errorCode", rd.getErrorCode())
-        .putString("data", dataUri != null ? dataUri.toString() : null);
-    }
-    lastOperationEditor.commit();
-  }
-
+  /**
+   * This method starts asynchronous read of last operation.
+   * Workers must be synchronized with this reading.
+   */
   private void loadLastOperation() {
-    final SharedPreferences src = lastOperationDump;
-    final APICallInfoData dst = lastOperation;
-    dst.set(src.getInt("op", Operation.NOP), src.getInt("token", -1));
-    final ResponseData responseData = new ResponseData();
-    responseData.setMessage(src.getString("msg", null));
-    responseData.setErrorCode(src.getInt("errorCode", ResponseData.RESPONSE_CODE_ILLEGAL));
-    final String url = src.getString("data", null);
-    responseData.setData(url != null ? Uri.parse(url) : null);
-    dst.set(responseData);
-    if (DEBUG) { Log.d(TAG, "Loaded last operation: " + dst.operation + " / " + dst.responseData.getErrorCode() + " -> " + dst.hasData()); }
+    AppUtils.getSdkDependentUtils().executeAsyncTaskParallel(
+      new AsyncTask<Void, Void, Void>() {
+        @Override
+        protected Void doInBackground(final Void... params) {
+          lastOperation.load(lastOperationStore);
+          initSync.countDown();
+          return null;
+        }
+      }
+    );
   }
+
+  /**
+   * Constructs a handler for processing the queue of remote API requests.
+   * @param looper looper instance that must be passed to the handler constructor
+   * @return main worker thread handler
+   */
+  protected ApiMethodsHandler createApiMethodsHandler(final Looper looper) { return new ApiMethodsHandler(looper); }
+  /**
+   * Constructor a request description processing strategy.
+   * @param app application instance
+   * @return processor instance
+   */
+  protected RequestDescriptionProcessor createRequestDescriptionProcessor(final Application app) { return new RequestDescriptionProcessor(app); }
+  /**
+   * @return request description processing hooks
+   */
+  protected RequestProcessorHooks createRequestDescriptionHooks() { return new MainHooks(); }
 
   private void updateLastOperation(final ResponseData rd) {
     final APICallInfoData lastOperation = this.lastOperation;
@@ -229,13 +294,24 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     if (DEBUG) { Log.v(TAG, "Finish broadcast"); }
   }
 
-  void reportApiSuccess(final int token, final int opCode, final ResponseData responseData) {
+  void reportApiSuccess(final int opCode, final int token, final ResponseData responseData) {
     reportToCallbacks(token, opCode, responseData, SUCCESS_REPORTER);
   }
 
-  void reportError(final int token, final int opCode, final ResponseData responseData) {
+  void reportError(final int opCode, final int token, final ResponseData responseData) {
     reportToCallbacks(token, opCode, responseData, ERROR_REPORTER);
   }
+
+  boolean isWorking() { return activeWorkersCount.intValue() == 0; }
+
+  @Override
+  public void destroy() {
+    apiCallbacks.kill();
+    if (DEBUG) { Log.d(TAG, "API methods destroyed"); }
+  }
+
+
+  // --------------------------------------------------------------------------------------------
 
   @Override
   public void performRequest(final RequestDescription description) throws RemoteException {
@@ -267,25 +343,18 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     apiCallbacks.unregister(callback);
   }
 
-  @Override
-  public void destroy() {
-    final Looper looper = mainWorker.getLooper();
-    if (looper != null) { looper.quit(); }
-    apiCallbacks.kill();
-    mainHandler = null;
-    mainWorker = null;
-    appService = null;
-    if (DEBUG) { Log.d(TAG, "API methods destroyed"); }
-    System.gc();
-  }
-
-  public boolean isWorking() { return workingFlag.get(); }
+  // --------------------------------------------------------------------------------------------
 
   /**
    * Information about last operation.
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  private static class APICallInfoData {
+  static class APICallInfoData {
+
+    /** Preference key names. */
+    private static final String OP_CODE = "op", TOKEN = "token",
+                                RD_MESSAGE = "msg", RD_ERROR = "errorCode", RD_DATA = "data";
+
     /** Operation code. */
     int operation = Operation.NOP;
     /** Operation token. */
@@ -309,18 +378,36 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
       this.token = token;
     }
     public boolean hasData() { return operation != Operation.NOP; }
-  }
 
-  /**
-   * @author Roman Mazur (Stanfy - http://www.stanfy.com)
-   */
-  private abstract static class CallbackReporter {
-    /** Reporter name. */
-    final String name;
-    protected CallbackReporter(final String name) {
-      this.name = name;
+    public void save(final SharedPreferences preferences) {
+      final Editor lastOperationEditor = preferences.edit();
+      lastOperationEditor
+          .putInt(OP_CODE, this.operation)
+          .putInt(TOKEN, this.token);
+      final ResponseData rd = this.responseData;
+      if (rd != null) {
+        final Uri dataUri = rd.getData();
+        lastOperationEditor
+          .putString(RD_MESSAGE, rd.getMessage())
+          .putInt(RD_ERROR, rd.getErrorCode())
+          .putString(RD_DATA, dataUri != null ? dataUri.toString() : null);
+      }
+      lastOperationEditor.commit();
     }
-    abstract void report(final ApiMethodCallback callback, final int token, final int operation, final ResponseData responseData) throws RemoteException;
+
+    public void load(final SharedPreferences preferences) {
+      final SharedPreferences src = preferences;
+      final APICallInfoData dst = this;
+      dst.set(src.getInt(OP_CODE, Operation.NOP), src.getInt(TOKEN, -1));
+      final ResponseData responseData = new ResponseData();
+      responseData.setMessage(src.getString(RD_MESSAGE, null));
+      responseData.setErrorCode(src.getInt(RD_ERROR, ResponseData.RESPONSE_CODE_ILLEGAL));
+      final String url = src.getString(RD_DATA, null);
+      responseData.setData(url != null ? Uri.parse(url) : null);
+      dst.set(responseData);
+      if (DEBUG) { Log.d(TAG, "Loaded last operation: " + dst.operation + " / " + dst.responseData.getErrorCode() + " -> " + dst.hasData()); }
+    }
+
   }
 
 }

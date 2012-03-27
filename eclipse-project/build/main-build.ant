@@ -359,6 +359,7 @@
       <batchtest todir="${output.junit}">
         <fileset dir="${output.temp.test}">
           <exclude name="**/*Abstract*.class"/>
+          <exclude name="**/*Runner*.class"/>
           <exclude name="**/*$*.class"/>
           <exclude name="**/activity/**"/>
           <include name="**/*Test*.class"/>

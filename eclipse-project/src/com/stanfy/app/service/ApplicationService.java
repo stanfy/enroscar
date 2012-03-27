@@ -38,7 +38,7 @@ public class ApplicationService extends Service {
   private AtomicBoolean apiMethodsUse = new AtomicBoolean(false), locationMethodsUse = new AtomicBoolean(false);
 
   /** @return application instance */
-  protected Application getApp() { return (Application)getApplication(); }
+  public Application getApp() { return (Application)getApplication(); }
 
   /** @return API methods implementation */
   protected ApiMethodsImpl createApiMethods() { return new ApiMethodsImpl(this); }

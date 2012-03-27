@@ -1,20 +1,22 @@
 package com.stanfy.utils.test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Random;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.stanfy.EnroscarTestRunner;
 import com.stanfy.utils.Base64;
 
 /**
  * Tests for {@link Base64}.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
+@RunWith(EnroscarTestRunner.class)
 public class Base64Test {
 
   /** Sample. */
@@ -35,7 +37,7 @@ public class Base64Test {
 
   private void testEncodeDecode(final int length) throws IOException {
     final byte[] source = randomBytes(length);
-    assertTrue(Arrays.equals(source, Base64.decode(Base64.encodeBytes(source))));
+    assertThat(source, equalTo(Base64.decode(Base64.encodeBytes(source))));
   }
 
   @Test
@@ -57,14 +59,14 @@ public class Base64Test {
 
   @Test
   public void sampleTestEncode() {
-    assertTrue(Arrays.equals(SAMPLE_BYTES_ENCODED, Base64.encodeBytesToBytes(SAMPLE_BYTES)));
-    assertEquals(SAMPLE_STRING_ENCODED, Base64.encodeBytes(SAMPLE_STRING.getBytes()));
+    assertThat(SAMPLE_BYTES_ENCODED, equalTo(Base64.encodeBytesToBytes(SAMPLE_BYTES)));
+    assertThat(SAMPLE_STRING_ENCODED, equalTo(Base64.encodeBytes(SAMPLE_STRING.getBytes())));
   }
 
   @Test
   public void sampleTestDecode() throws IOException {
-    assertTrue(Arrays.equals(SAMPLE_BYTES, Base64.decode(SAMPLE_BYTES_ENCODED)));
-    assertEquals(SAMPLE_STRING, new String(Base64.decode(SAMPLE_STRING_ENCODED)));
+    assertThat(SAMPLE_BYTES, equalTo(Base64.decode(SAMPLE_BYTES_ENCODED)));
+    assertThat(SAMPLE_STRING, equalTo(new String(Base64.decode(SAMPLE_STRING_ENCODED))));
   }
 
 }

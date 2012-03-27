@@ -4,6 +4,7 @@ import java.io.File;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.view.View;
 import android.webkit.WebView;
 
@@ -50,5 +51,12 @@ public interface SDKDependentUtils {
    * @param webView web view instance
    */
   void webViewOnResume(final WebView webView);
+
+  /**
+   * Ensures that this task will be invoked in its own separate thread.
+   * @param task async task instance
+   * @param params parameters
+   */
+  <P> void executeAsyncTaskParallel(final AsyncTask<P, ?, ?> task, final P... params);
 
 }
