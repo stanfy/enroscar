@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="" default="build" basedir=".." xmlns:stanfy="antlib:com.stanfy.anttasks" xmlns:contrib="antlib:net.sf.antcontrib">
+<project name="" default="build" basedir=".." 
+	  xmlns:stanfy="antlib:com.stanfy.anttasks" 
+	  xmlns:contrib="antlib:net.sf.antcontrib"
+	  xmlns:groovy="antlib:groovy">
 
   <!-- Home. -->
   <property name="build.home" value="${basedir}/build"/>
@@ -77,6 +80,8 @@
   <property name="src.java" value="${basedir}/src"/>
   <property name="src.libs" value="${basedir}/libs"/>
   <property name="src.test" value="${basedir}/test"/>
+  <property name="src.test.java" value="${src.test}/java"/>
+  <property name="src.test.groovy" value="${src.test}/groovy"/>
   <property name="src.resources" value="${basedir}/res"/>
   <property name="src.assets" value="${basedir}/assets"/>
 
@@ -134,7 +139,13 @@
   <taskdef uri="antlib:com.stanfy.anttasks" resource="com/stanfy/anttasks/antlib.xml" classpathref="antlibs.ext" />
   <taskdef uri="antlib:net.sf.antcontrib" resource="net/sf/antcontrib/antlib.xml" classpathref="antlibs.ext" />
 
-  <!-- Resolve application package -->
+  <taskdef resource="org/codehaus/groovy/antlib.xml" uri="antlib:groovy">
+    <classpath>
+      <fileset dir="${src.libs}/test" includes="groovy-*.jar" />
+    </classpath>
+  </taskdef>
+
+	<!-- Resolve application package -->
   <xmltask source="AndroidManifest.xml">
     <copy path="/manifest/@package" property="application.package" />
   </xmltask>
@@ -342,18 +353,30 @@
     </path>
       
     <echo message="Compiling tests..."/>
-    <javac target="1.5" debug="true" extdirs="" destdir="${output.temp.test}" srcdir="${src.test}"
+    <javac target="1.5" debug="true" extdirs="" destdir="${output.temp.test}" srcdir="${src.test.java}"
         includeantruntime="false"
         bootclasspathref="android.target.classpath"
         verbose="${verbose}" 
         classpathref="test.classpath"
         />
     
+    <path id="test.classpath.groovy">
+      <path refid="test.classpath" />
+    	<pathelement path="${output.temp.test}" />
+    </path>
+  	
+  	<groovy:groovyc 
+  		  srcdir="${src.test.groovy}"
+  		  destdir="${output.temp.test}"
+  		  classpathref="test.classpath.groovy"
+  	    />
+  		
+  	
     <echo message="Testing..."/>
     <junit haltonerror="true" haltonfailure="true" fork="true" showoutput="true" printsummary="true">
       <formatter type="xml"/>
       <classpath>
-        <path refid="test.classpath"/>
+        <path refid="test.classpath.groovy"/>
         <pathelement location="${output.temp.test}" />
       </classpath>
       <batchtest todir="${output.junit}">

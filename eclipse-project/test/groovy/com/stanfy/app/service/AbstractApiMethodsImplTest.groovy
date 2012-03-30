@@ -1,24 +1,25 @@
-package com.stanfy.app.service;
+package com.stanfy.app.service
+
 
 import android.content.Intent;
 import android.os.IBinder;
 
 /**
- * Basic tests for  {@link ApiMethodsImpl}.
+ * Base Groovy test for {@link ApiMethodsImpl}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public abstract class AbstractApiMethodsImplTest extends AbstractAppServiceTest {
+abstract class AbstractApiMethodsImplTest extends AbstractAppServiceTest {
 
-  /** API methods implementation. */
-  ApiMethodsImpl apiMethodsImpl;
+  /** API methods instance. */
+  ApiMethodsImpl apiMethodsImpl
 
   @Override
-  public void setup() {
+  void setup() {
     super.setup();
     final Intent bindIntent = new Intent(ApiMethods.class.getName());
     final IBinder binder = appService.onBind(bindIntent);
     apiMethodsImpl = (ApiMethodsImpl)binder;
+    assertThat apiMethodsImpl, notNullValue()
   }
-
 
 }

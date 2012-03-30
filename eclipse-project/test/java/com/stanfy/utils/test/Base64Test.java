@@ -9,7 +9,7 @@ import java.util.Random;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.stanfy.EnroscarTestRunner;
+import com.stanfy.test.EnroscarTestRunner;
 import com.stanfy.utils.Base64;
 
 /**

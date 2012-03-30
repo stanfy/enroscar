@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 
 import android.app.Activity;
 
-import com.stanfy.EnroscarTestRunner;
+import com.stanfy.test.EnroscarTestRunner;
 
 /**
  * Tests for error reports messages.
