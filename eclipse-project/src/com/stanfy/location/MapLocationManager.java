@@ -78,7 +78,7 @@ public final class MapLocationManager implements Destroyable {
   private LocationListener fineListener = new LocationListenerAdapter();
 
   /** Updates listener. */
-  public static interface LocationUpdateListener {
+  public interface LocationUpdateListener {
     void updateLocation(final Location loc);
   }
 
