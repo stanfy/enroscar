@@ -62,6 +62,7 @@ abstract class ApplicationServiceSupport<T extends IInterface> implements Servic
    * Destroy the service connection.
    */
   public void unbind() {
+    if (serviceObject == null) { return; }
     serviceObject = null;
     final Context context = contextRef.get();
     if (DEBUG) { Log.v(TAG, "Unbind " + context); }
