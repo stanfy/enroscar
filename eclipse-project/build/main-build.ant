@@ -139,12 +139,6 @@
   <taskdef uri="antlib:com.stanfy.anttasks" resource="com/stanfy/anttasks/antlib.xml" classpathref="antlibs.ext" />
   <taskdef uri="antlib:net.sf.antcontrib" resource="net/sf/antcontrib/antlib.xml" classpathref="antlibs.ext" />
 
-  <taskdef resource="org/codehaus/groovy/antlib.xml" uri="antlib:groovy">
-    <classpath>
-      <fileset dir="${src.libs}/test" includes="groovy-*.jar" />
-    </classpath>
-  </taskdef>
-
 	<!-- Resolve application package -->
   <xmltask source="AndroidManifest.xml">
     <copy path="/manifest/@package" property="application.package" />
@@ -365,13 +359,13 @@
     	<pathelement path="${output.temp.test}" />
     </path>
   	
+    <taskdef resource="org/codehaus/groovy/antlib.xml" uri="antlib:groovy" classpathref="test.classpath" />
   	<groovy:groovyc 
   		  srcdir="${src.test.groovy}"
   		  destdir="${output.temp.test}"
   		  classpathref="test.classpath.groovy"
   	    />
   		
-  	
     <echo message="Testing..."/>
     <junit haltonerror="true" haltonfailure="true" fork="true" showoutput="true" printsummary="true">
       <formatter type="xml"/>
