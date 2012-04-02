@@ -17,7 +17,7 @@ import com.stanfy.serverapi.response.ResponseData;
  * Test for {@link APICallInfoData}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-class ApiOperationSaveLoadTest extends AbstractApiMethodsImplTest {
+class AbstractApiOperationSaveLoadTest extends AbstractApiMethodsImplTest {
 
   /** Test storage. */
   private SharedPreferences storage;

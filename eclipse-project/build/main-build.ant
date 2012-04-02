@@ -12,6 +12,8 @@
 
   <!-- Main properties. -->
   <property environment="env"/>
+  <property name="sdk.dir" value="${env.ANDROID_HOME}" />
+  <property name="sdk.dir" value="${env.ANDROID_SDK}" />
   <property name="conf" value="dev" />
   <condition property="realConf" value="${libs.conf}" else="${conf}">
     <and>
