@@ -288,6 +288,10 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
    * @return request description processing hooks
    */
   protected RequestProcessorHooks createRequestDescriptionHooks() { return new MainHooks(); }
+  /**
+   * @return async task that is used to perform a parallel remote request
+   */
+  protected AsyncRequestTask createAsyncTaskForRequest() { return new AsyncRequestTask(); }
 
   private void updateLastOperation(final ResponseData rd) {
     final APICallInfoData lastOperation = this.lastOperation;
@@ -345,8 +349,11 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     if (handler == null) { return; }
     if (DEBUG) { Log.d(TAG, "Perform " + description + " " + this); }
     if (description.isParallelMode()) {
-      new AsyncRequestTask().execute(description);
+      // request must be parallel
+      AppUtils.getSdkDependentUtils()
+          .executeAsyncTaskParallel(createAsyncTaskForRequest(), description);
     } else {
+      // request must be enqueued
       handler.removeMessages(MSG_FINISH);
       handler.sendMessage(handler.obtainMessage(MSG_REQUEST, description));
       handler.sendEmptyMessage(MSG_FINISH);
