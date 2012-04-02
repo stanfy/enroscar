@@ -136,7 +136,7 @@ public class ApiMethodsSupport extends RequestPerformer {
   /**
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  static interface SupportAware {
+  interface SupportAware {
     void setSupport(ApiMethodsSupport support);
   }
 
