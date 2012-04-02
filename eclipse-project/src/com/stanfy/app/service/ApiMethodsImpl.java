@@ -53,9 +53,13 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
 
   /** Main worker. */
   private static final HandlerThread MAIN_WORKER = new HandlerThread(THREAD_NAME);
+  static {
+    MAIN_WORKER.start();
+  }
 
   /** Message code. */
-  private static final int MSG_REQUEST = 0, MSG_FINISH = 1;
+  private static final int MSG_REQUEST = 0, // make a request
+                           MSG_FINISH = 1;  // all requests are done
 
   /** Null operation data. */
   static final APICallInfoData NULL_OPERATION_DATA = new APICallInfoData();
@@ -86,30 +90,6 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
       callback.reportError(token, operation, responseData);
     }
   };
-
-  /** Handler instance for main worker. */
-  private final ApiMethodsHandler mainHandler;
-  /** Working flag. */
-  private final AtomicInteger activeWorkersCount = new AtomicInteger(0);
-  /** Initialization sync point. */
-  private final CountDownLatch initSync = new CountDownLatch(1);
-
-  /** Request description processing strategy. */
-  private final RequestDescriptionProcessor rdProcessor;
-  /** Processor hooks. */
-  private final RequestProcessorHooks queuedProcessorHooks, parallelProcessorHooks;
-
-  /** API callbacks. */
-  private final RemoteCallbackList<ApiMethodCallback> apiCallbacks = new RemoteCallbackList<ApiMethodCallback>();
-
-  /** Application service. */
-  private final ApplicationService appService;
-
-  /** Last operation dump. */
-  private final SharedPreferences lastOperationStore;
-
-  /** Operations info. */
-  final APICallInfoData pending = new APICallInfoData(), lastOperation = new APICallInfoData();
 
   /** Special handler. */
   protected class ApiMethodsHandler extends Handler {
@@ -142,6 +122,52 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     }
 
   }
+
+  /**
+   * Async task that performs a request.
+   * @author Roman Mazur (Stanfy - http://stanfy.com)
+   */
+  protected class AsyncRequestTask extends AsyncTask<RequestDescription, Void, Void> {
+    @Override
+    protected void onPreExecute() {
+      activeWorkersCount.incrementAndGet();
+    }
+    @Override
+    protected Void doInBackground(final RequestDescription... params) {
+      rdProcessor.process(appService, params[0], parallelProcessorHooks);
+      return null;
+    }
+    @Override
+    protected void onPostExecute(final Void result) {
+      activeWorkersCount.decrementAndGet();
+      mainHandler.sendEmptyMessage(MSG_FINISH);
+    }
+  }
+
+  /** Handler instance for main worker. */
+  private final ApiMethodsHandler mainHandler;
+
+  /** Working flag. */
+  final AtomicInteger activeWorkersCount = new AtomicInteger(0);
+  /** Initialization sync point. */
+  final CountDownLatch initSync = new CountDownLatch(1);
+
+  /** Request description processing strategy. */
+  final RequestDescriptionProcessor rdProcessor;
+  /** Processor hooks. */
+  private final RequestProcessorHooks queuedProcessorHooks, parallelProcessorHooks;
+
+  /** Application service. */
+  final ApplicationService appService;
+
+  /** API callbacks. */
+  private final RemoteCallbackList<ApiMethodCallback> apiCallbacks = new RemoteCallbackList<ApiMethodCallback>();
+
+  /** Last operation dump. */
+  private final SharedPreferences lastOperationStore;
+
+  /** Operations info. */
+  final APICallInfoData pending = new APICallInfoData(), lastOperation = new APICallInfoData();
 
   /**
    * Main hooks implementation. Performs request callbacks reporting and optional configuration for {@link RequestConfigurableContext}s.
@@ -269,7 +295,7 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     lastOperation.set(rd);
   }
 
-  private void reportToCallbacks(final int token, final int opCode, final ResponseData responseData, final CallbackReporter reporter) {
+  private synchronized void reportToCallbacks(final int token, final int opCode, final ResponseData responseData, final CallbackReporter reporter) {
     updateLastOperation(responseData);
     if (DEBUG) { Log.v(TAG, "Start broadcast"); }
     int c = apiCallbacks.beginBroadcast();
@@ -318,9 +344,13 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     final Handler handler = this.mainHandler;
     if (handler == null) { return; }
     if (DEBUG) { Log.d(TAG, "Perform " + description + " " + this); }
-    handler.removeMessages(MSG_FINISH);
-    handler.sendMessage(handler.obtainMessage(MSG_REQUEST, description));
-    handler.sendEmptyMessage(MSG_FINISH);
+    if (description.isParallelMode()) {
+      new AsyncRequestTask().execute(description);
+    } else {
+      handler.removeMessages(MSG_FINISH);
+      handler.sendMessage(handler.obtainMessage(MSG_REQUEST, description));
+      handler.sendEmptyMessage(MSG_FINISH);
+    }
   }
 
   @Override

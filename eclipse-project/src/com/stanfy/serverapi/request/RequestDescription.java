@@ -67,6 +67,9 @@ public class RequestDescription implements Parcelable {
   /** Meta information. */
   ParametersGroup metaParameters;
 
+  /** Whether request should be performed in parallel. */
+  boolean parallelMode = false;
+
   public static String getParamValue(final String name, final LinkedList<Parameter> param) {
     for (final Parameter p : param) {
       if (p instanceof ParameterValue && name.equals(p.getName())) {
@@ -92,6 +95,7 @@ public class RequestDescription implements Parcelable {
     this.contentType = source.readString();
     this.contentLanguage = source.readString();
     this.metaParameters = source.readParcelable(cl);
+    this.parallelMode = source.readInt() == 1;
   }
 
   void setupOperation(final Operation op) {
@@ -117,6 +121,7 @@ public class RequestDescription implements Parcelable {
     dest.writeString(contentType);
     dest.writeString(contentLanguage);
     dest.writeParcelable(metaParameters, flags);
+    dest.writeInt(parallelMode ? 1 : 0);
   }
 
   /** @return the contentLanguage */
@@ -138,6 +143,11 @@ public class RequestDescription implements Parcelable {
 
   /** @return whether request is simple. */
   public boolean isSimple() { return operationType == OperationType.SIMPLE_POST || operationType == OperationType.SIMPLE_GET; }
+
+  /** @param parallelMode parallel mode flag */
+  public void setParallelMode(final boolean parallelMode) { this.parallelMode = parallelMode; }
+  /** @return parallel mode flag */
+  public boolean isParallelMode() { return parallelMode; }
 
   /** @return the metaParameters */
   public ParametersGroup getMetaParameters() { return metaParameters; }

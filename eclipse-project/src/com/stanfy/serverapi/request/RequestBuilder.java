@@ -109,15 +109,26 @@ public abstract class RequestBuilder {
   }
 
   public void execute(final int token) {
+    execute(token, false);
+  }
+
+  public final void execute() { execute(-1); }
+
+  public void executeParallel(final int token) {
+    execute(token, true);
+  }
+
+  public final void executeParallel() { executeParallel(-1); }
+
+  protected void execute(final int token, final boolean parallelMode) {
     result.token = token;
+    result.parallelMode = parallelMode;
     if (executor != null) {
       executor.performRequest(result);
     } else {
       Log.w(TAG, "Don't know how to perform operation " + getOperation());
     }
   }
-
-  public final void execute() { execute(-1); }
 
   public boolean checkOperation(final int code) { return code == getOperationCode(); }
 

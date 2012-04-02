@@ -245,6 +245,7 @@ public class DownloadsService extends Service {
       final int max = 1000;
       remoteViews.setProgressBar(R.id.notification_progress, max, (int)(p * max), progress == null);
 
+      @SuppressWarnings("deprecation")
       final Notification n = new Notification(android.R.drawable.stat_sys_download, p == 0 ? request.title : null, notificationTime);
       n.contentView = remoteViews;
       n.contentIntent = PendingIntent.getBroadcast(DownloadsService.this, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
