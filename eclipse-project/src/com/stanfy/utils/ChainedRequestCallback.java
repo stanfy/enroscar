@@ -44,7 +44,10 @@ public class ChainedRequestCallback extends ApiSupportRequestCallback<Serializab
   public Class<?> getModelClass(final int token, final int operation) { return Serializable.class; }
 
   @Override
-  public boolean isModelInterest() { return !modelInterest.isEmpty(); }
+  public boolean isModelInterest() {
+    // XXX temporary fix
+    return true; /* !modelInterest.isEmpty(); */
+  }
 
   @Override
   public boolean filterOperation(final int token, final int o) {
