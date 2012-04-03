@@ -37,7 +37,7 @@ import com.stanfy.utils.AppUtils;
  *   There are two options how to handle incoming remote API request:
  *   <ol>
  *     <li>enqueue it so that incoming requests are processed one by one in a separate thread in FIFO order</li>
- *     <li>run it in parallel to other requests</li>
+ *     <li>run it in parallel with other requests</li>
  *   </ol>
  * </p>
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
@@ -64,6 +64,71 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
 
   /** Null operation data. */
   static final APICallInfoData NULL_OPERATION_DATA = new APICallInfoData();
+
+  /**
+   * Information about last operation.
+   * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+   */
+  static class APICallInfoData {
+
+    /** Preference key names. */
+    private static final String OP_CODE = "op", TOKEN = "token",
+                                RD_MESSAGE = "msg", RD_ERROR = "errorCode", RD_DATA = "data";
+
+    /** Operation code. */
+    int operation = Operation.NOP;
+    /** Operation token. */
+    int token = -1;
+    /** Response data. */
+    ResponseData responseData = new ResponseData();
+
+    public void set(final APICallInfoData data) {
+      this.operation = data.operation;
+      this.token = data.token;
+      responseData = data.responseData;
+    }
+    public void set(final ResponseData rd) {
+      final ResponseData responseData = this.responseData;
+      responseData.setErrorCode(rd.getErrorCode());
+      responseData.setData(rd.getData());
+      responseData.setMessage(rd.getMessage());
+    }
+    public void set(final int opCode, final int token) {
+      this.operation = opCode;
+      this.token = token;
+    }
+    public boolean hasData() { return operation != Operation.NOP; }
+
+    public void save(final SharedPreferences preferences) {
+      final Editor lastOperationEditor = preferences.edit();
+      lastOperationEditor
+          .putInt(OP_CODE, this.operation)
+          .putInt(TOKEN, this.token);
+      final ResponseData rd = this.responseData;
+      if (rd != null) {
+        final Uri dataUri = rd.getData();
+        lastOperationEditor
+          .putString(RD_MESSAGE, rd.getMessage())
+          .putInt(RD_ERROR, rd.getErrorCode())
+          .putString(RD_DATA, dataUri != null ? dataUri.toString() : null);
+      }
+      lastOperationEditor.commit();
+    }
+
+    public void load(final SharedPreferences preferences) {
+      final SharedPreferences src = preferences;
+      final APICallInfoData dst = this;
+      dst.set(src.getInt(OP_CODE, Operation.NOP), src.getInt(TOKEN, -1));
+      final ResponseData responseData = new ResponseData();
+      responseData.setMessage(src.getString(RD_MESSAGE, null));
+      responseData.setErrorCode(src.getInt(RD_ERROR, ResponseData.RESPONSE_CODE_ILLEGAL));
+      final String url = src.getString(RD_DATA, null);
+      responseData.setData(url != null ? Uri.parse(url) : null);
+      dst.set(responseData);
+      if (DEBUG) { Log.d(TAG, "Loaded last operation: " + dst.operation + " / " + dst.responseData.getErrorCode() + " -> " + dst.hasData()); }
+    }
+
+  }
 
   /**
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
@@ -145,33 +210,6 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     }
   }
 
-  /** Handler instance for main worker. */
-  private final ApiMethodsHandler mainHandler;
-
-  /** Working flag. */
-  final AtomicInteger activeWorkersCount = new AtomicInteger(0);
-  /** Initialization sync point. */
-  final CountDownLatch initSync = new CountDownLatch(1);
-
-  /** Request description processing strategy. */
-  final RequestDescriptionProcessor rdProcessor;
-  /** Processor hooks. */
-  private final RequestProcessorHooks queuedProcessorHooks, parallelProcessorHooks;
-
-  /** Application service. */
-  final ApplicationService appService;
-
-  /** API callbacks. */
-  private final RemoteCallbackList<ApiMethodCallback> apiCallbacks = new RemoteCallbackList<ApiMethodCallback>();
-  /** Map of active requests by their IDs. */
-  private final SparseArray<RequestDescription> descriptionsMap = new SparseArray<RequestDescription>();
-
-  /** Last operation dump. */
-  private final SharedPreferences lastOperationStore;
-
-  /** Operations info. */
-  final APICallInfoData pending = new APICallInfoData(), lastOperation = new APICallInfoData();
-
   /**
    * Main hooks implementation. Performs request callbacks reporting and optional configuration for {@link RequestConfigurableContext}s.
    * @author Roman Mazur (Stanfy - http://stanfy.com)
@@ -185,6 +223,8 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     }
     @Override
     public void afterRequestProcessingFinished(final RequestDescription requestDescription, final ParserContext pContext, final RequestMethod requestMethod) {
+      trackersMap.remove(requestDescription.getId());
+      if (DEBUG) { Log.d(TAG, "Request trackers count: " + trackersMap.size()); }
     }
 
     @Override
@@ -238,6 +278,101 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
       mainHooks.onRequestError(requestDescription, responseData);
     }
   }
+
+  /**
+   * Request tracker. It knows how to start or cancel request.
+   */
+  private abstract static class RequestTracker {
+    /** Request description. */
+    final RequestDescription requestDescription;
+
+    public RequestTracker(final RequestDescription rd) {
+      this.requestDescription = rd;
+    }
+
+    /** Start a request. */
+    public abstract void performRequest();
+    /** Abort a request. */
+    public abstract void cancelRequest();
+  }
+
+  /**
+   * Tracker for enqueued requests.
+   * @author Roman Mazur (Stanfy - http://stanfy.com)
+   */
+  private class EnqueuedRequestTracker extends RequestTracker {
+
+    public EnqueuedRequestTracker(final RequestDescription rd) {
+      super(rd);
+    }
+
+    @Override
+    public void performRequest() {
+      final Handler handler = mainHandler;
+      handler.removeMessages(MSG_FINISH);
+      handler.sendMessage(handler.obtainMessage(MSG_REQUEST, requestDescription));
+      handler.sendEmptyMessage(MSG_FINISH);
+    }
+
+    @Override
+    public void cancelRequest() {
+      mainHandler.removeMessages(MSG_REQUEST, requestDescription);
+    }
+
+  }
+
+  /**
+   * Tracker for parallel requests.
+   * @author Roman Mazur (Stanfy - http://stanfy.com)
+   */
+  private class ParallelRequestTracker extends RequestTracker {
+
+    /** Task instance. */
+    private AsyncRequestTask task;
+
+    public ParallelRequestTracker(final RequestDescription rd) {
+      super(rd);
+    }
+
+    @Override
+    public void performRequest() {
+      task = createAsyncTaskForRequest();
+      AppUtils.getSdkDependentUtils().executeAsyncTaskParallel(task, requestDescription);
+    }
+
+    @Override
+    public void cancelRequest() {
+      task.cancel(false);
+    }
+
+  }
+
+  /** Handler instance for main worker. */
+  private final ApiMethodsHandler mainHandler;
+
+  /** Working flag. */
+  final AtomicInteger activeWorkersCount = new AtomicInteger(0);
+  /** Initialization sync point. */
+  final CountDownLatch initSync = new CountDownLatch(1);
+
+  /** Request description processing strategy. */
+  final RequestDescriptionProcessor rdProcessor;
+  /** Processor hooks. */
+  private final RequestProcessorHooks queuedProcessorHooks, parallelProcessorHooks;
+
+  /** Application service. */
+  final ApplicationService appService;
+
+  /** API callbacks. */
+  private final RemoteCallbackList<ApiMethodCallback> apiCallbacks = new RemoteCallbackList<ApiMethodCallback>();
+  /** Map of active requests by their IDs. */
+  private final SparseArray<RequestTracker> trackersMap = new SparseArray<RequestTracker>();
+
+  /** Last operation dump. */
+  private final SharedPreferences lastOperationStore;
+
+  /** Operations info. */
+  final APICallInfoData pending = new APICallInfoData(), lastOperation = new APICallInfoData();
 
   /**
    * Constructs remote API methods implementation.<br/>
@@ -348,27 +483,23 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
 
   @Override
   public void performRequest(final RequestDescription description) throws RemoteException {
-    final Handler handler = this.mainHandler;
-    if (handler == null) { return; }
+    if (this.mainHandler == null) { return; }
     if (DEBUG) { Log.d(TAG, "Perform " + description + " " + this); }
-    descriptionsMap.put(description.getId(), description);
 
-    if (description.isParallelMode()) {
-      // request must be parallel
-      AppUtils.getSdkDependentUtils()
-          .executeAsyncTaskParallel(createAsyncTaskForRequest(), description);
-    } else {
-      // request must be enqueued
-      handler.removeMessages(MSG_FINISH);
-      handler.sendMessage(handler.obtainMessage(MSG_REQUEST, description));
-      handler.sendEmptyMessage(MSG_FINISH);
-    }
+    final RequestTracker tracker = description.isParallelMode()
+        ? new ParallelRequestTracker(description)  // request must be parallel
+        : new EnqueuedRequestTracker(description); // request must be enqueued
 
+    trackersMap.put(description.getId(), tracker);
+    tracker.performRequest();
   }
 
   @Override
   public void cancelRequest(final int id) throws RemoteException {
-    // TODO cancel request
+    final RequestTracker tracker = trackersMap.get(id);
+    if (tracker != null) {
+      tracker.cancelRequest();
+    }
   }
 
   @Override
@@ -392,70 +523,5 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
   }
 
   // --------------------------------------------------------------------------------------------
-
-  /**
-   * Information about last operation.
-   * @author Roman Mazur (Stanfy - http://www.stanfy.com)
-   */
-  static class APICallInfoData {
-
-    /** Preference key names. */
-    private static final String OP_CODE = "op", TOKEN = "token",
-                                RD_MESSAGE = "msg", RD_ERROR = "errorCode", RD_DATA = "data";
-
-    /** Operation code. */
-    int operation = Operation.NOP;
-    /** Operation token. */
-    int token = -1;
-    /** Response data. */
-    ResponseData responseData = new ResponseData();
-
-    public void set(final APICallInfoData data) {
-      this.operation = data.operation;
-      this.token = data.token;
-      responseData = data.responseData;
-    }
-    public void set(final ResponseData rd) {
-      final ResponseData responseData = this.responseData;
-      responseData.setErrorCode(rd.getErrorCode());
-      responseData.setData(rd.getData());
-      responseData.setMessage(rd.getMessage());
-    }
-    public void set(final int opCode, final int token) {
-      this.operation = opCode;
-      this.token = token;
-    }
-    public boolean hasData() { return operation != Operation.NOP; }
-
-    public void save(final SharedPreferences preferences) {
-      final Editor lastOperationEditor = preferences.edit();
-      lastOperationEditor
-          .putInt(OP_CODE, this.operation)
-          .putInt(TOKEN, this.token);
-      final ResponseData rd = this.responseData;
-      if (rd != null) {
-        final Uri dataUri = rd.getData();
-        lastOperationEditor
-          .putString(RD_MESSAGE, rd.getMessage())
-          .putInt(RD_ERROR, rd.getErrorCode())
-          .putString(RD_DATA, dataUri != null ? dataUri.toString() : null);
-      }
-      lastOperationEditor.commit();
-    }
-
-    public void load(final SharedPreferences preferences) {
-      final SharedPreferences src = preferences;
-      final APICallInfoData dst = this;
-      dst.set(src.getInt(OP_CODE, Operation.NOP), src.getInt(TOKEN, -1));
-      final ResponseData responseData = new ResponseData();
-      responseData.setMessage(src.getString(RD_MESSAGE, null));
-      responseData.setErrorCode(src.getInt(RD_ERROR, ResponseData.RESPONSE_CODE_ILLEGAL));
-      final String url = src.getString(RD_DATA, null);
-      responseData.setData(url != null ? Uri.parse(url) : null);
-      dst.set(responseData);
-      if (DEBUG) { Log.d(TAG, "Loaded last operation: " + dst.operation + " / " + dst.responseData.getErrorCode() + " -> " + dst.hasData()); }
-    }
-
-  }
 
 }
