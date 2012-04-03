@@ -79,7 +79,7 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
    * @param description request description
    */
   @Override
-  public void performRequest(final RequestDescription description) {
+  public int performRequest(final RequestDescription description) {
     if (serviceObject != null) {
       if (DEBUG) { Log.d(TAG, "Call " + description.getOperationCode() + " " + serviceObject); }
       doRequest(description);
@@ -87,7 +87,7 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
       if (DEBUG) { Log.d(TAG, "Save last description " + description.getOperationCode() + "(" + serviceObject + "," + registered + ")"); }
       lastDescriptions.add(description);
     }
-
+    return description.getId();
   }
 
   @Override

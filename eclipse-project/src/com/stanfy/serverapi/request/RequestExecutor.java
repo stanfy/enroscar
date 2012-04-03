@@ -8,7 +8,8 @@ public interface RequestExecutor {
 
   /**
    * @param rd request description
+   * @return unique request identifier
    */
-  void performRequest(final RequestDescription rd);
+  int performRequest(final RequestDescription rd);
 
 }

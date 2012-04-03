@@ -17,6 +17,9 @@ import com.stanfy.app.RequestExecutorProvider;
  */
 public abstract class RequestBuilder {
 
+  /** Invalid request identifier. */
+  public static final int INVALID_REQUEST_IDENTIFIER = -1;
+
   /** Logging tag. */
   private static final String TAG = "RequestBuilder";
 
@@ -108,25 +111,26 @@ public abstract class RequestBuilder {
     result.metaParameters = null;
   }
 
-  public void execute(final int token) {
-    execute(token, false);
+  public int execute(final int token) {
+    return execute(token, false);
   }
 
-  public final void execute() { execute(-1); }
+  public final int execute() { return execute(-1); }
 
-  public void executeParallel(final int token) {
-    execute(token, true);
+  public int executeParallel(final int token) {
+    return execute(token, true);
   }
 
-  public final void executeParallel() { executeParallel(-1); }
+  public final int executeParallel() { return executeParallel(-1); }
 
-  protected void execute(final int token, final boolean parallelMode) {
+  protected int execute(final int token, final boolean parallelMode) {
     result.token = token;
     result.parallelMode = parallelMode;
     if (executor != null) {
-      executor.performRequest(result);
+      return executor.performRequest(result);
     } else {
       Log.w(TAG, "Don't know how to perform operation " + getOperation());
+      return INVALID_REQUEST_IDENTIFIER;
     }
   }
 

@@ -28,10 +28,10 @@ public class ServiceRequestPerformer extends RequestPerformer  {
   }
 
   @Override
-  public void performRequest(final RequestDescription description) {
+  public int performRequest(final RequestDescription description) {
     bind();
     registerListener();
-    super.performRequest(description);
+    return super.performRequest(description);
   }
 
   @Override

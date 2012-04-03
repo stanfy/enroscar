@@ -15,6 +15,7 @@ import android.os.Message;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.Destroyable;
@@ -162,6 +163,8 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
 
   /** API callbacks. */
   private final RemoteCallbackList<ApiMethodCallback> apiCallbacks = new RemoteCallbackList<ApiMethodCallback>();
+  /** Map of active requests by their IDs. */
+  private final SparseArray<RequestDescription> descriptionsMap = new SparseArray<RequestDescription>();
 
   /** Last operation dump. */
   private final SharedPreferences lastOperationStore;
@@ -348,6 +351,8 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     final Handler handler = this.mainHandler;
     if (handler == null) { return; }
     if (DEBUG) { Log.d(TAG, "Perform " + description + " " + this); }
+    descriptionsMap.put(description.getId(), description);
+
     if (description.isParallelMode()) {
       // request must be parallel
       AppUtils.getSdkDependentUtils()
@@ -358,6 +363,12 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
       handler.sendMessage(handler.obtainMessage(MSG_REQUEST, description));
       handler.sendEmptyMessage(MSG_FINISH);
     }
+
+  }
+
+  @Override
+  public void cancelRequest(final int id) throws RemoteException {
+    // TODO cancel request
   }
 
   @Override

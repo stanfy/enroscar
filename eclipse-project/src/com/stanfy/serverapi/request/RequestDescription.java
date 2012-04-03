@@ -31,6 +31,9 @@ import com.stanfy.http.multipart.StringPart;
  */
 public class RequestDescription implements Parcelable {
 
+  /** ID counter. */
+  private static int idCounter = 0;
+
   /** Logging tag. */
   public static final String TAG = "ReqDesc";
 
@@ -48,6 +51,14 @@ public class RequestDescription implements Parcelable {
     public RequestDescription[] newArray(final int size) { return new RequestDescription[size]; }
   };
 
+  private static synchronized int nextId() {
+    ++idCounter;
+    if (idCounter < 0) { idCounter = 1; }
+    return idCounter;
+  }
+
+  /** Request ID. */
+  final int id;
   /** Token. It can be used to identify a sender. */
   int token;
   /** Operation to execute. */
@@ -79,12 +90,15 @@ public class RequestDescription implements Parcelable {
     return null;
   }
 
-  public RequestDescription() { /* nothing */ }
+  public RequestDescription() {
+    this.id = nextId();
+  }
 
   /**
    * Create from parcel.
    */
   protected RequestDescription(final Parcel source) {
+    this.id = source.readInt();
     this.token = source.readInt();
     this.operationCode = source.readInt();
     this.operationType = source.readInt();
@@ -112,6 +126,7 @@ public class RequestDescription implements Parcelable {
   public int describeContents() { return 0; }
   @Override
   public void writeToParcel(final Parcel dest, final int flags) {
+    dest.writeInt(id);
     dest.writeInt(token);
     dest.writeInt(operationCode);
     dest.writeInt(operationType);
@@ -123,6 +138,14 @@ public class RequestDescription implements Parcelable {
     dest.writeParcelable(metaParameters, flags);
     dest.writeInt(parallelMode ? 1 : 0);
   }
+
+  /** @return request identifier */
+  public int getId() { return id; }
+
+  /** @return the operation */
+  public int getOperationCode() { return operationCode; }
+  /** @return the token */
+  public int getToken() { return token; }
 
   /** @return the contentLanguage */
   public String getContentLanguage() { return contentLanguage; }
@@ -264,11 +287,5 @@ public class RequestDescription implements Parcelable {
     }
     return result;
   }
-
-  /** @return the operation */
-  public int getOperationCode() { return operationCode; }
-
-  /** @return the token */
-  public int getToken() { return token; }
 
 }
