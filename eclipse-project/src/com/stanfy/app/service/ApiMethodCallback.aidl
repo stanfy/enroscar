@@ -12,6 +12,10 @@ interface ApiMethodCallback {
    */
   void reportError(in int token, in int operation, in ResponseData response);
   /**
+   * Notify about canceled request. 
+   */
+  void reportCancel(in int token, in int operation);
+  /**
    * Notify about pending operation. This method can be called when a callback is registered. 
    */
   void reportPending(in int token, in int operation);

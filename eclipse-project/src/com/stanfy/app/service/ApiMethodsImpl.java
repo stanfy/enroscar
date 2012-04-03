@@ -22,7 +22,7 @@ import com.stanfy.Destroyable;
 import com.stanfy.app.Application;
 import com.stanfy.app.service.ApiMethods.Stub;
 import com.stanfy.app.service.serverapi.RequestDescriptionProcessor;
-import com.stanfy.app.service.serverapi.RequestDescriptionProcessor.RequestProcessorHooks;
+import com.stanfy.app.service.serverapi.RequestProcessorHooks;
 import com.stanfy.serverapi.RequestMethod;
 import com.stanfy.serverapi.request.Operation;
 import com.stanfy.serverapi.request.RequestDescription;
@@ -156,6 +156,13 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
       callback.reportError(token, operation, responseData);
     }
   };
+  /** Calls {@link ApiMethodCallback#reportSuccess(int, int, String, Uri, ResponseData)}. */
+  private static final CallbackReporter CANCEL_REPORTER = new CallbackReporter("cancel") {
+    @Override
+    void report(final ApiMethodCallback callback, final int token, final int operation, final ResponseData responseData) throws RemoteException {
+      callback.reportCancel(token, operation);
+    }
+  };
 
   /** Special handler. */
   protected class ApiMethodsHandler extends Handler {
@@ -193,22 +200,48 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
    * Async task that performs a request.
    * @author Roman Mazur (Stanfy - http://stanfy.com)
    */
-  protected class AsyncRequestTask extends AsyncTask<RequestDescription, Void, Void> {
+  protected class AsyncRequestTask extends AsyncTask<Void, Void, Void> {
+
+    /** Description to process. */
+    private final RequestDescription target;
+
+    public AsyncRequestTask(final RequestDescription rd) {
+      this.target = rd;
+    }
+
     @Override
     protected void onPreExecute() {
       activeWorkersCount.incrementAndGet();
     }
     @Override
-    protected Void doInBackground(final RequestDescription... params) {
-      rdProcessor.process(appService, params[0], parallelProcessorHooks);
+    protected Void doInBackground(final Void... params) {
+      rdProcessor.process(appService, target, parallelProcessorHooks);
       return null;
     }
     @Override
     protected void onPostExecute(final Void result) {
+      onFinish();
+    }
+    @Override
+    protected void onCancelled() {
+      onCancel();
+    }
+    @Override
+    protected void onCancelled(final Void result) {
+      onCancel();
+    }
+
+    protected void onFinish() {
       activeWorkersCount.decrementAndGet();
       mainHandler.sendEmptyMessage(MSG_FINISH);
     }
-  }
+
+    protected void onCancel() {
+      onFinish();
+      parallelProcessorHooks.onRequestCancel(target);
+    }
+
+}
 
   /**
    * Main hooks implementation. Performs request callbacks reporting and optional configuration for {@link RequestConfigurableContext}s.
@@ -227,13 +260,45 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
       if (DEBUG) { Log.d(TAG, "Request trackers count: " + trackersMap.size()); }
     }
 
+    protected synchronized void reportToCallbacks(final RequestDescription description, final ResponseData responseData, final CallbackReporter reporter) {
+      if (DEBUG) { Log.v(TAG, "Start broadcast"); }
+      final int opCode = description.getOperationCode(), token = description.getToken();
+      final RemoteCallbackList<ApiMethodCallback> apiCallbacks = ApiMethodsImpl.this.apiCallbacks;
+
+      int callbacksCount = apiCallbacks.beginBroadcast();
+      ResponseData noModelData = null;
+      while (callbacksCount > 0) {
+        --callbacksCount;
+        try {
+          final ApiMethodCallback callback = apiCallbacks.getBroadcastItem(callbacksCount);
+          if (DEBUG) { Log.d(TAG, "Report API " + reporter.name + "/op=" + opCode + "/token=" + token + " " + callbacksCount + ": " + callback); }
+          final boolean requiresModel = (Boolean)apiCallbacks.getBroadcastCookie(callbacksCount);
+          ResponseData sendingData = responseData;
+          if (!requiresModel && responseData != null) {
+            if (noModelData == null) { noModelData = ResponseData.withoutModel(responseData); }
+            sendingData = noModelData;
+          }
+          reporter.report(callback, token, opCode, sendingData);
+        } catch (final RemoteException e) {
+          Log.e(TAG, "Cannot run callback report method", e);
+        }
+      }
+
+      apiCallbacks.finishBroadcast();
+      if (DEBUG) { Log.v(TAG, "Finish broadcast"); }
+    }
+
     @Override
     public void onRequestSuccess(final RequestDescription requestDescription, final ResponseData responseData) {
-      reportApiSuccess(requestDescription.getOperationCode(), requestDescription.getToken(), responseData);
+      reportToCallbacks(requestDescription, responseData, SUCCESS_REPORTER);
     }
     @Override
     public void onRequestError(final RequestDescription requestDescription, final ResponseData responseData) {
-      reportError(requestDescription.getOperationCode(), requestDescription.getToken(), responseData);
+      reportToCallbacks(requestDescription, responseData, ERROR_REPORTER);
+    }
+    @Override
+    public void onRequestCancel(final RequestDescription requestDescription) {
+      reportToCallbacks(requestDescription, null, CANCEL_REPORTER);
     }
   }
 
@@ -269,14 +334,27 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
 
     }
 
+    private void updateLastOperation(final ResponseData rd) {
+      final APICallInfoData lastOperation = ApiMethodsImpl.this.lastOperation;
+      lastOperation.set(pending);
+      lastOperation.set(rd);
+    }
+
     @Override
     public void onRequestSuccess(final RequestDescription requestDescription, final ResponseData responseData) {
+      updateLastOperation(responseData);
       mainHooks.onRequestSuccess(requestDescription, responseData);
     }
     @Override
     public void onRequestError(final RequestDescription requestDescription, final ResponseData responseData) {
+      updateLastOperation(responseData);
       mainHooks.onRequestError(requestDescription, responseData);
     }
+    @Override
+    public void onRequestCancel(final RequestDescription requestDescription) {
+      mainHooks.onRequestCancel(requestDescription);
+    }
+
   }
 
   /**
@@ -336,12 +414,13 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
 
     @Override
     public void performRequest() {
-      task = createAsyncTaskForRequest();
-      AppUtils.getSdkDependentUtils().executeAsyncTaskParallel(task, requestDescription);
+      task = createAsyncTaskForRequest(requestDescription);
+      AppUtils.getSdkDependentUtils().executeAsyncTaskParallel(task);
     }
 
     @Override
     public void cancelRequest() {
+      if (task == null) { throw new IllegalStateException("Cancel request was called before performRequest"); }
       task.cancel(false);
     }
 
@@ -427,48 +506,11 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
    */
   protected RequestProcessorHooks createRequestDescriptionHooks() { return new MainHooks(); }
   /**
+   * @param rd request description instance
    * @return async task that is used to perform a parallel remote request
    */
-  protected AsyncRequestTask createAsyncTaskForRequest() { return new AsyncRequestTask(); }
+  protected AsyncRequestTask createAsyncTaskForRequest(final RequestDescription rd) { return new AsyncRequestTask(rd); }
 
-  private void updateLastOperation(final ResponseData rd) {
-    final APICallInfoData lastOperation = this.lastOperation;
-    lastOperation.set(pending);
-    lastOperation.set(rd);
-  }
-
-  private synchronized void reportToCallbacks(final int token, final int opCode, final ResponseData responseData, final CallbackReporter reporter) {
-    updateLastOperation(responseData);
-    if (DEBUG) { Log.v(TAG, "Start broadcast"); }
-    int c = apiCallbacks.beginBroadcast();
-    ResponseData noModelData = null;
-    while (c > 0) {
-      --c;
-      try {
-        final ApiMethodCallback callback = apiCallbacks.getBroadcastItem(c);
-        if (DEBUG) { Log.d(TAG, "Report API " + reporter.name + "/op=" + opCode + "/token=" + token + " " + c + ": " + callback); }
-        final boolean requiresModel = (Boolean)apiCallbacks.getBroadcastCookie(c);
-        ResponseData sendingData = responseData;
-        if (!requiresModel) {
-          if (noModelData == null) { noModelData = ResponseData.withoutModel(responseData); }
-          sendingData = noModelData;
-        }
-        reporter.report(callback, token, opCode, sendingData);
-      } catch (final RemoteException e) {
-        Log.e(TAG, "Cannot run callback report method", e);
-      }
-    }
-    apiCallbacks.finishBroadcast();
-    if (DEBUG) { Log.v(TAG, "Finish broadcast"); }
-  }
-
-  void reportApiSuccess(final int opCode, final int token, final ResponseData responseData) {
-    reportToCallbacks(token, opCode, responseData, SUCCESS_REPORTER);
-  }
-
-  void reportError(final int opCode, final int token, final ResponseData responseData) {
-    reportToCallbacks(token, opCode, responseData, ERROR_REPORTER);
-  }
 
   boolean isWorking() { return activeWorkersCount.intValue() == 0; }
 
