@@ -169,6 +169,11 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
     @Override
     public String toString() { return name; }
 
+    @Override
+    public void reportCancel(final int token, final int operation) throws RemoteException {
+      // TODO implement onCancel
+    }
+
   }
 
 }
