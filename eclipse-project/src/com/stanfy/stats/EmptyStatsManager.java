@@ -11,6 +11,9 @@ import android.app.Activity;
 public class EmptyStatsManager implements StatsManager                                    {
 
   @Override
+  public void onStartSession(final Activity activity) { /* nothing */ }
+
+  @Override
   public void onStartScreen(final Activity activity) { /* nothing */ }
 
   @Override
@@ -18,6 +21,9 @@ public class EmptyStatsManager implements StatsManager                          
 
   @Override
   public void onLeaveScreen(final Activity activity) { /* nothing */ }
+
+  @Override
+  public void onEndSession(final Activity activity) { /* nothing */ }
 
   @Override
   public void error(final String tag, final Throwable e) { /* nothing */ }

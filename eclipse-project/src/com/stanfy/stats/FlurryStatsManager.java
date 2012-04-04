@@ -26,8 +26,13 @@ public class FlurryStatsManager extends StatsManagerAdapter {
   }
 
   @Override
-  public void onStartScreen(final Activity activity) {
+  public void onStartSession(final Activity activity) {
     FlurryAgent.onStartSession(activity, key);
+  }
+
+  @Override
+  public void onStartScreen(final Activity activity) {
+    /* nothing here */
   }
 
   @Override
@@ -37,6 +42,11 @@ public class FlurryStatsManager extends StatsManagerAdapter {
 
   @Override
   public void onLeaveScreen(final Activity activity) {
+    /* nothing here */
+  }
+
+  @Override
+  public void onEndSession(final Activity activity) {
     FlurryAgent.onEndSession(activity);
   }
 

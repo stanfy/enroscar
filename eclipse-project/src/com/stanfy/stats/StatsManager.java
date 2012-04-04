@@ -11,6 +11,12 @@ import android.app.Activity;
 public interface StatsManager {
 
   /**
+   * Start session routine.
+   * @param activity activity instance
+   */
+  void onStartSession(final Activity activity);
+
+  /**
    * On start screen.
    * @param activity activity instance
    */
@@ -27,6 +33,12 @@ public interface StatsManager {
    * @param activity activity instance
    */
   void onLeaveScreen(final Activity activity);
+
+  /**
+   * Session end routine.
+   * @param activity activity instance
+   */
+  void onEndSession(final Activity activity);
 
   /**
    * Report error.

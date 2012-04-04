@@ -109,6 +109,7 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
     // statistics
     final Activity a = getActivity();
     if (a == null) { return; }
+    statsManager.onStartSession(a);
     if (firstStart) {
       statsManager.onStartScreen(a);
     }
@@ -160,6 +161,7 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
     final Activity a = getActivity();
     if (a == null) { return; }
     statsManager.onLeaveScreen(a);
+    statsManager.onEndSession(a);
   }
 
   /**
