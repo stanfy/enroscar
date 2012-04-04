@@ -71,6 +71,12 @@ public class ErrorReportTest {
       @Override
       public void error(final String tag, final Throwable e) {
       }
+      @Override
+      public void onStartSession(final Activity activity) {
+      }
+      @Override
+      public void onEndSession(final Activity activity) {
+      }
     }
     .readException(new Throwable(), maxLen);
     assertThat(msg.length(), lessThanOrEqualTo(maxLen));
