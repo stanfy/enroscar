@@ -116,7 +116,7 @@ public class GridLayout extends FixedSizeViewGroup {
         final int row = i / columns;
 
         final LayoutParams params = child.getLayoutParams();
-        if (params.width == LayoutParams.FILL_PARENT) {
+        if (params.width == LayoutParams.MATCH_PARENT) {
           final int childLeft = paddingLeft + column * cw;
           final int childTop = paddingTop + row * rh;
           child.layout(childLeft, childTop, childLeft + child.getMeasuredWidth(),

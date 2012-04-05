@@ -80,7 +80,7 @@ public class FetchableListView extends FrameLayout implements OnScrollListener {
 
     listView.setOnScrollListener(this);
 
-    final ListView.LayoutParams params = new ListView.LayoutParams(ListView.LayoutParams.FILL_PARENT, ListView.LayoutParams.WRAP_CONTENT);
+    final ListView.LayoutParams params = new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, ListView.LayoutParams.WRAP_CONTENT);
     footer.setLayoutParams(params);
 
     setupListView();
@@ -170,7 +170,7 @@ public class FetchableListView extends FrameLayout implements OnScrollListener {
   /**
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  public static interface OnItemsLoadedListener {
+  public interface OnItemsLoadedListener {
     /**
      * Called when new items are loaded.
      * @param empty whether elements list is empty

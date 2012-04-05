@@ -739,6 +739,7 @@ public class ImagesManager<T extends CachedImage> {
       }
     }
 
+    @SuppressWarnings("unused")
     @Override
     public Void call() {
       if (DEBUG) { Log.d(TAG, "Start image task"); }

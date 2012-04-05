@@ -123,7 +123,7 @@ public final class StateWindowHelper {
   /**
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
-  public static interface ActionDefiner extends OnClickListener {
+  public interface ActionDefiner extends OnClickListener {
     /** Button height. */
     int BUTTON_HEIGHT = 55;
     /**
