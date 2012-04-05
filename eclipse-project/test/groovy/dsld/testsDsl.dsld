@@ -8,7 +8,10 @@ package dsld
 //   property name : 'newProp', type : String, provider : 'Sample DSL', doc : 'This is a sample.  You should see this in content assist for GroovyObjects: <pre>newProp</pre>'
 // }
 
-def testPointcut = enclosingMethod(annotatedBy('org.junit.Before') | annotatedBy('org.junit.Test') | name('setup'))
+def testPointcut = (
+    currentType(subType('com.stanfy.test.AbstractGroovyEnroscarTest'))
+//    && enclosingMethod(annotatedBy('org.junit.Before') | annotatedBy('org.junit.Test') | name('setup'))
+)
 
 contribute(testPointcut) {
 
