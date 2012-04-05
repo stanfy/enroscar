@@ -10,10 +10,10 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.WifiLock;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,7 +55,7 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   private Handler handler = new Handler();
 
   /** Wake lock. */
-  private WakeLock wakeLock;
+  private WifiLock wifiLock;
 
   /** Show controller worker. */
   private final Runnable showController = new Runnable() {
@@ -98,8 +98,12 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   @Override
   public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    final PowerManager powerManager = (PowerManager)getOwnerActivity().getSystemService(Context.POWER_SERVICE);
-    wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, TAG);
+
+    if (isNetworkRequired()) {
+      final WifiManager wifiManager = (WifiManager)getActivity().getSystemService(Context.WIFI_SERVICE);
+      wifiLock = wifiManager.createWifiLock(TAG);
+    }
+
     finishOnComplete = getArguments().getBoolean(EXTRA_FINISH_ON_COMPLETE, true);
   }
 
@@ -126,8 +130,8 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   @Override
   public void onResume() {
     super.onResume();
-    if (!completed) {
-      wakeLock.acquire();
+    if (wifiLock != null && !completed) {
+      wifiLock.acquire();
     }
   }
 
@@ -140,8 +144,8 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   @Override
   public void onPause() {
     super.onPause();
-    if (wakeLock.isHeld()) {
-      wakeLock.release();
+    if (wifiLock != null && wifiLock.isHeld()) {
+      wifiLock.release();
     }
   }
 
@@ -168,10 +172,18 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   public void onCompletion(final MediaPlayer mp) {
     if (DEBUG) { Log.d(TAG, "Video playback completed"); }
     completed = true;
-    if (wakeLock.isHeld()) {
-      wakeLock.release();
+    if (wifiLock != null && wifiLock.isHeld()) {
+      wifiLock.release();
     }
     if (finishOnComplete) { getOwnerActivity().finish(); }
+  }
+
+  /**
+   * @return true if network connection is required for video playback
+   */
+  public boolean isNetworkRequired() {
+    final String scheme = getArguments().<Uri>getParcelable(EXTRA_SOURCE_URI).getScheme();
+    return !"file".equals(scheme);
   }
 
   private void openVideo() {
