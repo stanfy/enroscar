@@ -59,8 +59,8 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
   }
 
   /** Message code. */
-  private static final int MSG_REQUEST = 0, // make a request
-                           MSG_FINISH = 1;  // all requests are done
+  protected static final int MSG_REQUEST = 0, // make a request
+                             MSG_FINISH = 1;  // all requests are done
 
   /** Null operation data. */
   static final APICallInfoData NULL_OPERATION_DATA = new APICallInfoData();
@@ -520,6 +520,10 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     if (DEBUG) { Log.d(TAG, "API methods destroyed"); }
   }
 
+  /** @return application service that owns this implementation */
+  protected ApplicationService getAppService() { return appService; }
+  /** @return main API thread handler */
+  protected Handler getMainHandler() { return mainHandler; }
 
   // --------------------------------------------------------------------------------------------
 
