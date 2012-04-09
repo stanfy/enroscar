@@ -38,16 +38,23 @@ public class GUIUtils {
   protected GUIUtils() { /* hide */ }
 
   /**
-   * Create very simple notification, <b>should be used for debugging only</b>.
+   * Create a very simple notification, <b>should be used for debugging only</b>.
+   * Use {@link SDKDependentUtils#createNotificationBuilder(Context)} for building notification.
    * @param ctx context instance
    * @param message message to display
    * @param contentIntent content intent
    * @return notification instance
+   * @see SDKDependentUtils#createNotificationBuilder(Context)
+   * @see com.stanfy.utils.notifications.NotificationBuilder
    */
   public static Notification createNotification(final Context ctx, final CharSequence message, final PendingIntent contentIntent) {
-    final Notification n = new Notification(R.drawable.icon, message, System.currentTimeMillis());
-    n.setLatestEventInfo(ctx, ctx.getText(R.string.app_name), message, contentIntent);
-    return n;
+    return AppUtils.getSdkDependentUtils().createNotificationBuilder(ctx)
+        .setSmallIcon(R.drawable.icon)
+        .setTicker(message)
+        .setContentTitle(ctx.getText(R.string.app_name))
+        .setContentText(message)
+        .setContentIntent(contentIntent)
+        .getNotification();
   }
 
   /**

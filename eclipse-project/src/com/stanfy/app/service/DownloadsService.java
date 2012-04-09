@@ -27,13 +27,12 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.app.Application;
 import com.stanfy.images.BuffersPool;
 import com.stanfy.images.PoolableBufferedInputStream;
-import com.stanfy.views.R;
+import com.stanfy.utils.AppUtils;
 
 /**
  * Service that can be used instead of {@link android.app.DownloadManager} on older devices.
@@ -238,18 +237,20 @@ public class DownloadsService extends Service {
     public Request getRequest() { return request; }
 
     protected void updateDownloadProgress(final Float progress) {
-      final RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification_download);
-      remoteViews.setTextViewText(R.id.notification_title, request.title);
-      remoteViews.setTextViewText(R.id.notification_description, request.description);
       final float p = progress == null ? 0 : progress;
       final int max = 1000;
-      remoteViews.setProgressBar(R.id.notification_progress, max, (int)(p * max), progress == null);
 
-      @SuppressWarnings("deprecation")
-      final Notification n = new Notification(android.R.drawable.stat_sys_download, p == 0 ? request.title : null, notificationTime);
-      n.contentView = remoteViews;
-      n.contentIntent = PendingIntent.getBroadcast(DownloadsService.this, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-      n.flags |= Notification.FLAG_ONGOING_EVENT;
+      final Notification n = AppUtils.getSdkDependentUtils().createNotificationBuilder(DownloadsService.this)
+          .setWhen(notificationTime)
+          .setSmallIcon(android.R.drawable.stat_sys_download)
+          .setTicker(request.title)
+          .setContentTitle(request.title)
+          .setContentText(request.description)
+          .setContentIntent(PendingIntent.getBroadcast(DownloadsService.this, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+          .setOngoing(true)
+          .setProgress(max, (int)(p * max), progress == null)
+          .getNotification();
+
       getNotificationManager().notify(request.notificationId, n);
 
       publishProgress(p);

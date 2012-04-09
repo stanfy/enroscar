@@ -11,6 +11,9 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 
+import com.stanfy.utils.notifications.GingerbreadBotificationBuilder;
+import com.stanfy.utils.notifications.NotificationBuilder;
+
 /**
  * Gingerbread utilities (API level 9).
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
@@ -45,6 +48,11 @@ public class GingerbreadUtils extends EclairUtils {
   @Override
   public void applySharedPreferences(final Editor editor) {
     editor.apply();
+  }
+
+  @Override
+  public NotificationBuilder createNotificationBuilder(final Context context) {
+    return new GingerbreadBotificationBuilder(context);
   }
 
 }

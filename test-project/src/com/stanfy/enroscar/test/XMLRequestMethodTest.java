@@ -252,7 +252,7 @@ public class XMLRequestMethodTest extends AndroidTestCase {
     }
 
     @Override
-    public void performRequest(final RequestDescription rd) {
+    public int performRequest(final RequestDescription rd) {
       try {
         // don't put me in background
         method.start(sysContext, rd, context);
@@ -260,6 +260,7 @@ public class XMLRequestMethodTest extends AndroidTestCase {
         Log.e(TAG, "Was unable to make request", e);
         fail("Was unable to make request");
       }
+      return rd.getId();
     }
 
   }

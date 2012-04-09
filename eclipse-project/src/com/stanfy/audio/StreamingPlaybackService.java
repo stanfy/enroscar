@@ -29,6 +29,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.utils.AppUtils;
 import com.stanfy.views.R;
 
 /**
@@ -262,17 +263,14 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
   }
 
   protected Notification buildNotification() {
-    final Notification n = new Notification();
-    n.icon = R.drawable.icon;
-    if (title == null) {
-      n.tickerText = "Playing";
-    } else {
-      n.tickerText = "Playing " + title;
-    }
-    n.when = System.currentTimeMillis();
-    n.flags |= Notification.FLAG_ONGOING_EVENT;
-    n.setLatestEventInfo(this, getText(R.string.app_name), n.tickerText, null);
-    return n;
+    final String text = title == null ? "Playing" : "Playing " + title;
+    return AppUtils.getSdkDependentUtils().createNotificationBuilder(this)
+        .setSmallIcon(R.drawable.icon)
+        .setTicker(text)
+        .setOngoing(true)
+        .setContentTitle(getText(R.string.app_name))
+        .setContentText(text)
+        .getNotification();
   }
 
   /** @return the mediaPlayer */

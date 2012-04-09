@@ -9,6 +9,9 @@ import android.os.Environment;
 import android.view.View;
 import android.webkit.WebView;
 
+import com.stanfy.utils.notifications.BaseNotificationBuilder;
+import com.stanfy.utils.notifications.NotificationBuilder;
+
 /**
  * Implementation for old versions.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
@@ -46,6 +49,11 @@ public class LowestSDKDependentUtils implements SDKDependentUtils {
   public <P> void executeAsyncTaskParallel(final AsyncTask<P, ?, ?> task, final P... params) {
     // DONUT..GINGERBREAD - its parallel
     task.execute(params);
+  }
+
+  @Override
+  public NotificationBuilder createNotificationBuilder(final Context context) {
+    return new BaseNotificationBuilder(context);
   }
 
 }

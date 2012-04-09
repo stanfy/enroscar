@@ -8,6 +8,8 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.webkit.WebView;
 
+import com.stanfy.utils.notifications.NotificationBuilder;
+
 /**
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
@@ -58,5 +60,10 @@ public interface SDKDependentUtils {
    * @param params parameters
    */
   <P> void executeAsyncTaskParallel(final AsyncTask<P, ?, ?> task, final P... params);
+
+  /**
+   * @return notification builder instance
+   */
+  NotificationBuilder createNotificationBuilder(final Context context);
 
 }
