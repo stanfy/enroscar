@@ -5,7 +5,7 @@
   <string name="ok"><![CDATA[OK]]></string>
   <string name="cancel"><![CDATA[Отмена]]></string>
 
-  <string name="progress_loading">Загрузка...</string>
+  <string name="progress_loading">Загрузка&#8230;</string>
 
   <string name="error_connection">Проверьте ваше соединение с Интернетом</string>
   <string name="error_connection_long">Проверьте ваше соединение с Интернетом</string>
