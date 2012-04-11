@@ -447,7 +447,7 @@
       <arg value="--config" />
       <arg value="${lint.config}" />
       <arg value="--url" />
-      <arg value="${lint.url.mapping}" />
+      <arg value="${basedir}=${svn.url}" />
   	</exec>
     
   	<copy todir="${output.reports}" overwrite="true">
