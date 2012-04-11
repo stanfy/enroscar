@@ -39,11 +39,11 @@ table { border: none; }
 .metadata {
 }
 .location {
-    color: #bebebe;
+    color: #006699;
 }
 .message { }
-.errorspan { color: #33b5e5; }
-.errorline { color: #33b5e5; }
+.errorspan { color: #007000; }
+.errorline { color: #007000; }
 .warningslist { margin-bottom: 20px; }
 .overview {
     padding: 10pt;
