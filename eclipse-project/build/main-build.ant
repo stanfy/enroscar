@@ -344,7 +344,7 @@
 
   <target name="-test" depends="-check-tests-available" if="src.test.available">
     <path id="test.classpath">
-      <fileset dir="${jar.libs.absolute.dir}/test" includes="*.jar" />
+      <fileset dir="${jar.libs.absolute.dir}" includes="test/*.jar" />
       <fileset dir="${jar.libs.absolute.dir}" includes="*.jar" />
     	<fileset dir="${build.library.path}/libs/test" includes="*.jar" />
       <pathelement path="${output.temp.android}/classes" />
