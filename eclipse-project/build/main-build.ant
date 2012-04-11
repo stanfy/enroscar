@@ -318,7 +318,7 @@
     </scp>
   </target>
 	
-  <target name="-copy-jar-to-bin" if="android.library">
+  <target name="-copy-jar-to-bin">
     <fileset id="lib.jar.path" dir="${output.temp.android}" includes="classes.jar" />
     <copy todir="bin"><fileset refid="lib.jar.path"/></copy>
   </target>
