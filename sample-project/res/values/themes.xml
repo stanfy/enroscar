@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <style name="Theme" parent="@android:style/Theme"/>
+
+  <style name="Theme.Activity">
+    <item name="android:windowNoTitle">true</item> 
+    <item name="android:windowSoftInputMode">stateHidden|adjustPan</item>
+    <item name="com.stanfy.enroscar.sample:qaMainContainerStyle">@style/QA.MainContainer</item>
+    <item name="com.stanfy.enroscar.sample:qaTopFrameStyle">@style/QA.TopFrame</item>
+    <item name="com.stanfy.enroscar.sample:qaBottomFrameStyle">@style/QA.BottomFrame</item>
+    <item name="com.stanfy.enroscar.sample:qaScrollStyle">@style/QA.Scroll</item>
+  </style>
+   
+</resources>
