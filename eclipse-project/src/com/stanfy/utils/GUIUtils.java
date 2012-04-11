@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
+import android.content.pm.ApplicationInfo;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -19,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.views.R;
 import com.stanfy.views.utils.Animations;
 
 /**
@@ -48,10 +48,11 @@ public class GUIUtils {
    * @see com.stanfy.utils.notifications.NotificationBuilder
    */
   public static Notification createNotification(final Context ctx, final CharSequence message, final PendingIntent contentIntent) {
+    final ApplicationInfo appInfo = ctx.getApplicationInfo();
     return AppUtils.getSdkDependentUtils().createNotificationBuilder(ctx)
-        .setSmallIcon(R.drawable.icon)
+        .setSmallIcon(appInfo.icon)
         .setTicker(message)
-        .setContentTitle(ctx.getText(R.string.app_name))
+        .setContentTitle(ctx.getPackageManager().getApplicationLabel(appInfo))
         .setContentText(message)
         .setContentIntent(contentIntent)
         .getNotification();
@@ -170,13 +171,17 @@ public class GUIUtils {
     view.startAnimation(a);
   }
 
+  public static CharSequence getApplicationLabel(final Context context) {
+    return context.getPackageManager().getApplicationLabel(context.getApplicationInfo());
+  }
+
   public static AlertDialog createConfirm(final Context context, final int message, final OnClickListener yesListener) {
     final String m = context.getString(message);
     return createConfirm(context, m, yesListener, true);
   }
   public static AlertDialog createConfirm(final Context context, final String message, final OnClickListener yesListener, final boolean useNoListener) {
     return new AlertDialog.Builder(context)
-        .setTitle(context.getText(R.string.app_name))
+        .setTitle(getApplicationLabel(context))
         .setMessage(message)
         .setPositiveButton(android.R.string.yes, yesListener)
         .setNegativeButton(android.R.string.no, useNoListener ? yesListener : null)
@@ -186,7 +191,7 @@ public class GUIUtils {
   public static AlertDialog createDialogMessage(final Context context, final String message) { return createDialogMessage(context, message, null); }
   public static AlertDialog createDialogMessage(final Context context, final String message, final DialogInterface.OnClickListener listener) {
     return new AlertDialog.Builder(context)
-      .setTitle(context.getText(R.string.app_name))
+      .setTitle(getApplicationLabel(context))
       .setMessage(message)
       .setPositiveButton(android.R.string.ok, listener)
       .create();

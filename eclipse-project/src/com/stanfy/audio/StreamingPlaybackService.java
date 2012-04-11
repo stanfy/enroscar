@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -264,11 +265,12 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
 
   protected Notification buildNotification() {
     final String text = title == null ? "Playing" : "Playing " + title;
+    final ApplicationInfo appInfo = getApplicationInfo();
     return AppUtils.getSdkDependentUtils().createNotificationBuilder(this)
-        .setSmallIcon(R.drawable.icon)
+        .setSmallIcon(appInfo.icon)
         .setTicker(text)
         .setOngoing(true)
-        .setContentTitle(getText(R.string.app_name))
+        .setContentTitle(getPackageManager().getApplicationLabel(appInfo))
         .setContentText(text)
         .getNotification();
   }
