@@ -4,4 +4,7 @@
   <issue id="NewApi" severity="informational" />
   <issue id="Registered" severity="informational" />
   <issue id="UnusedResources" severity="ignore" />
+  <issue id="MissingTranslation">
+    <ignore path="res/values/sql.xml" />
+  </issue>
 </lint>
