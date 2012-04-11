@@ -6,5 +6,6 @@
   <issue id="UnusedResources" severity="ignore" />
   <issue id="MissingTranslation">
     <ignore path="res/values/sql.xml" />
+    <ignore path="res/values/notranslate.xml" />
   </issue>
 </lint>

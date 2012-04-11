@@ -2,8 +2,8 @@
   
   <string name="reset">Сброс</string>
 
-  <string name="ok"><![CDATA[OK]]></string>
-  <string name="cancel"><![CDATA[Отмена]]></string>
+  <string name="ok">OK</string>
+  <string name="cancel">Отмена</string>
 
   <string name="progress_loading">Загрузка&#8230;</string>
 
