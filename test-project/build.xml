@@ -1,4 +1,10 @@
 <project name="enroscar-tests" basedir="." default="help">
-  <property name="build.library.path" value="${basedir}/../eclipse-project" />
+
+	<!-- Change main directories structure. -->
+  <property name="src.java" value="${basedir}/src/emulator"/>
+  <property name="src.test" value="${basedir}/src/jvm"/>
+	
+	<property name="build.library.path" value="${basedir}/../eclipse-project" />
   <import file="${build.library.path}/build/main-build.ant"/>
+
 </project>
