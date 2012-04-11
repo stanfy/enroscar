@@ -353,9 +353,6 @@
       <path refid="android.target.classpath" />
     </path>
       
-    <pathconvert property="temp.test.cp" refid="test.classpath"></pathconvert>
-    <echo>${temp.test.cp}</echo>
-    
     <echo message="Compiling tests..."/>
     <javac target="1.5" debug="true" extdirs="" destdir="${output.temp.test}" srcdir="${src.test.java}"
         includeantruntime="false"
