@@ -196,7 +196,7 @@
   <!-- Hooks -->
   <target name="-package-resources" depends="-preprocess, android_rules.-package-resources" />
   <target name="-pre-build" depends="-prepare-directories, -prepare-sources, -prepare-lang-values"/>
-  <target name="-post-compile" depends="-copy-jar-to-bin" /> <!-- -test -->
+  <target name="-post-compile" depends="-copy-jar-to-bin, -test" />
   
   <target name="-prepare-directories">
     <mkdir dir="${output.temp.resources}"/>
