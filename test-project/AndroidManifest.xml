@@ -6,7 +6,10 @@
     android:versionName="0.1"
     >
   
-  <uses-sdk android:minSdkVersion="10" />
+  <uses-sdk 
+      android:minSdkVersion="7" 
+      android:targetSdkVersion="15" 
+      />
   
   <instrumentation 
       android:targetPackage="com.stanfy.enroscar.test" 
