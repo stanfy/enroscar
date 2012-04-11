@@ -4,6 +4,17 @@
   <string name="hello">Hello World!</string>
   <string name="app_name">Enroscar Sample</string>
   <string name="hello_fragment">Hello from fragment</string>
-  <string name="tweets">Show tweets</string>
   
+  <string name="tweetsdemo">Tweets demo</string>
+  
+  <string name="qademo">Quick actions demo</string>
+  <string name="gallerydemo">Gallery demo</string>
+  
+  <string name="qademo_action1">Action 1</string>
+  <string name="qademo_action2">Action 2</string>
+  
+  <string name="gallerydemo_description">
+      Consult LogCat to see how convertView is used. Se bug http://code.google.com/p/android/issues/detail?id=3376 for details.
+  </string>
+
 </resources>

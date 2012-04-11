@@ -34,6 +34,11 @@
       </intent-filter>
     </activity>
     
+    <!-- Quick actions demo -->
+    <activity android:name=".other.QuickActionsSampleActivity" />
+    <!-- Gallery demo -->
+    <activity android:name=".other.GallerySampleActivity" />
+    
     <!-- Main application service. Deals with remote server API. -->
     <service android:name="com.stanfy.app.service.ApplicationService" />
     

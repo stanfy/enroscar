@@ -18,8 +18,9 @@
   
   <Button
       style="@style/WrapContent"
-      android:text="@string/tweets" 
+      android:text="@string/tweetsdemo" 
       android:id="@+id/tweets_btn"
+      android:layout_gravity="center_horizontal"
       />
   
 </LinearLayout>
