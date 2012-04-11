@@ -73,6 +73,7 @@
   <property name="keystore.path" value="${env.ANDROID_KEYSTORE}" />
   <property name="key.store" value="${keystore.path}/${keystore.name}.keystore" />
   <property file="${keystore.path}/${keystore.name}-access.properties" />
+  <echo>Use keystore at ${keystore.name}</echo>
 
 	<!-- Default SDK location -->
   <property name="sdk.dir" value="${env.ANDROID_HOME}" />
