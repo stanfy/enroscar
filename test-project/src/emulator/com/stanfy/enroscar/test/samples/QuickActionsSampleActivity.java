@@ -24,8 +24,8 @@ public class QuickActionsSampleActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.qa);
     final BasicQuickActionsAdapter adapter = new BasicQuickActionsAdapter(this,
-        new BasicQuickAction(this, R.drawable.icon, R.string.app_name),
-        new BasicQuickAction(this, R.drawable.icon, R.string.app_name)
+        new BasicQuickAction(this, R.drawable.ic_launcher, R.string.app_name),
+        new BasicQuickAction(this, R.drawable.ic_launcher, R.string.app_name)
     );
     final QuickActionsBar qaBar = new QuickActionsBar(this);
     qaBar.setQuickActionsAdapter(adapter);
@@ -38,7 +38,7 @@ public class QuickActionsSampleActivity extends Activity {
     qaBar.setOnQuickActionClickListener(new OnQuickActionClickListener() {
       @Override
       public void onQuickActionClicked(final QuickActionsWidget widget, final int position) {
-        Log.d("123123", "Pos " + position);
+        Log.d("EnroscarQA", "Pos " + position);
       }
     });
   }

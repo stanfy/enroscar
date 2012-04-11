@@ -11,7 +11,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.stanfy.enroscar.test.R;
-import com.stanfy.enroscar.test.R.drawable;
 import com.stanfy.views.gallery.Gallery;
 
 /**
@@ -47,15 +46,15 @@ public class GallerySampleActivity extends Activity {
       TextView view = null;
       if (convertView != null) {
         view = (TextView)convertView;
-        Log.d("123123", "Use convert view " + position + " / " + view.getText());
+        Log.d("Enroscar", "Use convert view " + position + " / " + view.getText());
       } else {
         view = new TextView(GallerySampleActivity.this);
         view.setLayoutParams(new Gallery.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         view.setGravity(Gravity.CENTER);
-        Log.d("123123", "Create " + position);
+        Log.d("Enroscar", "Create " + position);
       }
       view.setText(getItem(position));
-      view.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon, 0, 0);
+      view.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_launcher, 0, 0);
       return view;
     }
 
