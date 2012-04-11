@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src/jvm/java"/>
+	<classpathentry kind="src" path="src/jvm/groovy"/>
+	<classpathentry kind="src" path="src/emulator"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="libs/robotium-solo-2.3.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="/enroscar/libs/android-support-v4.jar"/>
-	<classpathentry kind="lib" path="/enroscar/libs/FlurryAgent.jar"/>
-	<classpathentry kind="lib" path="/enroscar/libs/gson-2.1.jar" sourcepath="/enroscar/libs/src/gson-2.1-sources.jar"/>
+	<classpathentry kind="lib" path="libs/jvm-tests/groovy-all-1.8.6.jar" sourcepath="libs/src/groovy-1.8.6-src.jar"/>
+	<classpathentry kind="lib" path="libs/jvm-tests/hamcrest-all-1.2.jar"/>
+	<classpathentry kind="lib" path="libs/jvm-tests/junit-4.10.jar" sourcepath="libs/src/junit-4.10-src.jar"/>
+	<classpathentry kind="lib" path="libs/jvm-tests/robolectric-all.jar" sourcepath="libs/src/robolectric-src.jar"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
