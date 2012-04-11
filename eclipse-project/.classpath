@@ -2,15 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="src" path="test/java"/>
-	<classpathentry kind="src" path="test/groovy"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="libs/test/hamcrest-all-1.2.jar"/>
-	<classpathentry kind="lib" path="libs/test/robolectric-all.jar" sourcepath="libs/src/robolectric-src.jar"/>
-	<classpathentry kind="lib" path="libs/test/groovy-all-1.8.6.jar" sourcepath="libs/src/groovy-1.8.6-src.jar"/>
-	<classpathentry kind="lib" path="libs/test/junit-4.10.jar" sourcepath="libs/src/junit-4.10-src.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
-	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
