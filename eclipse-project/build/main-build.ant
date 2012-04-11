@@ -448,6 +448,10 @@
       <arg value="${lint.config}" />
   	</exec>
     
+  	<copy todir="${output.reports}" overwrite="true">
+  		<fileset dir="${lib.ant}/lint" />
+  	</copy>
+  	
     <echo>Running copy-past detector...</echo>
     <cpd language="java" minimumtokencount="70" encoding="UTF-8" format="xml" outputfile="${output.reports}/cpd-report.xml">
       <fileset refid="pmd.src" />
