@@ -66,7 +66,7 @@
         				<tr>
                   <td>
                     <a>
-                      <xsl:attribute name="href">../src/<xsl:value-of select="@path"/>.html#<xsl:value-of select="@line"/></xsl:attribute>
+                      <xsl:attribute name="href"><xsl:value-of select="@path"/>#<xsl:value-of select="@line"/></xsl:attribute>
                       <xsl:value-of select="@path"/>
                     </a>
                   </td>
