@@ -343,11 +343,10 @@
   </target>
 
   <target name="-test" depends="-check-tests-available" if="src.test.available">
-  	<stanfy:resolvelib namepart="${application.library}" propertiesprefix="test.mainlib" />
     <path id="test.classpath">
-      <fileset dir="${jar.libs.absolute.dir}" includes="test/*.jar" />
+      <fileset dir="${jar.libs.absolute.dir}/test" includes="*.jar" />
       <fileset dir="${jar.libs.absolute.dir}" includes="*.jar" />
-    	<fileset dir="${test.mainlib.path}" includes="libs/test/*.jar" />
+    	<fileset dir="${build.library.path}/libs/test" includes="*.jar" />
       <pathelement path="${output.temp.android}/classes" />
     	<path refid="project.libraries.jars" />
       <path refid="android.target.classpath" />
@@ -429,13 +428,16 @@
     </fileset>
     
     <echo>Running lint...</echo>
+    <condition property="lint.config" value="${basedir}/lint.xml" else="${build.library.path}/lint.xml">
+      <available file="${basedir}/lint.xml" />
+    </condition>
   	<exec executable="${sdk.dir}/tools/lint">
   		<arg value="--quiet" />
       <arg value="--html" />
       <arg value="${output.reports}/lint-report.html" />
       <arg value="${basedir}" />
       <arg value="--config" />
-      <arg value="${basedir}/lint.xml" />
+      <arg value="${lint.config}" />
   	</exec>
     
     <echo>Running copy-past detector...</echo>
