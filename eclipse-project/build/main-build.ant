@@ -434,6 +434,8 @@
       <arg value="--html" />
       <arg value="${output.reports}/lint-report.html" />
       <arg value="${basedir}" />
+      <arg value="--config" />
+      <arg value="${basedir}/lint.xml" />
   	</exec>
     
     <echo>Running copy-past detector...</echo>
