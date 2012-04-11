@@ -318,7 +318,7 @@
     </scp>
   </target>
 	
-  <target name="-copy-jar-to-bin">
+  <target name="-copy-jar-to-bin" if="android.library">
     <fileset id="lib.jar.path" dir="${output.temp.android}" includes="classes.jar" />
     <copy todir="bin"><fileset refid="lib.jar.path"/></copy>
   </target>
@@ -419,7 +419,15 @@
     Perfom code style checks and copy-past detection.
   -->
   <target name="codecheck" depends="build" description="Check the code using PMD" if="codecheck.necessary">
-    <path id="pmd.path">
+    <do-only-if-not-library elseText="No need to copy .class files.">
+    	<delete dir="${basedir}/bin/classes" />
+      <mkdir dir="${basedir}/bin/classes" />
+    	<copy todir="${basedir}/bin/classes">
+    		<fileset dir="${output.temp.android}/classes" />
+      </copy>
+    </do-only-if-not-library>
+  	
+  	<path id="pmd.path">
       <fileset dir="${lib.ant}/pmd" includes="*.jar" />
     </path>
     <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="pmd.path" />
