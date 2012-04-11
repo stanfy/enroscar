@@ -25,7 +25,6 @@
     <uses-library android:name="android.test.runner" />
 
     <activity android:name=".ListViewActivity" />
-    <activity android:name=".samples.GallerySampleActivity"/>
     <activity 
         android:name=".samples.QuickActionsSampleActivityty"
         android:theme="@style/Theme.Activity" 
