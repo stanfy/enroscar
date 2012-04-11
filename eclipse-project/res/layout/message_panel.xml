@@ -12,7 +12,7 @@
   
   <TextView
       style="@style/LinearHorizontalContainer"
-      android:id="@+id/message"
+      android:id="@+id/message_text"
       android:layout_above="@id/message_image"
       android:padding="10dp"
       android:gravity="center"

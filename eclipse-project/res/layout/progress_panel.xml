@@ -19,7 +19,7 @@
       />
   <TextView
       style="@style/WrapContent"
-      android:id="@+id/message"
+      android:id="@+id/progress_text"
       android:layout_above="@id/progress_bar"
       android:text="@string/progress_loading"
       android:layout_marginBottom="5dp"

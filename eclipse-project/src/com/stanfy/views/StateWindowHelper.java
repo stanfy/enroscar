@@ -51,7 +51,7 @@ public final class StateWindowHelper {
     this.stateContainer = statePanel.findViewById(R.id.state_message);
     final View stateContainer = this.stateContainer;
     if (stateContainer != null) {
-      messageViewText = (TextView)stateContainer.findViewById(R.id.message);
+      messageViewText = (TextView)stateContainer.findViewById(R.id.message_text);
       messageImage = (ImageView)stateContainer.findViewById(R.id.message_image);
       messageAction = stateContainer.findViewById(R.id.message_action);
     } else {
