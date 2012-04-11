@@ -343,17 +343,22 @@
   </target>
 
   <target name="-test" depends="-check-tests-available" if="src.test.available">
+  	<stanfy:resolvelib namepart="${application.library}" propertiesprefix="test.mainlib" />
     <path id="test.classpath">
       <fileset dir="${jar.libs.absolute.dir}" includes="test/*.jar" />
-      <path refid="android.target.classpath"/>
       <fileset dir="${jar.libs.absolute.dir}" includes="*.jar" />
+    	<fileset dir="${test.mainlib.path}" includes="libs/test/*.jar" />
       <pathelement path="${output.temp.android}/classes" />
+    	<path refid="project.libraries.jars" />
+      <path refid="android.target.classpath" />
     </path>
       
+    <pathconvert property="temp.test.cp" refid="test.classpath"></pathconvert>
+    <echo>${temp.test.cp}</echo>
+    
     <echo message="Compiling tests..."/>
     <javac target="1.5" debug="true" extdirs="" destdir="${output.temp.test}" srcdir="${src.test.java}"
         includeantruntime="false"
-        bootclasspathref="android.target.classpath"
         verbose="${verbose}" 
         classpathref="test.classpath"
         />
