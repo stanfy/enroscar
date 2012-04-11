@@ -1,6 +1,6 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-  <string name="sql_ddl_create_index">
+  <string name="sql_ddl_create_index" tools:ignore="MissingTranslation">
   <![CDATA[
     CREATE INDEX IF NOT EXISTS %1$s ON %2$s (
       %3$s
@@ -8,7 +8,7 @@
   ]]>
   </string>
 
-  <string name="sql_ddl_cached_image">
+  <string name="sql_ddl_cached_image" tools:ignore="MissingTranslation">
   <![CDATA[
     CREATE TABLE IF NOT EXISTS %1$s (
       %2$s INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,19 +23,19 @@
   ]]>
   </string>
 
-  <string name="sql_ddl_cached_image_index_url">
+  <string name="sql_ddl_cached_image_index_url" tools:ignore="MissingTranslation">
   <![CDATA[
     CREATE UNIQUE INDEX IF NOT EXISTS %1$s_index_url ON %1$s (url); 
   ]]>
   </string>
 
-  <string name="sql_ddl_cached_image_index_usage_ts">
+  <string name="sql_ddl_cached_image_index_usage_ts" tools:ignore="MissingTranslation">
   <![CDATA[
     CREATE INDEX IF NOT EXISTS %1$s_index_usage_ts ON %1$s (usage_ts); 
   ]]>
   </string>
 
-  <string name="sql_ddl_cached_image_index_type">
+  <string name="sql_ddl_cached_image_index_type" tools:ignore="MissingTranslation">
   <![CDATA[
     CREATE INDEX IF NOT EXISTS %1$s_index_type ON %1$s (type); 
   ]]>

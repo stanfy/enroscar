@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
   <issue id="IconDensities" severity="informational" />
-  <issue id="NewApi" severity="informational" />
+  <!-- issue id="NewApi" severity="informational" / -->
   <issue id="Registered" severity="informational" />
   <issue id="UnusedResources" severity="ignore" />
-  <issue id="MissingTranslation">
-    <ignore path="res/values/sql.xml" />
-    <ignore path="res/values/notranslate.xml" />
-  </issue>
 </lint>
