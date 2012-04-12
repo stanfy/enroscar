@@ -21,7 +21,6 @@ ant.sequential {
   echo "name: ${releaseName}"
   echo "base directory: ${basedir}"
   echo "config directory: ${configDir}"
-  echo "ant home: " + System.getProperty('ANT_HOME')
   
   delete file : zipFileName
   
@@ -29,21 +28,27 @@ ant.sequential {
     fileset dir : ".", excludes : "bin/**, gen/**, *.zip"
   }
 
-  property environment : "env"
-  echo "Repo access: $configDir"
-  property file : "${configDir}/release.properties"   
-  def repoAccessFile = ant.project.getProperty('repo.access.file')
-  echo "Repo access: ${repoAccessFile}"
-  property file : repoAccessFile
+  def loadProperties = {
+    Properties p = new Properties()
+    p.load(new FileInputStream(it))
+    return new ConfigSlurper().parse(p)
+  }
   
-  def baseRemoteDir = ant.project.getProperty('scp.release.dir')
-  def user = ant.project.getProperty('scp.user')
-  def password = ant.project.getProperty('scp.password')
-  def host = ant.project.getProperty('scp.host')
-  def port = ant.project.getProperty('scp.port')
+  def localConfig = loadProperties("${configDir}/release.properties")
+  def repoAccessFile = localConfig.repo.access.file.replace('${env.INTEGRATION_HOME}', System.getenv()['INTEGRATION_HOME'])
+  
+  echo "Repo access: ${repoAccessFile}"
+
+  def securedConfig = loadProperties(repoAccessFile)
+    
+  def baseRemoteDir = securedConfig.scp.release.dir
+  def user = securedConfig.scp.user
+  def password = securedConfig.scp.password
+  def host = securedConfig.scp.host
+  def port = securedConfig.scp.port
   echo "Login: ${user}"
   
-  scp todir : "${user}@${host}:${baseRemoteDir}/android", password : password, port : port, {
+  scp todir : "${user}@${host}:${baseRemoteDir}/enroscar/android", password : password, port : port, {
     fileset dir : ".", includes : zipFileName
   }
   
