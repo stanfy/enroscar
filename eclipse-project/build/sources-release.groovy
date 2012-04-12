@@ -21,6 +21,7 @@ ant.sequential {
   echo "name: ${releaseName}"
   echo "base directory: ${basedir}"
   echo "config directory: ${configDir}"
+  echo "ant home: " + System.getProperty('ANT_HOME')
   
   delete file : zipFileName
   
@@ -29,7 +30,8 @@ ant.sequential {
   }
 
   property environment : "env"
-  property file : "$configDir/release.properties"   
+  echo "Repo access: $configDir"
+  property file : "${configDir}/release.properties"   
   def repoAccessFile = ant.project.getProperty('repo.access.file')
   echo "Repo access: ${repoAccessFile}"
   property file : repoAccessFile
