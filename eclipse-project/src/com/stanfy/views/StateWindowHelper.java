@@ -49,6 +49,8 @@ public final class StateWindowHelper {
 
   /** Fade animation. */
   private int fadeInAnimation = android.R.anim.fade_in, fadeOutAnimation = android.R.anim.fade_out;
+  /** Animations enabled flag. */
+  private boolean animationsEnabled = true;
 
   /** Current state. */
   private int currentState = NOT_INITED;
@@ -59,6 +61,7 @@ public final class StateWindowHelper {
   public StateWindowHelper(final View statePanel, final View mainView, final View additionalView) {
     this.statePanel = statePanel;
     this.stateContainer = statePanel.findViewById(R.id.state_message);
+
     final View stateContainer = this.stateContainer;
     if (stateContainer != null) {
       messageViewText = (TextView)stateContainer.findViewById(R.id.message_text);
@@ -69,10 +72,12 @@ public final class StateWindowHelper {
       messageImage = null;
       messageAction = null;
     }
+
     this.progressView = statePanel.findViewById(R.id.state_progress);
     this.mainView = mainView;
     this.additionalView = additionalView;
-    showMain();
+
+    showMain(false);
   }
 
   /** @param additionalView the additionalView to set */
@@ -82,18 +87,12 @@ public final class StateWindowHelper {
   /** @return the additionalView */
   public View getAdditionalView() { return additionalView; }
 
-  /**
-   * @param fadeInAnimation fade in animation
-   */
-  public void setFadeInAnimation(final int fadeInAnimation) {
-    this.fadeInAnimation = fadeInAnimation;
-  }
-  /**
-   * @param fadeOutAnimation fade out animation
-   */
-  public void setFadeOutAnimation(final int fadeOutAnimation) {
-    this.fadeOutAnimation = fadeOutAnimation;
-  }
+  /** @param fadeInAnimation fade in animation */
+  public void setFadeInAnimation(final int fadeInAnimation) { this.fadeInAnimation = fadeInAnimation; }
+  /** @param fadeOutAnimation fade out animation */
+  public void setFadeOutAnimation(final int fadeOutAnimation) { this.fadeOutAnimation = fadeOutAnimation; }
+  /** @param animationsEnabled animations enabled flag */
+  public void setAnimationsEnabled(final boolean animationsEnabled) { this.animationsEnabled = animationsEnabled; }
 
   public void registerAction(final int state, final ActionDefiner action) {
     actions.put(state, action);
@@ -145,16 +144,18 @@ public final class StateWindowHelper {
     currentState = STATE_MAIN;
     if (prevState == currentState) { return; }
 
-    final View outView = prevState == STATE_PROGRESS ? progressView : statePanel;
-    final Context context = outView.getContext();
-    if (animate) {
-      outView.startAnimation(AnimationUtils.loadAnimation(context, fadeOutAnimation));
-      mainView.startAnimation(AnimationUtils.loadAnimation(context, fadeInAnimation));
-      if (additionalView != null) { additionalView.startAnimation(AnimationUtils.loadAnimation(context, fadeInAnimation)); }
-    } else {
-      outView.clearAnimation();
-      mainView.clearAnimation();
-      if (additionalView != null) { additionalView.clearAnimation(); }
+    final View outView = prevState == STATE_PROGRESS ? progressView : stateContainer;
+    if (animationsEnabled && outView != null) {
+      if (animate) {
+        final Context context = outView.getContext();
+        outView.startAnimation(AnimationUtils.loadAnimation(context, fadeOutAnimation));
+        mainView.startAnimation(AnimationUtils.loadAnimation(context, fadeInAnimation));
+        if (additionalView != null) { additionalView.startAnimation(AnimationUtils.loadAnimation(context, fadeInAnimation)); }
+      } else {
+        outView.clearAnimation();
+        mainView.clearAnimation();
+        if (additionalView != null) { additionalView.clearAnimation(); }
+      }
     }
 
     statePanel.setVisibility(View.GONE);
