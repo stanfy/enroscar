@@ -106,7 +106,7 @@ public interface OneRequestModelBehavior<RBT extends RequestBuilder, MT extends 
         public void run() {
           behavior.processModel(model);
           final StateWindowHelper stateHelper = behavior.getStateWindowHelper();
-          if (stateHelper != null) { stateHelper.showMain(); }
+          if (stateHelper != null) { stateHelper.showMain(true); }
         }
       });
     }

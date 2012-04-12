@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +19,9 @@ import com.stanfy.utils.AppUtils;
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public final class StateWindowHelper {
+
+  /** State. */
+  private static final int STATE_MAIN = 0, STATE_PROGRESS = 1, STATE_MESSAGE = 2, NOT_INITED = -1;
 
   /** State container. */
   private final View statePanel;
@@ -42,6 +46,12 @@ public final class StateWindowHelper {
 
   /** Possible actions. */
   private final TreeMap<Integer, ActionDefiner> actions = new TreeMap<Integer, ActionDefiner>();
+
+  /** Fade animation. */
+  private int fadeInAnimation = android.R.anim.fade_in, fadeOutAnimation = android.R.anim.fade_out;
+
+  /** Current state. */
+  private int currentState = NOT_INITED;
 
   public StateWindowHelper(final View statePanel, final View mainView) {
     this(statePanel, mainView, null);
@@ -72,12 +82,26 @@ public final class StateWindowHelper {
   /** @return the additionalView */
   public View getAdditionalView() { return additionalView; }
 
+  /**
+   * @param fadeInAnimation fade in animation
+   */
+  public void setFadeInAnimation(final int fadeInAnimation) {
+    this.fadeInAnimation = fadeInAnimation;
+  }
+  /**
+   * @param fadeOutAnimation fade out animation
+   */
+  public void setFadeOutAnimation(final int fadeOutAnimation) {
+    this.fadeOutAnimation = fadeOutAnimation;
+  }
+
   public void registerAction(final int state, final ActionDefiner action) {
     actions.put(state, action);
   }
 
   public void resolveState(final int state, final String message) {
     if (stateContainer == null) { return; }
+    currentState = STATE_MESSAGE;
     statePanel.setVisibility(View.VISIBLE);
     progressView.setVisibility(View.GONE);
     stateContainer.setVisibility(View.VISIBLE);
@@ -106,6 +130,7 @@ public final class StateWindowHelper {
   public boolean isMainVisible() { return mainView.getVisibility() == View.VISIBLE; }
 
   public void showProgress() {
+    currentState = STATE_PROGRESS;
     statePanel.setVisibility(View.VISIBLE);
     progressView.setVisibility(View.VISIBLE);
     if (stateContainer != null) { stateContainer.setVisibility(View.GONE); }
@@ -113,6 +138,25 @@ public final class StateWindowHelper {
     if (additionalView != null) { additionalView.setVisibility(View.GONE); }
   }
   public void showMain() {
+    showMain(false);
+  }
+  public void showMain(final boolean animate) {
+    final int prevState = currentState;
+    currentState = STATE_MAIN;
+    if (prevState == currentState) { return; }
+
+    final View outView = prevState == STATE_PROGRESS ? progressView : statePanel;
+    final Context context = outView.getContext();
+    if (animate) {
+      outView.startAnimation(AnimationUtils.loadAnimation(context, fadeOutAnimation));
+      mainView.startAnimation(AnimationUtils.loadAnimation(context, fadeInAnimation));
+      if (additionalView != null) { additionalView.startAnimation(AnimationUtils.loadAnimation(context, fadeInAnimation)); }
+    } else {
+      outView.clearAnimation();
+      mainView.clearAnimation();
+      if (additionalView != null) { additionalView.clearAnimation(); }
+    }
+
     statePanel.setVisibility(View.GONE);
     progressView.setVisibility(View.GONE);
     if (stateContainer != null) { stateContainer.setVisibility(View.GONE); }

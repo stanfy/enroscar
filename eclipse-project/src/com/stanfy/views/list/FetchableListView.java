@@ -150,7 +150,7 @@ public class FetchableListView extends FrameLayout implements OnScrollListener {
     stateWindowHelper.showProgress();
   }
   public void setupListView() {
-    stateWindowHelper.showMain();
+    stateWindowHelper.showMain(true);
     if (footerShown) {
       footerShown = false;
       listView.removeFooterView(footer);
