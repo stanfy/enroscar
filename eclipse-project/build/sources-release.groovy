@@ -6,7 +6,7 @@
 def basedir = args[0]
 def configDir = args[1]
 
-def manifest = new XmlSlurper().parse(new File('${basedir}/AndroidManifest.xml'))
+def manifest = new XmlSlurper().parse(new File("${basedir}/AndroidManifest.xml"))
 
 def version = manifest.@versionName.text()
 
@@ -30,14 +30,17 @@ ant.sequential {
 
   property environment : "env"
   property file : "$configDir/release.properties"   
-  property file : ant.project.getProperty('repo.access.file')
+  def repoAccessFile = ant.project.getProperty('repo.access.file')
+  echo "Repo access: ${repoAccessFile}"
+  property file : repoAccessFile
   
   def baseRemoteDir = ant.project.getProperty('scp.release.dir')
   def user = ant.project.getProperty('scp.user')
   def password = ant.project.getProperty('scp.password')
   def host = ant.project.getProperty('scp.host')
   def port = ant.project.getProperty('scp.port')
- 
+  echo "Login: ${user}"
+  
   scp todir : "${user}@${host}:${baseRemoteDir}/android", password : password, port : port, {
     fileset dir : ".", includes : zipFileName
   }
