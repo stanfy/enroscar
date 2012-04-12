@@ -3,12 +3,12 @@
  * This script makes a zip with sources.
  */
 
-def manifest = new XmlSlurper().parse(new File('AndroidManifest.xml'))
-
-def version = manifest.@versionName.text()
-
 def basedir = args[0]
 def configDir = args[1]
+
+def manifest = new XmlSlurper().parse(new File('${basedir}/AndroidManifest.xml'))
+
+def version = manifest.@versionName.text()
 
 def releaseName = "enroscar-sources-${version}"
 def zipFileName = "${releaseName}.zip"
