@@ -84,14 +84,14 @@ public class Application extends android.app.Application implements ImagesManage
   @Override
   public void onLowMemory() {
     Log.w(getClass().getSimpleName(), "Low memory!");
-    if (httpClientsPool != null) {
-      httpClientsPool.flush();
-    }
     if (requestMethodHelper != null) {
       requestMethodHelper.flush();
     }
     if (imagesContext != null) {
       imagesContext.flush();
+    }
+    if (httpClientsPool != null) {
+      httpClientsPool.flush();
     }
   }
 

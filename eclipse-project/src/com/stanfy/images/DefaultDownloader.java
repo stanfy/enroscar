@@ -14,22 +14,36 @@ import com.stanfy.app.HttpClientsPool;
  */
 public class DefaultDownloader implements Downloader {
 
+  /** HTTP client instance. */
+  private HttpClient httpClient;
   /** Pool instance. */
-  private final HttpClientsPool httpPool;
+  private final HttpClientsPool clientsPool;
 
   public DefaultDownloader(final HttpClientsPool clientsPool) {
-    this.httpPool = clientsPool;
+    this.clientsPool = clientsPool;
   }
 
   @Override
   public InputStream download(final String url) throws IOException {
-    final HttpClient client = httpPool.getHttpClient();
-    return client.execute(new HttpGet(url)).getEntity().getContent();
+    synchronized (this) {
+      if (httpClient == null) {
+        httpClient = clientsPool.getHttpClient();
+      }
+    }
+    return httpClient.execute(new HttpGet(url)).getEntity().getContent();
   }
 
   @Override
   public void finish(final String url) {
-    // XXX we currently do not release http clients, there some issues with reusing them
+    // nothing
+  }
+
+  @Override
+  public void flush() {
+    synchronized (this) {
+      clientsPool.releaseHttpClient(httpClient);
+      httpClient = null;
+    }
   }
 
 }

@@ -2,6 +2,7 @@ package com.stanfy.app;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.zip.GZIPInputStream;
@@ -15,14 +16,23 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.HttpVersion;
 import org.apache.http.auth.AuthState;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRouteBean;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -59,6 +69,11 @@ public class HttpClientsPool implements Destroyable {
                               HEADER_AUTH = "Authorization";
   /** Encoding. */
   private static final String ENCODING_GZIP = "gzip";
+
+  /** HTTP port. */
+  public static final int PORT_HTTP = 80, PORT_HTTPS = 443;
+  /** Max count of simultaneous connections. */
+  public static final int DEFAULT_CONNECTIONS_COUNT = 5;
 
   /** Pool of http clients. */
   private final LinkedList<HttpClient> httpClients = new LinkedList<HttpClient>();
@@ -161,6 +176,41 @@ public class HttpClientsPool implements Destroyable {
   protected boolean isCookieSupported() { return false; }
 
   /**
+   * Setup timeouts, buffer size, user agent string, HTTP protocol version, etc.
+   * @param context context instance
+   * @param params {@link HttpParams} instance that should be configured
+   * @see HttpConnectionParams
+   * @see HttpProtocolParams
+   */
+  protected void configureHttpParameters(final Context context, final HttpParams params) {
+    // Use generous timeouts for slow mobile networks
+    final int timeout = 20;
+    HttpConnectionParams.setConnectionTimeout(params, timeout * Time.SECONDS);
+    HttpConnectionParams.setSoTimeout(params, timeout * Time.SECONDS);
+    final int bufferSize = 8192;
+    HttpConnectionParams.setSocketBufferSize(params, bufferSize);
+
+    HttpProtocolParams.setUserAgent(params, getUserAgentString(context));
+    HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+
+    ConnManagerParams.setMaxTotalConnections(params, DEFAULT_CONNECTIONS_COUNT);
+    ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(DEFAULT_CONNECTIONS_COUNT));
+  }
+
+  /**
+   * @param context context instance
+   * @param params {@link HttpParams} instance configured with {@link #configureHttpParameters(Context, HttpParams)}
+   * @return client connection manager
+   */
+  protected ClientConnectionManager createClientConnectionManager(final Context context, final HttpParams params) {
+    final SchemeRegistry schemeRegistry = new SchemeRegistry();
+    schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), PORT_HTTP));
+    schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), PORT_HTTPS));
+    final ThreadSafeClientConnManager connectionsManager = new ThreadSafeClientConnManager(params, schemeRegistry);
+    return connectionsManager;
+  }
+
+  /**
    * This implementation adds gzip and basic authentication support.
    * @param context context instance
    * @return new instance of HTTP client
@@ -172,18 +222,11 @@ public class HttpClientsPool implements Destroyable {
     }
     final HttpParams params = new BasicHttpParams();
 
-    // Use generous timeouts for slow mobile networks
-    final int timeout = 20;
-    HttpConnectionParams.setConnectionTimeout(params, timeout * Time.SECONDS);
-    HttpConnectionParams.setSoTimeout(params, timeout * Time.SECONDS);
+    configureHttpParameters(context, params);
 
-    final int bufferSize = 8192;
-    HttpConnectionParams.setSocketBufferSize(params, bufferSize);
-    HttpProtocolParams.setUserAgent(params, getUserAgentString(context));
+    final DefaultHttpClient client = new DefaultHttpClient(createClientConnectionManager(context, params), params);
 
-    final DefaultHttpClient client = new DefaultHttpClient(params);
-
-    final DefaultInterceptor interceptor = new DefaultInterceptor(getBasicAuthInfo());
+    final EnroscarInterceptor interceptor = new EnroscarInterceptor(getBasicAuthInfo());
     client.addRequestInterceptor(interceptor);
     client.addResponseInterceptor(interceptor);
     return client;
@@ -202,13 +245,28 @@ public class HttpClientsPool implements Destroyable {
   }
 
   /**
+   * This interceptor keeps track on gzip usage and basic authentication setup.
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  private static class DefaultInterceptor implements HttpRequestInterceptor, HttpResponseInterceptor {
+  public static class EnroscarInterceptor implements HttpRequestInterceptor, HttpResponseInterceptor {
+
+    /** Context attribute name. */
+    protected static final String GZIP_USED = "enroscarGzipUsed";
+
     /** Auth info. */
     private final BasicAuthInfo authInfo;
 
-    DefaultInterceptor(final BasicAuthInfo info) { authInfo = info; }
+    /**
+     * @param entity entity instance
+     * @param context context instance
+     */
+    public static void ensureClosedStreams(final HttpEntity entity, final HttpContext context) {
+      if (context.getAttribute(GZIP_USED) != null) {
+        GzipInflatingEntity.ensureContentClosed(entity);
+      }
+    }
+
+    public EnroscarInterceptor(final BasicAuthInfo info) { authInfo = info; }
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
@@ -235,7 +293,8 @@ public class HttpClientsPool implements Destroyable {
       if (encoding != null) {
         for (final HeaderElement element : encoding.getElements()) {
           if (element.getName().equalsIgnoreCase(ENCODING_GZIP)) {
-            response.setEntity(new InflatingEntity(response.getEntity()));
+            context.setAttribute(GZIP_USED, Boolean.TRUE);
+            response.setEntity(new GzipInflatingEntity(response.getEntity()));
             break;
           }
         }
@@ -247,20 +306,50 @@ public class HttpClientsPool implements Destroyable {
    * Simple {@link HttpEntityWrapper} that inflates the wrapped
    * {@link HttpEntity} by passing it through {@link GZIPInputStream}.
    */
-  private static class InflatingEntity extends HttpEntityWrapper {
-    public InflatingEntity(final HttpEntity wrapped) {
+  public static class GzipInflatingEntity extends HttpEntityWrapper {
+
+    /** Close marker for {@link #writeTo(OutputStream)} method. */
+    private static final OutputStream CLOSE_MARKER = new OutputStream() {
+      @Override
+      public void write(final int oneByte) throws IOException { /* nothing */ }
+    };
+
+    static void ensureContentClosed(final HttpEntity entity) {
+      try {
+        entity.writeTo(CLOSE_MARKER);
+      } catch (final IOException e) {
+        Log.e(TAG, "ensureContentClosed(entity) failed", e);
+      }
+    }
+
+    /** Content stream instance. */
+    private InputStream contentStream;
+
+    public GzipInflatingEntity(final HttpEntity wrapped) {
       super(wrapped);
     }
 
     @Override
     public InputStream getContent() throws IOException {
-      return new GZIPInputStream(wrappedEntity.getContent());
+      contentStream = new GZIPInputStream(wrappedEntity.getContent());
+      return contentStream;
     }
 
     @Override
     public long getContentLength() {
       return -1;
     }
+
+    @Override
+    public void writeTo(final OutputStream outstream) throws IOException {
+      if (outstream == CLOSE_MARKER) {
+        final InputStream myStream = this.contentStream;
+        if (myStream != null) { myStream.close(); }
+      } else {
+        super.writeTo(outstream);
+      }
+    }
+
   }
 
   /**

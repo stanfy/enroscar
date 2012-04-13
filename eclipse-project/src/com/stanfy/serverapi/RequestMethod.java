@@ -1,6 +1,5 @@
 package com.stanfy.serverapi;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,10 +10,13 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
@@ -22,6 +24,7 @@ import android.util.Log;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.app.Application;
+import com.stanfy.app.HttpClientsPool.EnroscarInterceptor;
 import com.stanfy.images.BuffersPool;
 import com.stanfy.images.PoolableBufferedInputStream;
 import com.stanfy.serverapi.cache.APICacheDAO;
@@ -71,7 +74,7 @@ public abstract class RequestMethod {
    * @throws IOException if an error happens
    */
   private static String streamToString(final InputStream stream, final Charset charset) throws IOException {
-    final Reader in = new InputStreamReader(new BufferedInputStream(stream), charset);
+    final Reader in = new InputStreamReader(stream, charset);
     final StringBuilder result = new StringBuilder();
     final int bsize = 8192;
     final char[] buffer = new char[bsize];
@@ -121,10 +124,10 @@ public abstract class RequestMethod {
   /**
    * @param systemContext system context
    * @param description request description
-   * @param context parser context
+   * @param parserContext parser context
    * @throws RequestMethodException if ever
    */
-  public void start(final Context systemContext, final RequestDescription description, final ParserContext context) throws RequestMethodException {
+  public void start(final Context systemContext, final RequestDescription description, final ParserContext parserContext) throws RequestMethodException {
     LOCK.lock();
     ++requestId;
     LOCK.unlock();
@@ -149,24 +152,33 @@ public abstract class RequestMethod {
       }
     }
 
+    HttpContext httpContext = null;
     if (cachedStream == null) {
       try {
-        response = httpClient.execute(request);
+        httpContext = new BasicHttpContext();
+        response = httpClient.execute(request, httpContext);
       } catch (final IOException e) {
         throw new RequestMethodException(e);
       } catch (final RuntimeException e) {
         throw new RequestMethodException(e, null);
       }
-      onHttpResponse(response, context);
+      onHttpResponse(response, parserContext);
     }
 
     ResponseHanlder handler = null;
     InputStream inputStream = null;
+    HttpEntity httpEntity = null;
     long cacheId = -1;
     boolean success = false;
     try {
 
-      inputStream = cachedStream == null ? response.getEntity().getContent() : cachedStream;
+      if (cachedStream == null) {
+        httpEntity = response.getEntity();
+        inputStream = httpEntity.getContent();
+      } else {
+        inputStream = cachedStream;
+      }
+
       final int bsize = 8192;
       inputStream = new PoolableBufferedInputStream(inputStream, bsize, buffersPool);
       final Charset charset = Charset.forName(RequestDescription.CHARSET);
@@ -183,10 +195,10 @@ public abstract class RequestMethod {
         cacheId = cacheInfo.getId();
       }
 
-      handler = createResponseHandler(context, inputStream);
+      handler = createResponseHandler(parserContext, inputStream);
       handler.handleResponse();
 
-      final Response r = context.getResponse();
+      final Response r = parserContext.getResponse();
       success = r != null && r.isSuccessful();
 
     } catch (final IOException e) {
@@ -201,6 +213,8 @@ public abstract class RequestMethod {
           Log.e(TAG, "Cannot close input stream", e);
         }
       }
+      // XXX gzip stream can be not closed, this is a workaround
+      if (httpEntity != null) { EnroscarInterceptor.ensureClosedStreams(httpEntity, httpContext); }
       if (!success) { clearCache(systemContext, cacheId); }
       if (DEBUG) {
         Log.d(TAG, "Request time: " + (System.currentTimeMillis() - startTime) + " ms");

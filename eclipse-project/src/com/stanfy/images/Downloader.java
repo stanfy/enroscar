@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Interface of images downloader.
+ * Interface of images downloader. Must be thread-safe.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public interface Downloader {
@@ -20,5 +20,8 @@ public interface Downloader {
    * @param url URL with a finished connection
    */
   void finish(final String url);
+
+  /** Flush the resources. */
+  void flush();
 
 }
