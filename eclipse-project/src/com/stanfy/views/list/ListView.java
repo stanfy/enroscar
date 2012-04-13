@@ -11,7 +11,7 @@ import android.widget.AbsListView;
 import android.widget.ListAdapter;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.Application;
+import com.stanfy.views.AnimatedViewHelper;
 import com.stanfy.views.R;
 
 /**
@@ -44,18 +44,18 @@ public class ListView extends android.widget.ListView {
   /** First child. */
   private View firstChild;
 
-  /** Application instance. */
-  private Application application;
+  /** Helper object. */
+  private AnimatedViewHelper animatedViewHelper;
 
   /** Scroll listener that notifies application about crucial GUI operation. */
   private final OnScrollListener myScrollListener = new OnScrollListener() {
     @Override
     public void onScrollStateChanged(final AbsListView view, final int scrollState) {
-      if (application != null) {
+      if (animatedViewHelper != null) {
         if (scrollState == SCROLL_STATE_FLING) {
-          application.dispatchCrucialGUIOperationStart();
+          animatedViewHelper.notifyCrucialGuiStart();
         } else {
-          application.dispatchCrucialGUIOperationFinish();
+          animatedViewHelper.notifyCrucialGuiFinish();
         }
       }
       if (userScrollListener != null) {
@@ -88,11 +88,6 @@ public class ListView extends android.widget.ListView {
   }
 
   private void init(final Context context, final AttributeSet attrs) {
-    final Context appContext = context.getApplicationContext();
-    if (appContext instanceof Application) {
-      this.application = (Application)appContext;
-    }
-
     final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ListView);
     final boolean frozeSPos = a.getBoolean(R.styleable.ListView_frozeScrollPosition, false);
     final boolean notifyCrucial = a.getBoolean(R.styleable.ListView_notifyCrucialGUIOperations, true);
@@ -109,8 +104,11 @@ public class ListView extends android.widget.ListView {
 
   /** @param notifyCrucialGUIOperations the notifyCrucialGUIOperations to set */
   public void setNotifyCrucialGUIOperations(final boolean notifyCrucialGUIOperations) {
-    if (application != null && !notifyCrucialGUIOperations && this.notifyCrucialGUIOperations) {
-      application.dispatchCrucialGUIOperationFinish();
+    if (animatedViewHelper != null && !notifyCrucialGUIOperations && this.notifyCrucialGUIOperations) {
+      animatedViewHelper.notifyCrucialGuiFinish();
+    }
+    if (animatedViewHelper == null && notifyCrucialGUIOperations) {
+      this.animatedViewHelper = new AnimatedViewHelper(this);
     }
     this.notifyCrucialGUIOperations = notifyCrucialGUIOperations;
     if (DEBUG) { Log.v(VIEW_LOG_TAG, "set notifyCrucialGUIOperations=" + notifyCrucialGUIOperations); }
@@ -176,7 +174,9 @@ public class ListView extends android.widget.ListView {
 
   @Override
   protected void onDetachedFromWindow() {
-    if (application != null && notifyCrucialGUIOperations) { application.dispatchCrucialGUIOperationFinish(); }
+    if (animatedViewHelper != null && notifyCrucialGUIOperations) {
+      animatedViewHelper.onDetach();
+    }
     super.onDetachedFromWindow();
   }
 

@@ -39,6 +39,12 @@ public interface FetchableListAdapter extends ListAdapter {
    */
   State getState();
 
+  /** @see android.widget.BaseAdapter#notifyDataSetChanged() */
+  void notifyDataSetChanged();
+
+  /** @see android.widget.BaseAdapter#notifyDataSetInvalidated() */
+  void notifyDataSetInvalidated();
+
   /**
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */

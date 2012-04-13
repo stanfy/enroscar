@@ -36,7 +36,7 @@ import android.widget.Adapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Scroller;
 
-import com.stanfy.app.Application;
+import com.stanfy.views.AnimatedViewHelper;
 import com.stanfy.views.R;
 
 /**
@@ -180,8 +180,8 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
   /** Notify about crucial GUI operations. */
   private boolean notifyCrucialGUIOperations = true;
 
-  /** Application instance. */
-  private Application application;
+  /** Helper object. */
+  private AnimatedViewHelper animatedViewHelper;
 
   public Gallery(final Context context) {
     this(context, null);
@@ -193,11 +193,6 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
 
   public Gallery(final Context context, final AttributeSet attrs, final int defStyle) {
     super(context, attrs, defStyle);
-
-    final Context appContext = context.getApplicationContext();
-    if (appContext instanceof Application) {
-      this.application = (Application)appContext;
-    }
 
     mGestureDetector = new GestureDetector(context, this);
     mGestureDetector.setIsLongpressEnabled(true);
@@ -230,8 +225,11 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
 
   /** @param notifyCrucialGUIOperations the notifyCrucialGUIOperations to set */
   public void setNotifyCrucialGUIOperations(final boolean notifyCrucialGUIOperations) {
-    if (application != null && !notifyCrucialGUIOperations && this.notifyCrucialGUIOperations) {
-      application.dispatchCrucialGUIOperationFinish();
+    if (animatedViewHelper != null && !notifyCrucialGUIOperations && this.notifyCrucialGUIOperations) {
+      animatedViewHelper.notifyCrucialGuiFinish();
+    }
+    if (animatedViewHelper == null && notifyCrucialGUIOperations) {
+      animatedViewHelper = new AnimatedViewHelper(this);
     }
     this.notifyCrucialGUIOperations = notifyCrucialGUIOperations;
     if (DEBUG) { Log.v(VIEW_LOG_TAG, "set notifyCrucialGUIOperations=" + notifyCrucialGUIOperations); }
@@ -1383,7 +1381,9 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
 
   @Override
   protected void onDetachedFromWindow() {
-    if (application != null && notifyCrucialGUIOperations) { application.dispatchCrucialGUIOperationFinish(); }
+    if (animatedViewHelper != null && notifyCrucialGUIOperations) {
+      animatedViewHelper.onDetach();
+    }
     super.onDetachedFromWindow();
   }
 
@@ -1409,7 +1409,7 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
     }
 
     private void startCommon() {
-      if (application != null && notifyCrucialGUIOperations) { application.dispatchCrucialGUIOperationStart(); }
+      if (animatedViewHelper != null && notifyCrucialGUIOperations) { animatedViewHelper.notifyCrucialGuiStart(); }
       // Remove any pending flings
       removeCallbacks(this);
     }
@@ -1449,7 +1449,7 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
       mScroller.forceFinished(true);
 
       if (scrollIntoSlots) { scrollIntoSlots(); }
-      if (application != null && notifyCrucialGUIOperations) { application.dispatchCrucialGUIOperationFinish(); }
+      if (animatedViewHelper != null && notifyCrucialGUIOperations) { animatedViewHelper.notifyCrucialGuiFinish(); }
     }
 
     @Override

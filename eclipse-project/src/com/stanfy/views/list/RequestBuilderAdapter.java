@@ -168,6 +168,7 @@ public abstract class RequestBuilderAdapter<MT extends UniqueObject, RBT extends
           @Override
           public void run() {
             if (list != null) {
+              adapter.setBusy(false);
               list.setupMessageView(adapter.state.level, message);
               list.itemsLoaded(true);
             }
@@ -178,6 +179,7 @@ public abstract class RequestBuilderAdapter<MT extends UniqueObject, RBT extends
           @Override
           public void run() {
             if (list != null) {
+              adapter.setBusy(false);
               list.setupListView();
             }
           }
@@ -191,7 +193,10 @@ public abstract class RequestBuilderAdapter<MT extends UniqueObject, RBT extends
       if (DEBUG) { Log.d(TAG, "Post message " + state + " / " + message); }
       postToGUI(new Runnable() {
         @Override
-        public void run() { list.setupMessageView(state, message); }
+        public void run() {
+          adapter.setBusy(false);
+          list.setupMessageView(state, message);
+        }
       });
     }
 
@@ -204,8 +209,9 @@ public abstract class RequestBuilderAdapter<MT extends UniqueObject, RBT extends
        postToGUI(new Runnable() {
          @Override
          public void run() {
-             adapter.state.hasMoreElements = false;
-             list.setupListView();
+           adapter.state.hasMoreElements = false;
+           adapter.setBusy(false);
+           list.setupListView();
          }
         });
       }
@@ -225,6 +231,7 @@ public abstract class RequestBuilderAdapter<MT extends UniqueObject, RBT extends
             adapter.afterAnimationOperations.add(this);
             return;
           }
+          adapter.setBusy(false);
           adapter.addAll(model);
           list.setupListView();
           list.itemsLoaded(false);
@@ -244,7 +251,6 @@ public abstract class RequestBuilderAdapter<MT extends UniqueObject, RBT extends
 
     @Override
     protected void onOperationFinished(final int token, final int operation) {
-      adapter.setBusy(false);
     }
 
     public FetchableListView getListView() { return list; }

@@ -50,7 +50,7 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
     this.renderer = renderer;
     this.layoutInflater = LayoutInflater.from(context);
   }
-  
+
   public ModelListAdapter(final ModelListAdapter<T> adapter) {
     this.context = adapter.getContext();
     this.renderer = adapter.getRenderer();

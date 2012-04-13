@@ -142,10 +142,17 @@ public abstract class RequestBuilderListFragment<AppT extends Application, MT ex
   }
 
   @Override
+  public void onStart() {
+    super.onStart();
+    getOwnerActivity().getApp().addCrucialGUIOperationListener(adapter);
+  }
+
+  @Override
   public void onStop() {
     shouldRelaod = adapter.isBusy();
     super.onStop();
     adapter.onStop();
+    getOwnerActivity().getApp().removeCrucialGUIOperationListener(adapter);
   }
 
   @Override
@@ -254,14 +261,23 @@ public abstract class RequestBuilderListFragment<AppT extends Application, MT ex
    */
   public RequestBuilderAdapter<MT, RBT> getAdapter() { return adapter; }
 
+  private void setAdapter(final AT adapter, final boolean setupCrucialGUIOperations) {
+    if (DEBUG) { Log.d(TAG, "New adapter " + adapter); }
+    final Application app = getOwnerActivity().getApp();
+    adapter.setImagesManagerContext(app.getImagesContext());
+    if (setupCrucialGUIOperations) {
+      app.removeCrucialGUIOperationListener(this.adapter);
+      app.addCrucialGUIOperationListener(adapter);
+    }
+    this.adapter = adapter;
+    listView.setAdapter(adapter);
+  }
+
   /**
    * Setting adapter.
    */
   protected void setAdapter(final AT adapter) {
-    if (DEBUG) { Log.d(TAG, "New adapter " + adapter); }
-    adapter.setImagesManagerContext(getOwnerActivity().getApp().getImagesContext());
-    this.adapter = adapter;
-    listView.setAdapter(adapter);
+    setAdapter(adapter, isResumed());
   }
 
   @Override
