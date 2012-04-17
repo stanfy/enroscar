@@ -62,12 +62,12 @@ public class BuffersPool {
     }
 
     final List<Object> bList = map.get(map.firstKey());
-    if (bList == null || bList.isEmpty()) {
-      ++buffersCount;
-      return allocate(minCapacity);
-    }
-
     synchronized (lock) {
+      if (bList == null || bList.isEmpty()) {
+        ++buffersCount;
+        return allocate(minCapacity);
+      }
+
       final byte[] array = (byte[])bList.remove(0);
       return array;
     }
