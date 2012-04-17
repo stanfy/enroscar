@@ -102,7 +102,6 @@ public class FetchableListView extends FrameLayout implements OnScrollListener {
   @Override
   public final void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
     if (totalItemCount != visibleItemCount && LOAD_GAP < totalItemCount - firstVisibleItem - visibleItemCount) { return; }
-    if (DEBUG) { Log.d(VIEW_LOG_TAG, "Scroll fetchable list"); }
     final LoadmoreAdapter adapter = this.adapter;
     if (adapter == null || !adapter.moreElementsAvailable() || adapter.isBusy()) { return; }
     if (adapter.getCount() == 0) {
