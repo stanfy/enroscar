@@ -29,18 +29,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
-import android.widget.TextView;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.images.cache.ImageMemoryCache;
 import com.stanfy.images.model.CachedImage;
 import com.stanfy.utils.AppUtils;
 import com.stanfy.views.ImagesLoadListenerProvider;
-import com.stanfy.views.LoadableImageView;
-import com.stanfy.views.LoadableTextView;
 import com.stanfy.views.RemoteImageDensityProvider;
 
 /**
@@ -185,13 +179,12 @@ public class ImagesManager<T extends CachedImage> {
     holder.performCancellingLoader();
   }
 
-  protected ImageHolder createImageHolder(final View view) {
-    if (view instanceof LoadableImageView) { return new LoadableImageViewHolder((LoadableImageView)view); }
-    if (view instanceof ImageView) { return new ImageViewHolder((ImageView)view); }
-    if (view instanceof CompoundButton) { return new CompoundButtonHolder((CompoundButton)view); }
-    if (view instanceof TextView) { return new TextViewHolder((TextView)view); }
-    return null;
-  }
+  /**
+   * Create an image holder instance for the defined view.
+   * @param view view instance
+   * @return image holder instance
+   */
+  protected ImageHolder createImageHolder(final View view) { return ImageHolders.createImageHolder(view); }
 
   /**
    * @param url image URL
@@ -235,7 +228,7 @@ public class ImagesManager<T extends CachedImage> {
     final Drawable memCached = getFromMemCache(url, imageHolder);
     if (memCached != null) {
       imageHolder.onStart(null, url);
-      setImage(imageHolder, memCached, false);
+      setImage(imageHolder, memCached, false, false);
       imageHolder.onFinish(url, memCached);
       return;
     }
@@ -249,7 +242,7 @@ public class ImagesManager<T extends CachedImage> {
   private void setLoadingImage(final ImageHolder holder) {
     if (!holder.skipLoadingImage()) {
       final Drawable d = !holder.isDynamicSize() ? getLoadingDrawable(holder) : null;
-      setImage(holder, d, true);
+      setImage(holder, d, true, false/* ignored */);
     }
   }
 
@@ -287,20 +280,20 @@ public class ImagesManager<T extends CachedImage> {
   protected Drawable decorateDrawable(final ImageHolder holder, final Drawable drawable) { return drawable; }
 
   /**
+   * It must be executed in the main thread.
    * @param imageView image view instance
    * @param drawable incoming drawable
    * @param preloader preloading image flag
+   * @param animate whether to animate image change
    */
-  protected final void setImage(final ImageHolder imageHolder, final Drawable drawable, final boolean preloader) {
+  protected final void setImage(final ImageHolder imageHolder, final Drawable drawable, final boolean preloader, final boolean animate) {
     final Drawable d = decorateDrawable(imageHolder, drawable);
     if (preloader) {
       imageHolder.setLoadingImage(d);
     } else {
-      imageHolder.setImage(d);
+      imageHolder.setImage(d, animate);
     }
-    synchronized (imageHolder) {
-      imageHolder.reset();
-    }
+    imageHolder.reset();
   }
 
   /**
@@ -577,7 +570,7 @@ public class ImagesManager<T extends CachedImage> {
         synchronized (this) {
           if (started) { imageHolder.onStart(this, url); }
           if (resultResolved) {
-            imagesManager.setImage(imageHolder, resultDrawable, false);
+            imagesManager.setImage(imageHolder, resultDrawable, false, false);
             imageHolder.onFinish(url, resultDrawable);
           } else {
             imageHolder.currentLoader = this;
@@ -587,7 +580,7 @@ public class ImagesManager<T extends CachedImage> {
         }
       } else {
         // we finished
-        imagesManager.setImage(imageHolder, resultDrawable, false);
+        imagesManager.setImage(imageHolder, resultDrawable, false, false);
       }
       return true;
     }
@@ -636,7 +629,7 @@ public class ImagesManager<T extends CachedImage> {
       synchronized (imageHolder) {
         final String currentUrl = imageHolder.currentUrl;
         if (currentUrl != null && currentUrl.equals(url)) {
-          imagesManager.setImage(imageHolder, d, false);
+          imagesManager.setImage(imageHolder, d, false, true);
         } else {
           if (DEBUG) { Log.d(TAG, "Skip set for " + imageHolder); }
         }
@@ -865,13 +858,14 @@ public class ImagesManager<T extends CachedImage> {
     public Context getContext() { return context; }
 
     /* actions */
+    /** Reset holder state. Must be called from the main thread. */
     void reset() {
       currentUrl = null;
       loaderKey = null;
     }
     public void touch() { }
-    public abstract void setImage(final Drawable d);
-    public void setLoadingImage(final Drawable d) { setImage(d); }
+    public abstract void setImage(final Drawable d, final boolean animate);
+    public void setLoadingImage(final Drawable d) { setImage(d, false); }
     public abstract void post(final Runnable r);
     public void postpone(final Runnable r) { post(r); }
     public void destroy() {
@@ -1003,70 +997,6 @@ public class ImagesManager<T extends CachedImage> {
       super.destroy();
       view = null;
     }
-  }
-
-  /**
-   * Image holder for {@link ImageView}.
-   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
-   */
-  static class ImageViewHolder extends ViewImageHolder<ImageView> {
-    public ImageViewHolder(final ImageView view) { super(view); }
-    @Override
-    public void setImage(final Drawable d) { view.setImageDrawable(d); }
-  }
-
-  /**
-   * Image holder for {@link ImageView}.
-   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
-   */
-  static class LoadableImageViewHolder extends ImageViewHolder {
-    public LoadableImageViewHolder(final LoadableImageView view) { super(view); }
-    @Override
-    public boolean skipScaleBeforeCache() { return ((LoadableImageView)view).isSkipScaleBeforeCache(); }
-    @Override
-    public boolean skipLoadingImage() { return ((LoadableImageView)view).isSkipLoadingImage(); }
-    @Override
-    public boolean useSampling() { return ((LoadableImageView)view).isUseSampling(); }
-    @Override
-    public Drawable getLoadingImage() { return ((LoadableImageView)view).getLoadingImage(); }
-    @Override
-    public void setLoadingImage(final Drawable d) {
-      final LoadableImageView view = (LoadableImageView)this.view;
-      setImage(d);
-      view.setTemporaryScaleType(ScaleType.FIT_XY);
-    }
-    @Override
-    public int getImageType() { return ((LoadableImageView)this.view).getImageType(); }
-  }
-
-  /**
-   * Image holder for {@link CompoundButton}.
-   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
-   */
-  static class CompoundButtonHolder extends ViewImageHolder<CompoundButton> {
-    public CompoundButtonHolder(final CompoundButton view) { super(view); }
-    @Override
-    public void setImage(final Drawable d) { view.setButtonDrawable(d); }
-  }
-
-  /**
-   * Image holder for {@link TextView}.
-   * @author Olexandr Tereshchuk - Stanfy (http://www.stanfy.com)
-   */
-  static class TextViewHolder extends ViewImageHolder<TextView> {
-    public TextViewHolder(final TextView view) { super(view); }
-    @Override
-    public void setImage(final Drawable d) {
-      if (view instanceof LoadableTextView) {
-        ((LoadableTextView)view).setLoadedDrawable(d);
-      } else {
-        view.setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
-      }
-    }
-    @Override
-    public int getRequiredHeight() { return -1; }
-    @Override
-    public int getRequiredWidth() { return -1; }
   }
 
 }

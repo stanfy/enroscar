@@ -48,6 +48,11 @@
     <attr name="loadingImage" format="reference" />
     <attr name="imageType" format="integer" />
     <attr name="sourceDensity" />
+    <attr name="useTransition" format="integer">
+      <enum name="no" value="0" />
+      <enum name="yes" value="1" />
+      <enum name="auto" value="2" />
+    </attr>
   </declare-styleable>
 
   <declare-styleable name="LoadableComppoundButton">

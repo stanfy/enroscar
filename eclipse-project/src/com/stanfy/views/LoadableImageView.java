@@ -16,6 +16,9 @@ import com.stanfy.images.ImagesManagerContext;
  */
 public class LoadableImageView extends ImageView implements ImagesLoadListenerProvider, RemoteImageDensityProvider {
 
+  /** Use transition. */
+  public static final int USE_TRANSITION_NO = 0, USE_TRANSITION_YES = 1, USE_TRANSITION_AUTO = 2;
+
   /** Skip scaling before caching flag. */
   private boolean skipScaleBeforeCache;
   /** Skip loading indicator flag.  */
@@ -24,6 +27,8 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   private boolean useSampling;
   /** Image type. */
   private int imageType;
+  /** Use transition option. */
+  private int useTransition;
 
   /** Images load listener. */
   private ImagesLoadListener listener;
@@ -38,6 +43,7 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
 
   /** Loading image. */
   private Drawable loadingImage;
+
 
   public LoadableImageView(final Context context) {
     super(context);
@@ -59,6 +65,7 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     final Drawable loadingImage = a.getDrawable(R.styleable.LoadableImageView_loadingImage);
     final int type = a.getInt(R.styleable.LoadableImageView_imageType, 0);
     final int sourceDensity = a.getInt(R.styleable.LoadableTextView_sourceDensity, -1);
+    final int useTransition = a.getInt(R.styleable.LoadableImageView_useTransition, USE_TRANSITION_NO);
     a.recycle();
 
     setSourceDensity(sourceDensity);
@@ -68,12 +75,18 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
       setLoadingImageDrawable(loadingImage);
     }
     setImageType(type);
+    setUseTransitionMode(useTransition);
   }
 
   /** @param imagesManagerContext the imagesManager context to set */
   public void setImagesManagerContext(final ImagesManagerContext<?> imagesManagerContext) {
     this.imagesManagerContext = imagesManagerContext;
   }
+
+  /** @param mode mode specification (see {@link #USE_TRANSITION_NO}, {@link #USE_TRANSITION_YES}, {@link #USE_TRANSITION_AUTO}) */
+  public void setUseTransitionMode(final int mode) { this.useTransition = mode; }
+  /** @return whether this view wants to use transitions */
+  public boolean isUseTransition() { return this.useTransition != USE_TRANSITION_NO; }
 
   /** @param imageType the imageType to set */
   public void setImageType(final int imageType) { this.imageType = imageType; }

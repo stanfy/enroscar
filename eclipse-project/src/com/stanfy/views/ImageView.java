@@ -11,7 +11,9 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 
 import com.stanfy.images.decorator.ImageDecorator;
@@ -23,11 +25,16 @@ import com.stanfy.images.decorator.MaskImageDecorator;
  *   Features:
  *   <ul>
  *     <li><b>rounded corners</b> - set cornersRadius > 0 (attribute {@code android:radius})</li>
+ *     <li><b>other image decorators</b> - see {@link #setImageDecorator(ImageDecorator)} and {@link ImageDecorator}</li>
+ *     <li><b>image transitions</b> - see {@link #setImageDrawableWithTransition(Drawable, int)}</li>
  *   </ul>
  * </p>
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class ImageView extends android.widget.ImageView {
+
+  /** Default transition duration (in millis). */
+  private static final int TRANSITION_DURATION_DEFAULT = 300;
 
   /** Corners decorators store. */
   private static final RadiusDecoratorsCache CORNERS_DOCORATORS = new RadiusDecoratorsCache();
@@ -50,6 +57,8 @@ public class ImageView extends android.widget.ImageView {
   /** Flag to minimize count of layout requests. */
   private boolean minimizeLayoutRequests = false;
 
+  /** Decoration canvas. */
+  private final Canvas decorationCanvas = new Canvas();
   /** Decorated cache bitmap. */
   private SoftReference<Bitmap> decoratedCache;
   /** Flag that decorated cache bitmap is actual. */
@@ -60,6 +69,12 @@ public class ImageView extends android.widget.ImageView {
 
   /** Vectors. */
   private float[] bufferSrcVector = new float[2], bufferDstVector = new float[2];
+
+  /** Transition array. */
+  private final Drawable[] transitionArray = new Drawable[2];
+
+  /** Last transition. */
+  private TransitionDrawable lastTransition;
 
   public ImageView(final Context context) {
     super(context);
@@ -209,15 +224,23 @@ public class ImageView extends android.widget.ImageView {
     if (bitmap == null || bitmap.getWidth() != resultW || bitmap.getHeight() != resultH) {
       final Bitmap old = bitmap;
       bitmap = Bitmap.createBitmap(resultW, resultH, Bitmap.Config.ARGB_8888);
+      bitmap.setDensity(getResources().getDisplayMetrics().densityDpi);
       if (old != null) { old.recycle(); }
-      decoratedCache = new SoftReference<Bitmap>(bitmap);
+      updateDecorationCacheReference(bitmap);
       decoratedCacheActual = false;
     }
 
     if (!decoratedCacheActual) {
+      /*
+       * it's important to set it prior to drawable drawing since
+       * it can be reset by invalidateSelf call (see TransitionDrawable)
+       */
+      decoratedCacheActual = true;
+
       imageDecorator.setup(resultW, resultH, getDrawableState(), d.getLevel(), realW, realH);
 
-      final Canvas bitmapCanvas = new Canvas(bitmap);
+      final Canvas bitmapCanvas = decorationCanvas;
+      bitmapCanvas.setBitmap(bitmap);
       if (drawMatrix == null) {
         d.draw(bitmapCanvas);
       } else {
@@ -232,7 +255,8 @@ public class ImageView extends android.widget.ImageView {
         bitmap.recycle();
         updateDecorationCacheReference(decorated);
       }
-      decoratedCacheActual = true;
+
+      bitmapCanvas.setBitmap(null);
     } else {
       decorated = bitmap;
     }
@@ -248,6 +272,17 @@ public class ImageView extends android.widget.ImageView {
   }
 
   @Override
+  public void invalidateDrawable(final Drawable dr) {
+    if (dr == getDrawable()) { clearDecorateCache(); }
+    super.invalidateDrawable(dr);
+  }
+  @Override
+  public void scheduleDrawable(final Drawable who, final Runnable what, final long when) {
+    if (who == getDrawable()) { clearDecorateCache(); }
+    super.scheduleDrawable(who, what, when);
+  }
+
+  @Override
   public void setImageMatrix(final Matrix matrix) {
     if ((matrix == null && !getImageMatrix().isIdentity())
         || (matrix != null && !getImageMatrix().equals(matrix))) {
@@ -256,12 +291,52 @@ public class ImageView extends android.widget.ImageView {
     super.setImageMatrix(matrix);
   }
 
+  private void resetTransitionArrayCallbacks() {
+    final Drawable[] transitionArray = this.transitionArray;
+    if (transitionArray[0] != null) { transitionArray[0].setCallback(null); }
+    if (transitionArray[1] != null) { transitionArray[1].setCallback(null); }
+  }
+
+  public void setImageDrawableWithTransition(final Drawable drawable) {
+    setImageDrawableWithTransition(drawable, TRANSITION_DURATION_DEFAULT);
+  }
+  public void setImageDrawableWithTransition(final Drawable drawable, final int duration) {
+    final Drawable[] transitionArray = this.transitionArray;
+    final Drawable prev = getDrawable();
+
+    if (prev != null) {
+
+      transitionArray[0] = prev;
+      transitionArray[1] = drawable;
+      resetTransitionArrayCallbacks();
+      final TransitionDrawable transition = new TransitionDrawable(transitionArray);
+      setImageDrawable(transition);
+      transition.startTransition(duration);
+      lastTransition = transition;
+
+    } else {
+
+      setImageDrawable(drawable);
+
+    }
+
+  }
+
   @Override
   public void setImageDrawable(final Drawable drawable) {
+    // reset last transition
+    if (lastTransition != null) {
+      lastTransition.resetTransition();
+      lastTransition = null;
+    }
+
+    // check for temporary scale types
     if (storedScaleType != null && drawable != getDrawable()) {
       replaceScaleType(storedScaleType);
       storedScaleType = null;
     }
+
+    // block layout requests if needed
     if (minimizeLayoutRequests) { blockLayoutRequests = true; }
     super.setImageDrawable(drawable);
     if (drawable != null) { ImageViewHiddenMethods.configureBounds(this); }
@@ -285,6 +360,7 @@ public class ImageView extends android.widget.ImageView {
   @Override
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
+    resetTransitionArrayCallbacks();
     // destroy cache
     final Bitmap cache = decoratedCache != null ? decoratedCache.get() : null;
     if (cache != null) { cache.recycle(); }
@@ -308,6 +384,207 @@ public class ImageView extends android.widget.ImageView {
       }
       return d;
     }
+  }
+
+  /**
+   * Custom implementation of transition drawable.
+   * This implementation differs from standard {@link android.graphics.drawable.TransitionDrawable} by next points:
+   * <ul>
+   *   <li>it does not set layers alpha to <code>0</code> or <code>0xFF</code> after drawing</li>
+   *   <li>it calls {@link Drawable#invalidateSelf()} <b>before</b> drawing the layers</li>
+   * </ul>
+   *
+   * @see android.graphics.drawable.TransitionDrawable
+   * @see LayerDrawable
+   *
+   * @author Roman Mazur (Stanfy - http://stanfy.com)
+   */
+  private static class TransitionDrawable extends LayerDrawable {
+
+    /** A transition is about to start. */
+    private static final int TRANSITION_STARTING = 0;
+    /** The transition has started and the animation is in progress. */
+    private static final int TRANSITION_RUNNING = 1;
+    /** No transition will be applied. */
+    private static final int TRANSITION_NONE = 2;
+    /** Final alpha value. */
+    private static final int FINAL_ALPHA = 0xFF;
+
+    /**
+     * The current state of the transition. One of {@link #TRANSITION_STARTING},
+     * {@link #TRANSITION_RUNNING} and {@link #TRANSITION_NONE}
+     */
+    private int transitionState = TRANSITION_NONE;
+
+    /** Reverse transition flag. */
+    private boolean reverse;
+    /** Start time. */
+    private long startTimeMillis;
+    /** Alpha: from. */
+    private int from;
+    /** Alpha: to. */
+    private int to;
+    /** Transition duration. */
+    private int duration;
+    /** Original duration. */
+    private int originalDuration;
+    /** Alpha value. */
+    private int alpha = 0;
+    /** Cross fade option flag. */
+    private boolean crossFade;
+
+    /** Alphas. */
+    private int firstAlpha = 0, secondAlpha = 0;
+
+    /**
+     * Create a new transition drawable with the specified list of layers.
+     * 2 layers are required for this drawable to work properly.
+     */
+    public TransitionDrawable(final Drawable[] layers) {
+      super(layers);
+      if (layers.length != 2) { throw new IllegalArgumentException("You must supply 2 layers for transition"); }
+    }
+
+    /**
+     * Begin the second layer on top of the first layer.
+     * @param durationMillis The length of the transition in milliseconds
+     */
+    public void startTransition(final int durationMillis) {
+      from = 0;
+      to = FINAL_ALPHA;
+      alpha = 0;
+      originalDuration = durationMillis;
+      duration = originalDuration;
+      reverse = false;
+      transitionState = TRANSITION_STARTING;
+      invalidateSelf();
+    }
+
+    /**
+     * Show only the first layer.
+     */
+    public void resetTransition() {
+      alpha = 0;
+      transitionState = TRANSITION_NONE;
+      invalidateSelf();
+    }
+
+    /**
+     * Reverses the transition, picking up where the transition currently is.
+     * If the transition is not currently running, this will start the transition
+     * with the specified duration. If the transition is already running, the last
+     * known duration will be used.
+     *
+     * @param duration The duration to use if no transition is running.
+     */
+    @SuppressWarnings("unused")
+    public void reverseTransition(final int duration) {
+      final long time = SystemClock.uptimeMillis();
+      // Animation is over
+      if (time - startTimeMillis > duration) {
+        if (to == 0) {
+          from = 0;
+          to = FINAL_ALPHA;
+          alpha = 0;
+          reverse = false;
+        } else {
+          from = FINAL_ALPHA;
+          to = 0;
+          alpha = FINAL_ALPHA;
+          reverse = true;
+        }
+        originalDuration = duration;
+        this.duration = originalDuration;
+        transitionState = TRANSITION_STARTING;
+        invalidateSelf();
+        return;
+      }
+
+      reverse = !reverse;
+      from = alpha;
+      to = reverse ? 0 : FINAL_ALPHA;
+      this.duration = (int) (reverse ? time - startTimeMillis : originalDuration - (time - startTimeMillis));
+      transitionState = TRANSITION_STARTING;
+    }
+
+    @Override
+    public void draw(final Canvas canvas) {
+      boolean done = true;
+
+      switch (transitionState) {
+      case TRANSITION_STARTING:
+        startTimeMillis = SystemClock.uptimeMillis();
+        done = false;
+        transitionState = TRANSITION_RUNNING;
+        break;
+
+      case TRANSITION_RUNNING:
+        if (startTimeMillis >= 0) {
+          float normalized = (float)
+              (SystemClock.uptimeMillis() - startTimeMillis) / duration;
+          done = normalized >= 1.0f;
+          normalized = Math.min(normalized, 1.0f);
+          alpha = (int) (from  + (to - from) * normalized);
+        }
+        break;
+
+      default:
+        done = true;
+      }
+
+      final int alpha = this.alpha;
+      final boolean crossFade = this.crossFade;
+      final Drawable first = getDrawable(0), second = getDrawable(1);
+
+      if (done) {
+        if (crossFade && firstAlpha != 0 && alpha == FINAL_ALPHA) {
+          firstAlpha = 0;
+          first.setAlpha(0);
+        }
+        if (secondAlpha != FINAL_ALPHA) {
+          secondAlpha = FINAL_ALPHA;
+          second.setAlpha(FINAL_ALPHA);
+        }
+        // the setAlpha() calls below trigger invalidation and redraw. If we're done, just draw
+        // the appropriate drawable[s] and return
+        if (!crossFade || alpha == 0) {
+          first.draw(canvas);
+        }
+        if (alpha == FINAL_ALPHA) {
+          second.draw(canvas);
+        }
+        return;
+      }
+
+      invalidateSelf();
+
+      if (crossFade) {
+        firstAlpha = FINAL_ALPHA - alpha;
+        first.setAlpha(firstAlpha);
+      }
+      first.draw(canvas);
+
+      if (alpha > 0) {
+        secondAlpha = alpha;
+        second.setAlpha(alpha);
+        second.draw(canvas);
+      }
+
+    }
+
+    /**
+     * Enables or disables the cross fade of the drawables. When cross fade
+     * is disabled, the first drawable is always drawn opaque. With cross
+     * fade enabled, the first drawable is drawn with the opposite alpha of
+     * the second drawable. Cross fade is disabled by default.
+     *
+     * @param enabled True to enable cross fading, false otherwise.
+     */
+    @SuppressWarnings("unused")
+    public void setCrossFadeEnabled(final boolean enabled) {
+      crossFade = enabled;
+    }
+
   }
 
 }
