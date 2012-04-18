@@ -55,9 +55,6 @@
     <item name="android:fillViewport">true</item>
   </style>
 
-  <!-- Count of lines for large text. -->
-  <item type="integer" name="form_dialog_large_text_lines">3</item>
-
   <style name="FetchableListView" parent="MainContainer">
     <item name="android:listSelector">@drawable/list_selector</item>
   </style>
