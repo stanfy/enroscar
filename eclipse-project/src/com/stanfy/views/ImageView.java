@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
@@ -38,6 +39,9 @@ public class ImageView extends android.widget.ImageView {
 
   /** Corners decorators store. */
   private static final RadiusDecoratorsCache CORNERS_DOCORATORS = new RadiusDecoratorsCache();
+
+  /** Very small bitmap to be set to decoration canvas ({@link #decorationCanvas}). */
+  private static final Bitmap NULL_BITMAP = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
 
   /** Image decorator. */
   private ImageDecorator imageDecorator;
@@ -256,7 +260,8 @@ public class ImageView extends android.widget.ImageView {
         updateDecorationCacheReference(decorated);
       }
 
-      bitmapCanvas.setBitmap(null);
+      // we used null here but some devices fail with NP
+      bitmapCanvas.setBitmap(NULL_BITMAP);
     } else {
       decorated = bitmap;
     }
