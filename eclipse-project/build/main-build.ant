@@ -440,6 +440,7 @@
     <condition property="lint.config" value="${basedir}/lint.xml" else="${build.library.path}/lint.xml">
       <available file="${basedir}/lint.xml" />
     </condition>
+  	<contrib:propertyregex property="lint.baseurl" input="${svn.url}" regexp="/svn/" replace="/msvn/" />
   	<exec executable="${sdk.dir}/tools/lint">
   		<arg value="--quiet" />
       <arg value="--html" />
@@ -448,7 +449,7 @@
       <arg value="--config" />
       <arg value="${lint.config}" />
       <arg value="--url" />
-      <arg value="${basedir}=${svn.url}" />
+      <arg value="${basedir}=${lint.baseurl}" />
   	</exec>
     
   	<copy todir="${output.reports}" overwrite="true">
