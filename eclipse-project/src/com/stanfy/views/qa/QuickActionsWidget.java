@@ -295,7 +295,7 @@ public abstract class QuickActionsWidget extends PopupWindow {
    * Quick action click listener.
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  public static interface OnQuickActionClickListener {
+  public interface OnQuickActionClickListener {
     void onQuickActionClicked(QuickActionsWidget widget, int position);
   }
 
