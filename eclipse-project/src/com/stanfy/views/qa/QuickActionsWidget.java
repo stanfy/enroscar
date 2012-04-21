@@ -1,10 +1,12 @@
 package com.stanfy.views.qa;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -96,14 +98,16 @@ public abstract class QuickActionsWidget extends PopupWindow {
    */
   public QuickActionsWidget(final Context context) {
     super(context);
+    final Resources res = context.getResources();
+    final DisplayMetrics displayMetrics = res.getDisplayMetrics();
+    final float density = displayMetrics.density;
+
     this.context = context;
 
     actionsChanged = true;
-    final float density = context.getResources().getDisplayMetrics().density;
 
-    final WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-    screenWidth = windowManager.getDefaultDisplay().getWidth();
-    screenHeight = windowManager.getDefaultDisplay().getHeight();
+    screenWidth = displayMetrics.widthPixels;
+    screenHeight = displayMetrics.heightPixels;
     final float half = 0.5f;
     maxWidth = Math.min(screenWidth, Math.min(screenHeight, (int)(MAX_WIDTH * density + half)));
 
