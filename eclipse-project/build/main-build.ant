@@ -44,6 +44,10 @@
   </condition>
   <echo message="Default string resources will be copied to: ${conf.lang.default}" />
 
+  <!-- Default SDK location -->
+  <property name="sdk.dir" value="${env.ANDROID_HOME}" />
+  <property name="sdk.dir" value="${env.ANDROID_SDK}" />
+  
   <!-- Check for sdk.dir -->
   <fail
       message="sdk.dir is missing. Make sure to generate local.properties using 'android update project'"
@@ -75,10 +79,6 @@
   <property file="${keystore.path}/${keystore.name}-access.properties" />
   <echo>Use keystore at ${keystore.name}</echo>
 
-	<!-- Default SDK location -->
-  <property name="sdk.dir" value="${env.ANDROID_HOME}" />
-  <property name="sdk.dir" value="${env.ANDROID_SDK}" />
-	
   <!-- ============================= -->
   <!--          Setup paths          -->
   <!-- ============================= -->
