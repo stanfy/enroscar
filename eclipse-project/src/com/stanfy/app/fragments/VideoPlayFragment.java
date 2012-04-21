@@ -30,6 +30,7 @@ import com.stanfy.views.R;
 /**
  * Fragment that displays the video player.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+ * @author Michael Pustovit (Stanfy - http://www.stanfy.com)
  */
 public class VideoPlayFragment extends BaseFragment<Application> implements OnPreparedListener, OnErrorListener, OnCompletionListener {
 
@@ -226,7 +227,12 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
       super.onDismiss(dialog);
       getOwnerActivity().finish();
     }
-
   }
 
+  /**
+   * @return the fragment video view
+   */
+  public VideoView getVideoView() {
+    return videoView;
+  }
 }

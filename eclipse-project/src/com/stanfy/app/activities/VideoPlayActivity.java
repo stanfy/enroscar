@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.widget.VideoView;
 
 import com.stanfy.app.Application;
 import com.stanfy.app.fragments.VideoPlayFragment;
@@ -11,6 +12,7 @@ import com.stanfy.app.fragments.VideoPlayFragment;
 /**
  * Activity to play video. It does not contain action bar.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+ * @author Michael Pustovit - video controls (Stanfy - http://www.stanfy.com)
  */
 public class VideoPlayActivity extends OneFragmentActivity<Application> {
 
@@ -35,4 +37,16 @@ public class VideoPlayActivity extends OneFragmentActivity<Application> {
     if (fragment != null) { fragment.invalidateView(); }
   }
 
+  /**
+   * @return the fragment video view
+   */
+  public VideoView getVideoView() {
+    final VideoPlayFragment videoPlayFragment = (VideoPlayFragment) getFragment();
+
+    if (videoPlayFragment == null) {
+      throw new IllegalStateException("Fragment hasn't been created yet.");
+    }
+
+    return videoPlayFragment.getVideoView();
+  }
 }
