@@ -50,7 +50,7 @@
   
   <!-- Check for sdk.dir -->
   <fail
-      message="sdk.dir is missing. Make sure to generate local.properties using 'android update project'"
+      message="sdk.dir is missing. Make sure to define it in build/dev.properties or set ANDROID_SDK environment variable."
       unless="sdk.dir"
       />
 
