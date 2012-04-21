@@ -45,8 +45,12 @@
   <echo message="Default string resources will be copied to: ${conf.lang.default}" />
 
   <!-- Default SDK location -->
-  <property name="sdk.dir" value="${env.ANDROID_HOME}" />
-  <property name="sdk.dir" value="${env.ANDROID_SDK}" />
+  <condition property="sdk.dir" value="${env.ANDROID_HOME}">
+    <isset property="env.ANDROID_HOME"/>
+  </condition>
+  <condition property="sdk.dir" value="${env.ANDROID_SDK}">
+    <isset property="env.ANDROID_SDK"/>
+  </condition>
   
   <!-- Check for sdk.dir -->
   <fail
