@@ -317,7 +317,7 @@
 	</target>
 
   <target name="-publish-dev" if="publish.dev">
-    <echo message="Sending release to the repository (${scp.release.dir}/${release.path})....."/>
+    <echo message="Sending release to the repository (path: ${release.path})....."/>
     <scp todir="${scp.user}@${scp.host}:${scp.release.dir}" password="${scp.password}" port="${scp.port}">
       <fileset dir="${output.release}" includes="${release.path}/**"/>
     </scp>
