@@ -228,7 +228,9 @@ public class AppUtils {
   static {
     final int version = Build.VERSION.SDK_INT;
     String classsName = null;
-    if (version >= Build.VERSION_CODES.HONEYCOMB) {
+    if (version >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+      classsName = "com.stanfy.utils.HoneycombMr1Utils";
+    } else if (version >= Build.VERSION_CODES.HONEYCOMB) {
       classsName = "com.stanfy.utils.HoneycombUtils";
     } else if (version >= Build.VERSION_CODES.GINGERBREAD) {
       classsName = "com.stanfy.utils.GingerbreadUtils";

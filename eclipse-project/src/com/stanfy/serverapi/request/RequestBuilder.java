@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.stanfy.app.Application;
@@ -71,11 +73,49 @@ public abstract class RequestBuilder {
 
   public final int getOperationCode() { return result.operationCode; }
 
+  /**
+   * Setup binary content from the local file. Parameter name will be equal to {@link RequestDescription#BINARY_NAME_DEFAULT}.
+   * @param path local file path
+   * @param contentType content MIME-type
+   */
   protected void addBinaryContent(final String path, final String contentType) {
-    if (result.operationType == OperationType.UPLOAD_POST) {
-      result.uploadFile = path;
-      result.contentType = contentType;
-    }
+    addBinaryContent(null, path, contentType);
+  }
+
+  /**
+   * Setup binary content with the local file.
+   * @param name parameter name
+   * @param path local file path
+   * @param contentType content MIME-type
+   */
+  protected void addBinaryContent(final String name, final String path, final String contentType) {
+    result.contentType = contentType;
+    result.setUploadFile(path);
+    result.setBinaryDataName(name);
+  }
+
+  /**
+   * Setup binary content with the bitmap.
+   * @param name parameter name
+   * @param bitmap bitmap object
+   * @param contentType content MIME-type
+   * @param bitmap file name
+   */
+  protected void setBitmap(final String name, final Bitmap bitmap, final String fileName) {
+    result.setBitmap(fileName, bitmap);
+    result.setBinaryDataName(name);
+  }
+
+  /**
+   * Setup binary content with the file descriptor.
+   * @param name parameter name
+   * @param fd file descriptor
+   * @param contentType content MIME-type
+   * @param bitmap file name
+   */
+  protected void setFileDescriptor(final String name, final AssetFileDescriptor fd, final String contentType, final String fileName) {
+    result.setFileDescriptor(contentType, fileName, fd);
+    result.setBinaryDataName(name);
   }
 
   protected void addSimpleParameter(final String name, final boolean value) {
@@ -103,10 +143,11 @@ public abstract class RequestBuilder {
    * Clear the builder.
    */
   public void clear() {
+    final RequestDescription result = this.result;
     result.simpleParameters.children.clear();
     final ParametersGroup meta = result.metaParameters;
     if (meta != null) { meta.children.clear(); }
-    result.uploadFile = null;
+    result.clearBinaryData();
     result.contentType = null;
     result.metaParameters = null;
   }

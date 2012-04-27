@@ -3,6 +3,8 @@ package com.stanfy.serverapi.request;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,9 +16,13 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.content.res.AssetFileDescriptor;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
@@ -24,12 +30,28 @@ import com.stanfy.http.multipart.FilePart;
 import com.stanfy.http.multipart.MultipartEntity;
 import com.stanfy.http.multipart.Part;
 import com.stanfy.http.multipart.StringPart;
+import com.stanfy.http.multipart.android.AssetFileDescriptorPartSource;
+import com.stanfy.http.multipart.android.BitmapPart;
 
 /**
  * Request method description. This object is passed to the service describing the request.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class RequestDescription implements Parcelable {
+
+  /** Indicates {@link #binaryData} to be empty. */
+  public static final int BINARY_TYPE_EMPTY = 0;
+  /** Indicates {@link #binaryData} to be {@link Uri}. */
+  public static final int BINARY_TYPE_FILE_URI = 1;
+  /** Indicates {@link #binaryData} to be {@link Bitmap}. */
+  public static final int BINARY_TYPE_BITMAP = 2;
+  /** Indicates {@link #binaryData} to be {@link AssetFileDescriptor}. */
+  public static final int BINARY_TYPE_FILE_DESCRITPOR = 3;
+  /** First value for user types. */
+  public static final int BINARY_TYPE_USER = 100;
+
+  /** Default name for binary content. */
+  public static final String BINARY_NAME_DEFAULT = "content";
 
   /** ID counter. */
   private static int idCounter = 0;
@@ -59,24 +81,36 @@ public class RequestDescription implements Parcelable {
 
   /** Request ID. */
   final int id;
+
   /** Token. It can be used to identify a sender. */
   int token;
   /** Operation to execute. */
   int operationCode;
+
   /** Operation type. */
   int operationType;
+
   /** URL part. */
   String urlPart;
   /** Simple parameters. */
   ParametersGroup simpleParameters;
-  /** A path to the file with binary data. */
-  String uploadFile;
+
   /** Content type. */
   String contentType;
   /** Content language. */
   String contentLanguage;
+
   /** Meta information. */
   ParametersGroup metaParameters;
+
+  /** Binary data name. */
+  private String binaryDataName;
+  /** Binary data content name. */
+  private String binaryDataContentName;
+  /** Binary data type. */
+  private int binaryDataType = BINARY_TYPE_EMPTY;
+  /** Binary data. */
+  private Parcelable binaryData;
 
   /** Whether request should be performed in parallel. */
   boolean parallelMode = false;
@@ -105,11 +139,53 @@ public class RequestDescription implements Parcelable {
     this.urlPart = source.readString();
     final ClassLoader cl = Thread.currentThread().getContextClassLoader();
     this.simpleParameters = source.readParcelable(cl);
-    this.uploadFile = source.readString();
     this.contentType = source.readString();
     this.contentLanguage = source.readString();
     this.metaParameters = source.readParcelable(cl);
     this.parallelMode = source.readInt() == 1;
+
+    // binary content fields
+    this.binaryDataName = source.readString();
+    this.binaryDataContentName = source.readString();
+    this.binaryDataType = source.readInt();
+    this.binaryData = source.readParcelable(null);
+  }
+
+  @Override
+  public void writeToParcel(final Parcel dest, final int flags) {
+    dest.writeInt(id);
+    dest.writeInt(token);
+    dest.writeInt(operationCode);
+    dest.writeInt(operationType);
+    dest.writeString(urlPart);
+    dest.writeParcelable(simpleParameters, flags);
+    dest.writeString(contentType);
+    dest.writeString(contentLanguage);
+    dest.writeParcelable(metaParameters, flags);
+    dest.writeInt(parallelMode ? 1 : 0);
+
+    // binary content fields
+    dest.writeString(binaryDataName);
+    dest.writeString(binaryDataContentName);
+    dest.writeInt(binaryDataType);
+    dest.writeParcelable(binaryData, 0);
+  }
+
+  @Override
+  public final int describeContents() {
+    switch (binaryDataType) {
+
+    case BINARY_TYPE_EMPTY:
+    case BINARY_TYPE_BITMAP:
+    case BINARY_TYPE_FILE_URI:
+      return 0;
+
+    case BINARY_TYPE_FILE_DESCRITPOR:
+      return Parcelable.CONTENTS_FILE_DESCRIPTOR;
+
+    default:
+      return resolveParcelDescription();
+    }
   }
 
   void setupOperation(final Operation op) {
@@ -119,28 +195,13 @@ public class RequestDescription implements Parcelable {
     if (DEBUG) { Log.v(TAG, "Setup request operation OPCODE: " + operationCode + " OPTYPE: " + operationType + " URL: " + urlPart); }
   }
 
-  /** @return the operationType */
-  public int getOperationType() { return operationType; }
-
-  @Override
-  public int describeContents() { return 0; }
-  @Override
-  public void writeToParcel(final Parcel dest, final int flags) {
-    dest.writeInt(id);
-    dest.writeInt(token);
-    dest.writeInt(operationCode);
-    dest.writeInt(operationType);
-    dest.writeString(urlPart);
-    dest.writeParcelable(simpleParameters, flags);
-    dest.writeString(uploadFile);
-    dest.writeString(contentType);
-    dest.writeString(contentLanguage);
-    dest.writeParcelable(metaParameters, flags);
-    dest.writeInt(parallelMode ? 1 : 0);
-  }
+  protected int resolveParcelDescription() { return 0; }
 
   /** @return request identifier */
   public int getId() { return id; }
+
+  /** @return the operationType */
+  public int getOperationType() { return operationType; }
 
   /** @return the operation */
   public int getOperationCode() { return operationCode; }
@@ -159,10 +220,89 @@ public class RequestDescription implements Parcelable {
   public String getUrlPart() { return urlPart; }
   /** @param urlPart the urlPart to set */
   public void setUrlPart(final String urlPart) { this.urlPart = urlPart; }
+
+  // ============================ BINARY DATA ACCESS ============================
+
+  private File getBinaryDataAsFile() {
+    try {
+      return new File(new URI(((Uri)binaryData).toString()));
+    } catch (final URISyntaxException e) {
+      Log.e(TAG, "bad file URI: " + binaryData, e);
+      return null;
+    }
+  }
+
+  /** @param binaryDataName string used to name binary data */
+  public void setBinaryDataName(final String binaryDataName) { this.binaryDataName = binaryDataName; }
+  /** @return string used to name binary data */
+  public String getBinaryDataName() { return binaryDataName; }
+
   /** @return the uploadFile */
-  public String getUploadFile() { return uploadFile; }
+  public String getUploadFile() {
+    if (binaryDataType != BINARY_TYPE_FILE_URI) { return null; }
+    final File file = getBinaryDataAsFile();
+    return file != null ? file.getAbsolutePath() : null;
+  }
   /** @param uploadFile the uploadFile to set */
-  public void setUploadFile(final String uploadFile) { this.uploadFile = uploadFile; }
+  public void setUploadFile(final String uploadFile) {
+    this.binaryDataType = BINARY_TYPE_FILE_URI;
+    final File file = new File(uploadFile);
+    this.binaryDataContentName = file.getName();
+    this.binaryData = Uri.fromFile(file);
+  }
+
+  /** @param bitmap bitmap to transfer */
+  public final void setBitmap(final Bitmap bitmap) {
+    setBitmap(null, bitmap);
+  }
+  /**
+   * @param name bitmap file name
+   * @param bitmap bitmap to transfer
+   */
+  public void setBitmap(final String name, final Bitmap bitmap) {
+    this.binaryDataType = BINARY_TYPE_BITMAP;
+    this.binaryData = bitmap;
+    this.binaryDataContentName = name;
+  }
+  /** @return bitmap instance if binary data type is {@link #BINARY_TYPE_BITMAP} */
+  public Bitmap getBitmap() { return binaryDataType == BINARY_TYPE_BITMAP ? (Bitmap)binaryData : null; }
+
+  /**
+   * @param fd file descriptor required to open data to be transfered
+   * @param name content name
+   */
+  public void setFileDescriptor(final String name, final AssetFileDescriptor fd) {
+    setFileDescriptor(null, name, fd);
+  }
+  /**
+   * @param type content type (ignored if null)
+   * @param fd file descriptor required to open data to be transfered
+   */
+  public void setFileDescriptor(final String type, final String name, final AssetFileDescriptor fd) {
+    if (type != null) { this.contentType = type; }
+    this.binaryDataType = BINARY_TYPE_FILE_DESCRITPOR;
+    this.binaryDataContentName = name;
+    this.binaryData = fd;
+  }
+
+  /** @return binary data type identifier */
+  public int getBinaryDataType() { return binaryDataType; }
+  /** @return file name of the binary data */
+  public String getBinaryDataContentName() { return binaryDataContentName; }
+
+  protected void setBinaryData(final int type, final Parcelable data) {
+    this.binaryDataType = type;
+    this.binaryData = data;
+  }
+  protected Parcelable getBinaryData() { return binaryData; }
+
+  public void clearBinaryData() {
+    this.binaryData = null;
+    this.binaryDataType = BINARY_TYPE_EMPTY;
+    this.binaryDataName = null;
+  }
+
+  // ============================================================================
 
   /** @return whether request is simple. */
   public boolean isSimple() { return operationType == OperationType.SIMPLE_POST || operationType == OperationType.SIMPLE_GET; }
@@ -209,6 +349,8 @@ public class RequestDescription implements Parcelable {
     return null;
   }
 
+  // ============================ HTTP REQUESTS ============================
+
   protected String resolveSimpleGetRequest(final long requestId) {
     final Uri.Builder builder = Uri.parse(urlPart).buildUpon();
     for (final Parameter p : this.simpleParameters.children) {
@@ -245,8 +387,11 @@ public class RequestDescription implements Parcelable {
         parts[realCount++] = new StringPart(pv.name, pv.value, CHARSET);
       }
     }
-    if (uploadFile != null) {
-      parts[realCount++] = new FilePart("content", new File(uploadFile), contentType, null);
+    if (binaryDataType != BINARY_TYPE_EMPTY) {
+      final Part binaryPart = createBinaryPart();
+      if (binaryPart != null) {
+        parts[realCount++] = binaryPart;
+      }
     }
     if (realCount < parts.length) {
       final Part[] trim = new Part[realCount];
@@ -256,6 +401,43 @@ public class RequestDescription implements Parcelable {
     request.setEntity(new MultipartEntity(parts));
     if (DEBUG) { Log.d(TAG, "(" + requestId + ")" + ": " + params); }
   }
+
+  protected final Part createBinaryPart() throws IOException {
+    final String name = TextUtils.isEmpty(binaryDataName) ? BINARY_NAME_DEFAULT : binaryDataName;
+
+    switch (binaryDataType) {
+
+    case BINARY_TYPE_EMPTY:
+      throw new IllegalStateException("We are creating a binary part though binary data is empty");
+
+    case BINARY_TYPE_FILE_URI:
+      return new FilePart(name, getBinaryDataAsFile(), contentType, null);
+
+    case BINARY_TYPE_FILE_DESCRITPOR:
+      return new FilePart(
+          name,
+          new AssetFileDescriptorPartSource(binaryDataContentName, (AssetFileDescriptor)binaryData),
+          contentType,
+          null
+      );
+
+    case BINARY_TYPE_BITMAP:
+      final BitmapPart bitmapPart = new BitmapPart(name, contentType, binaryDataContentName, (Bitmap)binaryData);
+      configureBitmapPart(bitmapPart);
+      return bitmapPart;
+
+    default:
+      return createUserBinaryTypePart();
+
+    }
+  }
+
+  protected void configureBitmapPart(final BitmapPart bitmapPart) {
+    bitmapPart.setCompressFormat(CompressFormat.JPEG);
+    bitmapPart.setCompressQuality(BitmapPart.COMPRESS_QUALITY_DEFAULT);
+  }
+
+  protected Part createUserBinaryTypePart() throws IOException { return null; }
 
   /**
    * @param requestId request identifier

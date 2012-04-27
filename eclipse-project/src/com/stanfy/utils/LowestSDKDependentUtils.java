@@ -4,6 +4,7 @@ import java.io.File;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.view.View;
@@ -54,6 +55,11 @@ public class LowestSDKDependentUtils implements SDKDependentUtils {
   @Override
   public NotificationBuilder createNotificationBuilder(final Context context) {
     return new BaseNotificationBuilder(context);
+  }
+
+  @Override
+  public int getBitmapSize(final Bitmap bitmap) {
+    return bitmap.getRowBytes() * bitmap.getHeight();
   }
 
 }

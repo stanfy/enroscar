@@ -4,6 +4,7 @@ import java.io.File;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.view.View;
 import android.webkit.WebView;
@@ -65,5 +66,11 @@ public interface SDKDependentUtils {
    * @return notification builder instance
    */
   NotificationBuilder createNotificationBuilder(final Context context);
+
+  /**
+   * @param bitmap bitmap to process
+   * @return bitmap size in bytes
+   */
+  int getBitmapSize(final Bitmap bitmap);
 
 }
