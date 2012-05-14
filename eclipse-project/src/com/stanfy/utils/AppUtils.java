@@ -92,10 +92,9 @@ public class AppUtils {
 
       MessageDigest md;
       md = MessageDigest.getInstance("MD5");
-      byte[] md5hash = new byte[md5hashSize];
+      final byte[] md5hash = new byte[md5hashSize];
       final byte[] utf8Bytes = text.getBytes("UTF-8");
       md.update(utf8Bytes, 0, utf8Bytes.length);
-      md5hash = md.digest();
       return convertToHex(md5hash);
 
     } catch (final NoSuchAlgorithmException e) {

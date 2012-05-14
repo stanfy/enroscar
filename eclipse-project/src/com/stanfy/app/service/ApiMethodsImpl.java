@@ -256,7 +256,12 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     }
     @Override
     public void afterRequestProcessingFinished(final RequestDescription requestDescription, final ParserContext pContext, final RequestMethod requestMethod) {
-      trackersMap.remove(requestDescription.getId());
+      mainHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          trackersMap.remove(requestDescription.getId());
+        }
+      });
       if (DEBUG) { Log.d(TAG, "Request trackers count: " + trackersMap.size()); }
     }
 
@@ -545,6 +550,7 @@ public class ApiMethodsImpl extends Stub implements Destroyable {
     final RequestTracker tracker = trackersMap.get(id);
     if (tracker != null) {
       tracker.cancelRequest();
+      trackersMap.remove(id);
     }
   }
 
