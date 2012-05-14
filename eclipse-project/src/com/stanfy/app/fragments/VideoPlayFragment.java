@@ -44,7 +44,8 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
 
   /** Extra keys. */
   public static final String EXTRA_SOURCE_URI = "src_uri",
-                             EXTRA_FINISH_ON_COMPLETE = "fin_on_complete";
+                             EXTRA_FINISH_ON_COMPLETE = "fin_on_complete",
+                             EXTRA_AUTO_PAUSE_MANAGEMENT = "EXTRA_AUTO_PAUSE_MANAGEMENT";
 
   /** Video view. */
   private VideoView videoView;
@@ -77,23 +78,34 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   /** Finish on complete flag. */
   private boolean finishOnComplete = true;
 
+  /** Auto pause management flag. */
+  private boolean autoPauseManagement = true;
+
   /**
    * @param source source URI
    * @return fragment instance
    */
   public static VideoPlayFragment create(final Uri source) {
-    return create(source, true);
+    return create(source, true, false);
   }
   /**
    * @param source source URI
    * @param finishOnComplete finish on complete flag
+   * @param autoPauseManagement if this parameter is true then fragment automatically pause video in onPause() and
+   *    resumes it in onResume()
    * @return fragment instance
    */
-  public static VideoPlayFragment create(final Uri source, final boolean finishOnComplete) {
+  public static VideoPlayFragment create(
+      final Uri source,
+      final boolean finishOnComplete,
+      final boolean autoPauseManagement) {
     final VideoPlayFragment result = new VideoPlayFragment();
     final Bundle args = new Bundle();
+
     args.putParcelable(EXTRA_SOURCE_URI, source);
     args.putBoolean(EXTRA_FINISH_ON_COMPLETE, finishOnComplete);
+    args.putBoolean(EXTRA_AUTO_PAUSE_MANAGEMENT, autoPauseManagement);
+
     result.setArguments(args);
     return result;
   }
@@ -108,6 +120,7 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
     }
 
     finishOnComplete = getArguments().getBoolean(EXTRA_FINISH_ON_COMPLETE, true);
+    autoPauseManagement = getArguments().getBoolean(EXTRA_AUTO_PAUSE_MANAGEMENT, true);
   }
 
   @Override
@@ -133,7 +146,11 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   @Override
   public void onResume() {
     super.onResume();
-    videoView.start();
+
+    if (autoPauseManagement) {
+      videoView.start();
+    }
+
     if (wifiLock != null && !completed) {
       wifiLock.acquire();
     }
@@ -150,7 +167,11 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   @Override
   public void onPause() {
     super.onPause();
-    videoView.pause();
+
+    if (autoPauseManagement) {
+      videoView.pause();
+    }
+
     if (wifiLock != null && wifiLock.isHeld()) {
       wifiLock.release();
     }
@@ -240,5 +261,12 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
    */
   public VideoView getVideoView() {
     return videoView;
+  }
+
+  /**
+   * @return the fragment media controller
+   */
+  public MediaController getMediaController() {
+     return controller;
   }
 }

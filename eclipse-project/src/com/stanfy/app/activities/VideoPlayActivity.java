@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.stanfy.app.Application;
@@ -48,5 +49,18 @@ public class VideoPlayActivity extends OneFragmentActivity<Application> {
     }
 
     return videoPlayFragment.getVideoView();
+  }
+
+  /**
+   * @return the fragment media controller
+   */
+  public MediaController getMediaController() {
+    final VideoPlayFragment videoPlayFragment = (VideoPlayFragment) getFragment();
+
+    if (videoPlayFragment == null) {
+      throw new IllegalStateException("Fragment hasn't been created yet.");
+    }
+
+    return videoPlayFragment.getMediaController();
   }
 }
