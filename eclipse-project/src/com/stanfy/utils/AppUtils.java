@@ -2,6 +2,7 @@ package com.stanfy.utils;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -88,15 +89,12 @@ public class AppUtils {
 
   public static String getMd5(final String text)  {
     try {
-      final int md5hashSize = 32;
-
-      MessageDigest md;
-      md = MessageDigest.getInstance("MD5");
-      byte[] md5hash = new byte[md5hashSize];
+      final MessageDigest md = MessageDigest.getInstance("MD5");
       final byte[] utf8Bytes = text.getBytes("UTF-8");
       md.update(utf8Bytes, 0, utf8Bytes.length);
-      md5hash = md.digest();
-      return convertToHex(md5hash);
+      final byte[] md5hash = md.digest();
+      final int radix = 16;
+      return new BigInteger(1, md5hash).toString(radix);
 
     } catch (final NoSuchAlgorithmException e) {
       Log.e(TAG, "MD5 error", e);
