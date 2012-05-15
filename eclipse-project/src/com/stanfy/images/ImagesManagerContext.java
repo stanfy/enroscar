@@ -19,6 +19,7 @@ import com.stanfy.images.model.CachedImage;
  * @param <T> cached image type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
+@SuppressWarnings("deprecation")
 public class ImagesManagerContext<T extends CachedImage> {
 
   /** Images DAO. */
@@ -33,14 +34,22 @@ public class ImagesManagerContext<T extends CachedImage> {
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
   public static enum MemCacheMode {
-    /** Based on hash map. */
+    /**
+     * Based on hash map.
+     * @deprecated use {@link #LRU} instead
+     */
+    @Deprecated
     STATIC {
       @Override
       public ImageMemoryCache createCache() {
         return new StaticSizeImageMemoryCache();
       }
     },
-    /** Based on soft references. */
+    /**
+     * Based on soft references.
+     * @deprecated use {@link #LRU} instead
+     */
+    @Deprecated
     SOFT {
       @Override
       public ImageMemoryCache createCache() {

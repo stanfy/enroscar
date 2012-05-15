@@ -3,13 +3,14 @@ package com.stanfy.images.cache;
 import java.lang.ref.SoftReference;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 import android.graphics.Bitmap;
 
 /**
  * Images memory cache based on soft references.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+ * @deprecated use {@link SupportLruImageMemoryCache} instead
  */
+@Deprecated
 public class SoftImageMemoryCache implements ImageMemoryCache {
 
   /** Cache map. */
