@@ -6,7 +6,7 @@ import android.view.MotionEvent;
 
 /**
  * Gallery that performs fling on one item only.
- * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+ * @author Vladislav Lipskiy - Stanfy (http://www.stanfy.com)
  */
 public class OneItemFlingGallery extends Gallery {
 
@@ -23,8 +23,7 @@ public class OneItemFlingGallery extends Gallery {
 
   @Override
   public boolean onFling(final MotionEvent e1, final MotionEvent e2, final float velocityX, final float velocityY) {
-    final float divider = 1.5f;
-    return super.onFling(e1, e2, velocityX / divider, velocityY);
+    return velocityX < 0 ? moveNext() : movePrevious();
   }
 
 }
