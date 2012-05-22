@@ -89,12 +89,18 @@ public class AppUtils {
 
   public static String getMd5(final String text)  {
     try {
+
       final MessageDigest md = MessageDigest.getInstance("MD5");
       final byte[] utf8Bytes = text.getBytes("UTF-8");
       md.update(utf8Bytes, 0, utf8Bytes.length);
       final byte[] md5hash = md.digest();
       final int radix = 16;
-      return new BigInteger(1, md5hash).toString(radix);
+      final int length = 32;
+      final StringBuilder result = new StringBuilder(length).append(new BigInteger(1, md5hash).toString(radix));
+      if (result.length() == length - 1) { // 31 characters, first '0' is excluded
+        result.insert(0, Character.forDigit(0, radix));
+      }
+      return result.toString();
 
     } catch (final NoSuchAlgorithmException e) {
       Log.e(TAG, "MD5 error", e);
