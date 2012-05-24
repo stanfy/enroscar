@@ -7,10 +7,12 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.SystemClock;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.service.ApplicationService;
 import com.stanfy.app.service.ToolsApplicationService;
 import com.stanfy.images.DefaultDownloader;
@@ -57,6 +59,9 @@ public class Application extends android.app.Application implements ImagesManage
   /** Main thread instance. */
   private Thread mainThread;
 
+  /** Beans container instance. */
+  private BeansContainer beansContainer;
+
   /**
    * Setup images cache cleanup.
    * By default this method schedules cache cleanup in 3 minutes after application instance creation.
@@ -75,6 +80,7 @@ public class Application extends android.app.Application implements ImagesManage
   public void onCreate() {
     this.mainThread = Thread.currentThread();
     super.onCreate();
+    this.beansContainer = createBeansContainer();
     setupImagesCacheCleanup();
     if (DebugFlags.STRICT_MODE) {
       AppUtils.getSdkDependentUtils().enableStrictMode();
@@ -84,6 +90,9 @@ public class Application extends android.app.Application implements ImagesManage
   @Override
   public void onLowMemory() {
     Log.w(getClass().getSimpleName(), "Low memory!");
+    if (beansContainer != null) {
+      beansContainer.onLowMemory();
+    }
     if (requestMethodHelper != null) {
       requestMethodHelper.flush();
     }
@@ -94,6 +103,20 @@ public class Application extends android.app.Application implements ImagesManage
       httpClientsPool.flush();
     }
   }
+
+  @Override
+  public void onConfigurationChanged(final Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    if (beansContainer != null) {
+      beansContainer.onConfigurationChange(newConfig);
+    }
+  }
+
+  protected BeansContainer createBeansContainer() {
+    return null;
+  }
+
+  public BeansContainer getBeansContainer() { return beansContainer; }
 
   /** @param imagesDAOAuthority authority to access images cache content */
   public void setImagesDAOAuthority(final String imagesDAOAuthority) { this.imagesDAOAuthority = imagesDAOAuthority; }

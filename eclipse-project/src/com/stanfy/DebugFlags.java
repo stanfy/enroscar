@@ -47,4 +47,7 @@ public final class DebugFlags {
   /** Debug stats. */
   public static final boolean DEBUG_STATS = true; // @debug.stats@
 
+  /** Debug beans container. */
+  public static final boolean DEBUG_BEANS = true; // @debug.beans@
+
 }
