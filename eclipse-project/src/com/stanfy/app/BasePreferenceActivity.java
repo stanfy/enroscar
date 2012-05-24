@@ -3,6 +3,8 @@ package com.stanfy.app;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.stanfy.serverapi.request.RequestExecutor;
 import com.stanfy.utils.ApiMethodsSupport;
@@ -112,6 +114,23 @@ public abstract class BasePreferenceActivity<AT extends Application> extends Pre
     final boolean r = behavior.onKeyDown(keyCode, event);
     if (r) { return true; }
     return super.onKeyDown(keyCode, event);
+  }
+  @Override
+  public boolean onOptionsItemSelected(final MenuItem item) {
+    final boolean r = behavior.onOptionsItemSelected(item);
+    if (r) { return true; }
+    return super.onOptionsItemSelected(item);
+  }
+  @Override
+  public boolean onCreateOptionsMenu(final Menu menu) {
+    final boolean r = behavior.onCreateOptionsMenu(menu);
+    if (r) { return true; }
+    return super.onCreateOptionsMenu(menu);
+  }
+  @Override
+  public void onOptionsMenuClosed(final Menu menu) {
+    behavior.onOptionsMenuClosed(menu);
+    super.onOptionsMenuClosed(menu);
   }
 
 }

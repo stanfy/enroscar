@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.serverapi.request.RequestExecutor;
@@ -243,5 +245,28 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
 
   /** @return the serverApiSupport */
   public ApiMethodsSupport getServerApiSupport() { return serverApiSupport; }
+
+  /**
+   * @see Activity#onOptionsItemSelected(MenuItem)
+   * @return true if event was processed
+   */
+  public boolean onOptionsItemSelected(final MenuItem item) {
+    return false;
+  }
+
+  /**
+   * @see Activity#onCreateOptionsMenu(Menu)
+   * @return true if event was processed
+   */
+  public boolean onCreateOptionsMenu(final Menu menu) {
+    return false;
+  }
+
+  /**
+   * @see Activity#onOptionsMenuClosed(Menu)
+   */
+  public void onOptionsMenuClosed(final Menu menu) {
+    // nothing
+  }
 
 }
