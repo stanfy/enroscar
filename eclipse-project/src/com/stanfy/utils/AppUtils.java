@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,11 @@ public class AppUtils {
     return buf.toString();
   }
 
+  /**
+   * Calculate 32 bytes length MD5 digest.
+   * @param text input text
+   * @return MD5 digest
+   */
   public static String getMd5(final String text)  {
     try {
 
@@ -96,10 +102,16 @@ public class AppUtils {
       final byte[] md5hash = md.digest();
       final int radix = 16;
       final int length = 32;
+
       final StringBuilder result = new StringBuilder(length).append(new BigInteger(1, md5hash).toString(radix));
-      if (result.length() == length - 1) { // 31 characters, first '0' is excluded
-        result.insert(0, Character.forDigit(0, radix));
+
+      final int zeroBeginLen = length - result.length();
+      if (zeroBeginLen > 0) {
+        final char [] zeroBegin = new char[zeroBeginLen];
+        Arrays.fill(zeroBegin, Character.forDigit(0, radix));
+        result.insert(0, zeroBegin);
       }
+
       return result.toString();
 
     } catch (final NoSuchAlgorithmException e) {
