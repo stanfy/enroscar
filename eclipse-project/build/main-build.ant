@@ -42,7 +42,7 @@
   		<equals arg1="${conf.lang.indicateDefault}" arg2="true" />
     </and>
   </condition>
-  <echo message="Default string resources will be copied to: ${conf.lang.default}" />
+  <echo message="Default string resources will be copied from ${conf.lang.default}" />
 
   <!-- Default SDK location -->
   <condition property="sdk.dir" value="${env.ANDROID_HOME}">
