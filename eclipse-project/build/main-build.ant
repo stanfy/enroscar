@@ -195,7 +195,44 @@
       </xmltask>
     </sequential>
   </macrodef>
-  
+
+	<!-- 
+	  macro: handlelang
+	  Handles default language settings optionally moving language resources from the library and forcing default language settings.  
+	-->
+	<macrodef name="handlelang">
+    <attribute name="libNamePart"/>
+    <sequential>
+      <if condition="${conf.lang.moveLibDefault}">
+        <then><mkdir dir="${resource.absolute.dir}/values-${conf.lang.libDefaultMapping}" /></then>
+      </if>
+      <stanfy:resolvelib propertiesPrefix="lib.@{libNamePart}" namePart="@{libNamePart}" />
+      <if condition="${conf.lang.moveLibDefault}">
+        <then>
+          <copy todir="${resource.absolute.dir}/values-${conf.lang.libDefaultMapping}">
+            <fileset dir="${lib.@{libNamePart}.path}/res/values" includes="string*.xml" />
+            <mapper type="regexp" from="string(.*)\.xml$$" to="string\1_from_lib.xml"/>
+          </copy>
+        </then>
+      </if>
+      <copy todir="${resource.absolute.dir}/values" overwrite="true" failonerror="false">
+        <fileset dir="${lib.@{libNamePart}.path}/res/values-${conf.lang.default}" includes="*.xml" />
+        <mapper type="regexp" from="(.*)\.xml$$" to="\1_from_lib_default_${conf.lang.default}.xml"/>
+      </copy>
+      
+      <if condition="${conf.lang.indicateDefaultFlag}">
+        <then>
+          <echo>Force default language to be indicated</echo>
+          <mkdir dir="${resource.absolute.dir}/values-${conf.lang.default}" />
+          <copy todir="${resource.absolute.dir}/values-${conf.lang.default}">
+            <fileset dir="${resource.absolute.dir}/values" includes="string*.xml" />
+            <mapper type="regexp" from="(.*)\.xml$$" to="\1_from_default_strings.xml"/>
+          </copy>
+        </then>
+      </if>
+    </sequential>
+  </macrodef>
+	
   <!-- *************** Internal targets *************** -->
   
   <!-- Hooks -->
@@ -240,34 +277,7 @@
   
 	<target name="-prepare-lang-values" if="conf.lang.performTransform">
 		<do-only-if-not-library elseText="Library project. Do nothing.">
-	    <if condition="${conf.lang.moveLibDefault}">
-	      <then><mkdir dir="${resource.absolute.dir}/values-${conf.lang.libDefaultMapping}" /></then>
-	    </if>
-      <stanfy:resolvelib propertiesPrefix="lib.stviews" namePart="${application.library}" />
-      <if condition="${conf.lang.moveLibDefault}">
-        <then>
-          <copy todir="${resource.absolute.dir}/values-${conf.lang.libDefaultMapping}">
-            <fileset dir="${lib.stviews.path}/res/values" includes="string*.xml" />
-            <mapper type="regexp" from="string(.*)\.xml$$" to="string\1_from_lib.xml"/>
-          </copy>
-        </then>
-      </if>
-      <copy todir="${resource.absolute.dir}/values" overwrite="true" failonerror="false">
-        <fileset dir="${lib.stviews.path}/res/values-${conf.lang.default}" includes="*.xml" />
-        <mapper type="regexp" from="(.*)\.xml$$" to="\1_from_lib_default_${conf.lang.default}.xml"/>
-      </copy>
-			
-      <if condition="${conf.lang.indicateDefaultFlag}">
-        <then>
-        	<echo>Force default language to be indicated</echo>
-        	<mkdir dir="${resource.absolute.dir}/values-${conf.lang.default}" />
-          <copy todir="${resource.absolute.dir}/values-${conf.lang.default}">
-            <fileset dir="${resource.absolute.dir}/values" includes="string*.xml" />
-            <mapper type="regexp" from="(.*)\.xml$$" to="\1_from_default_strings.xml"/>
-          </copy>
-        </then>
-      </if>
-			
+			<handlelang libnamepart="${application.library}"/>
 		</do-only-if-not-library>
 	</target>
 	
