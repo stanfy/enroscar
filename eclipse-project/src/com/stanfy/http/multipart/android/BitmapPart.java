@@ -25,12 +25,12 @@ public class BitmapPart extends FilePart {
   final Bitmap bitmap;
 
   /** Compress format. */
-  private CompressFormat compressFormat;
+  private CompressFormat compressFormat = CompressFormat.JPEG;
   /** Compress quality. */
   private int compressQuality = COMPRESS_QUALITY_DEFAULT;
 
-  public BitmapPart(final String name, final String contentType, final String fileName, final Bitmap bitmap) {
-    super(name, new BitmapSource(fileName, AppUtils.getSdkDependentUtils().getBitmapSize(bitmap)), contentType, null);
+  public BitmapPart(final String name, final String fileName, final Bitmap bitmap) {
+    super(name, new BitmapSource(fileName, AppUtils.getSdkDependentUtils().getBitmapSize(bitmap)), "image/jpeg", null);
     this.bitmap = bitmap;
   }
 

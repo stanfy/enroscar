@@ -121,4 +121,11 @@ public class StringPart extends PartBase {
     this.content = null;
   }
 
+  /**
+   * @return part value
+   */
+  public String getValue() {
+    return value;
+  }
+
 }

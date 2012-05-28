@@ -12,6 +12,10 @@ import android.util.Log;
 
 import com.stanfy.app.Application;
 import com.stanfy.app.RequestExecutorProvider;
+import com.stanfy.serverapi.request.binary.AssetFdBinaryData;
+import com.stanfy.serverapi.request.binary.BitmapBinaryData;
+import com.stanfy.serverapi.request.binary.EmptyBinaryData;
+import com.stanfy.serverapi.request.binary.FileBinaryData;
 
 /**
  * Base class for request builders.
@@ -89,9 +93,11 @@ public abstract class RequestBuilder {
    * @param contentType content MIME-type
    */
   protected void addBinaryContent(final String name, final String path, final String contentType) {
-    result.contentType = contentType;
-    result.setUploadFile(path);
-    result.setBinaryDataName(name);
+    final FileBinaryData bdata = new FileBinaryData();
+    bdata.setName(name);
+    bdata.setUploadFilePath(path);
+    bdata.setContentType(contentType);
+    result.addBinaryData(bdata);
   }
 
   /**
@@ -101,9 +107,12 @@ public abstract class RequestBuilder {
    * @param contentType content MIME-type
    * @param bitmap file name
    */
-  protected void setBitmap(final String name, final Bitmap bitmap, final String fileName) {
-    result.setBitmap(fileName, bitmap);
-    result.setBinaryDataName(name);
+  protected void addBitmap(final String name, final Bitmap bitmap, final String fileName) {
+    final BitmapBinaryData bdata = new BitmapBinaryData();
+    bdata.setName(name);
+    bdata.setContentName(fileName);
+    bdata.setBitmap(bitmap);
+    result.addBinaryData(bdata);
   }
 
   /**
@@ -113,9 +122,21 @@ public abstract class RequestBuilder {
    * @param contentType content MIME-type
    * @param bitmap file name
    */
-  protected void setFileDescriptor(final String name, final AssetFileDescriptor fd, final String contentType, final String fileName) {
-    result.setFileDescriptor(contentType, fileName, fd);
-    result.setBinaryDataName(name);
+  protected void addFileDescriptor(final String name, final AssetFileDescriptor fd, final String contentType, final String fileName) {
+    final AssetFdBinaryData bdata = new AssetFdBinaryData();
+    bdata.setFileDescriptor(fileName, fd);
+    bdata.setName(name);
+    bdata.setContentType(contentType);
+    result.addBinaryData(bdata);
+  }
+
+  /**
+   * @param name name for empty binary type
+   */
+  protected void addEmptyBinary(final String name) {
+    final EmptyBinaryData bdata = new EmptyBinaryData();
+    bdata.setName(name);
+    result.addBinaryData(bdata);
   }
 
   protected void addSimpleParameter(final String name, final boolean value) {
