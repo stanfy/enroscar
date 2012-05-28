@@ -122,7 +122,7 @@ public class MultipartEntity extends AbstractHttpEntity {
     this.params = null;
   }
 
-  protected Part[] getParts() { return parts; }
+  public Part[] getParts() { return parts; }
 
   /**
    * Returns the MIME boundary string that is used to demarcate boundaries of
