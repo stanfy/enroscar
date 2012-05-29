@@ -586,10 +586,6 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
   protected void layout(final int delta, final boolean animate) {
     if (DEBUG) { Log.v(VIEW_LOG_TAG, "==== Gallery layout ===="); }
 
-    final int childrenLeft = mSpinnerPadding.left;
-    final int childrenWidth = getRight() - getLeft() - mSpinnerPadding.left - mSpinnerPadding.right;
-    if (DEBUG) { Log.v(VIEW_LOG_TAG, "childrenLeft=" + childrenLeft + ", childrenWidth=" + childrenWidth); }
-
     if (mDataChanged) {
       handleDataChanged();
     } else {
@@ -630,7 +626,7 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
     if (DEBUG) { Log.v(VIEW_LOG_TAG, "selected view " + sel); }
 
     // Put the selected child in the center
-    final int selectedOffset = childrenLeft + (childrenWidth / 2) - (sel.getWidth() / 2);
+    final int selectedOffset = computeLayoutScrollOffset(sel, mSelectedPosition, mSpinnerPadding, mSpacing, mGravity);
     if (DEBUG) { Log.v(VIEW_LOG_TAG, "selectedOffset=" + selectedOffset); }
     sel.offsetLeftAndRight(selectedOffset);
 
@@ -649,6 +645,14 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
 
     updateSelectedItemMetadata();
     if (DEBUG) { Log.v(VIEW_LOG_TAG, "============================"); }
+  }
+
+  protected int computeLayoutScrollOffset(final View selectedView, final int selectedPosition,
+      final Rect spinnerPadding, final int spacing, final int gravity) {
+    final int childrenLeft = spinnerPadding.left;
+    final int childrenWidth = getRight() - getLeft() - spinnerPadding.left - spinnerPadding.right;
+    if (DEBUG) { Log.v(VIEW_LOG_TAG, "childrenLeft=" + childrenLeft + ", childrenWidth=" + childrenWidth); }
+    return childrenLeft + (childrenWidth / 2) - (selectedView.getWidth() / 2);
   }
 
   private void fillToGalleryLeft() {
@@ -837,7 +841,7 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
 
     int childTop = 0;
 
-    switch (mGravity) {
+    switch (mGravity & Gravity.VERTICAL_GRAVITY_MASK) {
     case Gravity.TOP:
       childTop = mSpinnerPadding.top;
       break;
@@ -1488,6 +1492,8 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
 
       trackMotionScroll(delta);
 
+      if (!flingRunMethodTrail()) { return; }
+
       if (more && !mShouldStopFling) {
         mLastFlingX = x;
         post(this);
@@ -1497,6 +1503,9 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
     }
 
   }
+
+  /** Control over {@link FlingRunnable#run()} method execution. */
+  protected boolean flingRunMethodTrail() { return true; }
 
   /**
    * Gallery extends LayoutParams to provide a place to hold current
