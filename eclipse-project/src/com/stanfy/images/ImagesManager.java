@@ -377,19 +377,27 @@ public class ImagesManager<T extends CachedImage> {
       return;
     }
 
-    final InputStream in = new PoolableBufferedInputStream(downloader.download(image.getUrl()), BuffersPool.DEFAULT_SIZE_FOR_IMAGES, buffersPool);
-    final FileOutputStream out = new FileOutputStream(f);
     final byte[] buffer = buffersPool.get(BuffersPool.DEFAULT_SIZE_FOR_IMAGES);
     if (buffer == null) { return; }
-    int cnt;
+
+    InputStream in = null;
+    FileOutputStream out = null;
     try {
+      in = downloader.download(image.getUrl());
+      in = new PoolableBufferedInputStream(in, BuffersPool.DEFAULT_SIZE_FOR_IMAGES, buffersPool);
+      out = new FileOutputStream(f);
+
+      int cnt;
       do {
         cnt = in.read(buffer);
         if (cnt != -1) { out.write(buffer, 0, cnt); }
       } while (cnt != -1);
+    } catch (final IllegalStateException e) {
+      Log.e(TAG, "Illegal state while makeImageLocal: " + image.getUrl(), e);
+      throw new IOException(e);
     } finally {
-      in.close();
-      out.close();
+      if (in != null) { in.close(); }
+      if (out != null) { out.close(); }
       buffersPool.release(buffer);
     }
     downloader.finish(image.getUrl());
