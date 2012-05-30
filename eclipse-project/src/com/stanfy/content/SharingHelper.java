@@ -1,6 +1,5 @@
 package com.stanfy.content;
 
-import java.io.FileNotFoundException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
@@ -9,7 +8,6 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -162,8 +160,6 @@ public final class SharingHelper {
 
     /** Content name. */
     String[] contentNames;
-    /** Content file descriptor. */
-    AssetFileDescriptor[] assetFileDescriptors;
 
     /** Caller info. */
     ComponentName callerInfo;
@@ -178,16 +174,14 @@ public final class SharingHelper {
     SharingData(final Parcel in) {
       this.intent = in.readParcelable(null);
       this.contentNames = in.createStringArray();
-      this.assetFileDescriptors = (AssetFileDescriptor[]) in.readParcelableArray(null);
     }
 
     @Override
-    public int describeContents() { return assetFileDescriptors != null ? Parcelable.CONTENTS_FILE_DESCRIPTOR : 0; }
+    public int describeContents() { return 0; }
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
       dest.writeParcelable(intent, flags);
       dest.writeStringArray(contentNames);
-      dest.writeParcelableArray(assetFileDescriptors, flags);
     }
 
     private void cacheStreams() {
@@ -245,10 +239,8 @@ public final class SharingHelper {
     public ComponentName getCallerInfo() { return callerInfo; }
 
     /** @return whether content stream is resolved */
-    public boolean isStreamResolved() { return assetFileDescriptors != null; }
+    public boolean isStreamResolved() { return contentNames != null; }
 
-    /** @return content file descriptor */
-    public AssetFileDescriptor[] getAssetFileDescriptors() { return assetFileDescriptors; }
     /** @return content name */
     public String[] getContentNames() { return contentNames; }
 
@@ -297,48 +289,39 @@ public final class SharingHelper {
     private void resolveContent(final ContentResolver resolver, final SharingData data, final int index) {
       final Uri contentUri = data.getStreamUri(index);
 
-      try {
+      // resolve content name
+      String contentName = null;
+      final String scheme = contentUri.getScheme();
+      if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
 
-        // get file descriptor
-        data.assetFileDescriptors[index] = resolver.openAssetFileDescriptor(contentUri, "r");
-
-        // resolve content name
-        String contentName = null;
-        final String scheme = contentUri.getScheme();
-        if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-
-          // query content resolver for additional info
-          final Cursor cursor = resolver.query(contentUri, MEDIA_PROJECTION, null, null, null);
-          if (cursor != null) {
-            try {
-              cursor.moveToFirst();
-              // display name
-              contentName = cursor.getString(0);
-              if (TextUtils.isEmpty(contentName)) {
-                // title
-                contentName = cursor.getString(1);
-              }
-              if (TextUtils.isEmpty(contentName)) {
-                // file name
-                contentName = Uri.parse(cursor.getString(2)).getLastPathSegment();
-              }
-            } finally {
-              cursor.close();
+        // query content resolver for additional info
+        final Cursor cursor = resolver.query(contentUri, MEDIA_PROJECTION, null, null, null);
+        if (cursor != null) {
+          try {
+            cursor.moveToFirst();
+            // display name
+            contentName = cursor.getString(0);
+            if (TextUtils.isEmpty(contentName)) {
+              // title
+              contentName = cursor.getString(1);
             }
+            if (TextUtils.isEmpty(contentName)) {
+              // file name
+              contentName = Uri.parse(cursor.getString(2)).getLastPathSegment();
+            }
+          } finally {
+            cursor.close();
           }
-
-        } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
-
-          // use file name
-          contentName = contentUri.getLastPathSegment();
-
         }
 
-        data.contentNames[index] = contentName;
+      } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
 
-      } catch (final FileNotFoundException e) {
-        resolverErrorState = true;
+        // use file name
+        contentName = contentUri.getLastPathSegment();
+
       }
+
+      data.contentNames[index] = contentName;
     }
 
     @Override
@@ -356,7 +339,6 @@ public final class SharingHelper {
       final int count = data.getStreamUriCount();
       if (count == 0) { throw new IllegalStateException("Cannot run resolver task with a null content URI"); }
 
-      data.assetFileDescriptors = new AssetFileDescriptor[count];
       data.contentNames = new String[count];
       for (int i = 0; i < count; i++) {
         resolveContent(resolver, data, i);
