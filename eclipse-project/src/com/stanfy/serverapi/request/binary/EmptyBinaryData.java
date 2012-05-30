@@ -2,6 +2,7 @@ package com.stanfy.serverapi.request.binary;
 
 import java.io.IOException;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -40,7 +41,7 @@ public class EmptyBinaryData extends BinaryData<Parcelable> {
   }
 
   @Override
-  public Part createHttpPart() throws IOException {
+  public Part createHttpPart(final Context context) throws IOException {
     return new FilePart(getName(), new ByteArrayPartSource(getContentName(), EMPTY), getContentType(), null);
   }
 

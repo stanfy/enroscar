@@ -49,9 +49,6 @@ public abstract class RequestMethod {
   /** Thread lock. */
   private static final ReentrantLock LOCK = new ReentrantLock();
 
-  /** Request identifier. */
-  private static Long requestId = 0L;
-
   /** Http client instance. */
   private HttpClient httpClient;
 
@@ -128,17 +125,13 @@ public abstract class RequestMethod {
    * @throws RequestMethodException if ever
    */
   public void start(final Context systemContext, final RequestDescription description, final ParserContext parserContext) throws RequestMethodException {
-    LOCK.lock();
-    ++requestId;
-    LOCK.unlock();
-
     final long startTime = System.currentTimeMillis();
 
     InputStream cachedStream = null;
     HttpResponse response = null;
     String url = null;
 
-    final HttpUriRequest request = description.buildRequest(requestId);
+    final HttpUriRequest request = description.buildRequest(systemContext);
     if (request instanceof HttpGet) {
       url = request.getURI().toString();
       final File cFile = APICacheDAO.getCachedFile(systemContext, cacheAuthority, url);

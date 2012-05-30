@@ -2,6 +2,7 @@ package com.stanfy.serverapi.request.binary;
 
 import java.io.IOException;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -82,6 +83,6 @@ public abstract class BinaryData<T extends Parcelable> implements Parcelable {
   }
 
   /** @return part instance */
-  public abstract Part createHttpPart() throws IOException;
+  public abstract Part createHttpPart(final Context context) throws IOException;
 
 }

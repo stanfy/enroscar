@@ -14,6 +14,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -240,7 +241,7 @@ public class RequestDescription implements Parcelable {
 
   // ============================ HTTP REQUESTS ============================
 
-  protected String resolveSimpleGetRequest(final long requestId) {
+  protected String resolveSimpleGetRequest(final Context context) {
     final Uri.Builder builder = Uri.parse(urlPart).buildUpon();
     for (final Parameter p : this.simpleParameters.children) {
       if (p instanceof ParameterValue) {
@@ -248,11 +249,11 @@ public class RequestDescription implements Parcelable {
       }
     }
     final String result = builder.build().toString();
-    if (DEBUG) { Log.d(TAG, "(" + requestId + ")" + ": " + result); }
+    if (DEBUG) { Log.d(TAG, "(" + id + ")" + ": " + result); }
     return result;
   }
 
-  protected void resolveSimpleEntityRequest(final HttpRequestBase request, final long requestId) throws UnsupportedEncodingException {
+  protected void resolveSimpleEntityRequest(final HttpRequestBase request, final Context context) throws UnsupportedEncodingException {
     final LinkedList<BasicNameValuePair> parameters = new LinkedList<BasicNameValuePair>();
     for (final Parameter p : this.simpleParameters.children) {
       if (p instanceof ParameterValue) {
@@ -262,10 +263,10 @@ public class RequestDescription implements Parcelable {
     if (request instanceof HttpEntityEnclosingRequestBase) {
       ((HttpEntityEnclosingRequestBase)request).setEntity(new UrlEncodedFormEntity(parameters, CHARSET));
     }
-    if (DEBUG) { Log.d(TAG, "(" + requestId + ")" + ": " + parameters.toString()); }
+    if (DEBUG) { Log.d(TAG, "(" + id + ")" + ": " + parameters.toString()); }
   }
 
-  protected void resolveMultipartRequest(final HttpPost request, final long requestId) throws IOException {
+  protected void resolveMultipartRequest(final HttpPost request, final Context context) throws IOException {
     final List<Parameter> params = simpleParameters.children;
     int realCount = 0;
     final int binaryCount = binaryData != null ? binaryData.size() : 0;
@@ -278,7 +279,7 @@ public class RequestDescription implements Parcelable {
       }
     }
     for (int i = 0; i < binaryCount; i++) {
-      final Part part = binaryData.get(i).createHttpPart();
+      final Part part = binaryData.get(i).createHttpPart(context);
       if (part != null) {
         parts[realCount++] = part;
       }
@@ -289,29 +290,29 @@ public class RequestDescription implements Parcelable {
       parts = trim;
     }
     request.setEntity(new MultipartEntity(parts));
-    if (DEBUG) { Log.d(TAG, "(" + requestId + ")" + ": " + params); }
+    if (DEBUG) { Log.d(TAG, "(" + id + ")" + ": " + params); }
   }
 
 
   /**
-   * @param requestId request identifier
+   * @param context context instance
    * @return HTTP request instance
    */
-  public HttpUriRequest buildRequest(final long requestId) {
+  public HttpUriRequest buildRequest(final Context context) {
     final HttpRequestBase result;
 
     try {
       switch (operationType) {
       case OperationType.UPLOAD_POST:
         result = new HttpPost(urlPart);
-        resolveMultipartRequest((HttpPost)result, requestId);
+        resolveMultipartRequest((HttpPost)result, context);
         break;
       case OperationType.SIMPLE_GET:
-        result = new HttpGet(resolveSimpleGetRequest(requestId));
+        result = new HttpGet(resolveSimpleGetRequest(context));
         break;
       case OperationType.SIMPLE_POST:
         result = new HttpPost(urlPart);
-        resolveSimpleEntityRequest(result, requestId);
+        resolveSimpleEntityRequest(result, context);
         break;
       default:
         throw new IllegalArgumentException("Bad operation type for code " + operationCode + ", type " + operationType);

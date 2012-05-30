@@ -1,5 +1,6 @@
 package com.stanfy.serverapi.request.binary;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.os.Parcel;
@@ -48,7 +49,7 @@ public class BitmapBinaryData extends BinaryData<Bitmap> {
   }
 
   @Override
-  public Part createHttpPart() {
+  public Part createHttpPart(final Context context) {
     final BitmapPart bitmapPart = new BitmapPart(getName(), getContentName(), getData());
     configureBitmapPart(bitmapPart);
     return bitmapPart;

@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 
+import com.stanfy.app.Application;
 import com.stanfy.images.ImagesLoadListener;
 import com.stanfy.images.ImagesManager.ImageHolder;
 import com.stanfy.images.ImagesManagerContext;
@@ -76,6 +77,11 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     }
     setImageType(type);
     setUseTransitionMode(useTransition);
+
+    final Context app = context.getApplicationContext();
+    if (app instanceof Application) {
+      setImagesManagerContext(((Application) app).getImagesContext());
+    }
   }
 
   /** @param imagesManagerContext the imagesManager context to set */

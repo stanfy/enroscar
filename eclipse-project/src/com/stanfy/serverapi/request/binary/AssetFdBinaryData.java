@@ -2,6 +2,7 @@ package com.stanfy.serverapi.request.binary;
 
 import java.io.IOException;
 
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.os.Parcel;
 
@@ -41,7 +42,7 @@ public class AssetFdBinaryData extends BinaryData<AssetFileDescriptor> {
   }
 
   @Override
-  public Part createHttpPart() throws IOException {
+  public Part createHttpPart(final Context context) throws IOException {
     return new FilePart(
         getName(),
         new AssetFileDescriptorPartSource(getContentName(), getData()),

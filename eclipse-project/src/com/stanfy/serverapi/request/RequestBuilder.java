@@ -1,21 +1,26 @@
 package com.stanfy.serverapi.request;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.Log;
 
 import com.stanfy.app.Application;
 import com.stanfy.app.RequestExecutorProvider;
 import com.stanfy.serverapi.request.binary.AssetFdBinaryData;
 import com.stanfy.serverapi.request.binary.BitmapBinaryData;
+import com.stanfy.serverapi.request.binary.ContentUriBinaryData;
 import com.stanfy.serverapi.request.binary.EmptyBinaryData;
-import com.stanfy.serverapi.request.binary.FileBinaryData;
 
 /**
  * Base class for request builders.
@@ -79,23 +84,42 @@ public abstract class RequestBuilder {
 
   /**
    * Setup binary content from the local file. Parameter name will be equal to {@link RequestDescription#BINARY_NAME_DEFAULT}.
-   * @param path local file path
+   * @param data content URI
    * @param contentType content MIME-type
    */
-  protected void addBinaryContent(final String path, final String contentType) {
-    addBinaryContent(null, path, contentType);
+  protected void addBinaryContent(final Uri data, final String contentType) {
+    addBinaryContent(null, data, contentType);
   }
 
   /**
    * Setup binary content with the local file.
    * @param name parameter name
-   * @param path local file path
+   * @param data content URI
    * @param contentType content MIME-type
    */
-  protected void addBinaryContent(final String name, final String path, final String contentType) {
-    final FileBinaryData bdata = new FileBinaryData();
+  protected void addBinaryContent(final String name, final Uri data, final String contentType) {
+    String contentName = RequestDescription.BINARY_NAME_DEFAULT;
+    if (ContentResolver.SCHEME_FILE.equals(data.getScheme())) {
+      try {
+        contentName = new File(new URI(data.toString())).getName();
+      } catch (final URISyntaxException e) {
+        Log.e(TAG, "Bad file URI: " + data, e);
+      }
+    }
+    addBinaryContent(name, contentName, data, contentType);
+  }
+
+  /**
+   * Setup binary content with the local file.
+   * @param name parameter name
+   * @param contentName content name
+   * @param data content URI
+   * @param contentType content MIME-type
+   */
+  protected void addBinaryContent(final String name, final String contentName, final Uri data, final String contentType) {
+    final ContentUriBinaryData bdata = new ContentUriBinaryData();
     bdata.setName(name);
-    bdata.setUploadFilePath(path);
+    bdata.setContentUri(data, contentName);
     bdata.setContentType(contentType);
     result.addBinaryData(bdata);
   }
