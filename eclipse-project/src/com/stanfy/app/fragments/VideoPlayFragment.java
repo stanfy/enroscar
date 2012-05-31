@@ -45,7 +45,7 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   /** Extra keys. */
   public static final String EXTRA_SOURCE_URI = "src_uri",
                              EXTRA_FINISH_ON_COMPLETE = "fin_on_complete",
-                             EXTRA_AUTO_PAUSE_MANAGEMENT = "EXTRA_AUTO_PAUSE_MANAGEMENT";
+                             EXTRA_AUTO_RESUME_MANAGEMENT = "auto_resume_management";
 
   /** Video view. */
   private VideoView videoView;
@@ -78,8 +78,8 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   /** Finish on complete flag. */
   private boolean finishOnComplete = true;
 
-  /** Auto pause management flag. */
-  private boolean autoPauseManagement = true;
+  /** Auto resume management flag. */
+  private boolean autoResumeManagement = true;
 
   /**
    * @param source source URI
@@ -104,7 +104,7 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
 
     args.putParcelable(EXTRA_SOURCE_URI, source);
     args.putBoolean(EXTRA_FINISH_ON_COMPLETE, finishOnComplete);
-    args.putBoolean(EXTRA_AUTO_PAUSE_MANAGEMENT, autoPauseManagement);
+    args.putBoolean(EXTRA_AUTO_RESUME_MANAGEMENT, autoPauseManagement);
 
     result.setArguments(args);
     return result;
@@ -120,7 +120,7 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
     }
 
     finishOnComplete = getArguments().getBoolean(EXTRA_FINISH_ON_COMPLETE, true);
-    autoPauseManagement = getArguments().getBoolean(EXTRA_AUTO_PAUSE_MANAGEMENT, true);
+    autoResumeManagement = getArguments().getBoolean(EXTRA_AUTO_RESUME_MANAGEMENT, true);
   }
 
   @Override
@@ -144,10 +144,18 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   }
 
   @Override
+  public void onStart() {
+    super.onStart();
+    getOwnerActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    // XXX if fragments start a new surface is created for video view and playback restarts
+    progress.setVisibility(View.VISIBLE);
+  }
+
+  @Override
   public void onResume() {
     super.onResume();
 
-    if (autoPauseManagement) {
+    if (autoResumeManagement) {
       videoView.start();
     }
 
@@ -157,20 +165,10 @@ public class VideoPlayFragment extends BaseFragment<Application> implements OnPr
   }
 
   @Override
-  public void onStart() {
-    super.onStart();
-    getOwnerActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
-    // XXX if fragments start a new surface is created for video view and playback restarts
-    progress.setVisibility(View.VISIBLE);
-  }
-
-  @Override
   public void onPause() {
     super.onPause();
 
-    if (autoPauseManagement) {
-      videoView.pause();
-    }
+    videoView.pause();
 
     if (wifiLock != null && wifiLock.isHeld()) {
       wifiLock.release();
