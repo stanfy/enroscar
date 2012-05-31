@@ -542,12 +542,14 @@ public class ImagesManager<T extends CachedImage> {
     /** Loader key. */
     private final String key;
 
+    /** Context instance. */
+    private final ImagesManagerContext<?> imagesContext;
     /** Images manager. */
     private final ImagesManager<T> imagesManager;
     /** Images DAO. */
     private final ImagesDAO<T> imagesDAO;
     /** Downloader. */
-    private final Downloader downloader;
+    private Downloader downloader;
 
     /** Future task instance. */
     final FutureTask<Void> future;
@@ -564,8 +566,8 @@ public class ImagesManager<T extends CachedImage> {
     public ImageLoader(final String url, final String key, final ImagesManagerContext<T> imagesContext) {
       this.url = url;
       this.key = key;
+      this.imagesContext = imagesContext;
       this.imagesManager = imagesContext.getImagesManager();
-      this.downloader = imagesContext.getDownloader();
       this.imagesDAO = imagesContext.getImagesDAO();
       this.future = new FutureTask<Void>(this);
     }
@@ -583,7 +585,10 @@ public class ImagesManager<T extends CachedImage> {
           } else {
             imageHolder.currentLoader = this;
             targets.add(imageHolder);
-            if (mainTarget == null) { mainTarget = imageHolder; }
+            if (mainTarget == null) {
+              mainTarget = imageHolder;
+              downloader = imagesContext.getDownloader(imageHolder, url);
+            }
           }
         }
       } else {
@@ -656,7 +661,6 @@ public class ImagesManager<T extends CachedImage> {
     }
 
     protected Drawable setRemoteImage(final T cachedImage) throws IOException {
-      if (!url.startsWith("http")) { return null; }
       final Context x = mainTarget.context;
       if (x == null) { throw new IOException("Context is null"); }
       cachedImage.setType(mainTarget.getImageType());

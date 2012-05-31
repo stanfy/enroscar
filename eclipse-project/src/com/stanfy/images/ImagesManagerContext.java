@@ -74,7 +74,9 @@ public class ImagesManagerContext<T extends CachedImage> {
 
   public static boolean check(final Uri uri) {
     return uri == null || (uri.getScheme() != null
-        && (uri.getScheme().startsWith("http") || uri.getScheme().startsWith("content")));
+        && (uri.getScheme().startsWith("http")
+            || uri.getScheme().startsWith("content")
+            || uri.getScheme().startsWith("file")));
   }
 
   /** @return the imagesDAO */
@@ -82,7 +84,12 @@ public class ImagesManagerContext<T extends CachedImage> {
   /** @param imagesDAO the imagesDAO to set */
   public void setImagesDAO(final ImagesDAO<T> imagesDAO) { this.imagesDAO = imagesDAO; }
   /** @return the downloader */
-  public Downloader getDownloader() { return downloader; }
+  public Downloader getDownloader(final ImageHolder holder, final String url) {
+    if (url != null && !url.startsWith("http")) {
+      return new ContentUriDownloader(holder.getContext().getApplicationContext().getContentResolver());
+    }
+    return this.downloader;
+  }
   /** @param downloader the downloader to set */
   public void setDownloader(final Downloader downloader) { this.downloader = downloader; }
   /** @return the imagesManager */
