@@ -53,6 +53,10 @@ public final class APICacheDAO implements BaseColumns {
   /** Columns array to use in queries. */
   private static final String[] COLUMNS = new String[] {_ID, FILE, TIME};
 
+  /** @param timeRule Custom {@link TimeRule} instance. */
+  public static void addTimeRule(final TimeRule timeRule) {
+    CACHE_TIME_RULES.add(timeRule);
+  }
   /**
    * @param p URL pattern
    * @param time how long should the cache live
@@ -195,7 +199,7 @@ public final class APICacheDAO implements BaseColumns {
   /**
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  private static class TimeRule {
+  public static class TimeRule {
     /** Pattern. */
     final Pattern p;
     /** Time to live. */
@@ -212,7 +216,7 @@ public final class APICacheDAO implements BaseColumns {
   /**
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  private static class UntilTimeRule extends TimeRule {
+  public static class UntilTimeRule extends TimeRule {
     /**
      * @param p URL pattern
      * @param time count of millisecond from 00:00 of the current day to determine an hour when cache expires
