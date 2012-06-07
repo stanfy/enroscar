@@ -111,6 +111,8 @@ public class ImagesManager<T extends CachedImage> {
         makeImageLocal(imagesDao, context, image, downloader);
       } catch (final IOException e) {
         if (DEBUG_IO) { Log.e(TAG, "IO error for " + image.getUrl() + ": " + e.getMessage()); }
+      } catch (final Exception e) {
+        Log.e(TAG, "Ignored error for ensureImages", e);
       }
     }
   }
@@ -392,8 +394,8 @@ public class ImagesManager<T extends CachedImage> {
         cnt = in.read(buffer);
         if (cnt != -1) { out.write(buffer, 0, cnt); }
       } while (cnt != -1);
-    } catch (final IllegalStateException e) {
-      Log.e(TAG, "Illegal state while makeImageLocal: " + image.getUrl(), e);
+    } catch (final IllegalArgumentException e) {
+      Log.e(TAG, "Illegal argument while makeImageLocal: " + image.getUrl(), e);
       throw new IOException(e);
     } finally {
       if (in != null) { in.close(); }
