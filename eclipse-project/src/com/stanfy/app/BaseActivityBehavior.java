@@ -190,7 +190,7 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
   @Override
   public RequestExecutor getRequestExecutor() { return serverApiSupport; }
 
-  private void bindAPI() {
+  protected void bindAPI() {
     if (serverApiSupport != null) {
       if (DEBUG) { Log.v(TAG, "bind to API methods"); }
       serverApiSupport.bind();
@@ -198,18 +198,18 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
     }
     apiBindAttemptDone = true;
   }
-  private void unbindAPI() {
+  protected void unbindAPI() {
     if (serverApiSupport != null) {
       serverApiSupport.removeListener();
       serverApiSupport.unbind();
     }
     apiBindAttemptDone = false;
   }
-  private void bindLocation() {
+  protected void bindLocation() {
     if (locationSupport != null) { locationSupport.bind(); }
     locationBindAttemptDone = true;
   }
-  private void unbindLocation() {
+  protected void unbindLocation() {
     if (locationSupport != null) { locationSupport.unbind(); }
     locationBindAttemptDone = false;
   }
