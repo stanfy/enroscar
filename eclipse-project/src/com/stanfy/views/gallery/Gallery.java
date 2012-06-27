@@ -1250,7 +1250,7 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
     }
   }
 
-  private boolean scrollToChild(final int childPosition) {
+  boolean scrollToChild(final int childPosition) {
     final View child = getChildAt(childPosition);
 
     if (child != null) {
