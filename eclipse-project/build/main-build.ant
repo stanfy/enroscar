@@ -155,11 +155,17 @@
   
   <!-- Import android build rules, it's a bit tricky. -->
   <xmltask source="${sdk.dir}/tools/ant/build.xml" dest="${build.home}/android_rules.xml">
-    <insert path="/project/target[@name='-build-setup']/if/then/subant[@buildpathref='project.library.folder.path']">
+    <insert path="/project/target[@name='-build-setup']//if/then/subant[@buildpathref='project.library.folder.path']">
       <![CDATA[
     	<property name="libs.conf" value="${libs.conf}"/>
       <property name="conf.lang.default" value="${conf.lang.default}" />
     	]]>
+    </insert>
+    <insert path="/project/target[@name='clean']//if/then/subant[@buildpathref='project.library.folder.path']">
+      <![CDATA[
+      <property name="libs.conf" value="${libs.conf}"/>
+      <property name="conf.lang.default" value="${conf.lang.default}" />
+      ]]>
     </insert>
   </xmltask>
   <!-- version-tag: custom -->
@@ -346,13 +352,6 @@
     <copy tofile="${output.release}/${ant.project.name}-mapping.txt" file="${output.proguard.mapping}" failonerror="false" />
   </target>
 
-  <target name="-clean-libs" unless="android.library">
-    <stanfy:resolvelib propertiesPrefix="lib.stviews" namePart="${application.library}" />
-    <ant antfile="${lib.stviews.path}/build.xml" inheritall="false" dir="${lib.stviews.path}" target="clean">
-      <property name="libs.conf" value="${libs.conf}"/>
-    </ant>
-  </target>
-  
   <target name="-check-tests-available">
 	  <available file="${src.test}" property="src.test.available" />
   </target>
@@ -411,7 +410,7 @@
   <!--
     Clean all the genrated directories.
   -->
-  <target name="clean" description="Clean output directories" depends="android_rules.clean, -clean-libs">
+  <target name="clean" description="Clean output directories" depends="android_rules.clean">
     <delete dir="${output.temp}"/>
     <delete dir="${output.release}"/>
     <delete dir="${output.junit}"/>
