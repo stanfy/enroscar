@@ -155,7 +155,7 @@
   
   <!-- Import android build rules, it's a bit tricky. -->
   <xmltask source="${sdk.dir}/tools/ant/build.xml" dest="${build.home}/android_rules.xml">
-    <insert path="/project/target[@name='-build-setup']/if/then/subant[@buildpathref='project.libraries']">
+    <insert path="/project/target[@name='-build-setup']/if/then/subant[@buildpathref='project.library.folder.path']">
       <![CDATA[
     	<property name="libs.conf" value="${libs.conf}"/>
       <property name="conf.lang.default" value="${conf.lang.default}" />
