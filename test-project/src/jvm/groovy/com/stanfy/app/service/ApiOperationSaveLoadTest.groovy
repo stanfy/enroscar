@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNotNull
 import org.junit.Test
 
 import android.content.SharedPreferences
-import android.net.Uri
 
 import com.stanfy.app.service.ApiMethods.APICallInfoData
 import com.stanfy.serverapi.response.ResponseData
@@ -35,13 +34,12 @@ class ApiOperationSaveLoadTest extends AbstractApiMethodsImplTest {
     opData.set 1 // id
     assertThat opData.id, equalTo(1)
 
-    final ResponseData rd = new ResponseData(Uri.parse("http://test"), null)
+    final ResponseData rd = new ResponseData()
     rd.errorCode = 3
     rd.message = "test"
     opData.set rd
     assertThat opData.responseData.errorCode, equalTo(3)
     assertThat opData.responseData.message, equalTo("test")
-    assertThat opData.responseData.data.toString(), equalTo("http://test")
 
     // save
     opData.save storage
@@ -55,7 +53,6 @@ class ApiOperationSaveLoadTest extends AbstractApiMethodsImplTest {
     assertThat opData.id, equalTo(1)
     assertThat opData.responseData.errorCode, equalTo(3)
     assertThat opData.responseData.message, equalTo("test")
-    assertThat opData.responseData.data.toString(), equalTo("http://test")
   }
 
 }
