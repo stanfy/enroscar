@@ -28,7 +28,7 @@ import com.stanfy.app.BaseFragmentActivity;
 /**
  * Sherlock activity that extends {@link BaseFragmentActivity}.
  */
-public abstract class SherlockFragmentActivity<AT extends Application> extends BaseFragmentActivity<AT> implements OnCreatePanelMenuListener, OnPreparePanelListener, OnMenuItemSelectedListener, OnActionModeStartedListener, OnActionModeFinishedListener {
+public abstract class SherlockFragmentActivity<AT extends Application> extends BaseFragmentActivity implements OnCreatePanelMenuListener, OnPreparePanelListener, OnMenuItemSelectedListener, OnActionModeStartedListener, OnActionModeFinishedListener {
 
   static final boolean DEBUG = false;
   private static final String TAG = "SherlockFragmentActivity";

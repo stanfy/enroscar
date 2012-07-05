@@ -9,14 +9,10 @@ import com.actionbarsherlock.internal.view.menu.MenuMule;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.stanfy.app.Application;
 import com.stanfy.app.BaseFragment;
 
-public class SherlockFragment<AT extends Application> extends BaseFragment<AT> {
+public class SherlockFragment extends BaseFragment {
   private static final String TAG = "SherlockFragment";
-
-  @Override
-  protected SherlockFragmentActivity<AT> getOwnerActivity() { return (SherlockFragmentActivity<AT>)super.getOwnerActivity(); }
 
   private SherlockFragmentActivity<?> mActivity;
 
