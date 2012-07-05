@@ -2,6 +2,9 @@ package com.stanfy.utils;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -19,11 +22,15 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
+
+import com.google.gson.internal.$Gson$Types;
+import com.stanfy.app.beans.BeansManager;
+import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.io.IoUtils;
+import com.stanfy.utils.sdk.SDKDependentUtils;
 
 /**
  * Application utilities.
@@ -97,7 +104,7 @@ public class AppUtils {
     try {
 
       final MessageDigest md = MessageDigest.getInstance("MD5");
-      final byte[] utf8Bytes = text.getBytes("UTF-8");
+      final byte[] utf8Bytes = text.getBytes(IoUtils.UTF_8_NAME);
       md.update(utf8Bytes, 0, utf8Bytes.length);
       final byte[] md5hash = md.digest();
       final int radix = 16;
@@ -154,46 +161,11 @@ public class AppUtils {
     }
   }
 
-  public static String buildFilePathById(final long id, final String name) {
-    final StringBuilder sb = new StringBuilder();
-    final int divider = 100;
-    long rest = id;
-    do {
-      final int value = (int)(rest % divider);
-      rest /= divider;
-      sb.append(value).append('/');
-    } while (rest != 0);
-    sb.append(name);
-    return sb.toString();
-  }
-
   @SuppressWarnings("unchecked")
   public static <K, V> Map<K, V> tuples(final Object[][] tuples) {
     final Map<K, V> result = new HashMap<K, V>(tuples.length);
     for (final Object[] tuple : tuples) { result.put((K)tuple[0], (V)tuple[1]); }
     return result;
-  }
-
-  /**
-   * Converts device independent points to actual pixels.
-   * @param context - context
-   * @param dip - dip value
-   * @return pixels count
-   */
-  public static int pixelsWidth(final DisplayMetrics displayMetrics, final int dip) {
-    final float scale = displayMetrics.density;
-    final float alpha = 0.5f;
-    return (int)(dip * scale + alpha);
-  }
-  /**
-   * Converts device independent points to actual pixels.
-   * @param context - context
-   * @param dip - dip value
-   * @return pixels count
-   */
-  public static int pixelsOffset(final DisplayMetrics displayMetrics, final int dip) {
-    final float scale = displayMetrics.density;
-    return (int)(dip * scale);
   }
 
   /**
@@ -226,42 +198,54 @@ public class AppUtils {
         && intentAction != null && intentAction.equals(Intent.ACTION_MAIN);
   }
 
+  public static EnroscarBean getBeanInfo(final Class<?> clazz) {
+    final EnroscarBean beanAnnotation = getAnnotationFromHierarchy(clazz, EnroscarBean.class);
+    if (beanAnnotation == null) { throw new IllegalArgumentException(clazz + " and its supers are not annotated as @" + EnroscarBean.class.getSimpleName()); }
+    return beanAnnotation;
+  }
+
+  public static <A extends Annotation> A getAnnotationFromHierarchy(final Class<?> clazz, final Class<A> annotation) {
+    Class<?> currentClass = clazz;
+    A annotationInstance;
+    do {
+      annotationInstance = currentClass.getAnnotation(annotation);
+      currentClass = currentClass.getSuperclass();
+    } while (annotationInstance == null && currentClass != Object.class);
+    return annotationInstance;
+  }
+
+  public static Class<?> getGenericParameterClass(final Class<?> clazz) {
+    final Type superclass = clazz.getGenericSuperclass();
+    if (superclass instanceof Class) {
+      throw new RuntimeException("Missing type parameter.");
+    }
+    final ParameterizedType parameterized = (ParameterizedType) superclass;
+    final Type type = $Gson$Types.canonicalize(parameterized.getActualTypeArguments()[0]);
+    return $Gson$Types.getRawType(type);
+  }
+
   /* ================= SDK depended utils ================= */
   /** Utils instance. */
   private static SDKDependentUtils sdkDependentUtils;
 
   /**
    * Call to {@link SDKDependentUtils#applySharedPreferences(android.content.SharedPreferences.Editor)}.
-   * @param editor
+   * @param editor shared preferences editor instance
    */
   public static void applySharedPreferences(final Editor editor) {
-    sdkDependentUtils.applySharedPreferences(editor);
+    getSdkDependentUtils().applySharedPreferences(editor);
   }
 
   /** @return SDK depended utils */
-  public static SDKDependentUtils getSdkDependentUtils() { return sdkDependentUtils; }
-
-  static {
-    final int version = Build.VERSION.SDK_INT;
-    String classsName = null;
-    if (version >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-      classsName = "com.stanfy.utils.HoneycombMr1Utils";
-    } else if (version >= Build.VERSION_CODES.HONEYCOMB) {
-      classsName = "com.stanfy.utils.HoneycombUtils";
-    } else if (version >= Build.VERSION_CODES.GINGERBREAD) {
-      classsName = "com.stanfy.utils.GingerbreadUtils";
-    } else if (version >= Build.VERSION_CODES.ECLAIR) {
-      classsName = "com.stanfy.utils.EclairUtils";
-    } else {
-      classsName = "com.stanfy.utils.LowestSDKDependentUtils";
+  public static SDKDependentUtils getSdkDependentUtils() {
+    if (sdkDependentUtils == null) {
+      final BeansManager beansManager = BeansManager.get(null);
+      if (beansManager == null) {
+        throw new IllegalStateException("Beans manager must be created before calling getSdkDependentUtils");
+      }
+      sdkDependentUtils = beansManager.getSdkDependentUtilsFactory().createSdkDependentUtils();
     }
-    try {
-      sdkDependentUtils = (SDKDependentUtils)Class.forName(classsName).newInstance();
-    } catch (final Exception e) {
-      sdkDependentUtils = new LowestSDKDependentUtils();
-    } finally {
-      Log.d(TAG, "SDK depended utils: " + sdkDependentUtils);
-    }
+    return sdkDependentUtils;
   }
 
 }

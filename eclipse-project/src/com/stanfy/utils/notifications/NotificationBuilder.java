@@ -191,7 +191,7 @@ public interface NotificationBuilder {
    * Combine all of the options that have been set and return a new {@link Notification}
    * object.
    */
-  Notification getNotification();
+  Notification build();
 
   /** @return Android API version that is used by this builder */
   int getApiVersion();

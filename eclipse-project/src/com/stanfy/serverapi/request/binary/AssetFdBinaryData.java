@@ -6,9 +6,9 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.os.Parcel;
 
-import com.stanfy.http.multipart.FilePart;
-import com.stanfy.http.multipart.Part;
-import com.stanfy.http.multipart.android.AssetFileDescriptorPartSource;
+import com.stanfy.serverapi.request.net.multipart.FilePart;
+import com.stanfy.serverapi.request.net.multipart.Part;
+import com.stanfy.serverapi.request.net.multipart.android.AssetFileDescriptorPartSource;
 
 /**
  * Binary data that contains assets file descriptor. The latter can be returned by ContentResolver.

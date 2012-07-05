@@ -45,14 +45,6 @@
     <!-- Main application service. Deals with remote server API. -->
     <service android:name="com.stanfy.app.service.ApplicationService" />
     
-    <!-- Application content provider -->
-    <!-- Look at android:authorities="com.stanfy.enroscar.sample". 
-         It should be equal to APP_AUTHORITY value which you pass to setImagesDAOAuthority in the application class.  -->
-    <provider
-        android:name="com.stanfy.content.DefaultContentProvider"
-        android:authorities="com.stanfy.enroscar.sample"
-        />
-      
   </application>
 
 </manifest>

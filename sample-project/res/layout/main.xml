@@ -23,4 +23,10 @@
       android:layout_gravity="center_horizontal"
       />
   
+  <Button
+      style="@style/WrapContent"
+      android:text="LOadProfile"
+      android:id="@+id/profile_btn"
+      />
+  
 </LinearLayout>

@@ -1,8 +1,7 @@
 package com.stanfy.app.service
 
 
-import android.content.Intent;
-import android.os.IBinder;
+import android.content.Intent
 
 /**
  * Base Groovy test for {@link ApiMethodsImpl}.
@@ -11,15 +10,14 @@ import android.os.IBinder;
 abstract class AbstractApiMethodsImplTest extends AbstractAppServiceTest {
 
   /** API methods instance. */
-  ApiMethodsImpl apiMethodsImpl
+  ApiMethods apiMethods
 
   @Override
   void setup() {
-    super.setup();
-    final Intent bindIntent = new Intent(ApiMethods.class.getName());
-    final IBinder binder = appService.onBind(bindIntent);
-    apiMethodsImpl = (ApiMethodsImpl)binder;
-    assertThat apiMethodsImpl, notNullValue()
+    super.setup()
+    final Intent bindIntent = new Intent(ApiMethods.class.getName())
+    apiMethods = appService.onBind(bindIntent).apiMethods
+    assertThat apiMethods, notNullValue()
   }
 
 }

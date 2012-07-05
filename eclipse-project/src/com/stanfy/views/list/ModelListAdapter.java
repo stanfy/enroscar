@@ -13,7 +13,6 @@ import android.widget.ListAdapter;
 
 import com.stanfy.content.FictionObject;
 import com.stanfy.content.UniqueObject;
-import com.stanfy.images.ImagesManagerContext;
 
 /**
  * @param <T> model type
@@ -42,9 +41,6 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
   /** Data lock for elements. */
   Object dataLock = new Object();
 
-  /** Images manager context. */
-  private ImagesManagerContext<?> imagesManagerContext;
-
   public ModelListAdapter(final Context context, final ElementRenderer<T> renderer) {
     this.context = context;
     this.renderer = renderer;
@@ -56,7 +52,6 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
     this.renderer = adapter.getRenderer();
     this.layoutInflater = adapter.getLayoutInflater();
     this.elements = adapter.copyElements();
-    this.imagesManagerContext = adapter.getImagesManagerContext();
   }
 
   /** @return the layoutInflater */
@@ -65,11 +60,6 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
   public Context getContext() { return context; }
   /** @return the renderer */
   public ElementRenderer<T> getRenderer() { return renderer; }
-  /** @return the imagesManagerContext */
-  public ImagesManagerContext<?> getImagesManagerContext() { return imagesManagerContext; }
-
-  /** @param imagesManagerContext the imagesManagerContext to set */
-  public void setImagesManagerContext(final ImagesManagerContext<?> imagesManagerContext) { this.imagesManagerContext = imagesManagerContext; }
 
   @Override
   public int getViewTypeCount() { return 1; }
@@ -121,11 +111,11 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
     switch (type) {
     case TYPE_MAIN:
       view = layoutInflater.inflate(renderer.layoutId, parent, false);
-      holder = renderer.createHolder(view, imagesManagerContext);
+      holder = renderer.createHolder(view);
       break;
     default:
       view = renderer.createOtherTypeView(type, layoutInflater, parent);
-      holder = renderer.createOtherTypeHolder(view, imagesManagerContext);
+      holder = renderer.createOtherTypeHolder(view);
     }
     view.setTag(holder);
     return view;
@@ -231,10 +221,6 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
     super.notifyDataSetChanged();
   }
 
-  public void destroy() {
-    imagesManagerContext = null;
-  }
-
   /**
    * Model element renderer.
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
@@ -282,14 +268,14 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
      * @param imagesManagerContext images context
      * @return additional holder for views
      */
-    public Object createHolder(final View view, final ImagesManagerContext<?> imagesManagerContext) { return null; }
+    public Object createHolder(final View view) { return null; }
 
     /**
      * @param root section view
      * @param imagesManagerContext images context
      * @return additional holder for section views
      */
-    public Object createOtherTypeHolder(final View view, final ImagesManagerContext<?> imagesManagerContext) { return null; }
+    public Object createOtherTypeHolder(final View view) { return null; }
 
     /**
      * @param type view type ID

@@ -28,11 +28,12 @@ public class ParametersGroup extends Parameter {
   /** @return the children */
   public LinkedList<Parameter> getChildren() { return children; }
 
-  public void addSimpleParameter(final String name, final String value) {
+  public ParameterValue addSimpleParameter(final String name, final String value) {
     final ParameterValue pv = new ParameterValue();
     pv.name = name;
     pv.value = value;
     children.add(pv);
+    return pv;
   }
 
   public void addParameter(final Parameter p) {

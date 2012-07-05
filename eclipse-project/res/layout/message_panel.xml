@@ -1,30 +1,6 @@
-<RelativeLayout
+<TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/MainContainer"
-    android:visibility="gone"
-    >
-  
-  <com.stanfy.views.ImageView
-      style="@style/WrapContent"
-      android:id="@+id/message_image"
-      android:layout_centerInParent="true"
-      />
-  
-  <TextView
-      style="@style/LinearHorizontalContainer"
-      android:id="@+id/message_text"
-      android:layout_above="@id/message_image"
-      android:padding="10dp"
-      android:gravity="center"
-      />
-
-  <Button
-      style="@style/WrapContent"
-      android:id="@+id/message_action"
-      android:visibility="gone"
-      android:layout_below="@id/message_image"
-      android:layout_marginTop="10dp"
-      android:layout_centerHorizontal="true"
-      />
-      
-</RelativeLayout>
+    android:padding="10dp"
+    android:gravity="center"
+    />

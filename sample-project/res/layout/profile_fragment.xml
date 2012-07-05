@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <TextView 
+        style="@style/WrapContent"
+        android:id="@+id/profile_text1"
+        android:text="Text1"
+        />
+    
+    <TextView 
+        style="@style/WrapContent"
+        android:id="@+id/profile_text2"
+        android:text="Text2"
+        />
+
+</LinearLayout>

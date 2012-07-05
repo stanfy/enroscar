@@ -11,9 +11,9 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.util.Log;
 
-import com.stanfy.http.multipart.FilePart;
-import com.stanfy.http.multipart.Part;
-import com.stanfy.http.multipart.android.AssetFileDescriptorPartSource;
+import com.stanfy.serverapi.request.net.multipart.FilePart;
+import com.stanfy.serverapi.request.net.multipart.Part;
+import com.stanfy.serverapi.request.net.multipart.android.AssetFileDescriptorPartSource;
 
 /**
  * Binary data with file. Contains {@link Uri} that reference to the actual file.

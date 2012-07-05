@@ -29,6 +29,7 @@ public final class EnroscarClassLoader extends RobolectricClassLoader {
     final boolean shouldComeFromThisClassLoader = !(
         name.startsWith("groovy")
         || name.startsWith("org.codehaus.groovy")
+        || name.startsWith("junit")
     );
     return shouldComeFromThisClassLoader
         ? super.loadClass(name)

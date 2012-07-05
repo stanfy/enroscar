@@ -1,30 +1,25 @@
 package com.stanfy.serverapi.request;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
+import android.util.SparseArray;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.http.multipart.MultipartEntity;
-import com.stanfy.http.multipart.Part;
-import com.stanfy.http.multipart.StringPart;
+import com.stanfy.io.IoUtils;
 import com.stanfy.serverapi.request.binary.BinaryData;
+import com.stanfy.serverapi.request.net.BaseRequestDescriptionConverter;
+import com.stanfy.serverapi.request.net.SimpleGetConverter;
+import com.stanfy.serverapi.request.net.SimplePostConverter;
+import com.stanfy.serverapi.request.net.UploadPostConverter;
+import com.stanfy.serverapi.response.ModelTypeToken;
 
 /**
  * Request method description. This object is passed to the service describing the request.
@@ -61,24 +56,31 @@ public class RequestDescription implements Parcelable {
     return idCounter;
   }
 
+  /** Converters to {@link URLConnection}. */
+  private static final SparseArray<BaseRequestDescriptionConverter> CONVERTERS = new SparseArray<BaseRequestDescriptionConverter>(3);
+  static {
+    CONVERTERS.put(OperationType.SIMPLE_GET, new SimpleGetConverter());
+    CONVERTERS.put(OperationType.SIMPLE_POST, new SimplePostConverter());
+    CONVERTERS.put(OperationType.UPLOAD_POST, new UploadPostConverter());
+  }
+
   /** Request ID. */
   final int id;
 
-  /** Token. It can be used to identify a sender. */
-  int token;
-  /** Operation to execute. */
-  int operationCode;
-
   /** Operation type. */
-  int operationType;
+  int operationType = OperationType.SIMPLE_GET;
 
   /** URL part. */
-  String urlPart;
+  String url;
+  /** Cache instance name. */
+  String cacheName;
   /** Simple parameters. */
   ParametersGroup simpleParameters;
 
   /** Content type. */
   String contentType;
+  /** Request data encoding. */
+  Charset encoding = IoUtils.UTF_8;
   /** Content language. */
   String contentLanguage;
 
@@ -91,6 +93,14 @@ public class RequestDescription implements Parcelable {
   /** Whether request should be performed in parallel. */
   boolean parallelMode = false;
 
+  /** Canceled state flag. */
+  volatile boolean canceled = false;
+
+  /** Model class. */
+  ModelTypeToken modelType;
+  /** Content handler name. */
+  String contentHandler;
+
   public static String getParamValue(final String name, final LinkedList<Parameter> param) {
     for (final Parameter p : param) {
       if (p instanceof ParameterValue && name.equals(p.getName())) {
@@ -100,44 +110,81 @@ public class RequestDescription implements Parcelable {
     return null;
   }
 
+  /**
+   * Create with predefined ID.
+   * @param id request ID
+   */
+  public RequestDescription(final int id) {
+    this.id = id;
+  }
+
+  /**
+   * Create new description with new request ID.
+   */
   public RequestDescription() {
-    this.id = nextId();
+    this(nextId());
   }
 
   /**
    * Create from parcel.
    */
   protected RequestDescription(final Parcel source) {
-    this.id = source.readInt();
-    this.token = source.readInt();
-    this.operationCode = source.readInt();
+    this(source.readInt());
     this.operationType = source.readInt();
-    this.urlPart = source.readString();
-    final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    this.simpleParameters = source.readParcelable(cl);
+    this.url = source.readString();
+    this.cacheName = source.readString();
+    this.simpleParameters = source.readParcelable(null);
     this.contentType = source.readString();
+    this.encoding = Charset.forName(source.readString());
     this.contentLanguage = source.readString();
-    this.metaParameters = source.readParcelable(cl);
+    this.metaParameters = source.readParcelable(null);
     this.parallelMode = source.readInt() == 1;
+    this.canceled = source.readInt() == 1;
+
+    this.modelType = source.readParcelable(null);
+    this.contentHandler = source.readString();
 
     // binary content fields
+    final BinaryData<?>[] binary = (BinaryData<?>[]) source.readParcelableArray(null);
+    if (binary != null) {
+      this.binaryData = new ArrayList<BinaryData<?>>(Arrays.asList(binary));
+    }
   }
 
   @Override
   public void writeToParcel(final Parcel dest, final int flags) {
     dest.writeInt(id);
-    dest.writeInt(token);
-    dest.writeInt(operationCode);
     dest.writeInt(operationType);
-    dest.writeString(urlPart);
+    dest.writeString(url);
+    dest.writeString(cacheName);
     dest.writeParcelable(simpleParameters, flags);
     dest.writeString(contentType);
+    dest.writeString(encoding.name());
     dest.writeString(contentLanguage);
     dest.writeParcelable(metaParameters, flags);
     dest.writeInt(parallelMode ? 1 : 0);
+    dest.writeInt(canceled ? 1 : 0);
+
+    dest.writeParcelable(modelType, 0);
+    dest.writeString(contentHandler);
 
     // binary content fields
+    if (binaryData != null) {
+      final BinaryData<?>[] binary = new BinaryData<?>[binaryData.size()];
+      dest.writeParcelableArray(binaryData.toArray(binary), flags);
+    } else {
+      dest.writeParcelableArray(null, flags);
+    }
   }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (!(o instanceof RequestDescription)) { return false; }
+    return id == ((RequestDescription)o).getId();
+  }
+
+  @Override
+  public int hashCode() { return id; }
 
   @Override
   public final int describeContents() {
@@ -151,23 +198,13 @@ public class RequestDescription implements Parcelable {
     return result;
   }
 
-  void setupOperation(final Operation op) {
-    this.operationCode = op.getCode();
-    this.operationType = op.getType();
-    this.urlPart = op.getUrlPart();
-    if (DEBUG) { Log.v(TAG, "Setup request operation OPCODE: " + operationCode + " OPTYPE: " + operationType + " URL: " + urlPart); }
-  }
-
   /** @return request identifier */
   public int getId() { return id; }
 
+  /** @param operationType operation type */
+  public void setOperationType(final int operationType) { this.operationType = operationType; }
   /** @return the operationType */
   public int getOperationType() { return operationType; }
-
-  /** @return the operation */
-  public int getOperationCode() { return operationCode; }
-  /** @return the token */
-  public int getToken() { return token; }
 
   /** @return the contentLanguage */
   public String getContentLanguage() { return contentLanguage; }
@@ -177,10 +214,30 @@ public class RequestDescription implements Parcelable {
   public String getContentType() { return contentType; }
   /** @param contentType the contentType to set */
   public void setContentType(final String contentType) { this.contentType = contentType; }
-  /** @return the urlPart */
-  public String getUrlPart() { return urlPart; }
-  /** @param urlPart the urlPart to set */
-  public void setUrlPart(final String urlPart) { this.urlPart = urlPart; }
+  /** @return URL */
+  public String getUrl() { return url; }
+  /** @param url URL to set */
+  public void setUrl(final String url) { this.url = url; }
+  /** @return cache manager name */
+  public String getCacheName() { return cacheName; }
+  /** @param cacheName cache manager name */
+  public void setCacheName(final String cacheName) { this.cacheName = cacheName; }
+  /** @param encoding request encoding */
+  public void setEncoding(final Charset encoding) { this.encoding = encoding; }
+  /** @return request encoding */
+  public Charset getEncoding() { return encoding; }
+
+  /** @param typeToken type token the response model */
+  public void setModelType(final ModelTypeToken typeToken) { this.modelType = typeToken; }
+  /** @return type token the response model */
+  public ModelTypeToken getModelType() { return modelType; }
+  /** @param contentHandler content handler name */
+  public void setContentHandler(final String contentHandler) { this.contentHandler = contentHandler; }
+  /** @return content handler name */
+  public String getContentHandler() { return contentHandler; }
+
+  public void setCanceled(final boolean canceled) { this.canceled = canceled; }
+  public boolean isCanceled() { return canceled; }
 
   public ArrayList<BinaryData<?>> getBinaryData() { return binaryData; }
   public void addBinaryData(final BinaryData<?> bdata) {
@@ -241,88 +298,35 @@ public class RequestDescription implements Parcelable {
 
   // ============================ HTTP REQUESTS ============================
 
-  protected String resolveSimpleGetRequest(final Context context) {
-    final Uri.Builder builder = Uri.parse(urlPart).buildUpon();
-    for (final Parameter p : this.simpleParameters.children) {
-      if (p instanceof ParameterValue) {
-        builder.appendQueryParameter(p.getName(), ((ParameterValue) p).getValue());
-      }
+  /**
+   * A good place to set custom request headers.
+   * @param urlConnection URL connection instance
+   */
+  protected void onURLConnectionPrepared(final URLConnection urlConnection) {
+    if (contentType != null) {
+      urlConnection.addRequestProperty("Content-Type", contentType);
     }
-    final String result = builder.build().toString();
-    if (DEBUG) { Log.d(TAG, "(" + id + ")" + ": " + result); }
-    return result;
+    if (contentLanguage != null) {
+      urlConnection.addRequestProperty("Accept-Language", contentLanguage);
+    }
+    urlConnection.addRequestProperty("Accept-Encoding", IoUtils.ENCODING_GZIP);
   }
-
-  protected void resolveSimpleEntityRequest(final HttpRequestBase request, final Context context) throws UnsupportedEncodingException {
-    final LinkedList<BasicNameValuePair> parameters = new LinkedList<BasicNameValuePair>();
-    for (final Parameter p : this.simpleParameters.children) {
-      if (p instanceof ParameterValue) {
-        parameters.add(new BasicNameValuePair(p.name, ((ParameterValue)p).value));
-      }
-    }
-    if (request instanceof HttpEntityEnclosingRequestBase) {
-      ((HttpEntityEnclosingRequestBase)request).setEntity(new UrlEncodedFormEntity(parameters, CHARSET));
-    }
-    if (DEBUG) { Log.d(TAG, "(" + id + ")" + ": " + parameters.toString()); }
-  }
-
-  protected void resolveMultipartRequest(final HttpPost request, final Context context) throws IOException {
-    final List<Parameter> params = simpleParameters.children;
-    int realCount = 0;
-    final int binaryCount = binaryData != null ? binaryData.size() : 0;
-    Part[] parts = new Part[params.size() + binaryCount];
-    for (final Parameter p : params) {
-      if (p instanceof ParameterValue) {
-        final ParameterValue pv = (ParameterValue)p;
-        if (pv.value == null) { continue; }
-        parts[realCount++] = new StringPart(pv.name, pv.value, CHARSET);
-      }
-    }
-    for (int i = 0; i < binaryCount; i++) {
-      final Part part = binaryData.get(i).createHttpPart(context);
-      if (part != null) {
-        parts[realCount++] = part;
-      }
-    }
-    if (realCount < parts.length) {
-      final Part[] trim = new Part[realCount];
-      System.arraycopy(parts, 0, trim, 0, realCount);
-      parts = trim;
-    }
-    request.setEntity(new MultipartEntity(parts));
-    if (DEBUG) { Log.d(TAG, "(" + id + ")" + ": " + params); }
-  }
-
 
   /**
+   * Build {@link URLConnection} instance, connect, write request.
    * @param context context instance
-   * @return HTTP request instance
+   * @return {@link URLConnection} instance, ready for {@link URLConnection#getInputStream()} call
+   * @throws IOException in case of I/O errors
    */
-  public HttpUriRequest buildRequest(final Context context) {
-    final HttpRequestBase result;
+  public URLConnection makeConnection(final Context context) throws IOException {
+    final BaseRequestDescriptionConverter converter = CONVERTERS.get(operationType);
 
-    try {
-      switch (operationType) {
-      case OperationType.UPLOAD_POST:
-        result = new HttpPost(urlPart);
-        resolveMultipartRequest((HttpPost)result, context);
-        break;
-      case OperationType.SIMPLE_GET:
-        result = new HttpGet(resolveSimpleGetRequest(context));
-        break;
-      case OperationType.SIMPLE_POST:
-        result = new HttpPost(urlPart);
-        resolveSimpleEntityRequest(result, context);
-        break;
-      default:
-        throw new IllegalArgumentException("Bad operation type for code " + operationCode + ", type " + operationType);
-      }
-    } catch (final UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
-    } catch (final IOException e) {
-      throw new RuntimeException(e);
-    }
-    return result;
+    final URLConnection connection = converter.prepareConnectionInstance(context, this);
+    onURLConnectionPrepared(connection);
+    connection.connect();
+    converter.sendRequest(context, connection, this);
+
+    return connection;
   }
 
 }

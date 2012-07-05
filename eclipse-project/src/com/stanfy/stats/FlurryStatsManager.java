@@ -11,7 +11,7 @@ import com.flurry.android.FlurryAgent;
  * Statistics manager based on Flurry SDK.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class FlurryStatsManager extends StatsManagerAdapter {
+public class FlurryStatsManager extends StatsManager {
 
   /** API key. */
   private final String key;

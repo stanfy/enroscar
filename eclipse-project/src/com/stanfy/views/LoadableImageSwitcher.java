@@ -15,11 +15,10 @@ import android.widget.ProgressBar;
 import android.widget.ViewSwitcher;
 import android.widget.ViewSwitcher.ViewFactory;
 
-import com.stanfy.images.ImagesManagerContext;
-
 /**
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
+@SuppressWarnings("deprecation")
 public class LoadableImageSwitcher extends ImageSwitcher implements ViewFactory, OnGestureListener {
 
   /** Progress bar. */
@@ -37,9 +36,6 @@ public class LoadableImageSwitcher extends ImageSwitcher implements ViewFactory,
   /** 'With gallery' mode flag. */
   private boolean withGalleryMode;
 
-  /** Images context. */
-  private ImagesManagerContext<?> imagesManagerContext;
-
   public LoadableImageSwitcher(final Context context) {
     super(context);
     init(context);
@@ -54,13 +50,6 @@ public class LoadableImageSwitcher extends ImageSwitcher implements ViewFactory,
     super.setFactory(this);
     gestureDetector = new GestureDetector(context, this);
     gestureDetector.setIsLongpressEnabled(true);
-  }
-
-  /** @param imagesManagerContext the imagesManagerContext to set */
-  public void setImagesManagerContext(final ImagesManagerContext<?> imagesManagerContext) {
-    this.imagesManagerContext = imagesManagerContext;
-    removeAllViews();
-    super.setFactory(this);
   }
 
   @Override
@@ -91,7 +80,6 @@ public class LoadableImageSwitcher extends ImageSwitcher implements ViewFactory,
     final LoadableImageView image = new LoadableImageView(getContext());
     image.setLayoutParams(new ViewSwitcher.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     image.setScaleType(ScaleType.FIT_CENTER);
-    image.setImagesManagerContext(imagesManagerContext);
     return image;
   }
 

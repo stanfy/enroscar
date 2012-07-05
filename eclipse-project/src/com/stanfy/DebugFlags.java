@@ -28,6 +28,8 @@ public final class DebugFlags {
 
   /** API debug flag. */
   public static final boolean DEBUG_API = true; // @debug.api@
+  /** API response debug flag. */
+  public static final boolean DEBUG_API_RESPONSE = true; // @debug.api.response@
 
   /** Utilities debug flag. */
   public static final boolean DEBUG_UTILS = false; // @debug.utils@

@@ -10,9 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.serverapi.request.RequestExecutor;
+import com.stanfy.app.beans.BeansManager;
 import com.stanfy.stats.StatsManager;
-import com.stanfy.utils.ApiMethodsSupport;
 import com.stanfy.utils.AppUtils;
 import com.stanfy.utils.LocationMethodsSupport;
 
@@ -20,7 +19,7 @@ import com.stanfy.utils.LocationMethodsSupport;
  * Common behavior for all the activities.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class BaseActivityBehavior implements RequestExecutorProvider {
+public class BaseActivityBehavior {
 
   /** Logging tag. */
   private static final String TAG = "ActibityBehavior";
@@ -30,36 +29,25 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
   /** Activity reference. */
   private final WeakReference<Activity> activityRef;
 
-  /** Action bar support. */
-  private ActionBarSupport actionBarSupport;
-
-  /** Server API support. */
-  private ApiMethodsSupport serverApiSupport;
-
   /** Location support. */
   private LocationMethodsSupport locationSupport;
 
   /** Flag that indicates an attempt to bind API. */
-  private boolean apiBindAttemptDone = false, locationBindAttemptDone = false;
+  private boolean locationBindAttemptDone = false;
 
   /** First start flag. */
   private boolean firstStart = true;
 
   /** Stats manager. */
   private final StatsManager statsManager;
+  /** GUI operations manager. */
+  private final CrucialGUIOperationManager crucialGUIOperationManager;
 
   public BaseActivityBehavior(final Activity activity) {
     activityRef = new WeakReference<Activity>(activity);
-    statsManager = ((Application)activity.getApplication()).getStatsManager();
-  }
-
-  /**
-   * @return action bar support
-   */
-  private ActionBarSupport createActionBarSupport() {
-    final Activity a = activityRef.get();
-    final Application app = (Application)a.getApplication();
-    return app.createActionBarSupport();
+    final BeansManager beansManager = BeansManager.get(activity);
+    statsManager = beansManager.getStatsManager();
+    crucialGUIOperationManager = beansManager.getCrucialGUIOperationManager();
   }
 
   /**
@@ -71,24 +59,15 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
    * @see Activity#onContentChanged()
    */
   public void onContentChanged() {
-    if (actionBarSupport != null) {
-      actionBarSupport.destroy();
-    }
-    actionBarSupport = createActionBarSupport();
-    actionBarSupport.doInitialize(activityRef.get());
+    if (DEBUG) { Log.v(TAG, "onContentChanged " + activityRef.get()); }
   }
 
   /**
    * @see Activity#onCreate(Bundle)
    * @param savedInstanceState saved state bundle
-   * @param serverApiSupport server API support
    */
-  public void onCreate(final Bundle savedInstanceState, final ApiMethodsSupport serverApiSupport) {
+  public void onCreate(final Bundle savedInstanceState) {
     if (DEBUG) { Log.v(TAG, "create " + activityRef.get()); }
-    if (serverApiSupport != null) {
-      if (DEBUG) { Log.i(TAG, "has api support"); }
-      this.serverApiSupport = serverApiSupport;
-    }
   }
 
   /**
@@ -104,10 +83,10 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
    */
   public void onStart() {
     if (DEBUG) { Log.v(TAG, "start " + activityRef.get()); }
-    // server API
-    bindAPI();
+
     // location
     bindLocation();
+
     // statistics
     final Activity a = getActivity();
     if (a == null) { return; }
@@ -146,7 +125,7 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
    */
   public void onPause() {
     if (DEBUG) { Log.v(TAG, "pause " + activityRef.get()); }
-    ((Application)getActivity().getApplication()).dispatchCrucialGUIOperationFinish();
+    crucialGUIOperationManager.dispatchCrucialGUIOperationFinish();
   }
 
   /**
@@ -154,8 +133,6 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
    */
   public void onStop() {
     if (DEBUG) { Log.v(TAG, "stop " + activityRef.get()); }
-    // server API
-    unbindAPI();
     // location
     unbindLocation();
 
@@ -171,13 +148,7 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
    */
   public void onDestroy() {
     if (DEBUG) { Log.v(TAG, "destroy " + activityRef.get()); }
-    if (actionBarSupport != null) {
-      actionBarSupport.destroy();
-    }
   }
-
-  /** @return the actionBarSupport */
-  public ActionBarSupport getActionBarSupport() { return actionBarSupport; }
 
   /** @return the locationSupport */
   public LocationMethodsSupport getLocationSupport() { return locationSupport; }
@@ -187,24 +158,6 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
    */
   boolean onKeyDown(final int keyCode, final KeyEvent event) { return false; }
 
-  @Override
-  public RequestExecutor getRequestExecutor() { return serverApiSupport; }
-
-  protected void bindAPI() {
-    if (serverApiSupport != null) {
-      if (DEBUG) { Log.v(TAG, "bind to API methods"); }
-      serverApiSupport.bind();
-      serverApiSupport.registerListener();
-    }
-    apiBindAttemptDone = true;
-  }
-  protected void unbindAPI() {
-    if (serverApiSupport != null) {
-      serverApiSupport.removeListener();
-      serverApiSupport.unbind();
-    }
-    apiBindAttemptDone = false;
-  }
   protected void bindLocation() {
     if (locationSupport != null) { locationSupport.bind(); }
     locationBindAttemptDone = true;
@@ -212,16 +165,6 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
   protected void unbindLocation() {
     if (locationSupport != null) { locationSupport.unbind(); }
     locationBindAttemptDone = false;
-  }
-
-  /**
-   * @param apiSupport API support instance
-   */
-  public void forceAPIBinding(final ApiMethodsSupport apiSupport) {
-    if (serverApiSupport == null) {
-      this.serverApiSupport = apiSupport;
-      if (apiBindAttemptDone) { bindAPI(); }
-    }
   }
 
   /**
@@ -242,9 +185,6 @@ public class BaseActivityBehavior implements RequestExecutorProvider {
     }
     return true;
   }
-
-  /** @return the serverApiSupport */
-  public ApiMethodsSupport getServerApiSupport() { return serverApiSupport; }
 
   /**
    * @see Activity#onOptionsItemSelected(MenuItem)

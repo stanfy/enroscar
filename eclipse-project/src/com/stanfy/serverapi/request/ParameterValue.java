@@ -1,12 +1,14 @@
 package com.stanfy.serverapi.request;
 
+import org.apache.http.NameValuePair;
+
 import android.os.Parcel;
 
 /**
  * Parameter that has a simple value.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class ParameterValue extends Parameter {
+public class ParameterValue extends Parameter implements NameValuePair {
 
   /** Creator. */
   public static final Creator<ParameterValue> CREATOR = new Creator<ParameterValue>() {
@@ -27,6 +29,7 @@ public class ParameterValue extends Parameter {
   public void setValue(final String value) { this.value = value; }
 
   /** @return the value */
+  @Override
   public String getValue() { return value; }
 
   @Override

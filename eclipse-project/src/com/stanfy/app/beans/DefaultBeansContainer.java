@@ -1,10 +1,14 @@
 package com.stanfy.app.beans;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.util.Log;
+
+import com.stanfy.utils.AppUtils;
 
 /**
  * A class that contains instances of different named application entities.
@@ -16,17 +20,22 @@ public class DefaultBeansContainer implements BeansContainer {
   private final HashMap<String, Object> entitiesMap = new HashMap<String, Object>();
 
   @Override
-  public void putEntityInstance(final Class<?> clazz) {
-    final EnroscarBean beanAnnotation = clazz.getAnnotation(EnroscarBean.class);
-    if (beanAnnotation == null) { throw new IllegalArgumentException("Bean must be annotated as @" + EnroscarBean.class.getSimpleName()); }
-
-    Object instance;
+  public <T> T putEntityInstance(final Class<T> clazz, final Context context) {
+    final EnroscarBean beanAnnotation = AppUtils.getBeanInfo(clazz);
+    T instance;
     try {
-      instance = clazz.newInstance();
+      if (beanAnnotation.contextDependent()) {
+        if (context == null) { throw new IllegalArgumentException("Bean is context dependent but context is not supplied"); }
+        final Constructor<T> constr = clazz.getConstructor(Context.class);
+        instance = constr.newInstance(context);
+      } else {
+        instance = clazz.newInstance();
+      }
     } catch (final Exception e) {
-      throw new RuntimeException("Unable to instantiate bean " + clazz + " with name " + beanAnnotation.name(), e);
+      throw new RuntimeException("Unable to instantiate bean " + clazz + " with name " + beanAnnotation.value(), e);
     }
-    putEntityInstance(beanAnnotation.name(), instance);
+    putEntityInstance(beanAnnotation.value(), instance);
+    return instance;
   }
 
   @Override
@@ -42,30 +51,10 @@ public class DefaultBeansContainer implements BeansContainer {
   }
 
   @Override
-  public void onLowMemory() {
-    for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
-      final Object instance = entry.getValue();
-      if (instance instanceof FlushableBean) {
-        ((FlushableBean) instance).flushResources();
-      }
-    }
-  }
-
-  @Override
-  public void onConfigurationChange(final Configuration config) {
-    for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
-      final Object instance = entry.getValue();
-      if (instance instanceof ConfigurationDependentBean) {
-        ((ConfigurationDependentBean) instance).triggerConfigurationChange(config);
-      }
-    }
-  }
-
-  @Override
   public <T> T getBean(final Class<T> clazz) {
     final EnroscarBean beanAnnotation = clazz.getAnnotation(EnroscarBean.class);
     if (beanAnnotation == null) { throw new IllegalArgumentException("Bean must be annotated as @" + EnroscarBean.class.getSimpleName()); }
-    return getBean(beanAnnotation.name(), clazz);
+    return getBean(beanAnnotation.value(), clazz);
   }
 
   @Override
@@ -78,7 +67,53 @@ public class DefaultBeansContainer implements BeansContainer {
   public void putEntityInstance(final Object instance) {
     final EnroscarBean beanAnnotation = instance.getClass().getAnnotation(EnroscarBean.class);
     if (beanAnnotation == null) { throw new IllegalArgumentException("Bean must be annotated as @" + EnroscarBean.class.getSimpleName()); }
-    putEntityInstance(beanAnnotation.name(), instance);
+    putEntityInstance(beanAnnotation.value(), instance);
+  }
+
+  @Override
+  public void onConfigurationChanged(final Configuration config) {
+    for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
+      final Object instance = entry.getValue();
+      if (instance instanceof ConfigurationDependentBean) {
+        ((ConfigurationDependentBean) instance).triggerConfigurationChange(config);
+      }
+    }
+  }
+
+  @Override
+  public void onLowMemory() {
+    for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
+      final Object instance = entry.getValue();
+      if (instance instanceof FlushableBean) {
+        ((FlushableBean) instance).flushResources();
+      }
+    }
+  }
+
+  @Override
+  public void triggerInitFinished() {
+    for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
+      final Object instance = entry.getValue();
+      if (instance instanceof InitializingBean) {
+        ((InitializingBean) instance).onInititializationFinished();
+      }
+    }
+  }
+
+  @Override
+  public void destroy() {
+    for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
+      final Object instance = entry.getValue();
+      if (instance instanceof DestroyingBean) {
+        ((DestroyingBean) instance).onDestroy();
+      }
+    }
+    entitiesMap.clear();
+  }
+
+  @Override
+  public boolean containsBean(final String name) {
+    return entitiesMap.containsKey(name);
   }
 
 }

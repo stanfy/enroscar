@@ -1,10 +1,8 @@
 package com.stanfy.utils;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.BitSet;
 
-import com.stanfy.Destroyable;
+import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.utils.ApiMethodsSupport.ApiSupportRequestCallback;
 
@@ -12,143 +10,120 @@ import com.stanfy.utils.ApiMethodsSupport.ApiSupportRequestCallback;
  * Chain of callbacks.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class ChainedRequestCallback extends ApiSupportRequestCallback<Serializable> implements Destroyable {
+public class ChainedRequestCallback extends ApiSupportRequestCallback {
 
   /** Callbacks. */
-  private final ArrayList<ApiSupportRequestCallback<?>> callbacks = new ArrayList<ApiSupportRequestCallback<?>>();
+  private final ArrayList<ApiSupportRequestCallback> callbacks = new ArrayList<ApiSupportRequestCallback>();
 
   /** Callbacks after {@link #filterOperation(int, int)}. */
-  private final ArrayList<ApiSupportRequestCallback<?>> filterCallbacks = new ArrayList<ApiSupportRequestCallback<?>>();
+  private final ThreadLocal<ArrayList<ApiSupportRequestCallback>> filterCallbacks = new ThreadLocal<ArrayList<ApiSupportRequestCallback>>();
 
-  /** Bitset for model interest. */
-  private final BitSet modelInterest = new BitSet();
-
-  public void addCallback(final ApiSupportRequestCallback<?> callback) {
+  public void addCallback(final ApiSupportRequestCallback callback) {
     if (callback == null) { return; }
     callback.setSupport(getSupport());
     callbacks.add(callback);
-    modelInterest.set(modelInterest.size() - 1);
   }
 
-  public void removeCallback(final ApiSupportRequestCallback<?> callback) {
+  public void removeCallback(final ApiSupportRequestCallback callback) {
     if (callback == null) { return; }
     callback.setSupport(null);
     callbacks.remove(callback);
-    filterCallbacks.remove(callback);
+    final ArrayList<ApiSupportRequestCallback> filterCallbacks = this.filterCallbacks.get();
+    if (filterCallbacks != null) {
+      filterCallbacks.remove(callback);
+    }
+  }
+
+
+  public ArrayList<ApiSupportRequestCallback> getFilterCallbacks() {
+    ArrayList<ApiSupportRequestCallback> callbacks = this.filterCallbacks.get();
+    if (callbacks == null) {
+      callbacks = new ArrayList<ApiMethodsSupport.ApiSupportRequestCallback>();
+      this.filterCallbacks.set(callbacks);
+    }
+    return callbacks;
   }
 
   @Override
-  public void destroy() { callbacks.clear(); }
-
-  @Override
-  public Class<?> getModelClass(final int token, final int operation) { return Serializable.class; }
-
-  @Override
-  public boolean isModelInterest() {
-    // XXX temporary fix
-    return true; /* !modelInterest.isEmpty(); */
-  }
-
-  @Override
-  public boolean filterOperation(final int token, final int o) {
-    final ArrayList<ApiSupportRequestCallback<?>> callbacks = this.callbacks, filterCallbacks = this.filterCallbacks;
+  public boolean filterOperation(final int requestId, final RequestDescription requestDescription) {
+    final ArrayList<ApiSupportRequestCallback> callbacks = this.callbacks, filterCallbacks = getFilterCallbacks();
     filterCallbacks.clear();
     for (int i = callbacks.size() - 1; i >= 0; i--) {
-      final ApiSupportRequestCallback<?> rc = callbacks.get(i);
-      if (rc.filterOperation(token, o)) { filterCallbacks.add(rc); }
+      final ApiSupportRequestCallback rc = callbacks.get(i);
+      if (rc.filterOperation(requestId, requestDescription)) { filterCallbacks.add(rc); }
     }
     return !filterCallbacks.isEmpty();
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  protected void processSuccess(final int token, final int operation, final ResponseData responseData, final Serializable model) {
-    final ArrayList<ApiSupportRequestCallback<?>> callbacks = this.filterCallbacks;
+  protected void processSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+    final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
     for (int i = callbacks.size() - 1; i >= 0; i--) {
-      @SuppressWarnings("rawtypes")
       final ApiSupportRequestCallback rc = callbacks.get(i);
-      final Class<?> modelClass = rc.getModelClass(token, operation);
-      if (model == null || modelClass == null) {
-        rc.processSuccess(token, operation, responseData, null);
-      } else {
-        if (modelClass.isAssignableFrom(model.getClass())) {
-          rc.processSuccess(token, operation, responseData, model);
-        } else {
-          rc.processSuccessUnknownModelType(token, operation, responseData, model);
-        }
-      }
-    }
-  }
-
-  /* XXX this method will not be called indeed */
-  @Override
-  protected void processSuccessUnknownModelType(final int token, final int operation, final ResponseData responseData, final Serializable model) {
-    final ArrayList<ApiSupportRequestCallback<?>> callbacks = this.filterCallbacks;
-    for (int i = callbacks.size() - 1; i >= 0; i--) {
-      callbacks.get(i).processSuccessUnknownModelType(token, operation, responseData, model);
+      rc.processSuccess(requestDescription, responseData);
     }
   }
 
   @Override
-  protected void processServerError(final int token, final int operation, final ResponseData responseData) {
-    final ArrayList<ApiSupportRequestCallback<?>> callbacks = this.filterCallbacks;
+  protected void processServerError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+    final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
     for (int i = callbacks.size() - 1; i >= 0; i--) {
-      final ApiSupportRequestCallback<?> rc = callbacks.get(i);
-      rc.processServerError(token, operation, responseData);
+      final ApiSupportRequestCallback rc = callbacks.get(i);
+      rc.processServerError(requestDescription, responseData);
     }
   }
 
   @Override
-  protected void processConnectionError(final int token, final int operation, final ResponseData responseData) {
-    final ArrayList<ApiSupportRequestCallback<?>> callbacks = this.filterCallbacks;
+  protected void processConnectionError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+    final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
     for (int i = callbacks.size() - 1; i >= 0; i--) {
-      final ApiSupportRequestCallback<?> rc = callbacks.get(i);
-      rc.processConnectionError(token, operation, responseData);
+      final ApiSupportRequestCallback rc = callbacks.get(i);
+      rc.processConnectionError(requestDescription, responseData);
     }
   }
 
   @Override
-  protected void onError(final int token, final int operation, final ResponseData responseData) {
-    final ArrayList<ApiSupportRequestCallback<?>> callbacks = this.filterCallbacks;
+  protected void onError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+    final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
     for (int i = callbacks.size() - 1; i >= 0; i--) {
-      final ApiSupportRequestCallback<?> rc = callbacks.get(i);
-      rc.onError(token, operation, responseData);
+      final ApiSupportRequestCallback rc = callbacks.get(i);
+      rc.onError(requestDescription, responseData);
     }
   }
 
   @Override
-  protected void onLastOperationError(final int token, final int operation, final ResponseData responseData) {
-    final ArrayList<ApiSupportRequestCallback<?>> callbacks = this.filterCallbacks;
+  protected void onLastOperationReport(final int requestId, final ResponseData<?> responseData) {
+    final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
     for (int i = callbacks.size() - 1; i >= 0; i--) {
-      final ApiSupportRequestCallback<?> rc = callbacks.get(i);
-      rc.onLastOperationError(token, operation, responseData);
+      final ApiSupportRequestCallback rc = callbacks.get(i);
+      rc.onLastOperationReport(requestId, responseData);
     }
   }
 
   @Override
-  protected void onLastOperationSuccess(final int token, final int operation, final ResponseData responseData) {
-    final ArrayList<ApiSupportRequestCallback<?>> callbacks = this.filterCallbacks;
+  protected void onOperationFinished(final RequestDescription requestDescription) {
+    final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
     for (int i = callbacks.size() - 1; i >= 0; i--) {
-      final ApiSupportRequestCallback<?> rc = callbacks.get(i);
-      rc.onLastOperationSuccess(token, operation, responseData);
+      final ApiSupportRequestCallback rc = callbacks.get(i);
+      rc.onOperationFinished(requestDescription);
     }
   }
 
   @Override
-  protected void onOperationFinished(final int token, final int operation) {
-    final ArrayList<ApiSupportRequestCallback<?>> callbacks = this.filterCallbacks;
+  protected void onOperationPending(final int requestId) {
+    final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
     for (int i = callbacks.size() - 1; i >= 0; i--) {
-      final ApiSupportRequestCallback<?> rc = callbacks.get(i);
-      rc.onOperationFinished(token, operation);
+      final ApiSupportRequestCallback rc = callbacks.get(i);
+      rc.onOperationPending(requestId);
     }
   }
 
   @Override
-  protected void onOperationPending(final int token, final int operation) {
-    final ArrayList<ApiSupportRequestCallback<?>> callbacks = this.filterCallbacks;
+  public void onCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+    final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
     for (int i = callbacks.size() - 1; i >= 0; i--) {
-      final ApiSupportRequestCallback<?> rc = callbacks.get(i);
-      rc.onOperationPending(token, operation);
+      final ApiSupportRequestCallback rc = callbacks.get(i);
+      rc.onCancel(requestDescription, responseData);
     }
   }
 

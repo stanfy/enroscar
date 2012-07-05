@@ -2,11 +2,16 @@ package com.stanfy.images.cache;
 
 import android.graphics.Bitmap;
 
+import com.stanfy.app.beans.FlushableBean;
+
 /**
  * Interface of images memory cache.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public interface ImageMemoryCache {
+public interface ImageMemoryCache extends FlushableBean {
+
+  /** Bean name. */
+  String BEAN_NAME = "ImageMemoryCache";
 
   /**
    * @param url URL

@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.os.Parcel;
 
-import com.stanfy.http.multipart.Part;
-import com.stanfy.http.multipart.android.BitmapPart;
+import com.stanfy.serverapi.request.net.multipart.Part;
+import com.stanfy.serverapi.request.net.multipart.android.BitmapPart;
 
 /**
  * Binary data that contains a bitmap.

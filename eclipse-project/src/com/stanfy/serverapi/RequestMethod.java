@@ -1,227 +1,64 @@
 package com.stanfy.serverapi;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.xmlpull.v1.XmlPullParserException;
+import java.net.URLConnection;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.Application;
-import com.stanfy.app.HttpClientsPool.EnroscarInterceptor;
-import com.stanfy.images.BuffersPool;
-import com.stanfy.images.PoolableBufferedInputStream;
-import com.stanfy.serverapi.cache.APICacheDAO;
-import com.stanfy.serverapi.cache.APICacheDAO.CachedStreamInfo;
 import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.response.ParserContext;
-import com.stanfy.serverapi.response.Response;
-import com.stanfy.serverapi.response.ResponseHanlder;
 
 /**
  * Works with the server API method. Prepares HTTP request (URL and body),
  * executes this request and processes the response.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public abstract class RequestMethod {
+public class RequestMethod {
 
   /** Logging tag. */
   private static final String TAG = "ReqMethod";
   /** Debug flag. */
   private static final boolean DEBUG = DebugFlags.DEBUG_API;
 
-  /** Thread lock. */
-  private static final ReentrantLock LOCK = new ReentrantLock();
-
-  /** Http client instance. */
-  private HttpClient httpClient;
-
-  /** Application authority. Used for caching */
-  private final String cacheAuthority;
-
-  /** Buffers pool. */
-  private final BuffersPool buffersPool;
-
-  protected RequestMethod(final String cacheAuthority, final BuffersPool buffersPool) {
-    this.cacheAuthority = cacheAuthority;
-    this.buffersPool = buffersPool;
-  }
-
-  /**
-   * Input stream is closed after this method invocation.
-   * @param stream input stream
-   * @param charset input characters set
-   * @return string
-   * @throws IOException if an error happens
-   */
-  private static String streamToString(final InputStream stream, final Charset charset) throws IOException {
-    final Reader in = new InputStreamReader(stream, charset);
-    final StringBuilder result = new StringBuilder();
-    final int bsize = 8192;
-    final char[] buffer = new char[bsize];
-    int cnt;
-    try {
-      do {
-        cnt = in.read(buffer);
-        if (cnt > 0) { result.append(buffer, 0, cnt); }
-      } while (cnt >= 0);
-      return result.toString();
-    } finally {
-      in.close();
-    }
-  }
-
-  public void setup(final Application app) {
-    this.httpClient = app.getHttpClientsPool().getHttpClient();
-  }
-
-  public void stop(final Application app) {
-    app.getHttpClientsPool().releaseHttpClient(httpClient);
-  }
-
-  /** @return the httpClient */
-  public HttpClient getHttpClient() { return httpClient; }
-  /** @param httpClient the httpClient to set */
-  public void setHttpClient(final HttpClient httpClient) {
-    this.httpClient = httpClient;
-  }
-
-  /**
-   * This method is called when HTTP response is received from server before parsing.
-   * It won't be called if response content is cached.
-   * @param httpResponse HTTP response instance
-   * @param context parser context
-   */
-  protected void onHttpResponse(final HttpResponse httpResponse, final ParserContext context) throws RequestMethodException {
-    final int code = httpResponse.getStatusLine().getStatusCode();
-    final int codesRange = 100;
-    final int ok = 2, clientError = 4, serverError = 5;
-    final int checkValue = code / codesRange;
-    if (checkValue != ok && checkValue != clientError && checkValue != serverError) {
-      throw new RequestMethodException(code);
-    }
-  }
-
   /**
    * @param systemContext system context
    * @param description request description
-   * @param parserContext parser context
    * @throws RequestMethodException if ever
+   * @return parsed object
    */
-  public void start(final Context systemContext, final RequestDescription description, final ParserContext parserContext) throws RequestMethodException {
+  public RequestResult perform(final Context systemContext, final RequestDescription description) throws RequestMethodException {
     final long startTime = System.currentTimeMillis();
-
-    InputStream cachedStream = null;
-    HttpResponse response = null;
-    String url = null;
-
-    final HttpUriRequest request = description.buildRequest(systemContext);
-    if (request instanceof HttpGet) {
-      url = request.getURI().toString();
-      final File cFile = APICacheDAO.getCachedFile(systemContext, cacheAuthority, url);
-      if (cFile != null) {
-        try {
-          cachedStream = new FileInputStream(cFile);
-          if (DEBUG) { Log.i(TAG, "Cache is used"); }
-        } catch (final IOException e) {
-          Log.e(TAG, "Cannot read cached stream", e);
-        }
-      }
-    }
-
-    HttpContext httpContext = null;
-    if (cachedStream == null) {
-      try {
-        httpContext = new BasicHttpContext();
-        response = httpClient.execute(request, httpContext);
-      } catch (final IOException e) {
-        throw new RequestMethodException(e);
-      } catch (final RuntimeException e) {
-        throw new RequestMethodException(e, null);
-      }
-      onHttpResponse(response, parserContext);
-    }
-
-    ResponseHanlder handler = null;
-    InputStream inputStream = null;
-    HttpEntity httpEntity = null;
-    long cacheId = -1;
-    boolean success = false;
     try {
-
-      if (cachedStream == null) {
-        httpEntity = response.getEntity();
-        inputStream = httpEntity.getContent();
-      } else {
-        inputStream = cachedStream;
-      }
-
-      final int bsize = 8192;
-      inputStream = new PoolableBufferedInputStream(inputStream, bsize, buffersPool);
-      final Charset charset = Charset.forName(RequestDescription.CHARSET);
-
-      if (RequestDescription.DEBUG) {
-        final String responseString = streamToString(inputStream, charset);
-        Log.d(RequestDescription.TAG, responseString);
-        inputStream = new ByteArrayInputStream(responseString.getBytes(RequestDescription.CHARSET));
-      }
-
-      if (APICacheDAO.isCacheEnabled() && cachedStream == null && url != null) {
-        final CachedStreamInfo cacheInfo = APICacheDAO.insert(systemContext, cacheAuthority, url, inputStream, buffersPool, bsize);
-        inputStream = cacheInfo.getStream();
-        cacheId = cacheInfo.getId();
-      }
-
-      handler = createResponseHandler(parserContext, inputStream);
-      handler.handleResponse();
-
-      final Response r = parserContext.getResponse();
-      success = r != null && r.isSuccessful();
-
+      final URLConnection connection = description.makeConnection(systemContext);
+      final Object model = connection.getContent();
+      return new RequestResult(model, connection);
     } catch (final IOException e) {
       throw new RequestMethodException(e);
     } catch (final RuntimeException e) {
-      throw new RequestMethodException(e, handler);
+      throw new RequestMethodException(e);
     } finally {
-      if (inputStream != null) {
-        try {
-          inputStream.close();
-        } catch (final IOException e) {
-          Log.e(TAG, "Cannot close input stream", e);
-        }
-      }
-      // XXX gzip stream can be not closed, this is a workaround
-      if (httpEntity != null) { EnroscarInterceptor.ensureClosedStreams(httpEntity, httpContext); }
-      if (!success) { clearCache(systemContext, cacheId); }
       if (DEBUG) {
         Log.d(TAG, "Request time: " + (System.currentTimeMillis() - startTime) + " ms");
       }
     }
-
   }
 
-  private void clearCache(final Context systemContext, final long cacheId) {
-    if (DEBUG) { Log.d(TAG, "Response will not be cached"); }
-    if (cacheId != -1) { APICacheDAO.delete(systemContext, cacheAuthority, cacheId); }
-  }
+  /** Request result. */
+  public static class RequestResult {
+    /** Model instance. */
+    private final Object model;
+    /** Connection instance. */
+    private final URLConnection connection;
 
-  protected abstract ResponseHanlder createResponseHandler(final ParserContext context, final InputStream inputStream);
+    public RequestResult(final Object model, final URLConnection connection) {
+      this.model = model;
+      this.connection = connection;
+    }
+
+    public Object getModel() { return model; }
+    public URLConnection getConnection() { return connection; }
+  }
 
   /**
    * Request method exception.
@@ -245,18 +82,8 @@ public abstract class RequestMethod {
       connectionError = false;
     }
 
-    public RequestMethodException(final int responseCode) {
-      super("Bad server answer, code=" + responseCode);
-      connectionError = false;
-    }
-
-    public RequestMethodException(final XmlPullParserException e, final ResponseHanlder handler) {
-      super("Response parsing exception, handler state: " + (handler != null ? handler.dumpState() : "<none>"), e);
-      connectionError = false;
-    }
-
-    public RequestMethodException(final RuntimeException e, final ResponseHanlder handler) {
-      super("Response parsing exception" + (handler != null ? handler.dumpState() : "<none>"), e);
+    public RequestMethodException(final RuntimeException e) {
+      super("Response parsing exception", e);
       connectionError = false;
     }
 

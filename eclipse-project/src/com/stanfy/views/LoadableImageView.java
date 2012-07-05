@@ -6,10 +6,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 
-import com.stanfy.app.Application;
+import com.stanfy.app.beans.BeansManager;
 import com.stanfy.images.ImagesLoadListener;
+import com.stanfy.images.ImagesManager;
 import com.stanfy.images.ImagesManager.ImageHolder;
-import com.stanfy.images.ImagesManagerContext;
 
 /**
  * Image view that can load a remote image.
@@ -39,8 +39,8 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
 
   /** Image URI. */
   private Uri loadImageUri;
-  /** Images manager context. */
-  private ImagesManagerContext<?> imagesManagerContext;
+  /** Images manager. */
+  private ImagesManager imagesManager;
 
   /** Loading image. */
   private Drawable loadingImage;
@@ -78,15 +78,7 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     setImageType(type);
     setUseTransitionMode(useTransition);
 
-    final Context app = context.getApplicationContext();
-    if (app instanceof Application) {
-      setImagesManagerContext(((Application) app).getImagesContext());
-    }
-  }
-
-  /** @param imagesManagerContext the imagesManager context to set */
-  public void setImagesManagerContext(final ImagesManagerContext<?> imagesManagerContext) {
-    this.imagesManagerContext = imagesManagerContext;
+    this.imagesManager = BeansManager.get(context).getImagesManager();
   }
 
   /** @param mode mode specification (see {@link #USE_TRANSITION_NO}, {@link #USE_TRANSITION_YES}, {@link #USE_TRANSITION_AUTO}) */
@@ -142,16 +134,16 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   public void setImageURI(final Uri uri) {
     if (loadImageUri != null && loadImageUri.equals(uri)) { return; }
     loadImageUri = uri;
-    if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
-      imagesManagerContext.populate(this, uri != null ? uri.toString() : null);
+    if (imagesManager != null) {
+      imagesManager.populateImage(this, uri != null ? uri.toString() : null);
       return;
     }
     super.setImageURI(uri);
   }
 
   private void cancelLoading() {
-    if (loadImageUri != null && imagesManagerContext != null) {
-      imagesManagerContext.cancel(this);
+    if (loadImageUri != null && imagesManager != null) {
+      imagesManager.cancelImageLoading(this);
       loadImageUri = null;
     }
   }

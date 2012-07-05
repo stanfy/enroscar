@@ -6,9 +6,9 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.stanfy.http.multipart.ByteArrayPartSource;
-import com.stanfy.http.multipart.FilePart;
-import com.stanfy.http.multipart.Part;
+import com.stanfy.serverapi.request.net.multipart.ByteArrayPartSource;
+import com.stanfy.serverapi.request.net.multipart.FilePart;
+import com.stanfy.serverapi.request.net.multipart.Part;
 
 /**
  * Empty binary data.

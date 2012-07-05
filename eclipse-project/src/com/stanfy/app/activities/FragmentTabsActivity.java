@@ -10,16 +10,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TabHost;
 
-import com.stanfy.app.Application;
 import com.stanfy.app.BaseFragmentActivity;
 
 /**
  * Implements switching between the tabs of a
  * TabHost through fragments. It uses a trick to allow the
  * tabs to switch between fragments instead of simple views.
- * @param <AT> application type
  */
-public abstract class FragmentTabsActivity<AT extends Application> extends BaseFragmentActivity<AT> {
+public abstract class FragmentTabsActivity extends BaseFragmentActivity {
 
   /** Saved tab key. */
   protected static final String SAVE_TAB = "tab";

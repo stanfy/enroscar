@@ -1,9 +1,6 @@
 package com.stanfy.stats;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 import java.util.Map;
@@ -44,7 +41,7 @@ public class ErrorReportTest {
 
   @Test
   public void testStackTraceTrim() {
-    final String trimmed = StatsManagerAdapter.trimStackTrace(EXAMPLE_ST);
+    final String trimmed = StatsManager.trimStackTrace(EXAMPLE_ST);
     assertThat("Stack trace is not trimmed", trimmed.length(), lessThan(EXAMPLE_ST.length()));
     assertThat("Stack trace has \\n", -1, equalTo(trimmed.indexOf('\n')));
     assertThat("Stack trace has \\r", -1, equalTo(trimmed.indexOf('\r')));
@@ -55,7 +52,7 @@ public class ErrorReportTest {
   @Test
   public void testReadError() {
     final int maxLen = 255;
-    final String msg = new StatsManagerAdapter() {
+    final String msg = new StatsManager() {
       @Override
       public void onStartScreen(final Activity activity) {
       }

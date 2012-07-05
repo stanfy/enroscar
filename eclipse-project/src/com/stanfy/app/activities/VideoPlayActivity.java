@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-import com.stanfy.app.Application;
 import com.stanfy.app.fragments.VideoPlayFragment;
 
 /**
@@ -15,7 +14,7 @@ import com.stanfy.app.fragments.VideoPlayFragment;
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  * @author Michael Pustovit - video controls (Stanfy - http://www.stanfy.com)
  */
-public class VideoPlayActivity extends OneFragmentActivity<Application> {
+public class VideoPlayActivity extends OneFragmentActivity {
 
   /** Fragment. */
   private VideoPlayFragment fragment;

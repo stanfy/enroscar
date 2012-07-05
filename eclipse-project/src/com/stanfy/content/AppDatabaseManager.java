@@ -5,15 +5,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.stanfy.images.model.CachedImage;
-import com.stanfy.serverapi.cache.APICacheDAO;
 import com.stanfy.views.R;
 
 /**
  * Database manager used by {@link AppContentProvider}.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class AppDatabaseManager extends SQLiteOpenHelper {
+public abstract class AppDatabaseManager extends SQLiteOpenHelper {
 
   /** Database name. */
   public static final String DB_NAME = "app.db";
@@ -39,40 +37,6 @@ public class AppDatabaseManager extends SQLiteOpenHelper {
   protected void createIndex(final SQLiteDatabase db, final String table, final String columnName) {
     final String indexName = "idx_" + table + "_" + columnName;
     db.execSQL(getSQL(R.string.sql_ddl_create_index, indexName, table, columnName));
-  }
-
-  /**
-   * Perform DDL operation related to images cache.
-   * @param context context instance
-   * @param db database instance
-   */
-  protected void createImagesCache(final Context context, final SQLiteDatabase db) {
-    createTable(db, R.string.sql_ddl_cached_image, CachedImage.Contract.TABLE_NAME, CachedImage.Contract._ID);
-    db.execSQL(getSQL(R.string.sql_ddl_cached_image_index_url, CachedImage.Contract.TABLE_NAME));
-    db.execSQL(getSQL(R.string.sql_ddl_cached_image_index_type, CachedImage.Contract.TABLE_NAME));
-    db.execSQL(getSQL(R.string.sql_ddl_cached_image_index_usage_ts, CachedImage.Contract.TABLE_NAME));
-  }
-
-  /**
-   * Drop tables related to images cache.
-   * @param context context instance
-   * @param db database instance
-   */
-  protected void dropImagesCache(final Context context, final SQLiteDatabase db) {
-    db.execSQL("DROP TABLE IF EXISTS " + CachedImage.Contract.TABLE_NAME);
-  }
-
-  @Override
-  public void onCreate(final SQLiteDatabase db) {
-    APICacheDAO.ensureCacheTable(db);
-    createImagesCache(context, db);
-  }
-
-  @Override
-  public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
-    APICacheDAO.ensureCacheTable(db);
-    dropImagesCache(context, db);
-    createImagesCache(context, db);
   }
 
 }

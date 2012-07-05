@@ -6,42 +6,20 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.stanfy.serverapi.request.RequestExecutor;
-import com.stanfy.utils.ApiMethodsSupport;
-import com.stanfy.utils.ApiMethodsSupport.ApiSupportRequestCallback;
-import com.stanfy.utils.ChainedRequestCallback;
 import com.stanfy.utils.LocationMethodsSupport;
 
 /**
  * Fragment activity with common behavior.
- * @param <AT> application type
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public abstract class BaseFragmentActivity<AT extends Application> extends FragmentActivity implements ActionBarActivity, RequestExecutorProvider, LocationSupportProvider {
+@SuppressWarnings("deprecation")
+public abstract class BaseFragmentActivity extends FragmentActivity implements LocationSupportProvider {
 
   /** Behavior. */
   private BaseActivityBehavior behavior;
 
-  /** Request callback for API methods support. */
-  private ChainedRequestCallback requestCallback;
-
   /** @return the behavior */
   protected BaseActivityBehavior getBehavior() { return behavior; }
-
-  /** @return application instance */
-  @SuppressWarnings("unchecked")
-  public AT getApp() { return (AT)getApplication(); }
-
-
-  public ChainedRequestCallback getRequestCallback() { return requestCallback; }
-
-  /**
-   * This method is called from {@link #onCreate(Bundle)}.
-   * @return server API methods support
-   */
-  protected ApiMethodsSupport createApiMethodsSupport() {
-    return requestCallback != null ? new ApiMethodsSupport(this, requestCallback, false) : null;
-  }
 
   /**
    * Ensure that this activity is a root task when started from launcher.
@@ -57,12 +35,14 @@ public abstract class BaseFragmentActivity<AT extends Application> extends Fragm
    */
   protected boolean ensureRoot() { return behavior.ensureRoot(); }
 
+  /**
+   * @deprecated waiting for new implementation
+   */
   @Override
+  @Deprecated
   public void setupLocationSupport() { behavior.setupLocationSupport(); }
   @Override
   public LocationMethodsSupport getLocationSupport() { return behavior.getLocationSupport(); }
-  @Override
-  public RequestExecutor getRequestExecutor() { return behavior.getRequestExecutor(); }
 
   /**
    * Perform here all the operations required before creating API methods support.
@@ -72,40 +52,12 @@ public abstract class BaseFragmentActivity<AT extends Application> extends Fragm
     // nothing
   }
 
-  /** @param callback the requestCallback to set */
-  public void addRequestCallback(final ApiSupportRequestCallback<?> callback) {
-    if (callback == null) { return; }
-    if (this.requestCallback == null) {
-      this.requestCallback = new ChainedRequestCallback();
-      if (behavior.getServerApiSupport() == null) {
-        behavior.forceAPIBinding(createApiMethodsSupport());
-      }
-    }
-    this.requestCallback.addCallback(callback);
-  }
-
-  /** @param callback request callback to remove */
-  public void removeRequestCallback(final ApiSupportRequestCallback<?> callback) {
-    if (this.requestCallback != null) {
-      this.requestCallback.removeCallback(callback);
-    }
-  }
-
-  /**
-   * Return true here if your activity needs to ensure that it's binded to API service after {@link #onCreate(Bundle)} is finished.
-   * @return whether to force binding to API service in {@link #onCreate(Bundle)}
-   */
-  protected boolean forceApiSupportOnCreate() { return false; }
-
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
-    behavior = getApp().createActivityBehavior(this);
+    behavior = ActivityBehaviorFactory.createBehavior(this);
     super.onCreate(savedInstanceState);
     onInitialize(savedInstanceState);
-    if (requestCallback == null && forceApiSupportOnCreate()) {
-      requestCallback = new ChainedRequestCallback();
-    }
-    behavior.onCreate(savedInstanceState, behavior.getServerApiSupport() == null ? createApiMethodsSupport() : null);
+    behavior.onCreate(savedInstanceState);
   }
   @Override
   protected void onStart() {
@@ -145,7 +97,6 @@ public abstract class BaseFragmentActivity<AT extends Application> extends Fragm
   @Override
   protected void onDestroy() {
     behavior.onDestroy();
-    if (requestCallback != null) { requestCallback.destroy(); }
     super.onDestroy();
   }
   @Override
@@ -153,8 +104,6 @@ public abstract class BaseFragmentActivity<AT extends Application> extends Fragm
     super.onContentChanged();
     behavior.onContentChanged();
   }
-  @Override
-  public ActionBarSupport getActionBarSupport() { return behavior.getActionBarSupport(); }
   @Override
   public boolean onKeyDown(final int keyCode, final KeyEvent event) {
     final boolean r = behavior.onKeyDown(keyCode, event);

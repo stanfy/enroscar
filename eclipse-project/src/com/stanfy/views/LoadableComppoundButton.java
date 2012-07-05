@@ -8,7 +8,8 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.widget.CompoundButton;
 
-import com.stanfy.images.ImagesManagerContext;
+import com.stanfy.app.beans.BeansManager;
+import com.stanfy.images.ImagesManager;
 
 /**
  * Compound button that can have a drawable to be drawn and scaled on the center.
@@ -28,8 +29,8 @@ public class LoadableComppoundButton extends CompoundButton implements RemoteIma
   /** Image URI. */
   private Uri imageUri;
 
-  /** Images manager context. */
-  private ImagesManagerContext<?> imagesManagerContext;
+  /** Images manager. */
+  private final ImagesManager imagesManager;
 
   public LoadableComppoundButton(final Context context) {
     this(context, null);
@@ -49,11 +50,7 @@ public class LoadableComppoundButton extends CompoundButton implements RemoteIma
 
     setSourceDensity(sourceDensity);
     if (d != null) { setButtonDrawable(d); }
-  }
-
-  /** @param imagesManagerContext the imagesManager context to set */
-  public void setImagesManagerContext(final ImagesManagerContext<?> imagesManagerContext) {
-    this.imagesManagerContext = imagesManagerContext;
+    imagesManager = BeansManager.get(context).getImagesManager();
   }
 
   /** @param sourceDensity the sourceDensity to set */
@@ -94,8 +91,8 @@ public class LoadableComppoundButton extends CompoundButton implements RemoteIma
   public void setButtonDrawableUri(final Uri uri) {
     if (imageUri != null && imageUri.equals(uri)) { return; }
     imageUri = uri;
-    if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
-      imagesManagerContext.populate(this, uri != null ? uri.toString() : null);
+    if (imagesManager != null) {
+      imagesManager.populateImage(this, uri != null ? uri.toString() : null);
     }
   }
 
@@ -135,8 +132,8 @@ public class LoadableComppoundButton extends CompoundButton implements RemoteIma
   }
 
   private void cancelLoading() {
-    if (imageUri != null && imagesManagerContext != null) {
-      imagesManagerContext.cancel(this);
+    if (imageUri != null && imagesManager != null) {
+      imagesManager.cancelImageLoading(this);
       imageUri = null;
     }
   }

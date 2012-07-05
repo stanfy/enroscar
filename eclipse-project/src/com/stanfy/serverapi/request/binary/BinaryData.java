@@ -7,8 +7,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.stanfy.http.multipart.Part;
 import com.stanfy.serverapi.request.RequestDescription;
+import com.stanfy.serverapi.request.net.multipart.Part;
 
 /**
  * Binary data info.

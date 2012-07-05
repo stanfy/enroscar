@@ -7,7 +7,8 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import com.stanfy.images.ImagesManagerContext;
+import com.stanfy.app.beans.BeansManager;
+import com.stanfy.images.ImagesManager;
 
 /**
  * Text view that can load a remote images and use it as comppound drawables.
@@ -19,8 +20,8 @@ public class LoadableTextView extends TextView implements RemoteImageDensityProv
 
   /** Image URI. */
   private Uri imageUri;
-  /** Images manager context. */
-  private ImagesManagerContext<?> imagesManagerContext;
+  /** Images manager. */
+  private ImagesManager imagesManager;
 
   /** Loadable drawable width/height. */
   private int loadableDrawableWidth, loadableDrawableHeight;
@@ -68,11 +69,8 @@ public class LoadableTextView extends TextView implements RemoteImageDensityProv
       final Drawable[] drawables = getCompoundDrawables();
       setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], drawables[2], drawables[3]);
     }
-  }
 
-  /** @param imagesManagerContext the imagesManager context to set */
-  public void setImagesManagerContext(final ImagesManagerContext<?> imagesManagerContext) {
-    this.imagesManagerContext = imagesManagerContext;
+    this.imagesManager = BeansManager.get(context).getImagesManager();
   }
 
   /** @param sourceDensity the sourceDensity to set */
@@ -94,8 +92,8 @@ public class LoadableTextView extends TextView implements RemoteImageDensityProv
   public void setLoadableDrawable(final Uri uri) {
     if (imageUri != null && imageUri.equals(uri)) { return; }
     imageUri = uri;
-    if (imagesManagerContext != null && ImagesManagerContext.check(uri)) {
-      imagesManagerContext.populate(this, uri != null ? uri.toString() : null);
+    if (imagesManager != null) {
+      imagesManager.populateImage(this, uri != null ? uri.toString() : null);
     }
   }
 
@@ -123,8 +121,8 @@ public class LoadableTextView extends TextView implements RemoteImageDensityProv
   }
 
   private void cancelLoading() {
-    if (imageUri != null && imagesManagerContext != null) {
-      imagesManagerContext.cancel(this);
+    if (imageUri != null && imagesManager != null) {
+      imagesManager.cancelImageLoading(this);
       imageUri = null;
     }
   }

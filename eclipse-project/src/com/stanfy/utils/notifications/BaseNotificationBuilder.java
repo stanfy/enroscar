@@ -259,7 +259,7 @@ public class BaseNotificationBuilder implements NotificationBuilder {
   }
 
   @Override
-  public Notification getNotification() {
+  public Notification build() {
     final Notification n = new Notification();
     n.when = when;
     n.icon = smallIcon;

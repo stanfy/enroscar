@@ -2,7 +2,8 @@ package com.stanfy.views;
 
 import android.view.View;
 
-import com.stanfy.app.Application;
+import com.stanfy.app.CrucialGUIOperationManager;
+import com.stanfy.app.beans.BeansManager;
 
 /**
  * @author Roman Mazur (Stanfy - http://stanfy.com)
@@ -10,7 +11,7 @@ import com.stanfy.app.Application;
 public final class AnimatedViewHelper {
 
   /** Application instance. */
-  private final Application application;
+  private final CrucialGUIOperationManager manager;
 
   /** Owner view. */
   private final View owner;
@@ -19,18 +20,18 @@ public final class AnimatedViewHelper {
   private final Runnable crucialGuiOperationFinishedWorker = new Runnable() {
     @Override
     public void run() {
-      application.dispatchCrucialGUIOperationFinish();
+      manager.dispatchCrucialGUIOperationFinish();
     }
   };
 
   public AnimatedViewHelper(final View owner) {
     this.owner = owner;
-    this.application = (Application) owner.getContext().getApplicationContext();
+    this.manager = BeansManager.get(owner.getContext()).getCrucialGUIOperationManager();
   }
 
   public void notifyCrucialGuiStart() {
     owner.removeCallbacks(crucialGuiOperationFinishedWorker);
-    application.dispatchCrucialGUIOperationStart();
+    manager.dispatchCrucialGUIOperationStart();
   }
 
   public void notifyCrucialGuiFinish() {
@@ -40,7 +41,7 @@ public final class AnimatedViewHelper {
 
   public void onDetach() {
     owner.removeCallbacks(crucialGuiOperationFinishedWorker);
-    application.dispatchCrucialGUIOperationFinish();
+    manager.dispatchCrucialGUIOperationFinish();
   }
 
 }

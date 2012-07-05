@@ -1,21 +1,17 @@
 package com.stanfy.utils;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.app.service.ApiMethodCallback;
 import com.stanfy.app.service.ApiMethods;
-import com.stanfy.serverapi.request.RequestCallback;
+import com.stanfy.app.service.ApplicationService.ApiMethodsBinder;
 import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.request.RequestExecutor;
-import com.stanfy.serverapi.response.ResponseData;
 
 /**
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
@@ -30,14 +26,18 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
   /** Callback registered flag. */
   boolean registered = false;
   /** Callback. */
-  final RemoteCallback callback;
+  final ApiMethodCallback callback;
 
   /** Last descriptions. */
   private final ArrayList<RequestDescription> lastDescriptions = new ArrayList<RequestDescription>();
+  /** Last cancel IDs. */
+  private final ArrayList<Integer> lastCancelIds = new ArrayList<Integer>();
+  /** Saved callback operation. */
+  private boolean addCallbackRequest = false, removeCallbackRequest = false;
 
-  public RequestPerformer(final Context a, final RequestCallback<?> callback) {
+  public RequestPerformer(final Context a, final ApiMethodCallback callback) {
     super(a);
-    this.callback = callback != null ? new RemoteCallback(callback, "RC-" + a.getClass().getSimpleName()) : null;
+    this.callback = callback;
   }
 
   @Override
@@ -46,33 +46,36 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
   public boolean isRegistered() { return registered; }
 
   /** Register operation callback. */
-  public void registerListener() {
-    if (serviceObject != null && !registered) {
-      final RemoteCallback callback = this.callback;
-      if (callback == null) { return; }
+  public void registerCallback() {
+    if (registered) { return; }
+    if (serviceObject != null) {
       if (DEBUG) { Log.d(TAG, "Registering callback " + callback); }
-      try {
-        serviceObject.registerCallback(callback, callback.core.isModelInterest());
-        registered = true;
-      } catch (final RemoteException e) {
-        Log.e(TAG, "Cannot register callback", e);
-      }
+      serviceObject.registerCallback(callback);
+      registered = true;
+      addCallbackRequest = false;
+    } else {
+      if (DEBUG) { Log.d(TAG, "Save add callback request"); }
+      addCallbackRequest = true;
     }
   }
   /** Remove operation callback. */
-  public void removeListener() {
-    if (serviceObject != null && registered) {
+  public void removeCallback() {
+    if (!registered) { return; }
+    if (serviceObject != null) {
       if (DEBUG) { Log.d(TAG, "Removing callback"); }
-      try {
-        serviceObject.removeCallback(callback);
-        registered = false;
-      } catch (final RemoteException e) {
-        Log.e(TAG, "Cannot remove callback", e);
-      }
+      serviceObject.removeCallback(callback);
+      registered = false;
+      removeCallbackRequest = false;
+    } else {
+      if (DEBUG) { Log.d(TAG, "Save remove callback request"); }
+      removeCallbackRequest = true;
     }
   }
 
-  protected abstract void doRequest(final RequestDescription description);
+  protected void doRequest(final RequestDescription description) {
+    if (DEBUG) { Log.d(TAG, "Perform " + description.getId()); }
+    serviceObject.performRequest(description);
+  }
 
   /**
    * Perform the request.
@@ -81,20 +84,47 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
   @Override
   public int performRequest(final RequestDescription description) {
     if (serviceObject != null) {
-      if (DEBUG) { Log.d(TAG, "Call " + description.getOperationCode() + " " + serviceObject); }
+      if (DEBUG) { Log.d(TAG, "Call id= " + description.getId() + " " + serviceObject); }
       doRequest(description);
     } else {
-      if (DEBUG) { Log.d(TAG, "Save last description " + description.getOperationCode() + "(" + serviceObject + "," + registered + ")"); }
+      if (DEBUG) { Log.d(TAG, "Save last description " + description.getId() + "(" + serviceObject + "," + registered + ")"); }
       lastDescriptions.add(description);
     }
     return description.getId();
   }
 
+  public boolean cancelRequest(final int requestId) {
+    if (serviceObject != null) {
+      if (DEBUG) { Log.d(TAG, "Cancel " + requestId); }
+      return serviceObject.cancelRequest(requestId);
+    } else {
+      if (!lastDescriptions.isEmpty()) {
+        final boolean removed = lastDescriptions.remove(new RequestDescription(requestId));
+        if (removed) {
+          if (DEBUG) { Log.d(TAG, "Remove from last descriptions " + requestId); }
+          return false;
+        }
+      }
+      if (DEBUG) { Log.d(TAG, "Save last cancel " + requestId); }
+      lastCancelIds.add(requestId);
+      return false;
+    }
+  }
+
   @Override
   public void onServiceConnected(final ComponentName name, final IBinder service) {
-    serviceObject = ApiMethods.Stub.asInterface(service);
+    serviceObject = ((ApiMethodsBinder)service).getApiMethods();
     if (DEBUG) { Log.d(TAG, "apiMethods = " + serviceObject + " thread " + Thread.currentThread()); }
-    if (!registered) { registerListener(); }
+
+    final boolean callbackOperation = addCallbackRequest ^ removeCallbackRequest;
+    if (callbackOperation) {
+      if (addCallbackRequest) {
+        registerCallback();
+      } else {
+        removeCallback();
+      }
+    }
+
     final ArrayList<RequestDescription> lastDescriptions = this.lastDescriptions;
     final int rCount = lastDescriptions.size();
     if (rCount > 0) {
@@ -103,77 +133,22 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
       }
       lastDescriptions.clear();
     }
+
+    final ArrayList<Integer> lastCancels = this.lastCancelIds;
+    final int cCount = lastCancels.size();
+    if (cCount > 0) {
+      for (int i = 0; i < cCount; i++) {
+        cancelRequest(lastCancels.get(i));
+      }
+      lastCancels.clear();
+    }
   }
 
   @Override
   public void onServiceDisconnected(final ComponentName name) {
     if (DEBUG) { Log.d(TAG, "apiMethods = " + serviceObject + " thread " + Thread.currentThread()); }
+    // service disconnected => listener is removed, we'll have to register it again
     registered = false;
-  }
-
-  @Override
-  public void unbind() {
-    removeListener();
-    if (DEBUG) { Log.d(TAG, "Unbind from service"); }
-    super.unbind();
-  }
-
-  /** Remote callback. */
-  static class RemoteCallback extends ApiMethodCallback.Stub {
-
-    /** Core. */
-    final RequestCallback<?> core;
-
-    /** Name. */
-    private final String name;
-
-    public RemoteCallback(final RequestCallback<?> c, final String name) {
-      core = c;
-      this.name = name;
-    }
-
-    static void deliverSuccess(final RequestCallback<?> callback, final int token, final int operation, final ResponseData responseData, final Serializable model) {
-      final Class<?> clazz = callback.getModelClass(token, operation);
-      if (model != null && clazz != null) {
-        if (clazz.isAssignableFrom(model.getClass())) {
-          callback.castAndReportSuccess(token, operation, responseData, model);
-        } else {
-          callback.reportSuccessUnknownModelType(token, operation, responseData, model);
-        }
-      } else {
-        callback.reportSuccess(token, operation, responseData, null);
-      }
-    }
-
-    @Override
-    public void reportSuccess(final int token, final int operation, final ResponseData responseData) throws RemoteException {
-      if (responseData == null) { throw new IllegalArgumentException("Passing null response data to callback!"); }
-      deliverSuccess(core, token, operation, responseData, responseData.getModel());
-    }
-
-    @Override
-    public void reportError(final int token, final int operation, final ResponseData responseData) throws RemoteException {
-      core.reportError(token, operation, responseData);
-    }
-
-    @Override
-    public void reportPending(final int token, final int operation) throws RemoteException {
-      core.reportPending(token, operation);
-    }
-
-    @Override
-    public void reportLastOperation(final int token, final int operation, final ResponseData responseData) throws RemoteException {
-      core.reportLastOperation(token, operation, responseData);
-    }
-
-    @Override
-    public String toString() { return name; }
-
-    @Override
-    public void reportCancel(final int token, final int operation) throws RemoteException {
-      // TODO implement onCancel
-    }
-
   }
 
 }

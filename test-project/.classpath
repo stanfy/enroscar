@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="/enroscar/libs/test/hamcrest-all-1.2.jar"/>
 	<classpathentry kind="lib" path="/enroscar/libs/test/junit-4.10.jar" sourcepath="/enroscar/libs/src/junit-4.10-src.jar"/>
 	<classpathentry kind="lib" path="/enroscar/libs/test/robolectric-all.jar" sourcepath="/enroscar/libs/src/robolectric-src.jar"/>
+	<classpathentry kind="lib" path="libs/mockwebserver-20120401.jar" sourcepath="libs/src/mockwebserver-20120401-src.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

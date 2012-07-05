@@ -1,33 +1,32 @@
 package com.stanfy.enroscar.sample;
 
+import java.util.List;
+
 import android.content.Context;
 
-import com.stanfy.serverapi.request.ListRequestBuilder;
-import com.stanfy.serverapi.request.Operation;
+import com.stanfy.enroscar.sample.model.Tweet;
+import com.stanfy.serverapi.request.BaseRequestBuilder;
+import com.stanfy.serverapi.request.ListRequestBuilderWrapper;
 
 /**
- * Request builder for {@link OurOperation#GET_TWEETS} operation.
+ * Custom request builder.
  */
-public class TweetsRequestBuilder extends ListRequestBuilder {
+public class TweetsRequestBuilder extends BaseRequestBuilder<List<Tweet>> {
 
   public TweetsRequestBuilder(final Context context) {
     super(context);
+    setTargetUrl("https://api.twitter.com/1/statuses/user_timeline.json");
   }
-
-  @Override
-  public Operation getOperation() { return OurOperation.GET_TWEETS; }
 
   public TweetsRequestBuilder setScreenname(final String name) {
     addSimpleParameter("screen_name", name);
     return this;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public ListRequestBuilder setOffset(final int offset) {
-    return super.setOffset(offset + 1);
+  public ListRequestBuilderWrapper<List<Tweet>, Tweet> asLoadMoreList() {
+    return asLoadMoreList("page", "count");
   }
-
-  @Override
-  public String getOffsetParamName() { return "page"; }
 
 }

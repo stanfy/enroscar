@@ -5,18 +5,18 @@ import java.lang.ref.WeakReference;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.IInterface;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.Application;
+import com.stanfy.app.beans.BeansManager;
+import com.stanfy.serverapi.RemoteServerApiConfiguration;
 
 /**
  * Base class for helpers that can bind to application service.
  * @param <T> service object type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-abstract class ApplicationServiceSupport<T extends IInterface> implements ServiceConnection {
+abstract class ApplicationServiceSupport<T> implements ServiceConnection {
 
   /** Logging tag. */
   private static final String TAG = "ServiceSupport";
@@ -26,17 +26,15 @@ abstract class ApplicationServiceSupport<T extends IInterface> implements Servic
   /** Context instance. */
   final WeakReference<Context> contextRef;
 
+  /** Configuration. */
+  final RemoteServerApiConfiguration configuration;
+
   /** Service object. */
   T serviceObject;
 
   public ApplicationServiceSupport(final Context a) {
     this.contextRef = new WeakReference<Context>(a);
-  }
-
-  /** @return application service class used to resolve a component name */
-  private Class<?> getServiceClass(final Context context) {
-    final Application app = (Application)context.getApplicationContext();
-    return app.getApplicationServiceClass();
+    this.configuration = BeansManager.get(a).getRemoteServerApiConfiguration();
   }
 
   protected abstract Class<T> getInterfaceClass();
@@ -48,14 +46,15 @@ abstract class ApplicationServiceSupport<T extends IInterface> implements Servic
     if (serviceObject != null) { return; }
     final Context context = contextRef.get();
     if (context == null) { return; }
-    final Intent intent = new Intent(context, getServiceClass(context));
+    final Intent intent = new Intent(context, configuration.getApplicationServiceClass());
     intent.setAction(getInterfaceClass().getName());
     if (DEBUG_CALLS) {
       Log.v(TAG, "Attempt to bind to service " + this + "/" + context, new RuntimeException());
     }
+    // start manually, so that it will be stopped manually
     context.startService(intent);
     final boolean bindResult = context.bindService(intent, this, 0);
-    if (DEBUG) { Log.v(TAG, "Binded to service: " + bindResult + ", " + context); }
+    if (DEBUG) { Log.v(TAG, "Binded to service: " + bindResult + ", " + context + ", interface: " + getInterfaceClass()); }
   }
 
   /**
@@ -65,7 +64,7 @@ abstract class ApplicationServiceSupport<T extends IInterface> implements Servic
     if (serviceObject == null) { return; }
     serviceObject = null;
     final Context context = contextRef.get();
-    if (DEBUG) { Log.v(TAG, "Unbind " + context); }
+    if (DEBUG) { Log.v(TAG, "Unbind " + context + " from " + getInterfaceClass()); }
     if (context == null) { return; }
     try {
       context.unbindService(this);

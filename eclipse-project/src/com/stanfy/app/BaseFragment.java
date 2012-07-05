@@ -13,16 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.views.ProgressWrapperFrameLayout;
 import com.stanfy.views.ScrollView;
 
 /**
  * Base fragment class.
- * @param <AT> application type
  * @see BaseActivityBehavior
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class BaseFragment<AT extends Application> extends Fragment {
+public class BaseFragment extends Fragment {
 
   /** Indicates that container is linear layout. */
   public static final int CONTAINER_LINEAR_LAYOUT = 1, CONTAINER_RELATIVE_LAYOUT = 2, CONTAINER_FRAME_LAYOUT = 3;
@@ -75,9 +73,6 @@ public class BaseFragment<AT extends Application> extends Fragment {
     if (view != null && view instanceof FrameLayout && CLASS_NOSAVE_STATE_FRAME_LAYOUT.equals(view.getClass().getSimpleName())) {
       view = ((FrameLayout)view).getChildAt(0);
     }
-    if (view != null && view instanceof ProgressWrapperFrameLayout) {
-      view = ((ProgressWrapperFrameLayout) view).getMainView();
-    }
     return view;
   }
 
@@ -104,7 +99,6 @@ public class BaseFragment<AT extends Application> extends Fragment {
     }
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public void onResume() {
     super.onResume();
@@ -174,13 +168,6 @@ public class BaseFragment<AT extends Application> extends Fragment {
     }
     super.onSaveInstanceState(outState);
   }
-
-  /**
-   * @return owning fragment activity
-   * @see #getActivity()
-   */
-  @SuppressWarnings("unchecked")
-  protected BaseFragmentActivity<AT> getOwnerActivity() { return (BaseFragmentActivity<AT>)getActivity(); }
 
   /**
    * @see Activity#runOnUiThread(Runnable)

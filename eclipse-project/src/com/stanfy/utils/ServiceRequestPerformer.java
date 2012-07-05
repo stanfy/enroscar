@@ -1,12 +1,10 @@
 package com.stanfy.utils;
 
-import java.io.Serializable;
-
 import android.content.Context;
-import android.os.RemoteException;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.app.service.ApiMethodCallback;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.response.ResponseData;
 
@@ -24,63 +22,58 @@ public class ServiceRequestPerformer extends RequestPerformer  {
 
   public ServiceRequestPerformer(final Context a, final RequestCallback callback) {
     super(a, callback);
-    callback.performer = this;
   }
 
   @Override
   public int performRequest(final RequestDescription description) {
     bind();
-    registerListener();
+    registerCallback();
     return super.performRequest(description);
-  }
-
-  @Override
-  protected void doRequest(final RequestDescription description) {
-    try {
-      if (DEBUG) { Log.d(TAG, "Perform " + description.getOperationCode()); }
-      serviceObject.performRequest(description);
-    } catch (final RemoteException e) {
-      Log.e(TAG, "Cannot perform operation " + description.getOperationCode(), e);
-    }
   }
 
   /**
    * Provides default behavior.
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
-  public abstract static class RequestCallback extends com.stanfy.serverapi.request.RequestCallback<Serializable> {
-    /** Performer instance. */
-    ServiceRequestPerformer performer;
+  public abstract class RequestCallback implements ApiMethodCallback {
 
     @Override
-    public boolean isModelInterest() { return false;  }
+    public void reportCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+      // nothing
+    }
+    @Override
+    public void reportLastOperation(final int requestId, final ResponseData<?> responseData) {
+      // nothing
+    }
+    @Override
+    public void reportPending(final int requestId) {
+      // nothing
+    }
 
     @Override
-    public final void reportError(final int token, final int operation, final ResponseData responseData) {
-      if (!filterOperation(token, operation)) { return; }
+    public final void reportError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+      if (!filterOperation(requestDescription.getId(), requestDescription)) { return; }
       if (DEBUG) {
-        Log.d(TAG, "Problems with operation " + operation + ". Error code: "
+        Log.d(TAG, "Problems with operation " + requestDescription.getId() + ". Error code: "
             + responseData.getErrorCode() + ". Message: " + responseData.getMessage());
       }
-      performer.unbind();
-      onError(token, operation, responseData);
+      removeCallback();
+      unbind();
+      onError(requestDescription, responseData);
     }
     @Override
-    public final void reportSuccess(final int token, final int operation, final ResponseData responseData, final Serializable model) {
-      if (!filterOperation(token, operation)) { return; }
-      performer.unbind();
-      onSuccess(token, operation, responseData);
-    }
-    @Override
-    public void reportSuccessUnknownModelType(final int token, final int operation, final ResponseData responseData, final Serializable model) {
-      reportSuccess(token, operation, responseData, model);
+    public final void reportSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+      if (!filterOperation(requestDescription.getId(), requestDescription)) { return; }
+      removeCallback();
+      unbind();
+      onSuccess(requestDescription, responseData);
     }
 
-    protected boolean filterOperation(final int token, final int op) { return false; }
+    protected abstract boolean filterOperation(final int requestId, final RequestDescription requestDescription);
 
-    protected void onError(final int token, final int operation, final ResponseData responseData) { /* empty */ }
+    protected void onError(final RequestDescription requestDescription, final ResponseData<?> responseData) { /* empty */ }
 
-    protected void onSuccess(final int token, final int operation, final ResponseData responseData) { /* empty */ }
+    protected void onSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) { /* empty */ }
 
   }
 

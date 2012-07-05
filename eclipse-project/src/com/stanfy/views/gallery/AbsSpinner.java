@@ -151,6 +151,7 @@ abstract class AbsSpinner extends AdapterView<SpinnerAdapter> {
    *
    * @return A view displaying the data associated with the specified position
    */
+  @SuppressWarnings("deprecation")
   View obtainView(final int position, final boolean[] isScrap) {
     isScrap[0] = false;
     View scrapView;
@@ -248,7 +249,7 @@ abstract class AbsSpinner extends AdapterView<SpinnerAdapter> {
     final int selectedPosition = getSelectedItemPosition();
     if (DEBUG) { Log.v(VIEW_LOG_TAG, "selectedPosition=" + selectedPosition); }
     if (selectedPosition >= 0 && mAdapter != null && selectedPosition < mAdapter.getCount()) {
-      View view = obtainView(selectedPosition, mIsScrap);
+      final View view = obtainView(selectedPosition, mIsScrap);
 
       if (view != null) {
         // Put in recycler for re-measuring and/or layout
@@ -629,6 +630,7 @@ abstract class AbsSpinner extends AdapterView<SpinnerAdapter> {
     /**
      * Move all views remaining in mActiveViews to mScrapViews.
      */
+    @SuppressWarnings("deprecation")
     void scrapActiveViews() {
       final View[] activeViews = mActiveViews;
       final boolean hasListener = mRecyclerListener != null;

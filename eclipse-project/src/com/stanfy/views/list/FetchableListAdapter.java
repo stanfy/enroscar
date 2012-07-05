@@ -23,43 +23,20 @@ public interface FetchableListAdapter extends ListAdapter {
    */
   boolean isBusy();
 
-  /**
-   * Clear elements.
-   */
-  void clear();
-
-  /**
-   * Restore the adapter state.
-   * @param state adapter state
-   */
-  void restoreState(final State state);
-
-  /**
-   * @return adapter state
-   */
-  State getState();
-
   /** @see android.widget.BaseAdapter#notifyDataSetChanged() */
   void notifyDataSetChanged();
 
-  /** @see android.widget.BaseAdapter#notifyDataSetInvalidated() */
-  void notifyDataSetInvalidated();
+  /**
+   * @param listener listener instance
+   */
+  void setOnListItemsLoadedListener(final OnListItemsLoadedListener listener);
 
   /**
-   * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+   * @param <MT> model type
+   * @param <LT> list type
    */
-  public static class State {
-    /** State message. */
-    String message;
-    /** State level. */
-    int level;
-    /** Has more elements. */
-    boolean hasMoreElements;
-
-    /** @return the hasMoreElements */
-    public boolean isHasMoreElements() { return hasMoreElements; }
-    /** @param hasMoreElements the hasMoreElements to set */
-    public void setHasMoreElements(final boolean hasMoreElements) { this.hasMoreElements = hasMoreElements; }
+  public interface OnListItemsLoadedListener {
+    void onListItemsLoaded();
   }
 
 }

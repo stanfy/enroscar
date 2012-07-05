@@ -1,13 +1,14 @@
 package com.stanfy.app.beans;
 
 import static com.stanfy.DebugFlags.DEBUG_BEANS;
-import android.content.res.Configuration;
+import android.content.ComponentCallbacks;
+import android.content.Context;
 
 /**
  * Contains instances of different named application entities.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public interface BeansContainer {
+public interface BeansContainer extends ComponentCallbacks {
 
   /** Logging tag. */
   String TAG = "BeansContainer";
@@ -30,8 +31,10 @@ public interface BeansContainer {
   /**
    * Register the entity.
    * @param clazz entity class
+   * @param context context instance that can be used for bean creation
+   * @return entity instance
    */
-  void putEntityInstance(final Class<?> clazz);
+  <T> T putEntityInstance(final Class<T> clazz, final Context context);
 
   /**
    * Register the entity.
@@ -51,14 +54,19 @@ public interface BeansContainer {
   void removeEntityInstance(final String name);
 
   /**
-   * Called from {@link con.stanfy.app.Application#onLowMemory()}.
+   * Check for {@link InitializingBean} instances.
    */
-  void onLowMemory();
+  void triggerInitFinished();
 
   /**
-   * Called from {@link con.stanfy.app.Application#onConfigurationChanged(Configuration)}.
-   * @param config configuration instance
+   * Destroy all beans.
    */
-  void onConfigurationChange(final Configuration config);
+  void destroy();
+
+  /**
+   * @param name bean name
+   * @return true if bean with the given name exists
+   */
+  boolean containsBean(final String name);
 
 }

@@ -1,9 +1,11 @@
 package com.stanfy.app.service;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -30,7 +32,7 @@ public class ApplicationService extends Service {
   private Handler handler;
 
   /** API methods. */
-  private ApiMethodsImpl apiMethodsImpl;
+  private ApiMethods apiMethods;
   /** Location methods. */
   private LocationMethodsImpl locationMethodsImpl;
 
@@ -41,7 +43,7 @@ public class ApplicationService extends Service {
   public Application getApp() { return (Application)getApplication(); }
 
   /** @return API methods implementation */
-  protected ApiMethodsImpl createApiMethods() { return new ApiMethodsImpl(this); }
+  protected ApiMethods createApiMethods() { return new ApiMethods(this); }
 
   /** @return location methods implementation */
   protected LocationMethodsImpl createLocationMethods() { return new LocationMethodsImpl(this); }
@@ -49,26 +51,7 @@ public class ApplicationService extends Service {
   @Override
   public void onCreate() {
     super.onCreate();
-    handler = new Handler() {
-      @Override
-      public void handleMessage(final Message msg) {
-        switch (msg.what) {
-        case MSG_CHECK_FOR_STOP:
-          // here we decide whether to stop the service
-          if (DEBUG) { Log.d(TAG, "Check for stop"); }
-          final boolean hasUsers = apiMethodsUse.get() || locationMethodsUse.get();
-          if (!hasUsers) {
-            final boolean apiWorking = apiMethodsImpl != null && apiMethodsImpl.isWorking();
-            if (!apiWorking) {
-              if (DEBUG) { Log.d(TAG, "Stopping"); }
-              stopSelf();
-            }
-          }
-          break;
-        default:
-        }
-      }
-    };
+    handler = new InternalHandler(this);
     if (DEBUG) { Log.d(TAG, "Service created"); }
   }
 
@@ -81,8 +64,8 @@ public class ApplicationService extends Service {
 
   @Override
   public void onDestroy() {
-    if (apiMethodsImpl != null) {
-      apiMethodsImpl.destroy();
+    if (apiMethods != null) {
+      apiMethods.destroy();
     }
     if (locationMethodsImpl != null) {
       locationMethodsImpl.destroy();
@@ -91,6 +74,7 @@ public class ApplicationService extends Service {
     super.onDestroy();
   }
 
+  @SuppressWarnings("deprecation")
   private void checkForLocationMethodsSupport(final boolean force) {
     if (locationMethodsImpl != null) { return; }
     if (force || getApp().addLocationSupportToService()) {
@@ -106,11 +90,11 @@ public class ApplicationService extends Service {
 
     if (action.equals(ApiMethods.class.getName())) {
       apiMethodsUse.set(true);
-      if (apiMethodsImpl == null) {
-        apiMethodsImpl = createApiMethods();
+      if (apiMethods == null) {
+        apiMethods = createApiMethods();
       }
       checkForLocationMethodsSupport(false);
-      return apiMethodsImpl.asBinder();
+      return new ApiMethodsBinder(apiMethods);
     }
     if (action.equals(LocationMethods.class.getName())) {
       checkForLocationMethodsSupport(true);
@@ -138,7 +122,7 @@ public class ApplicationService extends Service {
     final String action = intent.getAction();
     if (action == null) { return false; }
     if (DEBUG) { Log.d(TAG, "Unbind from " + action); }
-    if (apiMethodsImpl != null && action.equals(ApiMethods.class.getName())) {
+    if (apiMethods != null && action.equals(ApiMethods.class.getName())) {
       apiMethodsUse.set(false);
       checkForStop();
     } else if (locationMethodsImpl != null && action.equals(LocationMethods.class.getName())) {
@@ -152,6 +136,58 @@ public class ApplicationService extends Service {
     if (DEBUG) { Log.d(TAG, "Schedule check for stop"); }
     handler.removeMessages(MSG_CHECK_FOR_STOP);
     handler.sendEmptyMessage(MSG_CHECK_FOR_STOP);
+  }
+
+  protected void doStop() {
+    stopSelf();
+  }
+
+  protected ApiMethods getApiMethods() { return apiMethods; }
+
+  /** API methods binder. */
+  public static class ApiMethodsBinder extends Binder {
+    /** API methods. */
+    private final ApiMethods apiMethods;
+
+    public ApiMethodsBinder(final ApiMethods apiMethods) {
+      this.apiMethods = apiMethods;
+    }
+
+    public ApiMethods getApiMethods() { return apiMethods; }
+  }
+
+  /** Internal handler. */
+  protected static class InternalHandler extends Handler {
+
+    /** Service instance. */
+    private final WeakReference<ApplicationService> serviceRef;
+
+    public InternalHandler(final ApplicationService service) {
+      this.serviceRef = new WeakReference<ApplicationService>(service);
+    }
+
+    @Override
+    public void handleMessage(final Message msg) {
+      final ApplicationService service = serviceRef.get();
+      if (service == null) { return; }
+
+      switch (msg.what) {
+      case MSG_CHECK_FOR_STOP:
+        // here we decide whether to stop the service
+        if (DEBUG) { Log.d(TAG, "Check for stop"); }
+        final boolean hasUsers = service.apiMethodsUse.get() || service.locationMethodsUse.get();
+        if (!hasUsers) {
+          final boolean apiWorking = service.apiMethods != null && service.apiMethods.isWorking();
+          if (!apiWorking) {
+            if (DEBUG) { Log.d(TAG, "Stopping"); }
+            service.doStop();
+          }
+        }
+        break;
+      default:
+      }
+    }
+
   }
 
 }

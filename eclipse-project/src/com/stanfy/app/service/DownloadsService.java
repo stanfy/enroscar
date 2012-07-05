@@ -2,17 +2,12 @@ package com.stanfy.app.service;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLConnection;
 import java.util.LinkedList;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -29,9 +24,10 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.Application;
-import com.stanfy.images.BuffersPool;
-import com.stanfy.images.PoolableBufferedInputStream;
+import com.stanfy.io.BuffersPool;
+import com.stanfy.io.IoUtils;
+import com.stanfy.io.PoolableBufferedInputStream;
+import com.stanfy.net.UrlConnectionBuilder;
 import com.stanfy.utils.AppUtils;
 
 /**
@@ -249,7 +245,7 @@ public class DownloadsService extends Service {
           .setContentIntent(PendingIntent.getBroadcast(DownloadsService.this, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT))
           .setOngoing(true)
           .setProgress(max, (int)(p * max), progress == null)
-          .getNotification();
+          .build();
 
       getNotificationManager().notify(request.notificationId, n);
 
@@ -265,10 +261,6 @@ public class DownloadsService extends Service {
       clickIntent.putExtra(EXTRA_ID, request.id);
       updateDownloadProgress(null);
 
-      final Application app = (Application)getApplicationContext();
-      final HttpGet get = new HttpGet(request.uri.toString());
-      final HttpClient client = app.getHttpClientsPool().getHttpClient();
-
       File destination;
       try {
         destination = new File(new URI(request.destinationUri.toString()));
@@ -280,14 +272,19 @@ public class DownloadsService extends Service {
       InputStream input = null;
       OutputStream output = null;
       try {
-        final HttpResponse response = client.execute(get);
-        final HttpEntity entity = response.getEntity();
-        final long length = entity.getContentLength();
-        if (length > 0) { updateDownloadProgress(0f); }
+        final URLConnection urlConnection = new UrlConnectionBuilder()
+          .setUrl(params[0].uri)
+          .create();
+
+        urlConnection.connect();
 
         destination.createNewFile();
         output = new FileOutputStream(destination);
-        input = new PoolableBufferedInputStream(entity.getContent(), DEFAULT_BUFFER_SIZE, buffersPool);
+        input = new PoolableBufferedInputStream(urlConnection.getInputStream(), DEFAULT_BUFFER_SIZE, buffersPool);
+
+        final long length = urlConnection.getContentLength();
+        if (length > 0) { updateDownloadProgress(0f); }
+
         int count;
         final byte[] buffer = buffersPool.get(DEFAULT_BUFFER_SIZE);
         int total = 0;
@@ -313,13 +310,8 @@ public class DownloadsService extends Service {
         Log.e(TAG, "Cannot download " + request.uri, e);
         return null;
       } finally {
-          try {
-            if (input != null) { input.close(); }
-            if (output != null) { output.close(); }
-          } catch (final IOException e) {
-            Log.e(TAG, "Cannot close the " + (input == null ? "output" : "input") + " stream for " + request.uri, e);
-          }
-        app.getHttpClientsPool().releaseHttpClient(client);
+        IoUtils.closeQuietly(input);
+        IoUtils.closeQuietly(output);
       }
     }
     @Override

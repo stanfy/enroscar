@@ -8,7 +8,7 @@ import android.app.Activity;
  * Empty implementation of {@link StatsManager}.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class EmptyStatsManager implements StatsManager                                    {
+public class EmptyStatsManager extends StatsManager {
 
   @Override
   public void onStartSession(final Activity activity) { /* nothing */ }

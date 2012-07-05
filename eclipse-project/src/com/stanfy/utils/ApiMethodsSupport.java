@@ -1,21 +1,15 @@
 package com.stanfy.utils;
 
-import java.io.Serializable;
+import java.lang.ref.WeakReference;
 
 import android.content.Context;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.ActionBarActivity;
-import com.stanfy.app.ActionBarSupport;
-import com.stanfy.app.service.ApiMethods;
+import com.stanfy.app.service.ApiMethodCallback;
 import com.stanfy.serverapi.ErrorCodes;
-import com.stanfy.serverapi.request.RequestCallback;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.views.R;
@@ -32,35 +26,22 @@ public class ApiMethodsSupport extends RequestPerformer {
   private static final boolean DEBUG = DebugFlags.DEBUG_API;
 
   /** Support handler messages. */
-  static final int MSG_SERVER_ERROR_TOAST = 1, MSG_CONNECTION_ERROR_INFO = 2, MSG_HIDE_PROGRESS = 3, MSG_SHOW_PROGRESS = 4, MSG_SHOW_TOAST = 5;
+  static final int MSG_SERVER_ERROR_TOAST = 1, MSG_CONNECTION_ERROR_INFO = 2, MSG_SHOW_TOAST = 5;
 
   /** Handler. */
   SupportHandler handler;
 
-  /** Last operation interest flag. */
-  final boolean lastOperationInterest;
-
-  public ApiMethodsSupport(final Context context, final RequestCallback<?> callback) {
-    this(context, callback, false);
-  }
-  public ApiMethodsSupport(final Context context, final RequestCallback<?> callback, final boolean lastOperationInterest) {
+  public ApiMethodsSupport(final Context context, final ApiMethodCallback callback) {
     super(context, callback);
-    if (callback instanceof SupportAware) { ((SupportAware)callback).setSupport(this); }
-    this.lastOperationInterest = lastOperationInterest;
-    this.handler = new SupportHandler();
+    if (callback instanceof ApiSupportRequestCallback) {
+      ((ApiSupportRequestCallback) callback).setSupport(this);
+    }
+    handler = new SupportHandler(this);
   }
 
   @Override
   protected void doRequest(final RequestDescription description) {
-    new CallTask().execute(description);
-  }
-
-  void setProgressVisibility(final boolean value) {
-    final Context context = contextRef.get();
-    if (context == null) { return; }
-    if (!(context instanceof ActionBarActivity)) { return; }
-    final ActionBarSupport abs = ((ActionBarActivity)context).getActionBarSupport();
-    if (abs != null) { abs.setProgressVisibility(value); }
+    serviceObject.performRequest(description);
   }
 
   void displayConnectionErrorInformation() {
@@ -75,69 +56,41 @@ public class ApiMethodsSupport extends RequestPerformer {
     GUIUtils.shortToast(context, message);
   }
 
+  /** @return GUI handler instance */
+  public Handler getHandler() { return handler; }
+
   /**
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
-  class SupportHandler extends Handler {
+  static class SupportHandler extends Handler {
+
+    /** Support reference. */
+    private final WeakReference<ApiMethodsSupport> supportRef;
+
+    public SupportHandler(final ApiMethodsSupport support) {
+      this.supportRef = new WeakReference<ApiMethodsSupport>(support);
+    }
 
     @Override
     public void handleMessage(final Message msg) {
+      final ApiMethodsSupport support = supportRef.get();
+      if (support == null) { return; } // we are destroyed
+
       switch (msg.what) {
 
       case MSG_SHOW_TOAST:
       case MSG_SERVER_ERROR_TOAST:
-        showToast((String)msg.obj);
+        support.showToast((String)msg.obj);
         break;
 
       case MSG_CONNECTION_ERROR_INFO:
-        displayConnectionErrorInformation();
-        break;
-
-      case MSG_HIDE_PROGRESS:
-        setProgressVisibility(false);
-        break;
-
-      case MSG_SHOW_PROGRESS:
-        setProgressVisibility(true);
+        support.displayConnectionErrorInformation();
         break;
 
       default:
       }
     }
 
-  }
-
-  /**
-   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
-   */
-  class CallTask extends AsyncTask<RequestDescription, Void, Boolean> {
-    @Override
-    protected void onPreExecute() { setProgressVisibility(true); }
-    @Override
-    protected Boolean doInBackground(final RequestDescription... params) {
-      final ApiMethods apiMethods = serviceObject;
-      if (apiMethods != null) {
-        try {
-          apiMethods.performRequest(params[0]);
-          return true;
-        } catch (final RemoteException e) {
-          Log.e(TAG, "Cannot run operation", e);
-          return false;
-        }
-      }
-      return false;
-    }
-    @Override
-    protected void onPostExecute(final Boolean result) {
-      if (!result) { setProgressVisibility(false); }
-    }
-  }
-
-  /**
-   * @author Roman Mazur (Stanfy - http://www.stanfy.com)
-   */
-  interface SupportAware {
-    void setSupport(ApiMethodsSupport support);
   }
 
   /**
@@ -145,181 +98,130 @@ public class ApiMethodsSupport extends RequestPerformer {
    * @param <MT> model type
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
-  public abstract static class ApiSupportRequestCallback<MT extends Serializable> extends RequestCallback<MT> implements SupportAware {
+  public abstract static class ApiSupportRequestCallback implements ApiMethodCallback {
 
     /** Support. */
     private ApiMethodsSupport support;
 
-    @Override
-    public void setSupport(final ApiMethodsSupport support) {
-      this.support = support;
-    }
+    void setSupport(final ApiMethodsSupport support) { this.support = support; }
 
     /** @return the support */
     public ApiMethodsSupport getSupport() { return support; }
 
-    public abstract boolean filterOperation(final int token, final int o);
+    public abstract boolean filterOperation(final int requestId, final RequestDescription requestDescription);
 
     /**
      * Process the connection error. This method is called <b>outside of the main thread</b>.
-     * @param operation operation
-     * @param token request token
-     * @param internalMessage internal message
+     * @param requestDescription request description
+     * @param responseData response data
      */
-    protected void processConnectionError(final int token, final int operation, final ResponseData responseData) {
+    protected void processConnectionError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
       Log.e(TAG, responseData.getMessage());
-      final ApiMethodsSupport support = this.support;
-      if (support != null) {
-        support.handler.obtainMessage(MSG_CONNECTION_ERROR_INFO, responseData.getMessage()).sendToTarget();
-      }
+      support.handler.obtainMessage(MSG_CONNECTION_ERROR_INFO, responseData.getMessage()).sendToTarget();
     }
 
     /**
      * Process the error obtained from the server. This method is called <b>outside of the main thread</b>.
-     * @param token request token
-     * @param operation operation instance
-     * @param code error code
-     * @param mesage error message
+     * @param requestDescription request description
+     * @param responseData response data
      */
-    protected void processServerError(final int token, final int operation, final ResponseData responseData) {
+    protected void processServerError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
       Log.e(TAG, "Got an error in server response: " + responseData.getErrorCode() + " / [" + responseData.getMessage() + "]");
-      final ApiMethodsSupport support = this.support;
-      if (support != null) {
-        support.handler.obtainMessage(MSG_SERVER_ERROR_TOAST, responseData.getMessage()).sendToTarget();
-      }
+      support.handler.obtainMessage(MSG_SERVER_ERROR_TOAST, responseData.getMessage()).sendToTarget();
     }
 
     /**
      * Process the result data. This method is called <b>outside of the main thread</b>.
-     * @param token request token
-     * @param operation operation instance
-     * @param server message
-     * @param data result data URI
-     * @param model instance
+     * @param requestDescription request description
+     * @param responseData response data
      */
-    protected abstract void processSuccess(final int token, final int operation, final ResponseData responseData, final MT model);
-
-    protected void processSuccessUnknownModelType(final int token, final int operation, final ResponseData responseData, final Serializable model) { }
+    protected abstract void processSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData);
 
     /**
      * This method is called <b>outside of the main thread</b>.
-     * @param operation operation instance
+     * @param requestDescription request description instance
      */
-    protected void onOperationFinished(final int token, final int operation) {
+    protected void onOperationFinished(final RequestDescription requestDescription) {
       if (DEBUG && support != null) {
-        Log.d(TAG, operation + " finished, thread " + Thread.currentThread() + ", context " + support.contextRef.get());
+        Log.d(TAG, requestDescription.getId() + " finished, thread " + Thread.currentThread() + ", context " + support.contextRef.get());
       }
     }
 
     /**
-     * This method can be called after the callback was registered in order to notify about running the operation
-     * that callback in interested in. Can process incoming GUI actions.
-     * @param operation pending operation
+     * @see ApiMethodCallback#reportPending(int)
      */
-    protected void onOperationPending(final int token, final int operation) {
+    protected void onOperationPending(final int requestId) {
+      // nothing
     }
 
-    protected void onError(final int token, final int operation, final ResponseData responseData) {
+    /**
+     * @see ApiMethodCallback#reportLastOperation(int, ResponseData<?>)
+     */
+    protected void onLastOperationReport(final int requestId, final ResponseData<?> responseData) {
+      // nothing
     }
 
-    protected void onLastOperationSuccess(final int token, final int operation, final ResponseData responseData) {
-
-    }
-    protected void onLastOperationError(final int token, final int operation, final ResponseData responseData) {
-      switch(responseData.getErrorCode()) {
-      case ErrorCodes.ERROR_CODE_CONNECTION:
-      case ErrorCodes.ERROR_CODE_SERVER_COMUNICATION:
-        processConnectionError(token, operation, responseData);
-        break;
-      default:
-        processServerError(token, operation, responseData);
-      }
+    protected void onError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
     }
 
-    private boolean successProcessing(final int token, final int operation, final Uri dataUri) {
-      if (!filterOperation(token, operation)) { return false; }
-      if (support != null) { support.handler.sendEmptyMessage(MSG_HIDE_PROGRESS); }
-      if (DEBUG) { Log.d(TAG, operation + " success, data " + dataUri); }
+    /**
+     * @see ApiMethodCallback#onCancel(RequestDescription)
+     */
+    protected void onCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+      // nothing
+    }
+
+    private boolean successProcessing(final RequestDescription requestDescription) {
+      if (!filterOperation(requestDescription.getId(), requestDescription)) { return false; }
+      if (DEBUG) { Log.d(TAG, requestDescription.getId() + " success"); }
       return true;
     }
 
     @Override
-    public final synchronized void reportSuccess(final int token, final int operation, final ResponseData responseData, final MT model) {
-      if (successProcessing(token, operation, responseData.getData())) {
-        processSuccess(token, operation, responseData, model);
+    public final void reportSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+      if (successProcessing(requestDescription)) {
+        processSuccess(requestDescription, responseData);
       }
-      onOperationFinished(token, operation);
+      onOperationFinished(requestDescription);
     }
 
     @Override
-    public final synchronized void reportSuccessUnknownModelType(final int token, final int operation, final ResponseData responseData, final Serializable model) {
-      if (successProcessing(token, operation, responseData.getData())) {
-        processSuccessUnknownModelType(token, operation, responseData, model);
-      }
-      onOperationFinished(token, operation);
-    }
-
-    @Override
-    public final synchronized void reportError(final int token, final int operation, final ResponseData responseData) {
-      if (!filterOperation(token, operation)) { return; }
-      if (support != null) { support.handler.sendEmptyMessage(MSG_HIDE_PROGRESS); }
-      onError(token, operation, responseData);
+    public final void reportError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+      if (!filterOperation(requestDescription.getId(), requestDescription)) { return; }
+      onError(requestDescription, responseData);
       switch (responseData.getErrorCode()) {
       case ErrorCodes.ERROR_CODE_CONNECTION:
       case ErrorCodes.ERROR_CODE_SERVER_COMUNICATION:
-        processConnectionError(token, operation, responseData);
-        if (DEBUG) { Log.d(TAG, operation + " error, message " + responseData.getMessage()); }
+        processConnectionError(requestDescription, responseData);
+        if (DEBUG) { Log.d(TAG, requestDescription.getId() + " error, message " + responseData.getMessage()); }
         break;
       default:
-        processServerError(token, operation, responseData);
+        processServerError(requestDescription, responseData);
       }
-      onOperationFinished(token, operation);
+      onOperationFinished(requestDescription);
     }
 
     @Override
-    public final synchronized void reportPending(final int token, final int operation) {
-      if (!filterOperation(token, operation)) { return; }
-      if (support != null) { support.handler.sendEmptyMessage(MSG_SHOW_PROGRESS); }
-      if (DEBUG) { Log.d(TAG, "Operation " + operation + " is already pending"); }
-      onOperationPending(token, operation);
+    public final void reportPending(final int requestId) {
+      if (!filterOperation(requestId, null)) { return; }
+      if (DEBUG) { Log.d(TAG, "Operation " + requestId + " is already pending"); }
+      onOperationPending(requestId);
     }
 
     @Override
-    public final synchronized void reportLastOperation(final int token, final int operation, final ResponseData responseData) {
-      if (!support.lastOperationInterest || !filterOperation(token, operation)) { return; }
-      if (responseData.getErrorCode() == 0) {
-        onLastOperationSuccess(token, operation, responseData);
-      } else {
-        onLastOperationError(token, operation, responseData);
-      }
+    public final void reportLastOperation(final int requestId, final ResponseData<?> responseData) {
+      if (!filterOperation(requestId, null)) { return; }
+      if (DEBUG) { Log.d(TAG, "Last operation " + requestId); }
+      onLastOperationReport(requestId, responseData);
     }
 
-  }
-
-  /**
-   * A request callback for {@link NoModelApiMethodsSupport}.
-   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
-   */
-  public abstract static class NoModelRequestCallback extends ApiSupportRequestCallback<Serializable> {
     @Override
-    protected final void processSuccess(final int token, final int operation, final ResponseData responseData, final Serializable model) {
-      processSuccess(token, operation, responseData);
-    }
-    @Override
-    protected void processSuccessUnknownModelType(final int token, final int operation, final ResponseData responseData, final Serializable model) {
-      processSuccess(token, operation, responseData);
+    public final void reportCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+      if (!filterOperation(requestDescription.getId(), requestDescription)) { return; }
+      if (DEBUG) { Log.d(TAG, "Canceled " + requestDescription.getId()); }
+      onCancel(requestDescription, responseData);
     }
 
-    /**
-     * Process the result data. This method is called <b>outside of the main thread</b>.
-     * @param operation operation instance
-     * @param server message
-     * @param data result data URI
-     */
-    protected abstract void processSuccess(final int token, final int operation, final ResponseData responseData);
-
-    @Override
-    public boolean isModelInterest() { return false; }
   }
 
 }

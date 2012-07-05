@@ -10,6 +10,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.pm.ApplicationInfo;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,12 +40,12 @@ public class GUIUtils {
 
   /**
    * Create a very simple notification, <b>should be used for debugging only</b>.
-   * Use {@link SDKDependentUtils#createNotificationBuilder(Context)} for building notification.
+   * Use {@link com.stanfy.utils.sdk.SDKDependentUtils#createNotificationBuilder(Context)} for building notification.
    * @param ctx context instance
    * @param message message to display
    * @param contentIntent content intent
    * @return notification instance
-   * @see SDKDependentUtils#createNotificationBuilder(Context)
+   * @see com.stanfy.utils.sdk.SDKDependentUtils#createNotificationBuilder(Context)
    * @see com.stanfy.utils.notifications.NotificationBuilder
    */
   public static Notification createNotification(final Context ctx, final CharSequence message, final PendingIntent contentIntent) {
@@ -55,7 +56,7 @@ public class GUIUtils {
         .setContentTitle(ctx.getPackageManager().getApplicationLabel(appInfo))
         .setContentText(message)
         .setContentIntent(contentIntent)
-        .getNotification();
+        .build();
   }
 
   /**
@@ -203,6 +204,28 @@ public class GUIUtils {
     spinner.setMessage(text);
     spinner.setOnCancelListener(oncancel);
     return spinner;
+  }
+
+  /**
+   * Converts device independent points to actual pixels.
+   * @param context - context
+   * @param dip - dip value
+   * @return pixels count
+   */
+  public static int pixelsWidth(final DisplayMetrics displayMetrics, final int dip) {
+    final float scale = displayMetrics.density;
+    final float alpha = 0.5f;
+    return (int)(dip * scale + alpha);
+  }
+  /**
+   * Converts device independent points to actual pixels.
+   * @param context - context
+   * @param dip - dip value
+   * @return pixels count
+   */
+  public static int pixelsOffset(final DisplayMetrics displayMetrics, final int dip) {
+    final float scale = displayMetrics.density;
+    return (int)(dip * scale);
   }
 
 }

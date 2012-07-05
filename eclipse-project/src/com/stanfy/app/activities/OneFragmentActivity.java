@@ -4,16 +4,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import com.stanfy.app.Application;
 import com.stanfy.app.BaseFragmentActivity;
 import com.stanfy.views.R;
 
 /**
  * Activity that contains one fragment only.
- * @param <AT> application type
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public abstract class OneFragmentActivity<AT extends Application> extends BaseFragmentActivity<AT> {
+public abstract class OneFragmentActivity extends BaseFragmentActivity {
 
   /** Fragment instance. */
   private Fragment fragment;

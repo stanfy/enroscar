@@ -1,6 +1,7 @@
 package com.stanfy.audio;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -141,7 +142,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
     super.onCreate();
     wifiLock = ((WifiManager)getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
     notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-    handler = new InternalHandler();
+    handler = new InternalHandler(this);
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO) {
       audioHelper = new AudioFocusHelper(this);
     } else {
@@ -272,7 +273,7 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
         .setOngoing(true)
         .setContentTitle(getPackageManager().getApplicationLabel(appInfo))
         .setContentText(text)
-        .getNotification();
+        .build();
   }
 
   /** @return the mediaPlayer */
@@ -510,12 +511,23 @@ public class StreamingPlaybackService extends Service implements OnPreparedListe
   /**
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  protected class InternalHandler extends Handler {
+  protected static class InternalHandler extends Handler {
+
+    /** Reference. */
+    private final WeakReference<StreamingPlaybackService> playbackRef;
+
+    public InternalHandler(final StreamingPlaybackService playbackService) {
+      this.playbackRef = new WeakReference<StreamingPlaybackService>(playbackService);
+    }
+
     @Override
     public void handleMessage(final Message msg) {
+      final StreamingPlaybackService service = playbackRef.get();
+      if (service == null) { return; } // we are destroyed
+
       switch (msg.what) {
       case MSG_META_UPDATED:
-        notifyListener();
+        service.notifyListener();
         break;
       default:
       }

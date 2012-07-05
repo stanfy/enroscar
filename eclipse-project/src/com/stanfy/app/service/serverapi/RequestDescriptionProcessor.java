@@ -5,12 +5,14 @@ import android.util.Log;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.app.Application;
+import com.stanfy.app.beans.BeansManager;
+import com.stanfy.serverapi.RemoteServerApiConfiguration;
 import com.stanfy.serverapi.RequestMethod;
 import com.stanfy.serverapi.RequestMethod.RequestMethodException;
-import com.stanfy.serverapi.RequestMethodHelper;
+import com.stanfy.serverapi.RequestMethod.RequestResult;
 import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.response.ParserContext;
 import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.serverapi.response.ResponseModelConverter;
 
 /**
  * A strategy that creates {@link com.stanfy.serverapi.response.ParserContext} and calls
@@ -24,11 +26,11 @@ public class RequestDescriptionProcessor {
   /** Debug API. */
   protected static final boolean DEBUG = DebugFlags.DEBUG_API;
 
-  /** Application instance. */
-  private final Application application;
+  /** Configuration. */
+  private final RemoteServerApiConfiguration config;
 
   public RequestDescriptionProcessor(final Application application) {
-    this.application = application;
+    this.config = BeansManager.get(application).getRemoteServerApiConfiguration();
   }
 
   /**
@@ -38,31 +40,35 @@ public class RequestDescriptionProcessor {
    * @param hooks request processor hooks
    */
   public void process(final Context context, final RequestDescription description, final RequestProcessorHooks hooks) {
-    final Application app = this.application;
+    final RequestMethod requestMethod = config.getRequestMethod(description);
+    final ResponseModelConverter converter = config.getResponseModelConverter(description);
 
-    final RequestMethodHelper requestMethodHelper = app.getRequestMethodHelper();
+    if (DEBUG) { Log.d(TAG, "Process request id " + description.getId()); }
 
-    final ParserContext pContext = requestMethodHelper.createParserContext(description);
-    pContext.setSystemContext(context);
-    final RequestMethod requestMethod = requestMethodHelper.createRequestMethod(description);
-
-    final int opCode = description.getOperationCode();
-    final int token = description.getToken();
-    if (DEBUG) { Log.d(TAG, "Current context: " + pContext + ", op " + opCode + ", token " + token); }
-
-    hooks.beforeRequestProcessingStarted(description, pContext, requestMethod);
+    hooks.beforeRequestProcessingStarted(description, requestMethod);
 
     try {
       // execute request method
-      requestMethod.setup(app);
-      requestMethod.start(context, description, pContext);
-      requestMethod.stop(app);
+      final RequestResult res = requestMethod.perform(context, description);
+
+      // check for cancel
+      if (description.isCanceled()) {
+        hooks.onRequestCancel(description, null);
+        return;
+      }
 
       // process results
-      final ResponseData response = pContext.processResults();
+      final ResponseData<?> response
+          = converter.toResponseData(description, res.getConnection(), res.getModel());
+
+      // check for cancel
+      if (description.isCanceled()) {
+        hooks.onRequestCancel(description, response);
+        return;
+      }
 
       // report results
-      if (pContext.isSuccessful()) {
+      if (response.isSuccessful()) {
         hooks.onRequestSuccess(description, response);
       } else {
         Log.e(TAG, "Server error: " + response.getErrorCode() + ", " + response.getMessage());
@@ -71,11 +77,9 @@ public class RequestDescriptionProcessor {
 
     } catch (final RequestMethodException e) {
       Log.e(TAG, "Request method error", e);
-      pContext.defineResponse(e);
-      hooks.onRequestError(description, pContext.processResults());
+      hooks.onRequestError(description, converter.toResponseData(description, e));
     } finally {
-      hooks.afterRequestProcessingFinished(description, pContext, requestMethod);
-      pContext.destroy();
+      hooks.afterRequestProcessingFinished(description, requestMethod);
     }
   }
 

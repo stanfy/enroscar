@@ -16,6 +16,11 @@ public @interface EnroscarBean {
   /**
    * @return bean name
    */
-  String name();
+  String value();
+
+  /**
+   * @return true if this bean requires context to be created
+   */
+  boolean contextDependent() default false;
 
 }

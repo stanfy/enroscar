@@ -11,7 +11,7 @@ import com.stanfy.enroscar.sample.DevelopersLogoFragment.TweetsListener;
 import com.stanfy.enroscar.sample.other.GallerySampleActivity;
 import com.stanfy.enroscar.sample.other.QuickActionsSampleActivity;
 
-public class SampleActivity extends OneFragmentActivity<SampleApplication> implements TweetsListener, OnClickListener {
+public class SampleActivity extends OneFragmentActivity implements TweetsListener, OnClickListener {
 
   @Override
   protected int getLayoutId() { return R.layout.activity; }
@@ -46,6 +46,13 @@ public class SampleActivity extends OneFragmentActivity<SampleApplication> imple
       break;
     default:
     }
+  }
+
+  @Override
+  public void loadProfile() {
+    getSupportFragmentManager().beginTransaction()
+    .replace(R.id.fragment_container, new LoadProfileFragment())
+    .commit();
   }
 
 }

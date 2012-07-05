@@ -1,29 +1,20 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" 
     style="@style/MainContainer"
     android:id="@+id/state_progress"
-    android:visibility="gone"
+    android:gravity="center"
     >
   
-  <ImageView
-      style="@style/WrapContent"
-      android:layout_centerInParent="true"
-      android:id="@+id/loader_image"
-      tools:ignore="ContentDescription"
-      />
   <ProgressBar
       style="@style/ProgressSmallDark"
       android:id="@+id/progress_bar"
-      android:layout_centerInParent="true"
       />
   <TextView
       style="@style/WrapContent"
       android:id="@+id/progress_text"
-      android:layout_above="@id/progress_bar"
+      android:layout_marginTop="5dp"
       android:text="@string/progress_loading"
-      android:layout_marginBottom="5dp"
-      android:layout_centerHorizontal="true"
       />
       
-</RelativeLayout>
+</LinearLayout>
