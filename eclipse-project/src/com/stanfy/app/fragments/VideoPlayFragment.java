@@ -22,7 +22,6 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.Application;
 import com.stanfy.app.BaseDialogFragment;
 import com.stanfy.app.BaseFragment;
 import com.stanfy.views.R;
@@ -235,7 +234,7 @@ public class VideoPlayFragment extends BaseFragment implements OnPreparedListene
    * Error dialog.
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
-  public static class ErrorDialogFragment extends BaseDialogFragment<Application> {
+  public static class ErrorDialogFragment extends BaseDialogFragment {
 
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
