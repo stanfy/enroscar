@@ -1,6 +1,7 @@
 package com.stanfy.serverapi.request;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -62,13 +63,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
     result.simpleParameters.name = "stub";
     result.contentLanguage = Locale.getDefault().getLanguage();
 
-//    final Class<?> myClass = getClass(); /*, superClass = myClass.getSuperclass();
-//    while (superClass != RequestBuilder.class) {
-//      myClass = superClass;
-//      superClass = superClass.getSuperclass();
-//    }*/
-//    result.modelClass = (Class<?>)((ParameterizedType)myClass.getGenericSuperclass()).getActualTypeArguments()[0];
-    result.modelType = new ModelTypeToken(getClass());
+    result.modelType = ModelTypeToken.fromRequestBuilderClass(getClass());
   }
 
   protected String getDateTimeFormat() { return "yyyy-MM-dd HH:mm:ss Z"; }
@@ -82,6 +77,10 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
       Log.e(TAG, "Cannot parse date " + d, e);
       return null;
     }
+  }
+
+  protected void setModelType(final Type type) {
+    result.modelType = ModelTypeToken.fromModelType(type);
   }
 
   /**

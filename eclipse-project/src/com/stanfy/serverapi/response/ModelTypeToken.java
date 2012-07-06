@@ -14,7 +14,7 @@ import com.google.gson.internal.$Gson$Types;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  *
  */
-public class ModelTypeToken implements Parcelable {
+public final class ModelTypeToken implements Parcelable {
 
   /** Creator. */
   public static final Creator<ModelTypeToken> CREATOR = new Creator<ModelTypeToken>() {
@@ -24,13 +24,24 @@ public class ModelTypeToken implements Parcelable {
     public ModelTypeToken[] newArray(final int size) { return new ModelTypeToken[size]; }
   };
 
+  public static ModelTypeToken fromRequestBuilderClass(final Class<?> clazz) {
+    return new ModelTypeToken(clazz);
+  }
+  public static ModelTypeToken fromModelType(final Type type) {
+    return new ModelTypeToken(type);
+  }
+
   /** Type. */
   private final Type type;
   /** Raw class. */
   private final Class<?> rawClass;
 
-  public ModelTypeToken(final Class<?> clazz) {
-    this.type = getType(clazz);
+  private ModelTypeToken(final Class<?> clazz) {
+    this(getType(clazz));
+  }
+
+  private ModelTypeToken(final Type type) {
+    this.type = type;
     this.rawClass = $Gson$Types.getRawType(this.type);
 
     assert this.type instanceof Serializable;
