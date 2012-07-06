@@ -197,7 +197,9 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
    * @param responseData can be null
    */
   protected void onCanceled(final ResponseData<MT> responseData) {
-    onReleaseData(responseData);
+    if (responseData != null) {
+      onReleaseData(responseData);
+    }
   }
 
   /**
@@ -295,6 +297,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
   ResponseData<MT> castResponseData(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+    if (responseData == null) { return null; }
     final Object model = responseData.getModel();
     if (model == null || requestDescription.getModelType().getRawClass().isInstance(model)) {
       final ResponseData result = responseData;
@@ -324,6 +327,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
         if (canceled) {
           dispatchCanceledData(data);
         } else {
+          if (data == null) { throw new IllegalStateException("ResponseData is null but request was not canceled!"); }
           dispatchLoadedData(request, data);
         }
       } finally {
