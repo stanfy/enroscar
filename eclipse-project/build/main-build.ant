@@ -358,12 +358,10 @@
 
   <target name="-test" depends="-check-tests-available" if="src.test.available">
     <path id="test.classpath">
-      <fileset dir="${jar.libs.absolute.dir}" includes="test/*.jar" />
-      <fileset dir="${jar.libs.absolute.dir}" includes="*.jar" />
     	<fileset dir="${build.library.path}/libs/test" includes="*.jar" />
       <pathelement path="${output.temp.android}/classes" />
-    	<path refid="project.libraries.jars" />
-      <path refid="android.target.classpath" />
+    	<path refid="project.all.jars.path" />
+    	<pathelement location="${project.target.android.jar}"/>
     </path>
       
     <echo message="Compiling tests..."/>
@@ -371,7 +369,9 @@
         includeantruntime="false"
         verbose="${verbose}" 
         classpathref="test.classpath"
-        />
+        >
+      <compilerarg line="${java.compilerargs}"/>
+    </javac>
     
     <path id="test.classpath.groovy">
       <path refid="test.classpath" />
@@ -386,7 +386,7 @@
   	    />
   		
     <echo message="Testing..."/>
-    <junit haltonerror="true" haltonfailure="true" fork="true" showoutput="true" printsummary="true">
+    <junit haltonerror="true" haltonfailure="true" fork="once" showoutput="true" printsummary="true">
       <formatter type="xml"/>
       <classpath>
         <path refid="test.classpath.groovy"/>
