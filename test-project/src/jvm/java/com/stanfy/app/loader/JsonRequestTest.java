@@ -3,6 +3,7 @@ package com.stanfy.app.loader;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -38,26 +39,37 @@ public class JsonRequestTest extends AbstractApplicationServiceTest {
     }
   }
 
+  /** Format. */
+  String format;
+
+  @Before
+  public void setFormat() {
+    format = "json";
+  }
+
   @Override
   protected void configureBeansManager(final Editor editor) {
     editor.required().remoteServerApi("json");
   }
 
+  protected void enqueueResponse(final MyModel model) {
+    final Gson gson = new GsonBuilder().create();
+    final String text = gson.toJson(model);
+    assertThat(text, containsString("shouldParseJson"));
+    getWebServer().enqueue(new MockResponse().setBody(text));
+  }
+
   @Test
-  public void shouldParseJson() throws Exception {
+  public void shouldParse() throws Exception {
     final MyModel model = new MyModel();
     model.id = 3;
     model.text = "shouldParseJson";
 
-    final Gson gson = new GsonBuilder().create();
-    final String text = gson.toJson(model);
-    assertThat(text, containsString("shouldParseJson"));
-
-    getWebServer().enqueue(new MockResponse().setBody(text));
+    enqueueResponse(model);
 
     final RequestBuilderLoader<MyModel> loader = new SimpleRequestBuilder<MyModel>(getApplication()) { }
         .setUrl(getWebServer().getUrl("/").toString())
-        .setFormat("json")
+        .setFormat(format)
         .getLoader();
 
     loader.startLoading();
