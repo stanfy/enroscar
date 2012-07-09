@@ -21,6 +21,7 @@ import com.stanfy.images.cache.SupportLruImageMemoryCache;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.serverapi.RemoteServerApiConfiguration;
 import com.stanfy.serverapi.response.handler.GsonContentHandler;
+import com.stanfy.serverapi.response.handler.XmlGsonContentHandler;
 import com.stanfy.stats.EmptyStatsManager;
 import com.stanfy.stats.StatsManager;
 import com.stanfy.utils.AppUtils;
@@ -139,6 +140,7 @@ public class BeansManager {
     private final TreeMap<String, Class<?>> formatMappings = new TreeMap<String, Class<?>>();
     {
       formatMappings.put("json", GsonContentHandler.class);
+      formatMappings.put("xml", XmlGsonContentHandler.class);
     }
 
     void checkIntrfaces(final Object bean) {
