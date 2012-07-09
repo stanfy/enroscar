@@ -21,7 +21,10 @@ public class DefaultResponseModelConverter implements ResponseModelConverter {
     final URLConnection conn = UrlConnectionWrapper.unwrap(connection);
     if (conn instanceof HttpURLConnection) {
       try {
-        data.setErrorCode(((HttpURLConnection) conn).getResponseCode() == HttpURLConnection.HTTP_OK ? 0 : ErrorCodes.ERROR_CODE_SERVER_COMUNICATION);
+        final HttpURLConnection http = (HttpURLConnection) conn;
+        final int code = http.getResponseCode();
+        data.setErrorCode(code == HttpURLConnection.HTTP_OK ? 0 : ErrorCodes.ERROR_CODE_SERVER_COMUNICATION);
+        data.setMessage(code + " " + http.getResponseMessage());
       } catch (final IOException e) {
         throw new RequestMethodException(e);
       }

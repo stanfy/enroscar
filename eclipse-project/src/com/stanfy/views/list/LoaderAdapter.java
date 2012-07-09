@@ -183,8 +183,6 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
     this.listener = listener;
   }
 
-  public void setLoader(final Loader<MT> loader) { this.loader = loader; }
-
   @Override
   public Loader<MT> onCreateLoader(final int i, final Bundle bundle) { throw new UnsupportedOperationException(); }
   @Override
@@ -195,7 +193,7 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
 
   @Override
   public void onLoadFinished(final Loader<MT> loader, final MT data) {
-    if (loader != this.loader) { throw new IllegalArgumentException("Adapter <" + this + "> does not communicate with loader <" + loader + ">"); }
+    this.loader = loader;
     if (listener != null) { listener.onListItemsLoaded(); }
     lastResponseData = data;
     if (isResponseSuccessful(data)) {

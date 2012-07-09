@@ -168,9 +168,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     // create adapter
     this.adapter = wrapAdapter(createAdapter(createRenderer()));
     // init loader, data can passed to adapter at once
-    final Loader<ResponseData<LT>> loader = getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
-    // connect adapter and loader
-    this.adapter.setLoader(loader);
+    getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
 
     // connect list and adapter
     this.listView.setAdapter(this.adapter);
@@ -182,6 +180,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
 
   /** Restart loader. */
   public void reload() {
+    getListView().setSelection(0);
     getLoaderManager().restartLoader(LIST_LOADER_ID, null, this);
   }
 

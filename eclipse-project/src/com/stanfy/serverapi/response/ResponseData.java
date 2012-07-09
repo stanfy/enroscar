@@ -1,5 +1,9 @@
 package com.stanfy.serverapi.response;
 
+import android.util.Log;
+
+import com.stanfy.serverapi.ErrorCodes;
+
 
 /**
  * Response data that is passed to service callbacks.
@@ -30,7 +34,12 @@ public class ResponseData<T>  {
   public String getMessage() { return message; }
 
   /** @param errorCode the errorCode to set */
-  public void setErrorCode(final int errorCode) { this.errorCode = errorCode; }
+  public void setErrorCode(final int errorCode) {
+    this.errorCode = errorCode;
+    if (errorCode == ErrorCodes.ERROR_CODE_SERVER_COMUNICATION) {
+      Log.e("123123", "aaaaaaa", new Throwable());
+    }
+  }
   /** @param message the message to set */
   public void setMessage(final String message) { this.message = message; }
   /** @param model the model to set */

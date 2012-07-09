@@ -1,6 +1,7 @@
 package com.stanfy.serverapi.request.net;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import android.content.Context;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.PoolableBufferedOutputStream;
+import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.serverapi.request.Parameter;
 import com.stanfy.serverapi.request.ParameterValue;
 import com.stanfy.serverapi.request.RequestDescription;
@@ -63,6 +65,9 @@ public class UploadPostConverter extends PostConverter {
   public void sendRequest(final Context context, final URLConnection connection, final RequestDescription requestDescription) throws IOException {
     // TODO Content Length
     final Part[] parts = composeParts(context, requestDescription);
+
+    final HttpURLConnection http = (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
+    http.setFixedLengthStreamingMode((int)Part.getLengthOfParts(parts, boundary));
 
     final BuffersPool buffersPool = BeansManager.get(context).getMainBuffersPool();
     final PoolableBufferedOutputStream out = new PoolableBufferedOutputStream(connection.getOutputStream(), buffersPool);

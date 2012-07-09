@@ -1,12 +1,14 @@
 package com.stanfy.serverapi;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.serverapi.request.RequestDescription;
 
 /**
@@ -29,8 +31,9 @@ public class RequestMethod {
    */
   public RequestResult perform(final Context systemContext, final RequestDescription description) throws RequestMethodException {
     final long startTime = System.currentTimeMillis();
+    URLConnection connection = null;
     try {
-      final URLConnection connection = description.makeConnection(systemContext);
+      connection = description.makeConnection(systemContext);
       final Object model = connection.getContent();
       return new RequestResult(model, connection);
     } catch (final IOException e) {
@@ -38,6 +41,11 @@ public class RequestMethod {
     } catch (final RuntimeException e) {
       throw new RequestMethodException(e);
     } finally {
+      final URLConnection http = UrlConnectionWrapper.unwrap(connection);
+      if (http instanceof HttpURLConnection) {
+        ((HttpURLConnection) http).disconnect();
+        if (DEBUG) { Log.v(TAG, "Disconnected"); }
+      }
       if (DEBUG) {
         Log.d(TAG, "Request time: " + (System.currentTimeMillis() - startTime) + " ms");
       }
