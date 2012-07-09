@@ -32,7 +32,7 @@ public abstract class AbstractEnroscarTest {
   protected static <T> T directlyOn(final T on) { return Robolectric.directlyOn(on); }
 
   /** Configuration. */
-  private EnroscarTestConfiguration config;
+  private EnroscarConfiguration config;
 
   /** Beans manager. */
   private BeansManager beansManager;
@@ -52,7 +52,7 @@ public abstract class AbstractEnroscarTest {
 
     if (config == null) {
       EnroscarConnectionsEngineMode.testMode();
-      config = AppUtils.getAnnotationFromHierarchy(getClass(), EnroscarTestConfiguration.class);
+      config = AppUtils.getAnnotationFromHierarchy(getClass(), EnroscarConfiguration.class);
     }
 
     beansManager = BeansManager.get(Robolectric.application);

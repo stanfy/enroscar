@@ -15,7 +15,7 @@ import com.xtremelabs.robolectric.Robolectric;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  *
  */
-@EnroscarTestConfiguration(connectionEngineRequired = true)
+@EnroscarConfiguration(connectionEngineRequired = true)
 public abstract class AbstractApplicationServiceTest extends AbstractMockServerTest {
 
   /** Error. */

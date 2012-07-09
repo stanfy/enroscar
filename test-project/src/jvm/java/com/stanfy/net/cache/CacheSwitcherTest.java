@@ -15,14 +15,14 @@ import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.BeansManager.Editor;
 import com.stanfy.net.UrlConnectionBuilder;
 import com.stanfy.test.AbstractMockServerTest;
-import com.stanfy.test.EnroscarTestConfiguration;
+import com.stanfy.test.EnroscarConfiguration;
 import com.xtremelabs.robolectric.Robolectric;
 
 /**
  * Tests for {@link com.stanfy.net.cache.ResponseCacheSwitcher}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@EnroscarTestConfiguration(connectionEngineRequired = true)
+@EnroscarConfiguration(connectionEngineRequired = true)
 public class CacheSwitcherTest extends AbstractMockServerTest {
 
   /** Cache instances. */
