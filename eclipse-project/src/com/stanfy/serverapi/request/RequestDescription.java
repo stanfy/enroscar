@@ -100,6 +100,8 @@ public class RequestDescription implements Parcelable {
   ModelTypeToken modelType;
   /** Content handler name. */
   String contentHandler;
+  /** Content analyzer. */
+  String contentAnalyzer;
 
   public static String getParamValue(final String name, final LinkedList<Parameter> param) {
     for (final Parameter p : param) {
@@ -143,6 +145,7 @@ public class RequestDescription implements Parcelable {
 
     this.modelType = source.readParcelable(null);
     this.contentHandler = source.readString();
+    this.contentAnalyzer = source.readString();
 
     // binary content fields
     final BinaryData<?>[] binary = (BinaryData<?>[]) source.readParcelableArray(null);
@@ -167,6 +170,7 @@ public class RequestDescription implements Parcelable {
 
     dest.writeParcelable(modelType, 0);
     dest.writeString(contentHandler);
+    dest.writeString(contentAnalyzer);
 
     // binary content fields
     if (binaryData != null) {
@@ -235,6 +239,9 @@ public class RequestDescription implements Parcelable {
   public void setContentHandler(final String contentHandler) { this.contentHandler = contentHandler; }
   /** @return content handler name */
   public String getContentHandler() { return contentHandler; }
+
+  public void setContentAnalyzer(final String contentAnalyzer) { this.contentAnalyzer = contentAnalyzer; }
+  public String getContentAnalyzer() { return contentAnalyzer; }
 
   public void setCanceled(final boolean canceled) { this.canceled = canceled; }
   public boolean isCanceled() { return canceled; }

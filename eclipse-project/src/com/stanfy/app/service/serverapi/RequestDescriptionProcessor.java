@@ -11,6 +11,7 @@ import com.stanfy.serverapi.RequestMethod;
 import com.stanfy.serverapi.RequestMethod.RequestMethodException;
 import com.stanfy.serverapi.RequestMethod.RequestResult;
 import com.stanfy.serverapi.request.RequestDescription;
+import com.stanfy.serverapi.response.ContentAnalyzer;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.serverapi.response.ResponseModelConverter;
 
@@ -31,6 +32,12 @@ public class RequestDescriptionProcessor {
 
   public RequestDescriptionProcessor(final Application application) {
     this.config = BeansManager.get(application).getRemoteServerApiConfiguration();
+  }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private ResponseData<?> analyze(final Context context, final ContentAnalyzer analyzer, final ResponseData<?> responseData) {
+    final ResponseData data = responseData;
+    return analyzer.analyze(context, data);
   }
 
   /**
@@ -58,13 +65,19 @@ public class RequestDescriptionProcessor {
       }
 
       // process results
-      final ResponseData<?> response
+      ResponseData<?> response
           = converter.toResponseData(description, res.getConnection(), res.getModel());
 
       // check for cancel
       if (description.isCanceled()) {
         hooks.onRequestCancel(description, response);
         return;
+      }
+
+      // analyze
+      final String analyzerBeanName = description.getContentAnalyzer();
+      if (analyzerBeanName != null) {
+        response = analyze(context, BeansManager.get(context).getContainer().getBean(analyzerBeanName, ContentAnalyzer.class), response);
       }
 
       // report results
