@@ -8,9 +8,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLConnection;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import com.google.gson.GsonXml;
 import com.google.gson.GsonXmlBuilder;
 import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.gsonxml.XmlParserCreator;
 import com.stanfy.serverapi.response.ModelTypeToken;
 
 
@@ -24,11 +29,23 @@ public class XmlGsonContentHandler extends BaseContentHandler {
   /** Response handler. */
   public static final String BEAN_NAME = "XmlGsonContentHandler";
 
+  /** Parser factory. */
+  protected static final XmlParserCreator PARSER_FACTORY = new XmlParserCreator() {
+    @Override
+    public XmlPullParser createParser() {
+      try {
+        return XmlPullParserFactory.newInstance().newPullParser();
+      } catch (final XmlPullParserException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  };
+
   /** GsonXml instance. */
   private GsonXml gsonXml;
 
   protected GsonXml createGsonXml() {
-    return new GsonXmlBuilder().setDateFormat(DEFAULT_DATE_FORMAT).create();
+    return new GsonXmlBuilder().setXmlParserCreator(PARSER_FACTORY).setDateFormat(DEFAULT_DATE_FORMAT).create();
   }
 
   @Override
