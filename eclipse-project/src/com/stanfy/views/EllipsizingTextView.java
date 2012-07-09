@@ -1,5 +1,6 @@
 package com.stanfy.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.text.Layout;
@@ -54,6 +55,7 @@ public class EllipsizingTextView extends TextView {
     isStale = true;
   }
 
+  @Override
   public int getMaxLines() { return maxLines; }
 
   @Override
@@ -81,6 +83,7 @@ public class EllipsizingTextView extends TextView {
     super.onDraw(canvas);
   }
 
+  @SuppressLint("NewApi")
   private void resetText() {
     final int maxLines = getMaxLines();
     String workingText = fullText;

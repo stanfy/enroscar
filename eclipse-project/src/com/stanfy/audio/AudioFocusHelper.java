@@ -2,13 +2,16 @@ package com.stanfy.audio;
 
 import java.lang.ref.WeakReference;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioManager;
+import android.os.Build;
 
 /**
  * A helper class that deals with audio focus (used for Android >=2.2).
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
+@TargetApi(Build.VERSION_CODES.FROYO)
 class AudioFocusHelper implements AudioManager.OnAudioFocusChangeListener, AudioFocusProcessor {
 
   /** Audio manager. */
