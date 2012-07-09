@@ -19,9 +19,6 @@ import com.stanfy.serverapi.response.ModelTypeToken;
 @EnroscarBean(GsonContentHandler.BEAN_NAME)
 public class GsonContentHandler extends BaseContentHandler implements InitializingBean {
 
-  /** Default date format. */
-  public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
-
   /** Response handler. */
   public static final String BEAN_NAME = "GsonResponseHandler";
 

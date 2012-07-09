@@ -28,6 +28,9 @@ import com.stanfy.serverapi.response.ModelTypeToken;
  */
 public abstract class BaseContentHandler extends ContentHandler implements InitializingBean {
 
+  /** Default date format. */
+  public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
+
   /** Buffers pool. */
   private BuffersPool buffersPool;
 
