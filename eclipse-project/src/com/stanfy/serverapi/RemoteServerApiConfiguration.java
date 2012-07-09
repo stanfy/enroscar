@@ -23,7 +23,7 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   private BeansManager beansManager;
 
   /** Application service class. */
-  private final Class<?> applicationServiceClass;
+  private Class<?> applicationServiceClass;
 
   /** Request method. */
   private RequestMethod requestMethod;
@@ -41,13 +41,15 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
     this.applicationServiceClass = applicationServiceClass;
   }
 
-  protected void setRequestMethod(final RequestMethod requestMethod) {
+  public void setRequestMethod(final RequestMethod requestMethod) {
     this.requestMethod = requestMethod;
   }
-  protected void setResponseModelConverter(final ResponseModelConverter responseModelConverter) {
+  public void setResponseModelConverter(final ResponseModelConverter responseModelConverter) {
     this.responseModelConverter = responseModelConverter;
   }
 
+
+  public void setApplicationServiceClass(final Class<?> applicationServiceClass) { this.applicationServiceClass = applicationServiceClass; }
   public Class<?> getApplicationServiceClass() { return applicationServiceClass; }
 
   public RequestMethod getRequestMethod(final RequestDescription requestDescription) { return requestMethod; }
