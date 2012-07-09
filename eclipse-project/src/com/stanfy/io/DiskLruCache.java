@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -106,22 +105,6 @@ public final class DiskLruCache implements Closeable {
 
   /** Journal rebuild threshold (see {@link #journalRebuildRequired()}). */
   private static final int REDUNDANT_OP_COMPACT_THRESHOLD = 2000;
-
-  private static <T> T[] copyOfRange(final T[] original, final int start, final int end) {
-    final int originalLength = original.length; // For exception priority compatibility.
-    if (start > end) {
-      throw new IllegalArgumentException();
-    }
-    if (start < 0 || start > originalLength) {
-      throw new ArrayIndexOutOfBoundsException();
-    }
-    final int resultLength = end - start;
-    final int copyLength = Math.min(resultLength, originalLength - start);
-    @SuppressWarnings("unchecked")
-    final T[] result = (T[]) Array.newInstance(original.getClass().getComponentType(), resultLength);
-    System.arraycopy(original, start, result, 0, copyLength);
-    return result;
-  }
 
   /*
    * This cache uses a journal file named "journal". A typical journal file

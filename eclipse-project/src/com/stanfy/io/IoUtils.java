@@ -51,7 +51,6 @@ public final class IoUtils {
   static final int BUF_SIZE = 8192;
 
   /* From java.util.Arrays */
-  @SuppressWarnings("unchecked")
   public static <T> T[] copyOfRange(final T[] original, final int start, final int end) {
     final int originalLength = original.length; // For exception priority compatibility.
     if (start > end) {
@@ -62,6 +61,7 @@ public final class IoUtils {
     }
     final int resultLength = end - start;
     final int copyLength = Math.min(resultLength, originalLength - start);
+    @SuppressWarnings("unchecked")
     final T[] result = (T[]) Array.newInstance(original.getClass().getComponentType(), resultLength);
     System.arraycopy(original, start, result, 0, copyLength);
     return result;

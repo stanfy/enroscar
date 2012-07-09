@@ -433,13 +433,11 @@
     Perfom code style checks and copy-past detection.
   -->
   <target name="codecheck" depends="build" description="Check the code using PMD" if="codecheck.necessary">
-    <do-only-if-not-library elseText="No need to copy .class files.">
-    	<delete dir="${basedir}/bin/classes" />
-      <mkdir dir="${basedir}/bin/classes" />
-    	<copy todir="${basedir}/bin/classes">
-    		<fileset dir="${output.temp.android}/classes" />
-      </copy>
-    </do-only-if-not-library>
+    <delete dir="${basedir}/bin/classes" />
+    <mkdir dir="${basedir}/bin/classes" />
+    <copy todir="${basedir}/bin/classes">
+      <fileset dir="${output.temp.android}/classes" />
+    </copy>
   	
   	<path id="pmd.path">
       <fileset dir="${lib.ant}/pmd" includes="*.jar" />
