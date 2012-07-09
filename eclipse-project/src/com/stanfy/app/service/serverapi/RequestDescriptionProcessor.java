@@ -35,9 +35,10 @@ public class RequestDescriptionProcessor {
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  private ResponseData<?> analyze(final Context context, final ContentAnalyzer analyzer, final ResponseData<?> responseData) {
+  private ResponseData<?> analyze(final Context context, final ContentAnalyzer analyzer, final ResponseData<?> responseData,
+      final RequestDescription description) {
     final ResponseData data = responseData;
-    return analyzer.analyze(context, data);
+    return analyzer.analyze(context, description, data);
   }
 
   /**
@@ -77,7 +78,9 @@ public class RequestDescriptionProcessor {
       // analyze
       final String analyzerBeanName = description.getContentAnalyzer();
       if (analyzerBeanName != null) {
-        response = analyze(context, BeansManager.get(context).getContainer().getBean(analyzerBeanName, ContentAnalyzer.class), response);
+        response = analyze(context,
+            BeansManager.get(context).getContainer().getBean(analyzerBeanName, ContentAnalyzer.class),
+            response, description);
       }
 
       // report results
