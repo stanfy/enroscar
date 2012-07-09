@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.util.Log;
 
+import com.stanfy.content.OffsetInfoProvider;
 import com.stanfy.serverapi.request.ListRequestBuilder;
 import com.stanfy.serverapi.response.ResponseData;
 
@@ -59,6 +60,10 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
     return limitIncrementor.nextValue(limit, lastLoadedCount, itemsList.size());
   }
 
+  protected boolean shouldStopLoading(final OffsetInfoProvider offsetInfoProvider) {
+    return offset > offsetInfoProvider.getMaxOffset();
+  }
+
   @Override
   protected ResponseData<LT> onAcceptData(final ResponseData<LT> oldData, final ResponseData<LT> data) {
     final LT list = data.getModel();
@@ -76,6 +81,17 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
         list.addAll(0, itemsList);
       }
       itemsList = list;
+
+      OffsetInfoProvider oiProvider = null;
+      if (data instanceof OffsetInfoProvider) {
+        oiProvider = (OffsetInfoProvider) data;
+      } else if (list instanceof OffsetInfoProvider) {
+        oiProvider = (OffsetInfoProvider) list;
+      }
+      if (oiProvider != null) {
+        stopLoadMore = shouldStopLoading(oiProvider);
+      }
+
     }
     return data;
   }

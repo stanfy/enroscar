@@ -76,10 +76,10 @@ public class ListRequestBuilderWrapper<LT extends List<MT>, MT> implements ListR
   public void setExecutor(final RequestExecutor executor) { core.setExecutor(executor); }
 
   @Override
-  public int getOffset() { return Integer.parseInt(offsetValue.getValue()); }
+  public int getOffset() { return offsetValue != null ? Integer.parseInt(offsetValue.getValue()) : 0; }
 
   @Override
-  public int getLimit() { return Integer.parseInt(limitValue.getValue()); }
+  public int getLimit() { return limitValue != null ? Integer.parseInt(limitValue.getValue()) : 0; }
 
   @Override
   public LoadMoreListLoader<MT, LT> getLoader() {

@@ -15,7 +15,7 @@ public class TaggedArrayList<E extends UniqueObject> extends ArrayList<E> {
   private static final long serialVersionUID = -2718881362985393198L;
 
   /** Additional info holder. */
-  private Serializable tag;
+  Serializable tag;
 
   public TaggedArrayList() { super(); }
   public TaggedArrayList(final int capacity) { super(capacity); }
