@@ -58,8 +58,13 @@ public final class ModelTypeToken implements Parcelable {
   }
 
   private static Type getType(final Class<?> clazz) {
-    final Type superclass = clazz.getGenericSuperclass();
-    if (superclass instanceof Class) {
+    Class<?> treatedType = clazz;
+    Type superclass;
+    do {
+      superclass = treatedType.getGenericSuperclass();
+      treatedType = treatedType.getSuperclass();
+    } while (superclass instanceof Class && treatedType != Object.class);
+    if (treatedType == Object.class) {
       throw new RuntimeException("Missing type parameter.");
     }
     final ParameterizedType parameterized = (ParameterizedType) superclass;
