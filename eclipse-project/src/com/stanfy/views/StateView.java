@@ -2,17 +2,23 @@ package com.stanfy.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ViewAnimator;
 
+import com.stanfy.DebugFlags;
+
 /**
  * Displays different views according to the current state.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 public class StateView extends ViewAnimator {
+
+  /** Debug flag. */
+  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
 
   /** State helper. */
   private final StateHelper stateHelper = new StateHelper();
@@ -24,7 +30,7 @@ public class StateView extends ViewAnimator {
   private int lastChildIndex;
 
   /** State. */
-  private boolean statesSet = true, trimming = false;
+  private boolean statesSet = true, trimming = false, inFinished = false, outFinished = false;
 
   /** Internal animation listener. */
   private AnimationListener animationsListener = new AnimationListener() {
@@ -38,7 +44,13 @@ public class StateView extends ViewAnimator {
     }
     @Override
     public void onAnimationEnd(final Animation animation) {
-      trimViews();
+      if (animation == getInAnimation()) {
+        inFinished = true;
+        trimViews();
+      } else if (animation == getOutAnimation()) {
+        outFinished = true;
+        trimViews();
+      }
     }
   };
 
@@ -106,6 +118,7 @@ public class StateView extends ViewAnimator {
   public void setState(final int state, final Object lastDataObject) {
     if (this.state == state) { return; }
     this.state = state;
+    final boolean withAnimations = getInAnimation() != null || getOutAnimation() != null;
     if (state == StateHelper.STATE_NORMAL) {
       lastChildIndex = 0;
       setDisplayedChild(0);
@@ -115,6 +128,17 @@ public class StateView extends ViewAnimator {
       statesSet = true;
       lastChildIndex = getChildCount() - 1;
       setDisplayedChild(lastChildIndex);
+    }
+
+    inFinished = false;
+    outFinished = false;
+    if (!withAnimations) {
+      trimViews();
+    } else {
+      Animation anim = getInAnimation();
+      if (anim != null) { anim.setAnimationListener(animationsListener); }
+      anim = getOutAnimation();
+      if (anim != null) { anim.setAnimationListener(animationsListener); }
     }
   }
 
@@ -132,18 +156,22 @@ public class StateView extends ViewAnimator {
   }
 
   protected void trimViews() {
-    int currentChild = lastChildIndex;
-    trimming = true;
-    while (getChildCount() > 2) {
-      if (currentChild == 1) {
-        removeViewAt(2);
-      } else {
-        if (currentChild > 0) { currentChild--; }
-        removeViewAt(1);
+    if ((inFinished || getInAnimation() == null) && (outFinished || getOutAnimation() == null)) {
+      if (DEBUG) { Log.d(VIEW_LOG_TAG, "Trim state view, count = " + getChildCount() + ", last state child = " + lastChildIndex); }
+      int currentChild = lastChildIndex;
+      trimming = true;
+      while (getChildCount() > 2) {
+        if (currentChild == 1) {
+          removeViewAt(2);
+        } else {
+          if (currentChild > 0) { currentChild--; }
+          removeViewAt(1);
+        }
       }
+      trimming = false;
+      lastChildIndex = currentChild;
+      if (DEBUG) { Log.d(VIEW_LOG_TAG, "trim finished, count = " + getChildCount() + ", last state child = " + lastChildIndex); }
     }
-    trimming = false;
-    lastChildIndex = currentChild;
   }
 
 }
