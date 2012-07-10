@@ -36,7 +36,12 @@ public class StateHelper {
 
   protected StateViewCreator[] constructCreatorsArray() {
     final StateViewCreator[] result = new StateViewCreator[DEFAULT_STATES.length];
-    System.arraycopy(DEFAULT_STATES, 0, result, 0, result.length);
+    for (int i = 0; i < result.length; i++) {
+      final StateViewCreator prototype = DEFAULT_STATES[i];
+      if (prototype != null) {
+        result[i] = prototype.copy();
+      }
+    }
     return result;
   }
 
@@ -46,17 +51,17 @@ public class StateHelper {
     }
   }
 
-  public View getCustomStateView(final int state, final Context context, final Object lastResponseData, final ViewGroup parent) {
+  public View getCustomStateView(final int state, final Context context, final Object lastDataObject, final ViewGroup parent) {
     final StateViewCreator creator = state > 0 && state < viewCreators.length ? viewCreators[state] : null;
     if (creator == null) { return null; }
-    final View view = creator.getView(context, lastResponseData, parent);
+    final View view = creator.getView(context, lastDataObject, parent);
     configureStateViewHeight(parent, view);
     return view;
   }
 
   public boolean hasState(final int state) { return viewCreators[state] != null; }
 
-  public void configureStateViewHeight(final ViewGroup parent, final View stateView) {
+  protected void configureStateViewHeight(final ViewGroup parent, final View stateView) {
     if (!(parent instanceof ListView)) { return; }
     final ListView listView = (ListView) parent;
 
@@ -92,7 +97,7 @@ public class StateHelper {
   /**
    * State view creator.
    */
-  public abstract static class StateViewCreator {
+  public abstract static class StateViewCreator implements Cloneable {
 
     /** View instance. */
     private View view;
@@ -106,6 +111,14 @@ public class StateHelper {
       }
       bindView(context, view, lastResponseData, parent);
       return view;
+    }
+
+    public StateViewCreator copy() {
+      try {
+        return (StateViewCreator)clone();
+      } catch (final CloneNotSupportedException e) {
+        throw new RuntimeException(e);
+      }
     }
 
   }
