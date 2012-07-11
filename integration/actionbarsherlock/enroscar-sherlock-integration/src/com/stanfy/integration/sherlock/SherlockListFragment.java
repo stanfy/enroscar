@@ -1,20 +1,19 @@
 package com.stanfy.integration.sherlock;
 
-import static com.stanfy.integration.sherlock.SherlockFragmentActivity.DEBUG;
 import android.app.Activity;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
+import android.support.v4.app._ActionBarSherlockTrojanHorse.OnCreateOptionsMenuListener;
+import android.support.v4.app._ActionBarSherlockTrojanHorse.OnOptionsItemSelectedListener;
+import android.support.v4.app._ActionBarSherlockTrojanHorse.OnPrepareOptionsMenuListener;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.internal.view.menu.MenuItemMule;
-import com.actionbarsherlock.internal.view.menu.MenuMule;
+import com.actionbarsherlock.internal.view.menu.MenuItemWrapper;
+import com.actionbarsherlock.internal.view.menu.MenuWrapper;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-public class SherlockListFragment extends ListFragment {
-  private static final String TAG = "SherlockListFragment";
-
+public class SherlockListFragment extends ListFragment implements OnCreateOptionsMenuListener, OnPrepareOptionsMenuListener, OnOptionsItemSelectedListener {
   private SherlockFragmentActivity mActivity;
 
   public SherlockFragmentActivity getSherlockActivity() {
@@ -24,7 +23,7 @@ public class SherlockListFragment extends ListFragment {
   @Override
   public void onAttach(final Activity activity) {
     if (!(activity instanceof SherlockFragmentActivity)) {
-      throw new IllegalStateException(TAG + " must be attached to a SherlockFragmentActivity.");
+      throw new IllegalStateException(getClass().getSimpleName() + " must be attached to a SherlockFragmentActivity.");
     }
     mActivity = (SherlockFragmentActivity)activity;
 
@@ -32,44 +31,39 @@ public class SherlockListFragment extends ListFragment {
   }
 
   @Override
-  public final void onCreateOptionsMenu(final android.view.Menu menu, final android.view.MenuInflater inflater) {
-    if (DEBUG) Log.d(TAG, "[onCreateOptionsMenu] menu: " + menu + ", inflater: " + inflater);
-
-    if (menu instanceof MenuMule) {
-      onCreateOptionsMenu(((MenuMule)menu).unwrap(), mActivity.getSupportMenuInflater());
-    }
+  public void onDetach() {
+    mActivity = null;
+    super.onDetach();
   }
 
+  @Override
+  public final void onCreateOptionsMenu(final android.view.Menu menu, final android.view.MenuInflater inflater) {
+    onCreateOptionsMenu(new MenuWrapper(menu), mActivity.getSupportMenuInflater());
+  }
+
+  @Override
   public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
     //Nothing to see here.
   }
 
   @Override
   public final void onPrepareOptionsMenu(final android.view.Menu menu) {
-    if (DEBUG) Log.d(TAG, "[onPrepareOptionsMenu] menu: " + menu);
-
-    if (menu instanceof MenuMule) {
-      onPrepareOptionsMenu(((MenuMule)menu).unwrap());
-    }
+    onPrepareOptionsMenu(new MenuWrapper(menu));
   }
 
+  @Override
   public void onPrepareOptionsMenu(final Menu menu) {
     //Nothing to see here.
   }
 
   @Override
   public final boolean onOptionsItemSelected(final android.view.MenuItem item) {
-    if (DEBUG) Log.d(TAG, "[onOptionsItemSelected] item: " + item);
-
-    if (item instanceof MenuItemMule) {
-      return onOptionsItemSelected(((MenuItemMule)item).unwrap());
-    }
-    return false;
+    return onOptionsItemSelected(new MenuItemWrapper(item));
   }
 
+  @Override
   public boolean onOptionsItemSelected(final MenuItem item) {
     //Nothing to see here.
     return false;
   }
-
 }
