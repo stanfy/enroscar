@@ -23,6 +23,7 @@ import com.stanfy.app.beans.InitializingBean;
 import com.stanfy.app.beans.ManagerAwareBean;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.DiskLruCache;
+import com.stanfy.io.DiskLruCache.Snapshot;
 import com.stanfy.io.IoUtils;
 import com.stanfy.io.PoolableBufferedInputStream;
 import com.stanfy.io.PoolableBufferedOutputStream;
@@ -86,10 +87,8 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
 
   public DiskLruCache getDiskCache() { return diskCache; }
 
-  protected CacheResponse get(final CacheEntry requestInfo) {
-    checkDiskCache();
+  private DiskLruCache.Snapshot readCacheInfo(final CacheEntry requestInfo, final CacheEntry entry) {
     final String key = requestInfo.getCacheKey();
-    final CacheEntry entry = newCacheEntry();
 
     DiskLruCache.Snapshot snapshot;
     PoolableBufferedInputStream bufferedStream = null;
@@ -105,6 +104,14 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
       // Give up because the cache cannot be read.
       return null;
     }
+    return snapshot;
+  }
+
+  protected CacheResponse get(final CacheEntry requestInfo) {
+    checkDiskCache();
+    final CacheEntry entry = newCacheEntry();
+    final DiskLruCache.Snapshot snapshot = readCacheInfo(requestInfo, entry);
+    if (snapshot == null) { return null; }
 
     if (!entry.matches(requestInfo) || !entry.canBeUsed()) {
       snapshot.close();
@@ -203,16 +210,35 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     }
   }
 
-  @Override
-  public boolean deleteGetEntry(final String url) throws IOException {
+  private CacheEntry createGetEntry(final String url) {
     final CacheEntry cacheEntry = newCacheEntry();
     try {
       cacheEntry.set(new URI(url), "GET", Collections.<String, List<String>>emptyMap());
-      return diskCache.remove(cacheEntry.getCacheKey());
+      return cacheEntry;
     } catch (final URISyntaxException e) {
       Log.e(TAG, "Bad url " + url + ", cannot deleteGetEntry", e);
-      return false;
+      return null;
     }
+  }
+
+  @Override
+  public boolean deleteGetEntry(final String url) throws IOException {
+    final CacheEntry cacheEntry = createGetEntry(url);
+    if (cacheEntry == null) { return false; }
+    return diskCache.remove(cacheEntry.getCacheKey());
+  }
+
+  @Override
+  public boolean contains(final String url) {
+    final CacheEntry requestInfo = createGetEntry(url);
+    if (requestInfo == null) { return false; }
+
+    final CacheEntry entry = newCacheEntry();
+    final Snapshot snapshot = readCacheInfo(requestInfo, entry);
+    if (snapshot == null) { return false; }
+    IoUtils.closeQuietly(snapshot);
+
+    return entry.matches(requestInfo);
   }
 
   @Override

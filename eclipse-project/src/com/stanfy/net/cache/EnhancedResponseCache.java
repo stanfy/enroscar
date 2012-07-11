@@ -22,4 +22,10 @@ public interface EnhancedResponseCache {
    */
   boolean deleteGetEntry(final String url) throws IOException;
 
+  /**
+   * @param url image URL
+   * @return true if image for specified URL exists in cache
+   */
+  boolean contains(final String url);
+
 }

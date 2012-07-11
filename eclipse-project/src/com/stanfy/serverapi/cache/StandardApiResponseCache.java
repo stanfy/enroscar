@@ -85,6 +85,14 @@ public class StandardApiResponseCache extends BaseSizeRestrictedCache implements
   }
 
   @Override
+  public boolean contains(final String url) {
+    if (delegate instanceof EnhancedResponseCache) {
+      return ((EnhancedResponseCache) delegate).contains(url);
+    }
+    return false;
+  }
+
+  @Override
   public void onInititializationFinished() {
     final ResponseCache mainResponseCache = ResponseCache.getDefault();
     try {

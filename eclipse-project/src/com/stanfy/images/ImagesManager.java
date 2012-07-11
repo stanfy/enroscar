@@ -118,10 +118,14 @@ public class ImagesManager implements Bean {
    * @param images image URLs collection
    */
   public void ensureImages(final List<String> images) {
+    final EnhancedResponseCache enhancedResponseCache = imagesResponseCache instanceof EnhancedResponseCache
+        ? (EnhancedResponseCache)imagesResponseCache : null;
     for (final String url : images) {
       try {
-        // TODO check for existence in file cache
-        IoUtils.consumeStream(newConnection(url).getInputStream(), buffersPool);
+        final boolean mustRead = enhancedResponseCache == null || !enhancedResponseCache.contains(url);
+        if (mustRead) {
+          IoUtils.consumeStream(newConnection(url).getInputStream(), buffersPool);
+        }
       } catch (final IOException e) {
         if (DEBUG_IO) { Log.e(TAG, "IO error for " + url + ": " + e.getMessage()); }
       } catch (final Exception e) {
