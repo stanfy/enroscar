@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import com.stanfy.integration.R;
 import com.stanfy.integration.sherlock.SherlockFragmentActivity;
 
 
@@ -20,7 +19,7 @@ public abstract class SherlockOneFragmentActivity extends SherlockFragmentActivi
   protected abstract int getLayoutId();
 
   /** Fragment container ID. */
-  protected int getFragmentContainerId() { return R.id.fragment_container; }
+  protected abstract int getFragmentContainerId();
 
   /** @return the fragment */
   public Fragment getFragment() { return fragment; }
