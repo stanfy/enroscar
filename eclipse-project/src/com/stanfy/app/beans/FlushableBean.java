@@ -5,7 +5,7 @@ package com.stanfy.app.beans;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  *
  */
-public interface FlushableBean {
+public interface FlushableBean extends Bean {
 
   /** Flush resources. */
   void flushResources();

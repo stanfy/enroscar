@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import android.app.Activity;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.app.beans.Bean;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.utils.AppUtils;
 
@@ -18,7 +19,7 @@ import com.stanfy.utils.AppUtils;
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 @EnroscarBean(StatsManager.BEAN_NAME)
-public abstract class StatsManager {
+public abstract class StatsManager implements Bean {
 
   /** Bean name. */
   public static final String BEAN_NAME = "StatsManager";

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
+import com.stanfy.app.beans.Bean;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.utils.AppUtils;
 import com.stanfy.utils.sdk.SDKDependentUtils;
@@ -15,7 +16,7 @@ import com.stanfy.utils.sdk.SDKDependentUtils;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @EnroscarBean(value = ImageMemoryCache.BEAN_NAME, contextDependent = true)
-public class SupportLruImageMemoryCache implements ImageMemoryCache {
+public class SupportLruImageMemoryCache implements ImageMemoryCache, Bean {
 
   /** Recycle on remove flag. */
   private boolean recycleOnRemove = false;

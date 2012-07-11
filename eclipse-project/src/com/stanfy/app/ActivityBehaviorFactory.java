@@ -2,6 +2,7 @@ package com.stanfy.app;
 
 import android.app.Activity;
 
+import com.stanfy.app.beans.Bean;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.EnroscarBean;
 
@@ -10,7 +11,7 @@ import com.stanfy.app.beans.EnroscarBean;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @EnroscarBean(ActivityBehaviorFactory.BEAN_NAME)
-public class ActivityBehaviorFactory {
+public class ActivityBehaviorFactory implements Bean {
 
   /** Bean name. */
   public static final String BEAN_NAME = "ActivityBehaviorFactory";

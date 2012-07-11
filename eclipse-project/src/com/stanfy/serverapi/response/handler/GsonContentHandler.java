@@ -8,7 +8,6 @@ import java.net.URLConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.stanfy.app.beans.EnroscarBean;
-import com.stanfy.app.beans.InitializingBean;
 import com.stanfy.serverapi.response.ModelTypeToken;
 
 /**
@@ -17,7 +16,7 @@ import com.stanfy.serverapi.response.ModelTypeToken;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @EnroscarBean(GsonContentHandler.BEAN_NAME)
-public class GsonContentHandler extends BaseContentHandler implements InitializingBean {
+public class GsonContentHandler extends BaseContentHandler {
 
   /** Response handler. */
   public static final String BEAN_NAME = "GsonResponseHandler";

@@ -3,6 +3,7 @@ package com.stanfy.utils.sdk;
 import android.os.Build;
 import android.util.Log;
 
+import com.stanfy.app.beans.Bean;
 import com.stanfy.app.beans.EnroscarBean;
 
 /**
@@ -10,7 +11,7 @@ import com.stanfy.app.beans.EnroscarBean;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @EnroscarBean(SDKDependentUtilsFactory.BEAN_NAME)
-public class SDKDependentUtilsFactory {
+public class SDKDependentUtilsFactory implements Bean {
 
   /** Bean name. */
   public static final String BEAN_NAME = "SDKDependentUtilsFactory";

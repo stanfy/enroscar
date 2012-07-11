@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.util.Log;
 
+import com.stanfy.app.beans.Bean;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.images.ImagesManager;
@@ -14,7 +15,7 @@ import com.stanfy.images.ImagesManager;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @EnroscarBean(value = CrucialGUIOperationManager.BEAN_NAME, contextDependent = true)
-public class CrucialGUIOperationManager {
+public class CrucialGUIOperationManager implements Bean {
 
   /** Bean name. */
   public static final String BEAN_NAME = "CrucialGUIOperationManager";

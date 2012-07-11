@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.app.beans.Bean;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.images.cache.ImageMemoryCache;
@@ -45,7 +46,7 @@ import com.stanfy.views.RemoteImageDensityProvider;
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 @EnroscarBean(value = ImagesManager.BEAN_NAME, contextDependent = true)
-public class ImagesManager {
+public class ImagesManager implements Bean {
 
   /** Bean name. */
   public static final String BEAN_NAME = "ImagesManager";

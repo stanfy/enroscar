@@ -11,6 +11,7 @@ import java.io.Writer;
 import android.content.Context;
 import android.os.Environment;
 
+import com.stanfy.app.beans.Bean;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.images.ImagesManager;
 import com.stanfy.net.cache.BaseFileResponseCache;
@@ -23,7 +24,7 @@ import com.stanfy.utils.AppUtils;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @EnroscarBean(value = ImagesManager.CACHE_BEAN_NAME, contextDependent = true)
-public class ImageFileCache extends BaseFileResponseCache {
+public class ImageFileCache extends BaseFileResponseCache implements Bean {
 
   public ImageFileCache(final Context context) {
     final String eState = Environment.getExternalStorageState();
