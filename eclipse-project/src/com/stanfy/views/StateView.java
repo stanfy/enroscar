@@ -124,9 +124,13 @@ public class StateView extends ViewAnimator {
       setDisplayedChild(0);
     } else {
       statesSet = false;
-      addView(stateHelper.getCustomStateView(state, getContext(), lastDataObject, this));
+      final View view = stateHelper.getCustomStateView(state, getContext(), lastDataObject, this);
+      lastChildIndex = indexOfChild(view);
+      if (lastChildIndex == -1) {
+        addView(view);
+        lastChildIndex = getChildCount() - 1;
+      }
       statesSet = true;
-      lastChildIndex = getChildCount() - 1;
       setDisplayedChild(lastChildIndex);
     }
 
