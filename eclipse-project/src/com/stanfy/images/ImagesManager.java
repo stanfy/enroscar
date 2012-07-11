@@ -93,6 +93,10 @@ public class ImagesManager implements Bean {
   /** Paused state. */
   private boolean paused = false;
 
+  public static void configureImageTaskExecutorsCount(final int count) {
+    Threading.configureImageTasksExecutor(count);
+  }
+
   public ImagesManager(final Context context) {
     this.resources = context.getResources();
 
@@ -114,23 +118,34 @@ public class ImagesManager implements Bean {
   public void setSourceDensity(final int sourceDensity) { this.sourceDensity = sourceDensity; }
 
   /**
-   * Ensure that all the images are loaded. Not loaded images will be downloaded in this thread.
+   * Ensure that all the images are loaded. Not loaded images will be downloaded in this thread or in a seperate thread.
    * @param images image URLs collection
+   * @param newThread true if separate thread is required
    */
-  public void ensureImages(final List<String> images) {
+  public void ensureImages(final List<String> images, final boolean newThread) {
     final EnhancedResponseCache enhancedResponseCache = imagesResponseCache instanceof EnhancedResponseCache
         ? (EnhancedResponseCache)imagesResponseCache : null;
-    for (final String url : images) {
-      try {
-        final boolean mustRead = enhancedResponseCache == null || !enhancedResponseCache.contains(url);
-        if (mustRead) {
-          IoUtils.consumeStream(newConnection(url).getInputStream(), buffersPool);
+    final Runnable task = new Runnable() {
+      @Override
+      public void run() {
+        for (final String url : images) {
+          try {
+            final boolean mustRead = enhancedResponseCache == null || !enhancedResponseCache.contains(url);
+            if (mustRead) {
+              IoUtils.consumeStream(newConnection(url).getInputStream(), buffersPool);
+            }
+          } catch (final IOException e) {
+            if (DEBUG_IO) { Log.e(TAG, "IO error for " + url + ": " + e.getMessage()); }
+          } catch (final Exception e) {
+            Log.e(TAG, "Ignored error for ensureImages", e);
+          }
         }
-      } catch (final IOException e) {
-        if (DEBUG_IO) { Log.e(TAG, "IO error for " + url + ": " + e.getMessage()); }
-      } catch (final Exception e) {
-        Log.e(TAG, "Ignored error for ensureImages", e);
       }
+    };
+    if (newThread) {
+      getImageTaskExecutor().execute(task);
+    } else {
+      task.run();
     }
   }
 
