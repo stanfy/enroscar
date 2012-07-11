@@ -11,6 +11,7 @@
 <module name="Checker">
   <property name="severity" value="warning"/>
   <module name="TreeWalker">
+    <module name="FileContentsHolder"/>
     <module name="JavadocType"/>
     <module name="JavadocVariable"/>
     <module name="JavadocStyle"/>
@@ -123,4 +124,8 @@
   <module name="NewlineAtEndOfFile"/>
   <module name="Translation"/>
   <module name="FileTabCharacter"/>
+  <module name="SuppressionFilter">
+    <property name="file" value="${basedir}/checkstyle-suppress.xml"/>
+  </module>
+  <module name="SuppressionCommentFilter"/>
 </module>
