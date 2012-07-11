@@ -156,7 +156,7 @@ public class BaseActivityBehavior {
   /**
    * @see Activity#onKeyDown(int, KeyEvent)
    */
-  boolean onKeyDown(final int keyCode, final KeyEvent event) { return false; }
+  public boolean onKeyDown(final int keyCode, final KeyEvent event) { return false; }
 
   protected void bindLocation() {
     if (locationSupport != null) { locationSupport.bind(); }
