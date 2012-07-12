@@ -77,6 +77,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     if (buffersPool == null) {
       throw new IllegalStateException("Buffers pool is not resolved");
     }
+    directory.mkdirs();
     diskCache = DiskLruCache.open(directory, buffersPool, version, ENTRIES_COUNT, maxSize);
   }
 
