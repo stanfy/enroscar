@@ -3,6 +3,9 @@ package com.stanfy.enroscar.sample;
 import java.util.List;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
@@ -55,9 +58,26 @@ public class TwitterFragment extends RequestBuilderListFragment<Tweet, List<Twee
   }
 
   @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setHasOptionsMenu(true);
+  }
+
+  @Override
   public void onActivityCreated(final Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     startLoad();
+  }
+
+  @Override
+  public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+    menu.add("refresh");
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(final MenuItem item) {
+    reload();
+    return true;
   }
 
 }
