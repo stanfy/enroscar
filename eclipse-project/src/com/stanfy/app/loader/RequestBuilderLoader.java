@@ -304,7 +304,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
       return result;
     }
     throw new IllegalArgumentException("Response data contains model of illegal type: " + model.getClass()
-        + ", expected is " + requestBuilder.getExpectedModelType().toString());
+        + ", expected is " + requestBuilder.getExpectedModelType().getRawClass());
   }
 
   /** For posting loaded data to the main thread. */
