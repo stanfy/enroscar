@@ -180,7 +180,9 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
 
   /** Restart loader. */
   public void reload() {
-    getListView().setSelection(0);
+    if (this.adapter != null && !this.adapter.isEmpty()) {
+      getListView().setSelection(0);
+    }
     getLoaderManager().restartLoader(LIST_LOADER_ID, null, this);
   }
 
@@ -198,62 +200,5 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     listView = (FetchableListView)getActivity().findViewById(android.R.id.list);
     return listView;
   }
-
-//  /**
-//   * Default policy is to conservative. So let the user to decide if he want fully reload the list.
-//   * @param rb request builder
-//   * @param forceClear force reload or not
-//   * @return does list affected or not
-//   */
-//  public boolean setRequestBuilder(final RequestBuilder rb, final boolean forceClear) {
-//    restartObserveEnabled |= forceClear;
-//    if (forceClear) {
-//      listView.setAdapter(EMPTY_ADAPTER);
-//      listView.setAdapter(adapter);
-//    }
-//    return setRequestBuilder(rb);
-//  }
-//
-//  /**
-//   * @param rb request builder
-//   * @return does list affected or not
-//   */
-//  @SuppressWarnings("unchecked")
-//  public boolean setRequestBuilder(final RequestBuilder rb) {
-//    final boolean result = restartObserveEnabled;
-//    adapter.setRequestBuilder((RBT)rb, result);
-//    reload();
-//    restartObserveEnabled = true;
-//    return result;
-//  }
-//
-//  /**
-//   * Force reloading.
-//   */
-//  public void reload() {
-//    if (restartObserveEnabled) {
-//      adapter.clear();
-//      listView.restartObserve();
-//    } else if (!adapter.isBusy()) {
-//      listView.getStateWindowHelper().showMain();
-//    }
-//  }
-
-//  private void setAdapter(final AT adapter, final boolean setupCrucialGUIOperations) {
-//    if (DEBUG) { Log.d(TAG, "New adapter " + adapter); }
-//    if (setupCrucialGUIOperations) {
-//      crucialGUIOperationManager.removeCrucialGUIOperationListener(this.adapter);
-//      crucialGUIOperationManager.addCrucialGUIOperationListener(adapter);
-//    }
-//    this.adapter = adapter;
-//    listView.setAdapter(adapter);
-//  }
-//
-//  /**
-//   * Setting adapter.
-//   */
-//  protected void setAdapter(final AT adapter) {
-//    setAdapter(adapter, isResumed());
-//  }
 
 }

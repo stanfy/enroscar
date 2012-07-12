@@ -16,7 +16,7 @@ import com.stanfy.utils.RequestExecutor;
  * @param <MT> model type
  * @param <LT> list type
  */
-public class ListRequestBuilderWrapper<LT extends List<MT>, MT> implements ListRequestBuilder<LT, MT> {
+public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> implements ListRequestBuilder<LT, MT> {
 
   /** Standard `offset` parameter name. */
   public static final String PARAM_OFFSET = "offset";
@@ -26,6 +26,9 @@ public class ListRequestBuilderWrapper<LT extends List<MT>, MT> implements ListR
   /** Core builder. */
   private final BaseRequestBuilder<LT> core;
 
+  /** Expected type token. */
+  private final ModelTypeToken expectedTypeToken;
+
   /** Parameter name. */
   private String offsetName = PARAM_OFFSET, limitName = PARAM_LIMIT;
 
@@ -34,8 +37,10 @@ public class ListRequestBuilderWrapper<LT extends List<MT>, MT> implements ListR
   /** Offset value. */
   private ParameterValue limitValue;
 
-  public ListRequestBuilderWrapper(final BaseRequestBuilder<LT> core) {
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public ListRequestBuilderWrapper(final BaseRequestBuilder core) {
     this.core = core;
+    this.expectedTypeToken = ModelTypeToken.fromRequestBuilderClass(getClass());
   }
 
   @Override
@@ -88,6 +93,6 @@ public class ListRequestBuilderWrapper<LT extends List<MT>, MT> implements ListR
   }
 
   @Override
-  public ModelTypeToken getExpectedModelType() { return core.getExpectedModelType(); }
+  public ModelTypeToken getExpectedModelType() { return expectedTypeToken; }
 
 }

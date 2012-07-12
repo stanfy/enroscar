@@ -291,8 +291,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   }
 
   public <T, LT extends List<T>> ListRequestBuilderWrapper<LT, T> asLoadMoreList(final String offset, final String limit) {
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    final ListRequestBuilderWrapper<LT, T> wrapper = new ListRequestBuilderWrapper(this);
+    final ListRequestBuilderWrapper<LT, T> wrapper = new ListRequestBuilderWrapper<LT, T>(this) { };
     if (offset != null) {
       wrapper.setOffsetParamName(offset);
     }
