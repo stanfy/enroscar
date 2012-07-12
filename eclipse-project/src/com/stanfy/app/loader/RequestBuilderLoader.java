@@ -299,11 +299,12 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   ResponseData<MT> castResponseData(final RequestDescription requestDescription, final ResponseData<?> responseData) {
     if (responseData == null) { return null; }
     final Object model = responseData.getModel();
-    if (model == null || requestDescription.getModelType().getRawClass().isInstance(model)) {
+    if (model == null || requestBuilder.getExpectedModelType().getRawClass().isInstance(model)) {
       final ResponseData result = responseData;
       return result;
     }
-    throw new IllegalArgumentException("Response data contains model of illegal type: " + model.getClass());
+    throw new IllegalArgumentException("Response data contains model of illegal type: " + model.getClass()
+        + ", expected is " + requestBuilder.getExpectedModelType().toString());
   }
 
   /** For posting loaded data to the main thread. */

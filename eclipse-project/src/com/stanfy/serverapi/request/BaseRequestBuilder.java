@@ -51,6 +51,9 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   /** Context. */
   private final Context context;
 
+  /** Class of the expected model. */
+  private final ModelTypeToken expectedModelType;
+
   /** Performer. */
   private RequestExecutor executor;
 
@@ -63,7 +66,8 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
     result.simpleParameters.name = "stub";
     result.contentLanguage = Locale.getDefault().getLanguage();
 
-    result.modelType = ModelTypeToken.fromRequestBuilderClass(getClass());
+    this.expectedModelType = ModelTypeToken.fromRequestBuilderClass(getClass());
+    result.modelType = this.expectedModelType;
   }
 
   protected String getDateTimeFormat() { return "yyyy-MM-dd HH:mm:ss Z"; }
@@ -241,6 +245,9 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
     result.parallelMode = value;
     return this;
   }
+
+  @Override
+  public ModelTypeToken getExpectedModelType() { return expectedModelType; }
 
   @Override
   public int execute() {

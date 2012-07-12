@@ -3,6 +3,7 @@ package com.stanfy.serverapi.request;
 import android.content.Context;
 
 import com.stanfy.app.loader.RequestBuilderLoader;
+import com.stanfy.serverapi.response.ModelTypeToken;
 import com.stanfy.utils.RequestExecutor;
 
 /**
@@ -29,5 +30,10 @@ public interface RequestBuilder<MT> {
    * @param executor request performer instance
    */
   void setExecutor(final RequestExecutor executor);
+
+  /**
+   * @return type token of the expected model
+   */
+  ModelTypeToken getExpectedModelType();
 
 }

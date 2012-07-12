@@ -7,6 +7,7 @@ import java.util.List;
 import android.content.Context;
 
 import com.stanfy.app.loader.LoadMoreListLoader;
+import com.stanfy.serverapi.response.ModelTypeToken;
 import com.stanfy.utils.RequestExecutor;
 
 /**
@@ -85,5 +86,8 @@ public class ListRequestBuilderWrapper<LT extends List<MT>, MT> implements ListR
   public LoadMoreListLoader<MT, LT> getLoader() {
     return new LoadMoreListLoader<MT, LT>(this);
   }
+
+  @Override
+  public ModelTypeToken getExpectedModelType() { return core.getExpectedModelType(); }
 
 }
