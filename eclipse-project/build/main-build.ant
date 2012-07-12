@@ -456,6 +456,8 @@
   		<arg value="--quiet" />
       <arg value="--html" />
       <arg value="${output.reports}/lint-report.html" />
+      <arg value="--xml" />
+      <arg value="${output.reports}/lint-report.xml" />
       <arg value="${basedir}" />
       <arg value="--config" />
       <arg value="${lint.config}" />
