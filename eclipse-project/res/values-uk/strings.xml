@@ -8,7 +8,6 @@
   <string name="progress_loading">Завантаження&#8230;</string>
 
   <string name="error_connection">Перевірте ваше з\'єднання з Інтернетом</string>
-  <string name="error_connection_long">Перевірте ваше з\'єднання з Інтернетом</string>
   <string name="error_server_default">Проблеми взаємодії з сервером</string>
 
   <string name="video_error">Неможливо відтворити відео</string>

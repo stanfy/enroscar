@@ -8,37 +8,4 @@
   ]]>
   </string>
 
-  <string name="sql_ddl_cached_image" tools:ignore="MissingTranslation">
-  <![CDATA[
-    CREATE TABLE IF NOT EXISTS %1$s (
-      %2$s INTEGER PRIMARY KEY AUTOINCREMENT,
-      url TEXT,
-      path TEXT,
-      loaded INTEGER,
-      removed INTEGER,
-      ts INTEGER,
-      usage_ts INTEGER,
-      type INTEGER
-    );
-  ]]>
-  </string>
-
-  <string name="sql_ddl_cached_image_index_url" tools:ignore="MissingTranslation">
-  <![CDATA[
-    CREATE UNIQUE INDEX IF NOT EXISTS %1$s_index_url ON %1$s (url); 
-  ]]>
-  </string>
-
-  <string name="sql_ddl_cached_image_index_usage_ts" tools:ignore="MissingTranslation">
-  <![CDATA[
-    CREATE INDEX IF NOT EXISTS %1$s_index_usage_ts ON %1$s (usage_ts); 
-  ]]>
-  </string>
-
-  <string name="sql_ddl_cached_image_index_type" tools:ignore="MissingTranslation">
-  <![CDATA[
-    CREATE INDEX IF NOT EXISTS %1$s_index_type ON %1$s (type); 
-  ]]>
-  </string>
-
 </resources>
