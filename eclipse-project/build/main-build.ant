@@ -456,6 +456,14 @@
   		<arg value="--quiet" />
       <arg value="--html" />
       <arg value="${output.reports}/lint-report.html" />
+      <arg value="${basedir}" />
+      <arg value="--config" />
+      <arg value="${lint.config}" />
+      <arg value="--url" />
+      <arg value="${basedir}=${lint.baseurl}" />
+  	</exec>
+    <exec executable="${sdk.dir}/tools/lint">
+      <arg value="--quiet" />
       <arg value="--xml" />
       <arg value="${output.reports}/lint-report.xml" />
       <arg value="${basedir}" />
@@ -463,7 +471,7 @@
       <arg value="${lint.config}" />
       <arg value="--url" />
       <arg value="${basedir}=${lint.baseurl}" />
-  	</exec>
+    </exec>
     
   	<copy todir="${output.reports}" overwrite="true">
   		<fileset dir="${lib.ant}/lint" />
