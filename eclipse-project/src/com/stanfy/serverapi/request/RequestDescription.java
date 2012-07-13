@@ -13,6 +13,7 @@ import android.os.Parcelable;
 import android.util.SparseArray;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.app.beans.BeansManager;
 import com.stanfy.io.IoUtils;
 import com.stanfy.serverapi.request.binary.BinaryData;
 import com.stanfy.serverapi.request.net.BaseRequestDescriptionConverter;
@@ -222,10 +223,6 @@ public class RequestDescription implements Parcelable {
   public String getUrl() { return url; }
   /** @param url URL to set */
   public void setUrl(final String url) { this.url = url; }
-  /** @return cache manager name */
-  public String getCacheName() { return cacheName; }
-  /** @param cacheName cache manager name */
-  public void setCacheName(final String cacheName) { this.cacheName = cacheName; }
   /** @param encoding request encoding */
   public void setEncoding(final Charset encoding) { this.encoding = encoding; }
   /** @return request encoding */
@@ -235,12 +232,33 @@ public class RequestDescription implements Parcelable {
   public void setModelType(final ModelTypeToken typeToken) { this.modelType = typeToken; }
   /** @return type token the response model */
   public ModelTypeToken getModelType() { return modelType; }
+
+  private void checkBeanExists(final String name) {
+    if (DEBUG && name != null && !BeansManager.get(null).getContainer().containsBean(name)) {
+      throw new IllegalArgumentException("Bean " + name + " is not registered");
+    }
+  }
+
+  /** @param cacheName cache manager name */
+  public void setCacheName(final String cacheName) {
+    checkBeanExists(cacheName);
+    this.cacheName = cacheName;
+  }
+  /** @return cache manager name */
+  public String getCacheName() { return cacheName; }
   /** @param contentHandler content handler name */
-  public void setContentHandler(final String contentHandler) { this.contentHandler = contentHandler; }
+  public void setContentHandler(final String contentHandler) {
+    checkBeanExists(contentHandler);
+    this.contentHandler = contentHandler;
+  }
   /** @return content handler name */
   public String getContentHandler() { return contentHandler; }
-
-  public void setContentAnalyzer(final String contentAnalyzer) { this.contentAnalyzer = contentAnalyzer; }
+  /** @param contentAnalyzer content analyzer bean name */
+  public void setContentAnalyzer(final String contentAnalyzer) {
+    checkBeanExists(contentAnalyzer);
+    this.contentAnalyzer = contentAnalyzer;
+  }
+  /** @return content analyzer bean name */
   public String getContentAnalyzer() { return contentAnalyzer; }
 
   public void setCanceled(final boolean canceled) { this.canceled = canceled; }
