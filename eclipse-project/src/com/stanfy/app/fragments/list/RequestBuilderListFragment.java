@@ -16,6 +16,7 @@ import com.stanfy.DebugFlags;
 import com.stanfy.app.BaseFragment;
 import com.stanfy.app.CrucialGUIOperationManager;
 import com.stanfy.app.beans.BeansManager;
+import com.stanfy.app.loader.RequestBuilderLoader;
 import com.stanfy.content.UniqueObject;
 import com.stanfy.serverapi.request.RequestBuilder;
 import com.stanfy.serverapi.response.ResponseData;
@@ -64,6 +65,15 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   /** @return request builder adapter */
   protected ResponseDataLoaderAdapter<MT, LT> wrapAdapter(final ModelListAdapter<MT> adapter) {
     return new ResponseDataLoaderAdapter<MT, LT>(getActivity(), adapter);
+  }
+
+  /**
+   * A good place for configuring main loader, e.g set offset incrementor.
+   * @param loader loader instance
+   * @return loader instance
+   */
+  protected Loader<ResponseData<LT>> modifyLoader(final RequestBuilderLoader<LT> loader) {
+    return loader;
   }
 
   /** @return true if data should be reloaded on locale changes */
@@ -139,7 +149,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   @Override
   public Loader<ResponseData<LT>> onCreateLoader(final int id, final Bundle bundle) {
     if (id == LIST_LOADER_ID) {
-      return createRequestBuilder().getLoader();
+      return modifyLoader(createRequestBuilder().getLoader());
     }
     throw new IllegalArgumentException("Cannot create loader with id=" + id);
   }
