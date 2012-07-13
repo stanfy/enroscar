@@ -23,6 +23,11 @@ public class ResponseData<T>  {
     this.model = model;
   }
 
+  public ResponseData(final ResponseData<?> response) {
+    this.errorCode = response.errorCode;
+    this.message = response.message;
+  }
+
   /** @return serializable model */
   public T getModel() { return model; }
   /** @return the errorCode */
