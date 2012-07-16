@@ -34,7 +34,7 @@ public class DefaultResponseModelConverter implements ResponseModelConverter {
 
   @Override
   public ResponseData<?> toResponseData(final RequestDescription description, final RequestMethodException error) {
-    final ResponseData<?> data = new ResponseData<Object>(null);
+    final ResponseData<?> data = new ResponseData<Object>();
     data.setErrorCode(error.isConnectionError() ? ErrorCodes.ERROR_CODE_CONNECTION : ErrorCodes.ERROR_CODE_SERVER_COMUNICATION);
     data.setMessage(error.getMessage());
     return data;
