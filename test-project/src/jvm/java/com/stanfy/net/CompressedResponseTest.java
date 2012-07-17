@@ -1,4 +1,4 @@
-package com.stanfy.net.cache;
+package com.stanfy.net;
 
 import static org.hamcrest.Matchers.*;
 
@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.io.IoUtils;
+import com.stanfy.net.cache.AbstractOneCacheTest;
 
 /**
  * Test for gzip response.

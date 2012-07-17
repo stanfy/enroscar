@@ -15,13 +15,16 @@ import com.stanfy.test.AbstractMockServerTest;
  */
 public abstract class AbstractOneCacheTest extends AbstractMockServerTest {
 
+  /** Cache name. */
+  protected static final String CACHE_NAME = "testCache";
+
   /** Cache instance. */
   SimpleFileCache cache;
 
   @Override
   protected void configureBeansManager(final Editor editor) {
     super.configureBeansManager(editor);
-    editor.put("testCache", new SimpleFileCache("test-base-cache"));
+    editor.put(CACHE_NAME, new SimpleFileCache("test-base-cache"));
   }
 
   @Before
