@@ -94,7 +94,7 @@ public class StandardApiResponseCache extends BaseSizeRestrictedCache implements
   }
 
   @Override
-  public void onInititializationFinished(final BeansContainer beansContainer) {
+  public void onInitializationFinished(final BeansContainer beansContainer) {
     final ResponseCache mainResponseCache = ResponseCache.getDefault();
     try {
       cacheInstaller = AppUtils.getSdkDependentUtils().getSystemResponseCacheInstaller();

@@ -58,8 +58,8 @@ public class XmlGsonContentHandler extends BaseContentHandler {
   }
 
   @Override
-  public void onInititializationFinished(final BeansContainer beansContainer) {
-    super.onInititializationFinished(beansContainer);
+  public void onInitializationFinished(final BeansContainer beansContainer) {
+    super.onInitializationFinished(beansContainer);
     this.gsonXml = createGsonXml();
   }
 

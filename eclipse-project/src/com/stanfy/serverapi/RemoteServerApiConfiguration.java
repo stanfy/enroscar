@@ -72,7 +72,7 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   public RequestDescription createRequestDescription() { return new RequestDescription(); }
 
   @Override
-  public void onInititializationFinished(final BeansContainer beansContainer) {
+  public void onInitializationFinished(final BeansContainer beansContainer) {
     if (this.requestMethod == null) {
       this.requestMethod = new RequestMethod();
     }

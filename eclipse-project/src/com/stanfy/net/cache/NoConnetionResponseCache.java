@@ -57,7 +57,7 @@ public abstract class NoConnetionResponseCache extends CacheWrapper implements I
   }
 
   @Override
-  public void onInititializationFinished(final BeansContainer beansContainer) {
+  public void onInitializationFinished(final BeansContainer beansContainer) {
     setCore(beansContainer.getBean(coreCacheBeanName, ResponseCache.class));
   }
 

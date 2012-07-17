@@ -95,7 +95,7 @@ public class DefaultBeansContainer implements BeansContainer {
     for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
       final Object instance = entry.getValue();
       if (instance instanceof InitializingBean) {
-        ((InitializingBean) instance).onInititializationFinished(this);
+        ((InitializingBean) instance).onInitializationFinished(this);
       }
     }
   }

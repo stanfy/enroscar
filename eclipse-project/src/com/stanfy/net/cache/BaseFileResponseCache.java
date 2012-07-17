@@ -262,7 +262,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   public int getHitCount() { return hitCount.get(); }
 
   @Override
-  public void onInititializationFinished(final BeansContainer beansContainer) {
+  public void onInitializationFinished(final BeansContainer beansContainer) {
     try {
       if (DEBUG) {
         Log.i(TAG, "Install new file cache workingDirectory=" + getWorkingDirectory() + ", version=" + VERSION + ", maxSize=" + getMaxSize());

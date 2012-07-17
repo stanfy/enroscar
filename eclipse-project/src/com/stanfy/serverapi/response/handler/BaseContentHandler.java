@@ -77,7 +77,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
   public Charset getCharset() { return charset; }
 
   @Override
-  public void onInititializationFinished(final BeansContainer beansContainer) {
+  public void onInitializationFinished(final BeansContainer beansContainer) {
     this.buffersPool = BeansManager.get(null).getMainBuffersPool();
   }
 
