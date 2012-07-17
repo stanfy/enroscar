@@ -7,6 +7,7 @@ import java.net.URLConnection;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.serverapi.response.ModelTypeToken;
 
@@ -37,8 +38,8 @@ public class GsonContentHandler extends BaseContentHandler {
   }
 
   @Override
-  public void onInititializationFinished() {
-    super.onInititializationFinished();
+  public void onInititializationFinished(final BeansContainer beansContainer) {
+    super.onInititializationFinished(beansContainer);
     this.gson = createGson();
   }
 

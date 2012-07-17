@@ -14,6 +14,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import com.google.gson.GsonXml;
 import com.google.gson.GsonXmlBuilder;
+import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.gsonxml.XmlParserCreator;
 import com.stanfy.serverapi.response.ModelTypeToken;
@@ -57,8 +58,8 @@ public class XmlGsonContentHandler extends BaseContentHandler {
   }
 
   @Override
-  public void onInititializationFinished() {
-    super.onInititializationFinished();
+  public void onInititializationFinished(final BeansContainer beansContainer) {
+    super.onInititializationFinished(beansContainer);
     this.gsonXml = createGsonXml();
   }
 

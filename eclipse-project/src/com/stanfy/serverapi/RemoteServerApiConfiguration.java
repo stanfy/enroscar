@@ -1,5 +1,6 @@
 package com.stanfy.serverapi;
 
+import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.app.beans.InitializingBean;
@@ -71,7 +72,7 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   public RequestDescription createRequestDescription() { return new RequestDescription(); }
 
   @Override
-  public void onInititializationFinished() {
+  public void onInititializationFinished(final BeansContainer beansContainer) {
     if (this.requestMethod == null) {
       this.requestMethod = new RequestMethod();
     }

@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.DestroyingBean;
 import com.stanfy.app.beans.InitializingBean;
@@ -261,7 +262,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   public int getHitCount() { return hitCount.get(); }
 
   @Override
-  public void onInititializationFinished() {
+  public void onInititializationFinished(final BeansContainer beansContainer) {
     try {
       if (DEBUG) {
         Log.i(TAG, "Install new file cache workingDirectory=" + getWorkingDirectory() + ", version=" + VERSION + ", maxSize=" + getMaxSize());
@@ -274,7 +275,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
 
 
   @Override
-  public void onDestroy() {
+  public void onDestroy(final BeansContainer beansContainer) {
     try {
       if (DEBUG) {
         Log.i(TAG, "Close file cache workingDirectory=" + getWorkingDirectory());

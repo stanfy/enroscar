@@ -7,7 +7,10 @@ package com.stanfy.app.beans;
  */
 public interface FlushableBean extends Bean {
 
-  /** Flush resources. */
-  void flushResources();
+  /**
+   * Flush resources.
+   * @param beansContainer beans container instance
+   */
+  void flushResources(final BeansContainer beansContainer);
 
 }

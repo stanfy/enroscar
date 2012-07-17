@@ -7,6 +7,7 @@ import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import com.stanfy.app.beans.Bean;
+import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.utils.AppUtils;
 import com.stanfy.utils.sdk.SDKDependentUtils;
@@ -77,7 +78,7 @@ public class SupportLruImageMemoryCache implements ImageMemoryCache, Bean {
   }
 
   @Override
-  public void flushResources() {
+  public void flushResources(final BeansContainer beansContainer) {
     // do no recycle bitmaps since some of them can be in use
     clear(false);
     Log.i(BEAN_NAME, "Images memory cache flushed");

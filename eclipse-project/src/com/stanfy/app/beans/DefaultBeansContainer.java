@@ -85,7 +85,7 @@ public class DefaultBeansContainer implements BeansContainer {
     for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
       final Object instance = entry.getValue();
       if (instance instanceof FlushableBean) {
-        ((FlushableBean) instance).flushResources();
+        ((FlushableBean) instance).flushResources(this);
       }
     }
   }
@@ -95,7 +95,7 @@ public class DefaultBeansContainer implements BeansContainer {
     for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
       final Object instance = entry.getValue();
       if (instance instanceof InitializingBean) {
-        ((InitializingBean) instance).onInititializationFinished();
+        ((InitializingBean) instance).onInititializationFinished(this);
       }
     }
   }
@@ -105,7 +105,7 @@ public class DefaultBeansContainer implements BeansContainer {
     for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
       final Object instance = entry.getValue();
       if (instance instanceof DestroyingBean) {
-        ((DestroyingBean) instance).onDestroy();
+        ((DestroyingBean) instance).onDestroy(this);
       }
     }
     entitiesMap.clear();

@@ -16,6 +16,7 @@ import android.os.Build.VERSION;
 import android.os.Environment;
 import android.util.Log;
 
+import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.beans.DestroyingBean;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.app.beans.InitializingBean;
@@ -93,7 +94,7 @@ public class StandardApiResponseCache extends BaseSizeRestrictedCache implements
   }
 
   @Override
-  public void onInititializationFinished() {
+  public void onInititializationFinished(final BeansContainer beansContainer) {
     final ResponseCache mainResponseCache = ResponseCache.getDefault();
     try {
       cacheInstaller = AppUtils.getSdkDependentUtils().getSystemResponseCacheInstaller();
@@ -115,7 +116,7 @@ public class StandardApiResponseCache extends BaseSizeRestrictedCache implements
   }
 
   @Override
-  public void onDestroy() {
+  public void onDestroy(final BeansContainer beansContainer) {
     if (cacheInstaller != null) {
       try {
         cacheInstaller.close(delegate);

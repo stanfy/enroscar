@@ -34,6 +34,9 @@ public class RequestDescriptionProcessor {
     this.config = BeansManager.get(application).getRemoteServerApiConfiguration();
   }
 
+  /** @return configuration object */
+  public RemoteServerApiConfiguration getConfig() { return config; }
+
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private ResponseData<?> analyze(final Context context, final ContentAnalyzer analyzer, final ResponseData<?> responseData,
       final RequestDescription description) {

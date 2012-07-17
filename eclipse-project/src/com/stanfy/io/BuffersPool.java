@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.app.beans.FlushableBean;
 
@@ -122,7 +123,7 @@ public class BuffersPool implements FlushableBean {
   }
 
   @Override
-  public void flushResources() {
+  public void flushResources(final BeansContainer beansContainer) {
     synchronized (lock) {
       if (buffers.size() > 2) {
         buffers.clear();

@@ -6,6 +6,9 @@ package com.stanfy.app.beans;
  */
 public interface DestroyingBean extends Bean {
 
-  void onDestroy();
+  /**
+   * @param beansContainer beans container instance
+   */
+  void onDestroy(final BeansContainer beansContainer);
 
 }

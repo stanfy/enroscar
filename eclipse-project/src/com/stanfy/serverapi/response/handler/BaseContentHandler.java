@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.InitializingBean;
 import com.stanfy.io.BuffersPool;
@@ -76,7 +77,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
   public Charset getCharset() { return charset; }
 
   @Override
-  public void onInititializationFinished() {
+  public void onInititializationFinished(final BeansContainer beansContainer) {
     this.buffersPool = BeansManager.get(null).getMainBuffersPool();
   }
 

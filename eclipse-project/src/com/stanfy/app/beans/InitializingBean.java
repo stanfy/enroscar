@@ -8,7 +8,8 @@ public interface InitializingBean extends Bean {
 
   /**
    * Called when all beans are initialized.
+   * @param beansContainer beans container instance
    */
-  void onInititializationFinished();
+  void onInititializationFinished(final BeansContainer beansContainer);
 
 }
