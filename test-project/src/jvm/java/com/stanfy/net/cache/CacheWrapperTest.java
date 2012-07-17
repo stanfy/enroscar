@@ -28,7 +28,7 @@ public class CacheWrapperTest extends AbstractOneCacheTest {
   public static class SimpleWrapper extends CacheWrapper implements InitializingBean {
 
     @Override
-    public void onInititializationFinished(final BeansContainer beansContainer) {
+    public void onInitializationFinished(final BeansContainer beansContainer) {
       setCore(BeansManager.get(Robolectric.application).getResponseCache(CACHE_NAME));
     }
 
