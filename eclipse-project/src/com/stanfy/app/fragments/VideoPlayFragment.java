@@ -106,6 +106,7 @@ public class VideoPlayFragment extends BaseFragment implements OnPreparedListene
     args.putBoolean(EXTRA_AUTO_RESUME_MANAGEMENT, autoPauseManagement);
 
     result.setArguments(args);
+    result.setRetainInstance(true);
     return result;
   }
 
