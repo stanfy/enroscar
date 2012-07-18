@@ -24,8 +24,8 @@ import com.stanfy.app.beans.InitializingBean;
  * Wrapper of response cache tha uses that cache when there is no available connection.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@EnroscarBean(value = NoConnetionResponseCache.BEAN_NAME, contextDependent = true)
-public abstract class NoConnetionResponseCache extends CacheWrapper implements InitializingBean {
+@EnroscarBean(value = NoConnectionResponseCache.BEAN_NAME, contextDependent = true)
+public abstract class NoConnectionResponseCache extends CacheWrapper implements InitializingBean {
 
   /** Bean name. */
   public static final String BEAN_NAME = "NoConnetionResponseCache";
@@ -36,7 +36,7 @@ public abstract class NoConnetionResponseCache extends CacheWrapper implements I
   /** Core cache bean name. */
   private final String coreCacheBeanName;
 
-  protected NoConnetionResponseCache(final Context context, final String coreCacheBeanName) {
+  protected NoConnectionResponseCache(final Context context, final String coreCacheBeanName) {
     this.connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
     this.coreCacheBeanName = coreCacheBeanName;
   }
