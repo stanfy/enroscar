@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import android.content.Context;
 
 import com.stanfy.serverapi.response.handler.GsonContentHandler;
+import com.stanfy.serverapi.response.handler.StringContentHandler;
 import com.stanfy.serverapi.response.handler.XmlGsonContentHandler;
 
 /**
@@ -14,11 +15,15 @@ import com.stanfy.serverapi.response.handler.XmlGsonContentHandler;
  */
 public abstract class SimpleRequestBuilder<MT> extends BaseRequestBuilder<MT> {
 
+  /** Format. */
+  public static final String JSON = "json", XML = "xml", STRING = "string";
+
   /** Content format mappings. */
   private static final TreeMap<String, String> FORMAT_MAPPINGS = new TreeMap<String, String>();
   static {
-    FORMAT_MAPPINGS.put("json", GsonContentHandler.BEAN_NAME);
-    FORMAT_MAPPINGS.put("xml", XmlGsonContentHandler.BEAN_NAME);
+    FORMAT_MAPPINGS.put(JSON, GsonContentHandler.BEAN_NAME);
+    FORMAT_MAPPINGS.put(XML, XmlGsonContentHandler.BEAN_NAME);
+    FORMAT_MAPPINGS.put(STRING, StringContentHandler.BEAN_NAME);
   }
 
   public SimpleRequestBuilder(final Context context) {
