@@ -104,6 +104,7 @@ public class ListView extends android.widget.ListView {
 
   /** @param notifyCrucialGUIOperations the notifyCrucialGUIOperations to set */
   public void setNotifyCrucialGUIOperations(final boolean notifyCrucialGUIOperations) {
+    if (isInEditMode()) { return; }
     if (animatedViewHelper != null && !notifyCrucialGUIOperations && this.notifyCrucialGUIOperations) {
       animatedViewHelper.notifyCrucialGuiFinish();
     }
