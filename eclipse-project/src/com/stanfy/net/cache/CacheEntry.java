@@ -12,9 +12,16 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
+import java.util.TreeMap;
 
 import android.annotation.TargetApi;
 import android.os.Build.VERSION;
@@ -26,12 +33,36 @@ import com.stanfy.io.DiskLruCache.Editor;
 import com.stanfy.io.IoUtils;
 import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.utils.AppUtils;
+import com.stanfy.utils.Time;
 
 /** Cache entry. */
 public class CacheEntry {
 
   /** Logging tag. */
   private static final String TAG = "CacheEntry";
+
+  /** This comparator is required to add null keys to the {@link TreeMap}. */
+  private static final Comparator<String> STRINGS_COMPARATOR = new Comparator<String>() {
+    @Override
+    public int compare(final String lhs, final String rhs) {
+      if (lhs == null) { return 0; }
+      if (rhs == null) { return 1; }
+      return lhs.compareTo(rhs);
+    }
+  };
+
+  /** We respect our own time rules, so give rather big max age to HTTP engine. Measured in seconds. */
+  private static final long MAX_AGE_TIME = 30 * Time.DAYS;
+
+  /** Format for the 'Date header'. */
+  private static final ThreadLocal<DateFormat> STANDARD_DATE_FORMAT = new ThreadLocal<DateFormat>() {
+    @Override
+    protected DateFormat initialValue() {
+      final DateFormat rfc1123 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+      rfc1123.setTimeZone(TimeZone.getTimeZone("UTC"));
+      return rfc1123;
+    }
+  };
 
   /** Request URI. */
   private String uri;
@@ -43,6 +74,9 @@ public class CacheEntry {
 
   /** Content encoding. */
   private String encoding;
+
+  /** Response status line. */
+  private String statusLine;
 
   /** Listener. */
   private CacheEntryListener listener;
@@ -82,13 +116,17 @@ public class CacheEntry {
     }
   }
 
+  public void setResponseData(final URLConnection conn) {
+    this.statusLine = conn.getHeaderField(null);
+    this.encoding = conn.getContentEncoding();
+  }
+
   public String getUri() { return uri; }
   public String getRequestMethod() { return requestMethod; }
   public String getEncoding() { return encoding; }
 
   protected void setUri(final String uri) { this.uri = uri; }
   protected void setRequestMethod(final String requestMethod) { this.requestMethod = requestMethod; }
-  public void setEncoding(final String encoding) { this.encoding = encoding; }
 
   public String getCacheKey() { return AppUtils.getMd5(uri); }
 
@@ -102,6 +140,7 @@ public class CacheEntry {
       requestMethod = readString(in);
       timestamp = readLong(in);
       encoding = readString(in);
+      statusLine = readString(in);
       if (encoding.length() == 0) {
         this.encoding = null;
       }
@@ -121,6 +160,7 @@ public class CacheEntry {
     writeString(writer, requestMethod);
     writeLong(writer, timestamp);
     writeString(writer, encoding);
+    writeString(writer, statusLine);
     writeMetaData(writer);
     writer.close();
   }
@@ -201,9 +241,17 @@ public class CacheEntry {
     public InputStream getBody() throws IOException { return in; }
     @Override
     public Map<String, List<String>> getHeaders() throws IOException {
-      return encoding == null
-          ? Collections.<String, List<String>>emptyMap()
-          : Collections.singletonMap("Content-Encoding", Collections.singletonList(encoding));
+      final TreeMap<String, List<String>> result = new TreeMap<String, List<String>>(STRINGS_COMPARATOR);
+      result.put(null, Collections.singletonList(statusLine));
+      if (encoding != null) {
+        result.put("Content-Encoding", Collections.singletonList(encoding));
+      }
+      // force HTTP engine use cache response
+      result.put("Date", Collections.singletonList(STANDARD_DATE_FORMAT.get().format(new Date())));
+      result.put("Cache-Control", Collections.singletonList(
+          "max-age=" + Time.asSeconds(System.currentTimeMillis() + MAX_AGE_TIME)
+      ));
+      return result;
     }
 
   }

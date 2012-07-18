@@ -53,7 +53,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   protected static final boolean DEBUG = DebugFlags.DEBUG_BEANS;
 
   /** Application version. */
-  private static final int VERSION = 201207;
+  private static final int VERSION = 20120718;
 
   /** Disk cache instance. */
   private DiskLruCache diskCache;
@@ -164,14 +164,11 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   @Override
   public CacheRequest put(final URI uri, final URLConnection connection) throws IOException {
     checkDiskCache();
-    URLConnection urlConnection = connection;
-    while (urlConnection instanceof UrlConnectionWrapper) {
-      urlConnection = ((UrlConnectionWrapper)urlConnection).getCore();
-    }
+    final URLConnection urlConnection = UrlConnectionWrapper.unwrap(connection);
 
     final CacheEntry cacheEntry = newCacheEntry();
     cacheEntry.setFrom(urlConnection);
-    cacheEntry.setEncoding(connection.getContentEncoding());
+    cacheEntry.setResponseData(urlConnection);
 
     if (!cacheEntry.canBeCached()) { return null; }
 

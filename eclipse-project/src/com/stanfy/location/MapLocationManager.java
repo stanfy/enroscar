@@ -5,6 +5,7 @@ import static com.stanfy.utils.Time.SECONDS;
 
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
@@ -25,6 +26,7 @@ import com.stanfy.Destroyable;
  * @author Roman Mazur (http://www.stanfy.com)
  * @author Yevgeniy Pazekha (neboskreb@narod.ru)
  */
+@SuppressLint("HandlerLeak")
 public final class MapLocationManager implements Destroyable {
   /** Logging tag. */
   static final String LOGTAG = "MapLocMan";
@@ -35,7 +37,7 @@ public final class MapLocationManager implements Destroyable {
   private static final int HUNDRED = 100;
 
   /** Update interval for location providers. */
-  public static final int LOCATION_MANAGER_COARSE_UPDATE_INTERVAL = 60 * SECONDS, LOCATION_MANAGER_FINE_UPDATE_INTERVAL = 2 * HUNDRED;
+  public static final long LOCATION_MANAGER_COARSE_UPDATE_INTERVAL = 60 * SECONDS, LOCATION_MANAGER_FINE_UPDATE_INTERVAL = 2 * HUNDRED;
   /** Nice accuracy. */
   public static final int LOCATION_MANAGER_NICE_ACCURACY = 15;
   /** Max fine provider runs. */
