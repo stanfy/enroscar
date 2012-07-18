@@ -70,7 +70,9 @@ public class ResponseCacheSwitcher extends ResponseCache {
   protected URLConnection getLastSavedUrlConnection() {
     final LinkedList<URLConnection> stack = currentUrlConnection.get();
     if (stack == null || stack.isEmpty()) {
-      Log.w(TAG, "Connections stack is empty. Did you call saveUrlConnection(URLConnection)?");
+      if (DebugFlags.DEBUG_API) {
+        Log.i(TAG, "Connections stack is empty. Did you call saveUrlConnection(URLConnection)?");
+      }
       return null;
     }
     return stack.peek();

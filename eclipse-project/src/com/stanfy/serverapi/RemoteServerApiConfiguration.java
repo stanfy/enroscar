@@ -34,6 +34,9 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   /** Default content handler name. */
   private String defaultContentHandlerName;
 
+  /** Default cache bean name. */
+  private String defaultCacheBeanName;
+
   public RemoteServerApiConfiguration() {
     this(ApplicationService.class);
   }
@@ -60,6 +63,12 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   public void setDefaultContentHandlerName(final String defaultContentHandlerName) {
     checkBeanExists(defaultContentHandlerName);
     this.defaultContentHandlerName = defaultContentHandlerName;
+  }
+
+  public String getDefaultCacheBeanName() { return defaultCacheBeanName; }
+  public void setDefaultCacheBeanName(final String defaultCacheBeanName) {
+    checkBeanExists(defaultCacheBeanName);
+    this.defaultCacheBeanName = defaultCacheBeanName;
   }
 
   protected void checkBeanExists(final String name) {

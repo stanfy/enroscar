@@ -265,6 +265,10 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
       throw new IllegalStateException("Content handler is not specified");
     }
 
+    if (result.cacheName == null) {
+      result.cacheName = config.getDefaultCacheBeanName();
+    }
+
     if (executor != null) {
       return executor.performRequest(result);
     } else {
