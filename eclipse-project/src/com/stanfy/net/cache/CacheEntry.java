@@ -117,7 +117,20 @@ public class CacheEntry {
   }
 
   public void setResponseData(final URLConnection conn) {
-    this.statusLine = conn.getHeaderField(null);
+    try {
+      this.statusLine = conn.getHeaderField(null);
+    } catch (final Exception e) {
+      // :( old Android versions have bad URLConnection implementations
+      final URLConnection connection = UrlConnectionWrapper.unwrap(conn);
+      if (connection instanceof HttpURLConnection) {
+        final HttpURLConnection http = (HttpURLConnection) connection;
+        try {
+          this.statusLine = "HTTP/1.1 " + http.getResponseCode() + " " + http.getResponseMessage();
+        } catch (final IOException ioe) {
+          Log.e(TAG, "Cannot set status line", ioe);
+        }
+      }
+    }
     this.encoding = conn.getContentEncoding();
   }
 

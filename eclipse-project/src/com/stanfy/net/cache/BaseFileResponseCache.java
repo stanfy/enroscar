@@ -110,7 +110,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   }
 
   protected CacheResponse get(final CacheEntry requestInfo) {
-    checkDiskCache();
+    if (!checkDiskCache()) { return null; }
     final CacheEntry entry = newCacheEntry();
     final DiskLruCache.Snapshot snapshot = readCacheInfo(requestInfo, entry);
     if (snapshot == null) { return null; }
@@ -163,7 +163,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
 
   @Override
   public CacheRequest put(final URI uri, final URLConnection connection) throws IOException {
-    checkDiskCache();
+    if (!checkDiskCache()) { return null; }
     final URLConnection urlConnection = UrlConnectionWrapper.unwrap(connection);
 
     final CacheEntry cacheEntry = newCacheEntry();
@@ -202,11 +202,12 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
 
   }
 
-  private void checkDiskCache() {
+  private boolean checkDiskCache() {
     if (diskCache == null) {
       Log.e(TAG, ILLEGAL_STATE_MESSSAGE);
-      throw new IllegalStateException(ILLEGAL_STATE_MESSSAGE);
+      return false;
     }
+    return true;
   }
 
   private CacheEntry createGetEntry(final String url) {
