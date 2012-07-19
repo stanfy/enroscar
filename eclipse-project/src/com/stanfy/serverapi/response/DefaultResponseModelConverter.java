@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
 import com.stanfy.net.UrlConnectionWrapper;
+import com.stanfy.net.cache.CacheControlUrlConnection;
 import com.stanfy.serverapi.ErrorCodes;
 import com.stanfy.serverapi.RequestMethod.RequestMethodException;
 import com.stanfy.serverapi.request.RequestDescription;
@@ -23,13 +24,20 @@ public class DefaultResponseModelConverter implements ResponseModelConverter {
       try {
         final HttpURLConnection http = (HttpURLConnection) conn;
         final int code = http.getResponseCode();
-        data.setErrorCode(code == HttpURLConnection.HTTP_OK ? 0 : ErrorCodes.ERROR_CODE_SERVER_COMUNICATION);
-        data.setMessage(code + " " + http.getResponseMessage());
+        data.setErrorCode(isHttpCodeOk(code, connection) ? 0 : ErrorCodes.ERROR_CODE_SERVER_COMUNICATION);
+        data.setMessage(http.getResponseMessage());
       } catch (final IOException e) {
         throw new RequestMethodException(e);
       }
     }
     return data;
+  }
+
+  protected static boolean isHttpCodeOk(final int code, final URLConnection connection) {
+    if (code == HttpURLConnection.HTTP_OK) { return true; }
+    final CacheControlUrlConnection cacheControl = UrlConnectionWrapper.getWrapper(connection, CacheControlUrlConnection.class);
+    if (cacheControl == null) { return false; }
+    return code == -1;
   }
 
   @Override

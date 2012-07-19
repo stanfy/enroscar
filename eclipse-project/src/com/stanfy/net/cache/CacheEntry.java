@@ -256,14 +256,17 @@ public class CacheEntry {
     public Map<String, List<String>> getHeaders() throws IOException {
       final TreeMap<String, List<String>> result = new TreeMap<String, List<String>>(STRINGS_COMPARATOR);
       result.put(null, Collections.singletonList(statusLine));
+
+      // NB! use lower case for header names: for old Android versions
       if (encoding != null) {
-        result.put("Content-Encoding", Collections.singletonList(encoding));
+        result.put("content-encoding", Collections.singletonList(encoding));
       }
       // force HTTP engine use cache response
-      result.put("Date", Collections.singletonList(STANDARD_DATE_FORMAT.get().format(new Date())));
-      result.put("Cache-Control", Collections.singletonList(
+      result.put("date", Collections.singletonList(STANDARD_DATE_FORMAT.get().format(new Date())));
+      result.put("cache-control", Collections.singletonList(
           "max-age=" + Time.asSeconds(System.currentTimeMillis() + MAX_AGE_TIME)
       ));
+
       return result;
     }
 
