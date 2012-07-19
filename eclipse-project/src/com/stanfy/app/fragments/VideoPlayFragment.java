@@ -1,5 +1,6 @@
 package com.stanfy.app.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -250,7 +251,8 @@ public class VideoPlayFragment extends BaseFragment implements OnPreparedListene
     @Override
     public void onDismiss(final DialogInterface dialog) {
       super.onDismiss(dialog);
-      getActivity().finish();
+      final Activity owner = getActivity();
+      if (owner != null) { owner.finish(); }
     }
   }
 

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
+import android.os.Build;
+
 import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.net.cache.CacheControlUrlConnection;
 import com.stanfy.serverapi.ErrorCodes;
@@ -37,7 +39,7 @@ public class DefaultResponseModelConverter implements ResponseModelConverter {
     if (code == HttpURLConnection.HTTP_OK) { return true; }
     final CacheControlUrlConnection cacheControl = UrlConnectionWrapper.getWrapper(connection, CacheControlUrlConnection.class);
     if (cacheControl == null) { return false; }
-    return code == -1;
+    return Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH && code == -1;
   }
 
   @Override

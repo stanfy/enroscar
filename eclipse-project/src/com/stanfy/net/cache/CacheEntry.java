@@ -24,6 +24,7 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 
 import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
@@ -255,7 +256,10 @@ public class CacheEntry {
     @Override
     public Map<String, List<String>> getHeaders() throws IOException {
       final TreeMap<String, List<String>> result = new TreeMap<String, List<String>>(STRINGS_COMPARATOR);
-      result.put(null, Collections.singletonList(statusLine));
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        result.put(null, Collections.singletonList(statusLine));
+      }
 
       // NB! use lower case for header names: for old Android versions
       if (encoding != null) {
