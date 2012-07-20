@@ -1,5 +1,6 @@
 package com.stanfy.location;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
@@ -17,6 +18,7 @@ import com.stanfy.DebugFlags;
  * Allows easily start and stop locations listenting.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
+@SuppressLint("HandlerLeak")
 public class LocationBinder {
 
   /** Location binder. */
