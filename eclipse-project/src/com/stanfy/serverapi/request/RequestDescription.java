@@ -5,7 +5,9 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -86,7 +88,7 @@ public class RequestDescription implements Parcelable {
   String contentLanguage;
 
   /** Meta information. */
-  ParametersGroup metaParameters;
+  Map<String, Object> metaParameters;
 
   /** Binary data array. */
   ArrayList<BinaryData<?>> binaryData;
@@ -140,7 +142,6 @@ public class RequestDescription implements Parcelable {
     this.contentType = source.readString();
     this.encoding = Charset.forName(source.readString());
     this.contentLanguage = source.readString();
-    this.metaParameters = source.readParcelable(null);
     this.parallelMode = source.readInt() == 1;
     this.canceled = source.readInt() == 1;
 
@@ -165,7 +166,6 @@ public class RequestDescription implements Parcelable {
     dest.writeString(contentType);
     dest.writeString(encoding.name());
     dest.writeString(contentLanguage);
-    dest.writeParcelable(metaParameters, flags);
     dest.writeInt(parallelMode ? 1 : 0);
     dest.writeInt(canceled ? 1 : 0);
 
@@ -285,40 +285,29 @@ public class RequestDescription implements Parcelable {
   public boolean isParallelMode() { return parallelMode; }
 
   /** @return the metaParameters */
-  public ParametersGroup getMetaParameters() { return metaParameters; }
+  public Map<String, Object> getMetaParameters() { return metaParameters; }
 
   /** @return the simpleParameters */
   public ParametersGroup getSimpleParameters() { return simpleParameters; }
 
-  public ParametersGroup createMetaParameters() {
-    metaParameters = new ParametersGroup();
-    metaParameters.name = "meta";
-    return metaParameters;
-  }
+  /** @return new meta parameters instance */
+  protected Map<String, Object> createMetaParameters() { return new HashMap<String, Object>(); }
 
   /**
    * @param name parameter name
    * @param value parameter value
    */
-  public void addMetaInfo(final String name, final String value) {
-    ParametersGroup metaParameters = this.metaParameters;
-    if (metaParameters == null) {
-      metaParameters = createMetaParameters();
-    }
-
-    final ParameterValue pv = new ParameterValue();
-    pv.name = name;
-    pv.value = value;
-    metaParameters.children.add(pv);
+  public void putMetaInfo(final String name, final Object value) {
+    if (this.metaParameters == null) { this.metaParameters = createMetaParameters(); }
+    this.metaParameters.put(name, value);
   }
 
-  public String getMetaInfo(final String name) {
-    final ParametersGroup metaParameters = this.metaParameters;
-    if (metaParameters == null) { return null; }
-    for (final Parameter p : metaParameters.children) {
-      if (name.equals(p.name)) { return ((ParameterValue)p).value; }
-    }
-    return null;
+  public Object getMetaInfo(final String name) {
+    return this.metaParameters == null ? null : this.metaParameters.get(name);
+  }
+
+  public boolean hasMetaInfo(final String name) {
+    return this.metaParameters == null ? false : this.metaParameters.containsKey(name);
   }
 
   // ============================ HTTP REQUESTS ============================

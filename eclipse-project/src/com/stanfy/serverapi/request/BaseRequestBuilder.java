@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -46,7 +47,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   /** Configuration. */
   private final RemoteServerApiConfiguration config;
   /** Result object. */
-  private RequestDescription result;
+  private final RequestDescription result;
 
   /** Context. */
   private final Context context;
@@ -222,6 +223,22 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
     result.simpleParameters.addParameter(p);
   }
 
+  /**
+   * Add meta information to request which could be retrieved in {@link com.stanfy.serverapi.response.ContentAnalyzer}.
+   * @param name info name
+   * @param value info value
+   */
+  protected void putMetaInfo(final String name, final Object value) {
+    result.putMetaInfo(name, value);
+  }
+
+  /**
+   * @param contentAnalyzer bean name of {@link com.stanfy.serverapi.response.ContentAnalyzer} instance
+   */
+  protected void defineContentAnalyzer(final String contentAnalyzer) {
+    result.setContentAnalyzer(contentAnalyzer);
+  }
+
   protected RequestDescription getResult() { return result; }
 
   /** @return the context */
@@ -234,8 +251,8 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   public void clear() {
     final RequestDescription result = this.result;
     result.simpleParameters.children.clear();
-    final ParametersGroup meta = result.metaParameters;
-    if (meta != null) { meta.children.clear(); }
+    final Map<String, Object> meta = result.metaParameters;
+    if (meta != null) { meta.clear(); }
     result.clearBinaryData();
     result.contentType = null;
     result.metaParameters = null;

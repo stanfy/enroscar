@@ -117,4 +117,20 @@ public abstract class SimpleRequestBuilder<MT> extends BaseRequestBuilder<MT> {
     return this;
   }
 
+  /**
+   * @see {@link BaseRequestBuilder#putMetaInfo(String, Object)}
+   */
+  public SimpleRequestBuilder<MT> setMetaInfo(final String name, final Object value) {
+    putMetaInfo(name, value);
+    return this;
+  }
+
+  /**
+   * @see {@link BaseRequestBuilder#defineContentAnalyzer(String)}
+   */
+  public SimpleRequestBuilder<MT> setContentAnalyzer(final String contentAnalyzer) {
+    defineContentAnalyzer(contentAnalyzer);
+    return this;
+  }
+
 }
