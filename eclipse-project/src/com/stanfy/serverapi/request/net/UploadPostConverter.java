@@ -63,7 +63,6 @@ public class UploadPostConverter extends PostConverter {
 
   @Override
   public void sendRequest(final Context context, final URLConnection connection, final RequestDescription requestDescription) throws IOException {
-    // TODO Content Length
     final Part[] parts = composeParts(context, requestDescription);
 
     final HttpURLConnection http = (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
