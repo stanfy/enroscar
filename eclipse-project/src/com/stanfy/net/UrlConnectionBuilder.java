@@ -9,6 +9,7 @@ import android.net.Uri;
 
 import com.stanfy.net.cache.CacheControlUrlConnection;
 import com.stanfy.serverapi.response.ModelTypeToken;
+import com.stanfy.utils.Time;
 
 /**
  * Builder for creating URL connections.
@@ -16,8 +17,18 @@ import com.stanfy.serverapi.response.ModelTypeToken;
  */
 public class UrlConnectionBuilder {
 
+  /** Default connection timeout. */
+  public static final int TIMEOUT_CONNECTION_DEFAULT = 30 * (int)Time.SECONDS;
+  /** Default read timeout. */
+  public static final int TIMEOUT_READ_DEFAULT = 30 * (int)Time.SECONDS;
+
   /** URL to create a connection. */
   private URL url;
+
+  /** Connection timeout. */
+  private int connectTimeout = TIMEOUT_CONNECTION_DEFAULT;
+  /** Read timeout. */
+  private int readTimeout = TIMEOUT_READ_DEFAULT;
 
   /** Cache manager name. */
   private String cacheManagerName;
@@ -67,6 +78,7 @@ public class UrlConnectionBuilder {
       connection = new CacheControlUrlConnection(connection, cacheManagerName);
       connection.setUseCaches(true); // wrapper
     }
+
     // content handler
     if (contentHandlerName != null || modelType != null) {
       final ContentControlUrlConnection control = new ContentControlUrlConnection(connection);
@@ -74,6 +86,10 @@ public class UrlConnectionBuilder {
       control.setContentHandlerName(contentHandlerName);
       connection = control;
     }
+
+    // timeouts
+    connection.setConnectTimeout(connectTimeout);
+    connection.setReadTimeout(readTimeout);
     return connection;
   }
 
