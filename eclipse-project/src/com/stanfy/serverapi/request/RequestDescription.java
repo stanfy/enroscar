@@ -23,6 +23,7 @@ import com.stanfy.serverapi.request.net.SimpleGetConverter;
 import com.stanfy.serverapi.request.net.SimplePostConverter;
 import com.stanfy.serverapi.request.net.UploadPostConverter;
 import com.stanfy.serverapi.response.ModelTypeToken;
+import com.stanfy.utils.AppUtils;
 
 /**
  * Request method description. This object is passed to the service describing the request.
@@ -314,9 +315,10 @@ public class RequestDescription implements Parcelable {
 
   /**
    * A good place to set custom request headers.
+   * @param context system context
    * @param urlConnection URL connection instance
    */
-  protected void onURLConnectionPrepared(final URLConnection urlConnection) {
+  protected void onURLConnectionPrepared(final Context context, final URLConnection urlConnection) {
     if (contentType != null) {
       urlConnection.addRequestProperty("Content-Type", contentType);
     }
@@ -324,6 +326,7 @@ public class RequestDescription implements Parcelable {
       urlConnection.addRequestProperty("Accept-Language", contentLanguage);
     }
     urlConnection.addRequestProperty("Accept-Encoding", IoUtils.ENCODING_GZIP);
+    urlConnection.addRequestProperty("User-Agent", AppUtils.buildUserAgent(context));
   }
 
   /**
@@ -336,7 +339,7 @@ public class RequestDescription implements Parcelable {
     final BaseRequestDescriptionConverter converter = CONVERTERS.get(operationType);
 
     final URLConnection connection = converter.prepareConnectionInstance(context, this);
-    onURLConnectionPrepared(connection);
+    onURLConnectionPrepared(context, connection);
     connection.connect();
     converter.sendRequest(context, connection, this);
 

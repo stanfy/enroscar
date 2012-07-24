@@ -20,8 +20,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -222,6 +225,22 @@ public class AppUtils {
     final ParameterizedType parameterized = (ParameterizedType) superclass;
     final Type type = $Gson$Types.canonicalize(parameterized.getActualTypeArguments()[0]);
     return $Gson$Types.getRawType(type);
+  }
+
+  /**
+   * @param context context instance
+   * @return user agent string
+   */
+  public static String buildUserAgent(final Context context) {
+    if (context == null) { return null; }
+    try {
+      final PackageManager manager = context.getPackageManager();
+      final PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+      return "Android client (" + Build.VERSION.RELEASE + " / api " + Build.VERSION.SDK_INT + "), "
+          + info.packageName + "/" + info.versionName + " (" + info.versionCode + ") (" + IoUtils.ENCODING_GZIP + ")";
+    } catch (final NameNotFoundException e) {
+      return null;
+    }
   }
 
   /* ================= SDK depended utils ================= */
