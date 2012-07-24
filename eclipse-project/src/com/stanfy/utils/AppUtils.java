@@ -235,9 +235,17 @@ public class AppUtils {
     if (context == null) { return null; }
     try {
       final PackageManager manager = context.getPackageManager();
-      final PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
-      return "Android client (" + Build.VERSION.RELEASE + " / api " + Build.VERSION.SDK_INT + "), "
-          + info.packageName + "/" + info.versionName + " (" + info.versionCode + ") (" + IoUtils.ENCODING_GZIP + ")";
+      final StringBuilder agentString = new StringBuilder();
+      agentString.append("Android client (").append(Build.VERSION.RELEASE).append(" / api ").append(Build.VERSION.SDK_INT).append("), ");
+      if (manager != null) {
+        final PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+        agentString.append(info.packageName).append("/").append(info.versionName)
+            .append(" (").append(info.versionCode).append(") (").append(IoUtils.ENCODING_GZIP).append(")");
+      } else {
+        // test environment only
+        agentString.append(" test");
+      }
+      return agentString.toString();
     } catch (final NameNotFoundException e) {
       return null;
     }
