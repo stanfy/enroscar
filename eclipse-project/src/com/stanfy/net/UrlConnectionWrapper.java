@@ -14,6 +14,14 @@ import java.util.Map;
  */
 public class UrlConnectionWrapper extends URLConnection {
 
+  /** Core connection instance. */
+  private URLConnection core;
+
+  public UrlConnectionWrapper(final URLConnection urlConnection) {
+    super(urlConnection.getURL());
+    this.core = urlConnection;
+  }
+
   public static URLConnection unwrap(final URLConnection connection) {
     URLConnection result = connection;
     while (result instanceof UrlConnectionWrapper) {
@@ -34,14 +42,6 @@ public class UrlConnectionWrapper extends URLConnection {
     } while (!found && result instanceof UrlConnectionWrapper);
     return found ? clazz.cast(result) : null;
   }
-
-  public UrlConnectionWrapper(final URLConnection urlConnection) {
-    super(urlConnection.getURL());
-    this.core = urlConnection;
-  }
-
-  /** Core connection instance. */
-  private URLConnection core;
 
   public URLConnection getCore() { return core; }
 

@@ -419,6 +419,10 @@ public final class Base64 {
   };
 
 
+  /** Defeats instantiation. */
+  private Base64() { }
+
+
   /* ********  D E T E R M I N E   W H I C H   A L H A B E T  ******** */
 
 
@@ -456,11 +460,6 @@ public final class Base64 {
       return STANDARD_DECODABET;
     }
   } // end getAlphabet
-
-
-
-  /** Defeats instantiation. */
-  private Base64() { }
 
 
 

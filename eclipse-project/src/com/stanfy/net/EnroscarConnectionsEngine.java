@@ -31,10 +31,17 @@ public class EnroscarConnectionsEngine implements URLStreamHandlerFactory, Conte
   /** Content handler factory. */
   private static ContentHandlerFactory contentHandlerFactory;
 
-  public static ContentHandlerFactory getContentHandlerFactory() { return contentHandlerFactory; }
-
   /** Treat 'file' scheme flag. */
   static boolean treatFileScheme = true;
+
+  /** Context instance. */
+  private final Context context;
+
+  public EnroscarConnectionsEngine(final Context context) {
+    this.context = context.getApplicationContext();
+  }
+
+  public static ContentHandlerFactory getContentHandlerFactory() { return contentHandlerFactory; }
 
   /** @return configurator instance */
   public static Config config() { return new Config(); }
@@ -96,13 +103,6 @@ public class EnroscarConnectionsEngine implements URLStreamHandlerFactory, Conte
 
   static boolean isContentResolverScheme(final String protocol) {
     return SCHEME_ANDROID_RESOURCE.equals(protocol) || SCHEME_CONTENT.equals(protocol) || (treatFileScheme && SCHEME_FILE.equals(protocol));
-  }
-
-  /** Context instance. */
-  private final Context context;
-
-  public EnroscarConnectionsEngine(final Context context) {
-    this.context = context.getApplicationContext();
   }
 
   @Override

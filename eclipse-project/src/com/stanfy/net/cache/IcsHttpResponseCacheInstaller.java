@@ -17,14 +17,14 @@ public final class IcsHttpResponseCacheInstaller implements CacheInstaller<HttpR
   /** Instance. */
   private static IcsHttpResponseCacheInstaller instance = null;
 
+  private IcsHttpResponseCacheInstaller() { /* hidden */ }
+
   public static IcsHttpResponseCacheInstaller getInstance() {
     if (instance == null) {
       instance = new IcsHttpResponseCacheInstaller();
     }
     return instance;
   }
-
-  private IcsHttpResponseCacheInstaller() { /* hidden */ }
 
   @Override
   public HttpResponseCache install(final File cacheDir, final long maxSize) throws IOException {

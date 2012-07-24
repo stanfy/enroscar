@@ -95,10 +95,6 @@ public final class MapLocationManager implements Destroyable {
   /** This delegate is called only when an incoming fix is accepted. */
   private LocationUpdateListener locListener = DUMMY_LISTENER;
 
-  public void registerUpdateListener(final LocationUpdateListener delegate) {
-    locListener = delegate;
-  }
-
   /**
    * @param context owner
    * @param looper looper instance
@@ -128,6 +124,10 @@ public final class MapLocationManager implements Destroyable {
         }
       };
     };
+  }
+
+  public void registerUpdateListener(final LocationUpdateListener delegate) {
+    locListener = delegate;
   }
 
   protected void requestLocationUpdates(final String p, final LocationListener listener, final boolean firstTime) {

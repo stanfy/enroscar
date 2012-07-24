@@ -93,10 +93,6 @@ public class ImagesManager implements Bean {
   /** Paused state. */
   private boolean paused = false;
 
-  public static void configureImageTaskExecutorsCount(final int count) {
-    Threading.configureImageTasksExecutor(count);
-  }
-
   public ImagesManager(final Context context) {
     this.resources = context.getResources();
 
@@ -110,6 +106,10 @@ public class ImagesManager implements Bean {
     if (imagesResponseCache == null) {
       Log.w(TAG, "Response cache for images is not defined");
     }
+  }
+
+  public static void configureImageTaskExecutorsCount(final int count) {
+    Threading.configureImageTasksExecutor(count);
   }
 
   /** @param imagesFormat the imagesFormat to set */

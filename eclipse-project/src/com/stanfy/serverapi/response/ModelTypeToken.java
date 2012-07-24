@@ -24,17 +24,20 @@ public final class ModelTypeToken implements Parcelable {
     public ModelTypeToken[] newArray(final int size) { return new ModelTypeToken[size]; }
   };
 
-  public static ModelTypeToken fromRequestBuilderClass(final Class<?> clazz) {
-    return new ModelTypeToken(clazz);
-  }
-  public static ModelTypeToken fromModelType(final Type type) {
-    return new ModelTypeToken(type);
-  }
-
   /** Type. */
   private final Type type;
   /** Raw class. */
   private final Class<?> rawClass;
+
+  ModelTypeToken(final Parcel in) {
+    this.type = (Type)in.readSerializable();
+    final String modelClassName = in.readString();
+    try {
+      this.rawClass = Class.forName(modelClassName);
+    } catch (final Exception e) {
+      throw new RuntimeException("Cannot load raw class for model type token", e);
+    }
+  }
 
   private ModelTypeToken(final Class<?> clazz) {
     this(getType(clazz));
@@ -47,14 +50,11 @@ public final class ModelTypeToken implements Parcelable {
     assert this.type instanceof Serializable;
   }
 
-  ModelTypeToken(final Parcel in) {
-    this.type = (Type)in.readSerializable();
-    final String modelClassName = in.readString();
-    try {
-      this.rawClass = Class.forName(modelClassName);
-    } catch (final Exception e) {
-      throw new RuntimeException("Cannot load raw class for model type token", e);
-    }
+  public static ModelTypeToken fromRequestBuilderClass(final Class<?> clazz) {
+    return new ModelTypeToken(clazz);
+  }
+  public static ModelTypeToken fromModelType(final Type type) {
+    return new ModelTypeToken(type);
   }
 
   private static Type getType(final Class<?> clazz) {

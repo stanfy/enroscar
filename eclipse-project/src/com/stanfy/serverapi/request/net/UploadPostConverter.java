@@ -32,6 +32,14 @@ public class UploadPostConverter extends PostConverter {
    */
   private static final byte[] MULTIPART_CHARS = EncodingUtils.getAsciiBytes("-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
+  /** Boundary. */
+  private final byte[] boundary;
+
+  public UploadPostConverter() {
+    super(null);
+    this.boundary = generateMultipartBoundary();
+  }
+
   /**
    * Generates a random multipart boundary string.
    */
@@ -44,14 +52,6 @@ public class UploadPostConverter extends PostConverter {
       bytes[i] = MULTIPART_CHARS[rand.nextInt(MULTIPART_CHARS.length)];
     }
     return bytes;
-  }
-
-  /** Boundary. */
-  private final byte[] boundary;
-
-  public UploadPostConverter() {
-    super(null);
-    this.boundary = generateMultipartBoundary();
   }
 
   @Override

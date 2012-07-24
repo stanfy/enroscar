@@ -41,6 +41,20 @@ public class BeansManager {
   /** Singleton instance. */
   private static BeansManager instance;
 
+  /** Application instance. */
+  private final Application application;
+
+  /** Container. */
+  private final BeansContainer container;
+
+  /** Register callbacks flag. */
+  private boolean callbacksRegistered = false;
+
+  protected BeansManager(final Application application) {
+    this.application = application;
+    this.container = createContainer(application);
+  }
+
   public static synchronized BeansManager get(final Context context) {
     if (instance == null) {
       if (context == null) { return null; }
@@ -67,20 +81,6 @@ public class BeansManager {
     if (OLD_SDK) {
       get(context).container.onConfigurationChanged(newConfig);
     }
-  }
-
-  /** Application instance. */
-  private final Application application;
-
-  /** Container. */
-  private final BeansContainer container;
-
-  /** Register callbacks flag. */
-  private boolean callbacksRegistered = false;
-
-  protected BeansManager(final Application application) {
-    this.application = application;
-    this.container = createContainer(application);
   }
 
   /**

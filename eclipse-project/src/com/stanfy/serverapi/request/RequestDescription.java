@@ -54,12 +54,6 @@ public class RequestDescription implements Parcelable {
     public RequestDescription[] newArray(final int size) { return new RequestDescription[size]; }
   };
 
-  private static synchronized int nextId() {
-    ++idCounter;
-    if (idCounter < 0) { idCounter = 1; }
-    return idCounter;
-  }
-
   /** Converters to {@link URLConnection}. */
   private static final SparseArray<BaseRequestDescriptionConverter> CONVERTERS = new SparseArray<BaseRequestDescriptionConverter>(3);
   static {
@@ -107,15 +101,6 @@ public class RequestDescription implements Parcelable {
   /** Content analyzer. */
   String contentAnalyzer;
 
-  public static String getParamValue(final String name, final LinkedList<Parameter> param) {
-    for (final Parameter p : param) {
-      if (p instanceof ParameterValue && name.equals(p.getName())) {
-        return ((ParameterValue)p).getValue();
-      }
-    }
-    return null;
-  }
-
   /**
    * Create with predefined ID.
    * @param id request ID
@@ -155,6 +140,21 @@ public class RequestDescription implements Parcelable {
     if (binary != null) {
       this.binaryData = new ArrayList<BinaryData<?>>(Arrays.asList(binary));
     }
+  }
+
+  private static synchronized int nextId() {
+    ++idCounter;
+    if (idCounter < 0) { idCounter = 1; }
+    return idCounter;
+  }
+
+  public static String getParamValue(final String name, final LinkedList<Parameter> param) {
+    for (final Parameter p : param) {
+      if (p instanceof ParameterValue && name.equals(p.getName())) {
+        return ((ParameterValue)p).getValue();
+      }
+    }
+    return null;
   }
 
   @Override

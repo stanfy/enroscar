@@ -39,19 +39,19 @@ public final class SharingHelper {
   /** Resolver task. */
   private ResolveContentUriTask asyncTask;
 
+  private SharingHelper(final SharingActor actor) {
+    this.actor = actor;
+    if (actor instanceof Context) {
+      this.context = new WeakReference<Context>((Context)actor);
+    }
+  }
+
   public static SharingHelper use(final SharingActor actor) {
     return new SharingHelper(actor);
   }
 
   public static Intent setSharingIntent(final Intent dest, final Intent sharingIntent) {
     return sharingIntent != null ? dest.putExtra(EXTRA_SHARING, sharingIntent) : dest;
-  }
-
-  private SharingHelper(final SharingActor actor) {
-    this.actor = actor;
-    if (actor instanceof Context) {
-      this.context = new WeakReference<Context>((Context)actor);
-    }
   }
 
   /**

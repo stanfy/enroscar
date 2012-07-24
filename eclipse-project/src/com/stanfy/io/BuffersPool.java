@@ -41,8 +41,6 @@ public class BuffersPool implements FlushableBean {
   /** Protects {@link #buffers}. */
   private Object lock = new Object();
 
-  private static byte[] allocate(final int size) { return new byte[size]; }
-
   /** Default pool configuration. */
   private static final int[][] DESCRIPTION_DEFAULT = {
     {4, DEFAULT_SIZE_FOR_IMAGES}, {2, IoUtils.BUF_SIZE}
@@ -64,6 +62,8 @@ public class BuffersPool implements FlushableBean {
     }
     usedBuffersCount.set(0);
   }
+
+  private static byte[] allocate(final int size) { return new byte[size]; }
 
   /**
    * @return buffer with default width
