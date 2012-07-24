@@ -115,6 +115,7 @@
       <property name="suppressLoadErrors" value="true"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
+    <module name="DeclarationOrder"/>
   </module>
   <module name="JavadocPackage">
     <property name="severity" value="ignore"/>
