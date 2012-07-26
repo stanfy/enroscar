@@ -16,6 +16,7 @@ import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.app.beans.BeansManager.Editor;
 import com.stanfy.io.IoUtils;
 import com.stanfy.net.UrlConnectionWrapper;
+import com.stanfy.serverapi.request.OperationType;
 import com.stanfy.serverapi.request.RequestBuilder;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.request.SimpleRequestBuilder;
@@ -112,6 +113,27 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
         "Accept-Language: " + lang,
         "Accept-Encoding: gzip"
     ));
+  }
+
+  @Test
+  public void makePostConnectionShouldReceiveCorrectResponse() throws Exception {
+    getWebServer().enqueue(new MockResponse().setBody("POST response"));
+
+    final URLConnection connection = makeConnection(
+        new MyRequestBuilder(Robolectric.application)
+          .setUrl(getWebServer().getUrl("/post").toString())
+          .setOperationType(OperationType.SIMPLE_POST)
+    );
+
+    assertThat(ResponseCache.getDefault(), is(nullValue()));
+
+    final String response = read(connection);
+    final RecordedRequest request = getWebServer().takeRequest();
+    assertThat(request.getMethod(), equalTo("POST"));
+
+    final HttpURLConnection http = (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
+    assertThat(http.getResponseCode(), equalTo(HttpURLConnection.HTTP_OK));
+    assertThat(response, equalTo("POST response"));
   }
 
 }
