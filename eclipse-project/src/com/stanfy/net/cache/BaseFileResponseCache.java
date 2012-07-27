@@ -74,12 +74,12 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     }
   }
 
-  protected void install(final File directory, final int version, final long maxSize) throws IOException {
+  protected void install(final File directory, final int version, final long maxSize, final boolean asyncInit) throws IOException {
     if (buffersPool == null) {
       throw new IllegalStateException("Buffers pool is not resolved");
     }
     directory.mkdirs();
-    diskCache = DiskLruCache.open(directory, buffersPool, version, ENTRIES_COUNT, maxSize);
+    diskCache = DiskLruCache.open(directory, buffersPool, version, ENTRIES_COUNT, maxSize, asyncInit);
   }
 
   public void delete() throws IOException {
@@ -272,7 +272,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
       if (DEBUG) {
         Log.i(TAG, "Install new file cache workingDirectory=" + getWorkingDirectory() + ", version=" + VERSION + ", maxSize=" + getMaxSize());
       }
-      install(getWorkingDirectory(), VERSION, getMaxSize());
+      install(getWorkingDirectory(), VERSION, getMaxSize(), true);
     } catch (final IOException e) {
       Log.e(TAG, "Cannot install file cache", e);
     }

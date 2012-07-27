@@ -11,7 +11,9 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.util.Log;
 
+import com.stanfy.DebugFlags;
 import com.stanfy.app.ActivityBehaviorFactory;
 import com.stanfy.app.CrucialGUIOperationManager;
 import com.stanfy.images.ImagesManager;
@@ -34,6 +36,12 @@ import com.stanfy.utils.sdk.SDKDependentUtilsFactory;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 public class BeansManager {
+
+  /** Debug flag. */
+  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+
+  /** Logging tag. */
+  private static final String TAG = "Beans";
 
   /** Old SDK flag. */
   private static final boolean OLD_SDK = VERSION.SDK_INT < VERSION_CODES.ICE_CREAM_SANDWICH;
@@ -240,11 +248,17 @@ public class BeansManager {
     }
 
     public void commit() {
+      final long start = System.currentTimeMillis();
       for (final Entry<String, Runnable> entry : editorActions.entrySet()) {
+        final long startAction = System.currentTimeMillis();
         entry.getValue().run();
+        if (DEBUG) { Log.d(TAG, "One action time: " + (System.currentTimeMillis() - startAction)); }
       }
+      if (DEBUG) { Log.d(TAG, "Run actions time: " + (System.currentTimeMillis() - start)); }
       registerComponentCallbacks();
+      if (DEBUG) { Log.d(TAG, "Before init time: " + (System.currentTimeMillis() - start)); }
       container.triggerInitFinished();
+      if (DEBUG) { Log.d(TAG, "All commit time: " + (System.currentTimeMillis() - start)); }
     }
 
   }

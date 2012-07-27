@@ -41,6 +41,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import android.os.AsyncTask;
+import android.os.Looper;
 import android.util.Log;
 
 /**
@@ -208,9 +210,10 @@ public final class DiskLruCache implements Closeable {
    * @param appVersion
    * @param valueCount the number of values per cache entry. Must be positive.
    * @param maxSize the maximum number of bytes this cache should use to store
+   * @param asyncInit whether use another thread for initialization
    * @throws IOException if reading or writing the cache directory fails
    */
-  public static DiskLruCache open(final File directory, final BuffersPool buffersPool, final int appVersion, final int valueCount, final long maxSize)
+  public static DiskLruCache open(final File directory, final BuffersPool buffersPool, final int appVersion, final int valueCount, final long maxSize, final boolean asyncInit)
       throws IOException {
     if (maxSize <= 0) {
       throw new IllegalArgumentException("maxSize <= 0");
@@ -220,26 +223,67 @@ public final class DiskLruCache implements Closeable {
     }
 
     // prefer to pick up where we left off
-    DiskLruCache cache = new DiskLruCache(directory, buffersPool, appVersion, valueCount, maxSize);
-    if (cache.journalFile.exists()) {
+    final DiskLruCache cache = new DiskLruCache(directory, buffersPool, appVersion, valueCount, maxSize);
+
+    if (asyncInit) {
+
+      if (Looper.myLooper() != null) {
+        // use async task
+        new AsyncTask<Void, Void, Void>() {
+          @Override
+          protected Void doInBackground(final Void... params) {
+            cache.asyncInit();
+            return null;
+          }
+        }
+        .execute();
+      } else {
+        // start new thread
+        new Thread() {
+          @Override
+          public void run() {
+            cache.asyncInit();
+          }
+        }
+        .start();
+      }
+
+    } else {
+      cache.initCache();
+    }
+
+    return cache;
+  }
+
+  private void asyncInit() {
+    try {
+      initCache();
+    } catch (final IOException e) {
+      journalWriter = null;
+      Log.e(TAG, "Could not initialize cache asynchrnously dir=" + directory, e);
+    }
+  }
+
+  private synchronized void initCache() throws IOException {
+    if (journalFile.exists()) {
       try {
-        cache.readJournal();
-        cache.processJournal();
-        cache.journalWriter = new OutputStreamWriter(
-            new PoolableBufferedOutputStream(new FileOutputStream(cache.journalFile, true), buffersPool), IoUtils.US_ASCII
+        readJournal();
+        processJournal();
+        this.journalWriter = new OutputStreamWriter(
+            new PoolableBufferedOutputStream(new FileOutputStream(journalFile, true), buffersPool), IoUtils.US_ASCII
         );
-        return cache;
+        return;
       } catch (final IOException journalIsCorrupt) {
         Log.w(TAG, directory + " is corrupt: " + journalIsCorrupt.getMessage() + ", removing", journalIsCorrupt);
-        cache.delete();
+        // cleanup
+        delete();
+        lruEntries.clear();
       }
     }
 
     // create a new empty cache
     directory.mkdirs();
-    cache = new DiskLruCache(directory, buffersPool, appVersion, valueCount, maxSize);
-    cache.rebuildJournal();
-    return cache;
+    rebuildJournal();
   }
 
   private void readJournal() throws IOException {

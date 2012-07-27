@@ -26,12 +26,16 @@ import com.stanfy.utils.AppUtils;
 @EnroscarBean(value = ImagesManager.CACHE_BEAN_NAME, contextDependent = true)
 public class ImageFileCache extends BaseFileResponseCache implements Bean {
 
+  /** Bigger images cache (10M). */
+  public static final long MAX_SIZE = 10 * 1024 * 1024;
+
   public ImageFileCache(final Context context) {
     final String eState = Environment.getExternalStorageState();
     final File baseDir = Environment.MEDIA_MOUNTED.equals(eState)
         ? AppUtils.getSdkDependentUtils().getExternalCacheDir(context)
         : context.getCacheDir();
     setWorkingDirectory(new File(baseDir, "images"));
+    setMaxSize(MAX_SIZE);
   }
 
   @Override

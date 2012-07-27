@@ -94,8 +94,12 @@ public class DefaultBeansContainer implements BeansContainer {
   public void triggerInitFinished() {
     for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
       final Object instance = entry.getValue();
+      final long startTime = System.currentTimeMillis();
       if (instance instanceof InitializingBean) {
         ((InitializingBean) instance).onInitializationFinished(this);
+        if (DEBUG) {
+          Log.d(TAG, "Init " + instance + " time: " + (System.currentTimeMillis() - startTime));
+        }
       }
     }
   }
