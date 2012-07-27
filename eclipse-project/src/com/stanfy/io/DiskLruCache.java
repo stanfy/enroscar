@@ -835,11 +835,13 @@ public final class DiskLruCache implements Closeable {
     }
 
     public File getCleanFile(final int i) {
-      return new File(directory, key + "." + i);
+      final int addLen = 10;
+      return new File(directory, new StringBuilder(key.length() + addLen).append(key).append(".").append(i).toString());
     }
 
     public File getDirtyFile(final int i) {
-      return new File(directory, key + "." + i + ".tmp");
+      final int addLen = 14;
+      return new File(directory, new StringBuilder(key.length() + addLen).append(key).append(".").append(i).append(".tmp").toString());
     }
   }
 }
