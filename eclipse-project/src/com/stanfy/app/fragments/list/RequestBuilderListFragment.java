@@ -41,8 +41,10 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   /** List loader ID. */
   protected static final int LIST_LOADER_ID = 1;
 
+  /** Core adapter instance. */
+  private ModelListAdapter<MT> coreAdapter;
   /** Adapter. */
-  private ResponseDataLoaderAdapter<MT, LT> adapter;
+  private ResponseDataLoaderAdapter<MT, LT> rbAdapter;
   /** List view instance. */
   private FetchableListView listView;
 
@@ -109,16 +111,16 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   @Override
   public void onStart() {
     super.onStart();
-    if (adapter != null) {
-      crucialGUIOperationManager.addCrucialGUIOperationListener(adapter);
+    if (rbAdapter != null) {
+      crucialGUIOperationManager.addCrucialGUIOperationListener(rbAdapter);
     }
   }
 
   @Override
   public void onStop() {
     super.onStop();
-    if (adapter != null) {
-      crucialGUIOperationManager.removeCrucialGUIOperationListener(adapter);
+    if (rbAdapter != null) {
+      crucialGUIOperationManager.removeCrucialGUIOperationListener(rbAdapter);
     }
   }
 
@@ -156,17 +158,22 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
 
   @Override
   public void onLoaderReset(final Loader<ResponseData<LT>> loader) {
-    if (adapter != null) {
-      this.adapter.onLoaderReset(loader);
+    if (rbAdapter != null) {
+      this.rbAdapter.onLoaderReset(loader);
     }
   }
 
   @Override
   public void onLoadFinished(final Loader<ResponseData<LT>> loader, final ResponseData<LT> data) {
-    if (adapter != null) {
-      this.adapter.onLoadFinished(loader, data);
+    if (rbAdapter != null) {
+      this.rbAdapter.onLoadFinished(loader, data);
     }
   }
+
+  /**
+   * @return instance of an adapter created by {@link #createAdapter(ElementRenderer)} method
+   */
+  public ModelListAdapter<MT> getCoreAdapter() { return coreAdapter; }
 
   /**
    * Start loading.
@@ -176,21 +183,22 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     if (this.listView.getAdapter() != null) { return; }
 
     // create adapter
-    this.adapter = wrapAdapter(createAdapter(createRenderer()));
+    this.coreAdapter = createAdapter(createRenderer());
+    this.rbAdapter = wrapAdapter(this.coreAdapter);
     // init loader, data can passed to adapter at once
     getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
 
     // connect list and adapter
-    this.listView.setAdapter(this.adapter);
+    this.listView.setAdapter(this.rbAdapter);
 
     if (isVisible()) {
-      crucialGUIOperationManager.addCrucialGUIOperationListener(adapter);
+      crucialGUIOperationManager.addCrucialGUIOperationListener(rbAdapter);
     }
   }
 
   /** Restart loader. */
   public void reload() {
-    if (this.adapter != null && !this.adapter.isEmpty()) {
+    if (this.rbAdapter != null && !this.rbAdapter.isEmpty()) {
       getListView().setSelection(0);
     }
     getLoaderManager().restartLoader(LIST_LOADER_ID, null, this);
