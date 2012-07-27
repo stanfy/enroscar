@@ -242,6 +242,13 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   }
 
   @Override
+  public String getLocalPath(final String url) {
+    final CacheEntry requestInfo = createGetEntry(url);
+    if (requestInfo == null) { return null; }
+    return diskCache.getLocalPath(requestInfo.getCacheKey(), ENTRY_BODY);
+  }
+
+  @Override
   public void onCacheEntryWriteAbort(final CacheEntryRequest request) {
     writeAbortCount.incrementAndGet();
   }

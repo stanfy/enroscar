@@ -62,6 +62,14 @@ public abstract class CacheWrapper extends ResponseCache implements EnhancedResp
   }
 
   @Override
+  public String getLocalPath(final String url) {
+    if (core instanceof EnhancedResponseCache) {
+      return ((EnhancedResponseCache) core).getLocalPath(url);
+    }
+    return null;
+  }
+
+  @Override
   public CacheResponse get(final URI uri, final String requestMethod, final Map<String, List<String>> requestHeaders) throws IOException {
     return core.get(uri, requestMethod, requestHeaders);
   }

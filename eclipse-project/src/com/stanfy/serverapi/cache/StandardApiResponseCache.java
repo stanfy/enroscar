@@ -94,6 +94,14 @@ public class StandardApiResponseCache extends BaseSizeRestrictedCache implements
   }
 
   @Override
+  public String getLocalPath(final String url) {
+    if (delegate instanceof EnhancedResponseCache) {
+      return ((EnhancedResponseCache) delegate).getLocalPath(url);
+    }
+    return null;
+  }
+
+  @Override
   public void onInitializationFinished(final BeansContainer beansContainer) {
     final ResponseCache mainResponseCache = ResponseCache.getDefault();
     try {

@@ -112,6 +112,9 @@ public class ImagesManager implements Bean {
     Threading.configureImageTasksExecutor(count);
   }
 
+  /** @return images response cache instance */
+  public ResponseCache getImagesResponseCache() { return imagesResponseCache; }
+
   /** @param imagesFormat the imagesFormat to set */
   public void setImagesFormat(final Bitmap.Config imagesFormat) { this.imagesFormat = imagesFormat; }
   /** @param sourceDensity the sourceDensity to set */

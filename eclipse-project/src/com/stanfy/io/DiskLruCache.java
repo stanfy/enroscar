@@ -403,9 +403,12 @@ public final class DiskLruCache implements Closeable {
      * from different edits.
      */
     final InputStream[] ins = new InputStream[valueCount];
+    final String[] paths = new String[valueCount];
     try {
       for (int i = 0; i < valueCount; i++) {
-        ins[i] = new FileInputStream(entry.getCleanFile(i));
+        final File file = entry.getCleanFile(i);
+        ins[i] = new FileInputStream(file);
+        paths[i] = file.getAbsolutePath();
       }
     } catch (final FileNotFoundException e) {
       // a file must have been deleted manually!
@@ -418,7 +421,11 @@ public final class DiskLruCache implements Closeable {
       executorService.submit(cleanupCallable);
     }
 
-    return new Snapshot(ins);
+    return new Snapshot(ins, paths);
+  }
+
+  public String getLocalPath(final String key, final int index) {
+    return new Entry(key).getCleanFile(index).getAbsolutePath();
   }
 
   /**
@@ -629,9 +636,12 @@ public final class DiskLruCache implements Closeable {
   public static final class Snapshot implements Closeable {
     /** Input. */
     private final InputStream[] ins;
+    /** Local path. */
+    private final String[] localPaths;
 
-    private Snapshot(final InputStream[] ins) {
+    Snapshot(final InputStream[] ins, final String[] localPaths) {
       this.ins = ins;
+      this.localPaths = localPaths;
     }
 
     /**
@@ -653,6 +663,9 @@ public final class DiskLruCache implements Closeable {
         closeQuietly(in);
       }
     }
+
+    /** @return local path to the cached content */
+    public String getLocalPath(final int index) { return localPaths[index]; }
   }
 
   /**
