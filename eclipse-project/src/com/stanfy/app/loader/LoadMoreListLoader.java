@@ -56,7 +56,7 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
     return offsetIncrementor.nextValue(offset, lastLoadedCount, itemsList.size());
   }
   protected final int nextLimit() {
-    if (offsetIncrementor == null) { return limit; }
+    if (limitIncrementor == null) { return limit; }
     return limitIncrementor.nextValue(limit, lastLoadedCount, itemsList.size());
   }
 
