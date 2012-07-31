@@ -180,6 +180,11 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   public ModelListAdapter<MT> getCoreAdapter() { return coreAdapter; }
 
   /**
+   * @return instance of an adapter returned by {@link #wrapAdapter(ModelListAdapter)}
+   */
+  public ResponseDataLoaderAdapter<MT, LT> getAdapter() { return rbAdapter; }
+
+  /**
    * Start loading.
    * Call it from {@link #onActivityCreated(Bundle)}.
    */
