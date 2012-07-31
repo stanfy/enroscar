@@ -170,6 +170,10 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     }
   }
 
+  protected void onLoadStart() {
+    // nothing
+  }
+
   /**
    * @return instance of an adapter created by {@link #createAdapter(ElementRenderer)} method
    */
@@ -186,6 +190,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     this.coreAdapter = createAdapter(createRenderer());
     this.rbAdapter = wrapAdapter(this.coreAdapter);
     // init loader, data can passed to adapter at once
+    onLoadStart();
     getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
 
     // connect list and adapter
@@ -201,6 +206,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     if (this.rbAdapter != null && !this.rbAdapter.isEmpty()) {
       getListView().setSelection(0);
     }
+    onLoadStart();
     getLoaderManager().restartLoader(LIST_LOADER_ID, null, this);
   }
 
