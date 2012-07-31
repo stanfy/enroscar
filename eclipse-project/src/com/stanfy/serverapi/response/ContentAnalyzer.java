@@ -2,6 +2,7 @@ package com.stanfy.serverapi.response;
 
 import android.content.Context;
 
+import com.stanfy.serverapi.RequestMethod.RequestMethodException;
 import com.stanfy.serverapi.request.RequestDescription;
 
 /**
@@ -12,6 +13,6 @@ import com.stanfy.serverapi.request.RequestDescription;
  */
 public interface ContentAnalyzer<T, RT> {
 
-  ResponseData<RT> analyze(final Context context, final RequestDescription description, final ResponseData<T> responseData);
+  ResponseData<RT> analyze(final Context context, final RequestDescription description, final ResponseData<T> responseData) throws RequestMethodException;
 
 }

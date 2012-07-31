@@ -664,7 +664,11 @@ public final class DiskLruCache implements Closeable {
    */
   public void delete() throws IOException {
     close();
-    deleteContents(directory);
+    try {
+      deleteContents(directory);
+    } catch (final IllegalArgumentException e) {
+      Log.w(TAG, "Cannot delete contents of " + directory, e);
+    }
   }
 
   private void validateKey(final String key) {

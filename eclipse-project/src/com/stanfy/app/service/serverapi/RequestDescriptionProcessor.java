@@ -39,7 +39,7 @@ public class RequestDescriptionProcessor {
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private ResponseData<?> analyze(final Context context, final ContentAnalyzer analyzer, final ResponseData<?> responseData,
-      final RequestDescription description) {
+      final RequestDescription description) throws RequestMethodException {
     final ResponseData data = responseData;
     return analyzer.analyze(context, description, data);
   }
