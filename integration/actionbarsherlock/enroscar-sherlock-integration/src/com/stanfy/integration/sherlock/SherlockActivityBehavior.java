@@ -41,7 +41,7 @@ public class SherlockActivityBehavior extends BaseActivityBehavior {
       return ((SherlockPreferenceActivity)activity).getSupportActionBar();
     }
 
-    throw new IllegalArgumentException("Cannot get sherlock action bar from " + activity);
+    return null;
   }
 
   public boolean onCreateOptionsMenu(final Menu menu) { return false; }
