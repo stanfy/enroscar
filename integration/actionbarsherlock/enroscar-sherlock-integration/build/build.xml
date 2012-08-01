@@ -8,4 +8,10 @@
 		<copy file="${out.library.jar.file}" tofile="${output.release}/${ant.project.name}.jar" />
 	</target>
 	
+  <target name="source" description="Prepare source artifact">
+    <jar destfile="${output.release}/${ant.project.name}-sources.jar">
+    	<fileset dir="${src.java}" />
+    </jar>
+  </target>
+
 </project>
