@@ -1,5 +1,6 @@
 package com.stanfy.views.list;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.util.AttributeSet;
@@ -106,6 +107,7 @@ public class FetchableListView extends ListView implements OnScrollListener {
   /**
    * Adapter that shows load more footer.
    */
+  @SuppressLint("FieldGetter")
   protected static class LoadmoreAdapter implements WrapperListAdapter, Filterable {
 
     /** Main adapter. */

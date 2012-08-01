@@ -83,7 +83,7 @@ public class EllipsizingTextView extends TextView {
     super.onDraw(canvas);
   }
 
-  @SuppressLint({"NewApi", "FieldGetter"})
+  @SuppressLint({ "NewApi", "FieldGetter" })
   private void resetText() {
     final int maxLines = getMaxLines();
     String workingText = fullText;

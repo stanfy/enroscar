@@ -2,6 +2,7 @@
 <lint>
     <issue id="FieldGetter" severity="informational" />
     <issue id="IconDensities" severity="informational" />
-    <issue id="Registered" severity="informational" />
-    <issue id="UnusedResources" severity="informational" />
+    <issue id="Registered" severity="ignore" />
+    <issue id="TypographyQuotes" severity="warning" />
+    <issue id="UnusedResources" severity="ignore" />
 </lint>
