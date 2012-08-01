@@ -2,19 +2,20 @@ package com.stanfy.enroscar.sample;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.stanfy.app.loader.RequestBuilderLoader;
+import com.stanfy.app.loader.RequestBuilderLoaderCallbacks;
 import com.stanfy.enroscar.sample.model.Profile;
 import com.stanfy.serverapi.request.SimpleRequestBuilder;
 import com.stanfy.serverapi.response.ResponseData;
 
 
-public class LoadProfileFragment extends Fragment implements LoaderCallbacks<ResponseData<Profile>> {
+public class LoadProfileFragment extends Fragment implements RequestBuilderLoaderCallbacks<Profile> {
 
   private static final int LOADER_ID = 1;
 
@@ -39,7 +40,7 @@ public class LoadProfileFragment extends Fragment implements LoaderCallbacks<Res
   }
 
   @Override
-  public Loader<ResponseData<Profile>> onCreateLoader(final int arg0, final Bundle arg1) {
+  public RequestBuilderLoader<Profile> onCreateLoader(final int arg0, final Bundle arg1) {
     return new SimpleRequestBuilder<Profile>(getActivity()) { }
       .setUrl("https://api.twitter.com/1/users/show.json")
       .addParam("screen_name", "TwitterAPI")

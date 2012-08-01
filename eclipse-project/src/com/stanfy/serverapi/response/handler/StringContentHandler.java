@@ -19,7 +19,7 @@ public class StringContentHandler extends BaseContentHandler {
   public static final String BEAN_NAME = "StringContentHandler";
 
   @Override
-  protected Object getContent(final URLConnection connection, final InputStream source, final ModelTypeToken modelType) throws IOException {
+  protected String getContent(final URLConnection connection, final InputStream source, final ModelTypeToken modelType) throws IOException {
     return IoUtils.streamToString(source);
   }
 

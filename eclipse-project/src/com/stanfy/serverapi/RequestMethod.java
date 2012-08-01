@@ -33,22 +33,38 @@ public class RequestMethod {
     final long startTime = System.currentTimeMillis();
     URLConnection connection = null;
     try {
+
+      // send request
       connection = description.makeConnection(systemContext);
+      // parse response
       final Object model = connection.getContent();
+      // return parsed response and connection
       return new RequestResult(model, connection);
+
     } catch (final IOException e) {
       throw new RequestMethodException(e);
     } catch (final RuntimeException e) {
       throw new RequestMethodException(e);
     } finally {
-      final URLConnection http = UrlConnectionWrapper.unwrap(connection);
-      if (http instanceof HttpURLConnection) {
-        ((HttpURLConnection) http).disconnect();
-        if (DEBUG) { Log.v(TAG, "Disconnected"); }
+      // do as mom said
+      if (connection != null) {
+        disconnect(connection);
       }
       if (DEBUG) {
         Log.d(TAG, "Request time: " + (System.currentTimeMillis() - startTime) + " ms");
       }
+    }
+  }
+
+  /**
+   * Perform disconnect actions.
+   * @param connection connection instance (may be wrapped)
+   */
+  protected void disconnect(final URLConnection connection) {
+    final URLConnection http = UrlConnectionWrapper.unwrap(connection);
+    if (http instanceof HttpURLConnection) {
+      ((HttpURLConnection) http).disconnect();
+      if (DEBUG) { Log.v(TAG, "Disconnected"); }
     }
   }
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.ContentHandler;
+import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 
@@ -12,7 +13,6 @@ import android.util.Log;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.InitializingBean;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.IoUtils;
@@ -28,6 +28,11 @@ import com.stanfy.serverapi.response.ModelTypeToken;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 public abstract class BaseContentHandler extends ContentHandler implements InitializingBean {
+
+  /** Logging tag. */
+  private static final String TAG = RequestDescription.TAG;
+  /** Debug flag. */
+  private static final boolean DEBUG = DebugFlags.DEBUG_API_RESPONSE;
 
   /** Default date format. */
   public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
@@ -45,20 +50,41 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
       throw new IllegalArgumentException("Connection is not wrapped with " + ContentControlUrlConnection.class);
     }
 
+    // try to get input stream
+    InputStream responseStream = null;
+    try {
+      responseStream = connection.getInputStream();
+    } catch (final IOException responseStreamException) {
+      if (DEBUG) { Log.v(TAG, "Cannot get input stream, message: " + responseStreamException.getMessage() + ", try to use error stream"); }
+
+      final URLConnection orig = UrlConnectionWrapper.unwrap(connection);
+      if (orig instanceof HttpURLConnection) {
+        responseStream = ((HttpURLConnection) orig).getErrorStream();
+      }
+
+      // no error stream?
+      if (responseStream == null) {
+        throw responseStreamException;
+      }
+    }
+
+    // we have input => wrap it for reading
+
     InputStream source = IoUtils.getUncompressedInputStream(
         connection.getContentEncoding(),
-        new PoolableBufferedInputStream(connection.getInputStream(), buffersPool)
+        new PoolableBufferedInputStream(responseStream, buffersPool)
     );
 
-    if (RequestDescription.DEBUG && DebugFlags.DEBUG_API_RESPONSE) {
-      final String responseString = IoUtils.streamToString(source);
-      Log.d(RequestDescription.TAG, responseString);
+    if (RequestDescription.DEBUG && DEBUG) {
+      final String responseString = IoUtils.streamToString(source); // source is now closed, don't worry
+      Log.d(TAG, responseString);
       source = new ByteArrayInputStream(responseString.getBytes(IoUtils.UTF_8_NAME));
     }
 
     try {
       return getContent(connection, source, connection.getModelType());
     } finally {
+      // do not forget to close the source
       IoUtils.closeQuietly(source);
     }
   }
@@ -67,8 +93,11 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
 
   protected Type getModelType(final ModelTypeToken modelType) {
     final Class<?> modelClass = modelType.getRawClass();
+
+    // check for wrappers
     final Model modelAnnotation = modelClass.getAnnotation(Model.class);
     if (modelAnnotation == null) { return modelType.getType(); }
+
     final Class<?> wrapper = modelAnnotation.wrapper();
     return wrapper != null ? wrapper : modelType.getType();
   }
@@ -78,7 +107,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
 
   @Override
   public void onInitializationFinished(final BeansContainer beansContainer) {
-    this.buffersPool = BeansManager.get(null).getMainBuffersPool();
+    this.buffersPool = beansContainer.getBean(BuffersPool.class);
   }
 
 }

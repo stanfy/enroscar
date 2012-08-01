@@ -2,46 +2,25 @@ package com.stanfy.serverapi;
 
 import static org.hamcrest.Matchers.*;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.ResponseCache;
 import java.net.URLConnection;
 
 import org.junit.Test;
 
-import android.content.Context;
-
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.app.beans.BeansManager.Editor;
-import com.stanfy.io.IoUtils;
 import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.serverapi.request.OperationType;
-import com.stanfy.serverapi.request.RequestBuilder;
-import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.request.SimpleRequestBuilder;
 import com.stanfy.test.AbstractMockServerTest;
 import com.xtremelabs.robolectric.Robolectric;
 
 /**
- * Tests for {@link RequestDescription}.
+ * Tests for {@link com.stanfy.serverapi.request.RequestDescription}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 public class RequestDescriptionTest extends AbstractMockServerTest {
-
-  /**
-   * Test request builder.
-   */
-  public final class MyRequestBuilder extends SimpleRequestBuilder<String> {
-
-    public MyRequestBuilder(final Context context) {
-      super(context);
-    }
-
-    @Override
-    public RequestDescription getResult() { return super.getResult(); }
-
-  }
 
 //  @Test
 //  public void parcelTest() {
@@ -55,14 +34,6 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
   protected void configureBeansManager(final Editor editor) {
     super.configureBeansManager(editor);
     editor.remoteServerApi();
-  }
-
-  private static URLConnection makeConnection(final RequestBuilder<?> rb) throws Exception {
-    return ((MyRequestBuilder)rb).getResult().makeConnection(Robolectric.application);
-  }
-
-  private static String read(final URLConnection connection) throws IOException {
-    return IoUtils.streamToString(connection.getInputStream());
   }
 
   @Test
