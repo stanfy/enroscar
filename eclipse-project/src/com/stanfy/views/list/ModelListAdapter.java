@@ -48,9 +48,9 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
   }
 
   public ModelListAdapter(final ModelListAdapter<T> adapter) {
-    this.context = adapter.getContext();
-    this.renderer = adapter.getRenderer();
-    this.layoutInflater = adapter.getLayoutInflater();
+    this.context = adapter.context;
+    this.renderer = adapter.renderer;
+    this.layoutInflater = adapter.layoutInflater;
     this.elements = adapter.copyElements();
   }
 
@@ -105,7 +105,7 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
   }
 
   protected View createView(final int type, final ViewGroup parent, final LayoutInflater layoutInflater) {
-    final ElementRenderer<T> renderer = getRenderer();
+    final ElementRenderer<T> renderer = this.renderer;
     View view;
     Object holder;
     switch (type) {

@@ -186,7 +186,7 @@ public class RequestDescription implements Parcelable {
   @Override
   public boolean equals(final Object o) {
     if (!(o instanceof RequestDescription)) { return false; }
-    return id == ((RequestDescription)o).getId();
+    return id == ((RequestDescription)o).id;
   }
 
   @Override
@@ -205,7 +205,7 @@ public class RequestDescription implements Parcelable {
   }
 
   /** @return request identifier */
-  public int getId() { return id; }
+  public final int getId() { return id; }
 
   /** @param operationType operation type */
   public void setOperationType(final int operationType) { this.operationType = operationType; }

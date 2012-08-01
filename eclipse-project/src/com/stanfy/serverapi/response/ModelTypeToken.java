@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -14,6 +15,7 @@ import com.google.gson.internal.$Gson$Types;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  *
  */
+@SuppressLint("FieldGetter")
 public final class ModelTypeToken implements Parcelable {
 
   /** Creator. */

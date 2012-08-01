@@ -26,7 +26,7 @@ import com.stanfy.Destroyable;
  * @author Roman Mazur (http://www.stanfy.com)
  * @author Yevgeniy Pazekha (neboskreb@narod.ru)
  */
-@SuppressLint("HandlerLeak")
+@SuppressLint({"HandlerLeak", "FieldGetter"})
 public final class MapLocationManager implements Destroyable {
   /** Logging tag. */
   static final String LOGTAG = "MapLocMan";

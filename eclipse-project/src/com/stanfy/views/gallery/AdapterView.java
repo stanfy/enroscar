@@ -17,6 +17,7 @@
 package com.stanfy.views.gallery;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.Parcelable;
@@ -39,6 +40,7 @@ import android.widget.Adapter;
  *      {@link FlingStopTouchGallery} for commonly used subclasses of AdapterView.
  * @param <T> adapter type
  */
+@SuppressLint("FieldGetter")
 public abstract class AdapterView<T extends Adapter> extends ViewGroup {
 
   /** Logging tag. */

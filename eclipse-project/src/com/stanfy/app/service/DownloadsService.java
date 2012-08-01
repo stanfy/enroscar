@@ -131,7 +131,7 @@ public class DownloadsService extends Service {
   }
 
   protected void onTaskFinish(final DownloadTask task, final Request request) {
-    getNotificationManager().cancel(request.notificationId);
+    notificationManager.cancel(request.notificationId);
     tasks.remove(task);
     sendBroadcast(new Intent(ACTION_DOWNLOAD_COMPLETE).putExtra(EXTRA_ID, request.id).putExtra(EXTRA_SUCCESS, request.success));
     if (tasks.isEmpty()) { stopSelf(); }

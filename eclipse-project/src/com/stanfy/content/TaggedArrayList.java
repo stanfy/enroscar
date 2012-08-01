@@ -23,7 +23,7 @@ public class TaggedArrayList<E extends UniqueObject> extends ArrayList<E> {
     super(collection);
     if (collection instanceof TaggedArrayList) {
       final TaggedArrayList<?> list = (TaggedArrayList<?>)collection;
-      tag = list.getTag();
+      tag = list.tag;
     }
   }
 

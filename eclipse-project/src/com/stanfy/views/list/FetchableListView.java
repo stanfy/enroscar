@@ -91,7 +91,7 @@ public class FetchableListView extends ListView implements OnScrollListener {
     if (adapter.isEmpty()) { return; }
     if (totalItemCount - firstVisibleItem - visibleItemCount > getLoadGap()) { return; }
 
-    final FetchableListAdapter coreAdapter = adapter.getWrappedAdapter();
+    final FetchableListAdapter coreAdapter = adapter.core;
     if (!coreAdapter.moreElementsAvailable()) {
       adapter.setLoadFlag(false);
       return;
@@ -109,7 +109,7 @@ public class FetchableListView extends ListView implements OnScrollListener {
   protected static class LoadmoreAdapter implements WrapperListAdapter, Filterable {
 
     /** Main adapter. */
-    private final FetchableListAdapter core;
+    final FetchableListAdapter core;
 
     /** Footer that indicates the loading process. */
     private final View loadView;

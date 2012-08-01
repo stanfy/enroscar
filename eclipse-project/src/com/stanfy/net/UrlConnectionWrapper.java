@@ -25,7 +25,7 @@ public class UrlConnectionWrapper extends URLConnection {
   public static URLConnection unwrap(final URLConnection connection) {
     URLConnection result = connection;
     while (result instanceof UrlConnectionWrapper) {
-      result = ((UrlConnectionWrapper)result).getCore();
+      result = ((UrlConnectionWrapper)result).core;
     }
     return result;
   }
@@ -35,7 +35,7 @@ public class UrlConnectionWrapper extends URLConnection {
     boolean found = false;
     do {
       if (!clazz.isInstance(result)) {
-        result = ((UrlConnectionWrapper)result).getCore();
+        result = ((UrlConnectionWrapper)result).core;
       } else {
         found = true;
       }
@@ -43,7 +43,7 @@ public class UrlConnectionWrapper extends URLConnection {
     return found ? clazz.cast(result) : null;
   }
 
-  public URLConnection getCore() { return core; }
+  public final URLConnection getCore() { return core; }
 
   @Override
   public void connect() throws IOException {

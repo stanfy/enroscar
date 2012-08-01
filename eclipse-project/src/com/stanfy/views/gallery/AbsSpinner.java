@@ -2,6 +2,7 @@ package com.stanfy.views.gallery;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Rect;
@@ -19,6 +20,7 @@ import android.widget.SpinnerAdapter;
  * Copy {@link android.widget.AbsSpinner} methods to make them available for us.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
+@SuppressLint("FieldGetter")
 abstract class AbsSpinner extends AdapterView<SpinnerAdapter> {
 
   /** Adapter instamce. */
