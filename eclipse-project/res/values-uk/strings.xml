@@ -2,9 +2,6 @@
   
   <string name="reset">Скинути</string>
 
-  <string name="ok">OK</string>
-  <string name="cancel">Скасувати</string>
-
   <string name="progress_loading">Завантаження&#8230;</string>
 
   <string name="error_connection">Перевірте ваше з\'єднання з Інтернетом</string>

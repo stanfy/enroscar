@@ -244,7 +244,7 @@ public class VideoPlayFragment extends BaseFragment implements OnPreparedListene
         .setMessage(R.string.video_error)
         .setCancelable(false)
         .setTitle(getActivity().getTitle())
-        .setPositiveButton(R.string.ok, null)
+        .setPositiveButton(android.R.string.ok, null)
         .create();
     }
 

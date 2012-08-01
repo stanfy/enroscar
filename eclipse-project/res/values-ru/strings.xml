@@ -2,9 +2,6 @@
   
   <string name="reset">Сброс</string>
 
-  <string name="ok">OK</string>
-  <string name="cancel">Отмена</string>
-
   <string name="progress_loading">Загрузка&#8230;</string>
 
   <string name="error_connection">Проверьте ваше соединение с Интернетом</string>
