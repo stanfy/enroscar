@@ -13,15 +13,15 @@ public final class EnroscarClassLoader extends RobolectricClassLoader {
   /** Instance. */
   private static EnroscarClassLoader instance;
 
+  private EnroscarClassLoader(final ClassHandler handler) {
+    super(handler);
+  }
+
   public static EnroscarClassLoader getInstance() {
     if (instance == null) {
       instance = new EnroscarClassLoader(ShadowWrangler.getInstance());
     }
     return instance;
-  }
-
-  private EnroscarClassLoader(final ClassHandler handler) {
-    super(handler);
   }
 
   @Override
