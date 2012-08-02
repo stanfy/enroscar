@@ -338,9 +338,13 @@ public class RequestDescription implements Parcelable {
   public URLConnection makeConnection(final Context context) throws IOException {
     final BaseRequestDescriptionConverter converter = CONVERTERS.get(operationType);
 
+    // create instance
     final URLConnection connection = converter.prepareConnectionInstance(context, this);
+    // setup headers
     onURLConnectionPrepared(context, connection);
-    connection.connect();
+    // make a connection
+    converter.connect(connection, this);
+    // send data, if required
     converter.sendRequest(context, connection, this);
 
     return connection;

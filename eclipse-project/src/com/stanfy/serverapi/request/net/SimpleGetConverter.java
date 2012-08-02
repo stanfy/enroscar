@@ -5,7 +5,6 @@ import java.net.URLConnection;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import com.stanfy.serverapi.request.Parameter;
 import com.stanfy.serverapi.request.ParameterValue;
@@ -34,7 +33,7 @@ public class SimpleGetConverter extends BaseRequestDescriptionConverter {
 
   @Override
   public void sendRequest(final Context context, final URLConnection connection, final RequestDescription requestDescription) {
-    if (DEBUG) { Log.d(TAG, "(" + requestDescription.getId() + ")" + ": " + connection.getURL()); }
+    // nothing, it's GET ;)
   }
 
 }

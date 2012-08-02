@@ -240,7 +240,7 @@ public class AppUtils {
       if (manager != null) {
         final PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
         agentString.append(info.packageName).append("/").append(info.versionName)
-            .append(" (").append(info.versionCode).append(") (").append(IoUtils.ENCODING_GZIP).append(")");
+            .append(" (").append(info.versionCode).append("), ").append(IoUtils.ENCODING_GZIP);
       } else {
         // test environment only
         agentString.append(" test");

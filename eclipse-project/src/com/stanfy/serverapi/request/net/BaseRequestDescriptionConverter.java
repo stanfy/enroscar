@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.URLConnection;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.net.UrlConnectionBuilder;
+import com.stanfy.serverapi.request.OperationType;
 import com.stanfy.serverapi.request.RequestDescription;
 
 /**
@@ -24,6 +26,24 @@ public abstract class BaseRequestDescriptionConverter {
   public abstract URLConnection prepareConnectionInstance(final Context context, final RequestDescription requestDescription) throws IOException;
 
   public abstract void sendRequest(final Context context, final URLConnection connection, final RequestDescription requestDescription) throws IOException;
+
+  private static String opertionTypeToString(final int type) {
+    switch (type) {
+    case OperationType.SIMPLE_GET: return "GET";
+    case OperationType.SIMPLE_POST: return "POST";
+    case OperationType.UPLOAD_POST: return "POST, multipart";
+    default: return "unknown";
+    }
+  }
+
+  public void connect(final URLConnection connection, final RequestDescription description) throws IOException {
+    if (DEBUG) {
+      final String idPrefix = "(" + description.getId() + ") ";
+      Log.d(TAG, idPrefix + "Connect to " + connection.getURL() + " <" + opertionTypeToString(description.getOperationType()) + ">");
+      Log.d(TAG, idPrefix + "Headers: " + connection.getRequestProperties());
+    }
+    connection.connect();
+  }
 
   protected UrlConnectionBuilder createUrlConnectionBuilder(final RequestDescription rd) {
     return new UrlConnectionBuilder()
