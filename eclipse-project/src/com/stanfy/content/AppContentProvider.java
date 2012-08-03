@@ -13,16 +13,13 @@ public abstract class AppContentProvider extends ContentProvider {
 
   /** MIME types. */
   protected static final String MIME_DIR = "vnd.android.cursor.dir",
-                                MIME_ITEM = "vnd.android.cursor.item";
+      MIME_ITEM = "vnd.android.cursor.item";
 
   /** URI matcher. */
   private UriMatcher uriMatcher;
 
-  /** DB manager. */
-  private AppDatabaseManager dbManager;
-
   /** @return application database manager */
-  public AppDatabaseManager getAppDatabaseManager() { return dbManager; }
+  public AppDatabaseManager getAppDatabaseManager() { return BeansManager.get(getContext()).getAppDatabaseManager(); }
 
   /** @return URI matcher instance */
   protected UriMatcher getUriMatcher() { return uriMatcher; }
@@ -37,7 +34,6 @@ public abstract class AppContentProvider extends ContentProvider {
 
   @Override
   public boolean onCreate() {
-    dbManager = BeansManager.get(getContext()).getAppDatabaseManager();
     uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     onUriMatcherCreate(uriMatcher);
     return true;

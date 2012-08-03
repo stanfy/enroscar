@@ -108,7 +108,7 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
    * Adapter that shows load more footer.
    */
   @SuppressLint("FieldGetter")
-  protected static class LoadmoreAdapter implements WrapperListAdapter, Filterable {
+  public static class LoadmoreAdapter implements WrapperListAdapter, Filterable {
 
     /** Main adapter. */
     final FetchableListAdapter core;

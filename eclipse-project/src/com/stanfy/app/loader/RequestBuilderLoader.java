@@ -45,7 +45,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   private boolean updateRequested = false;
 
   /** Latch used for waiting. */
-  private CountDownLatch done = new CountDownLatch(1);
+  private final CountDownLatch done = new CountDownLatch(1);
 
   /** Update throttle. */
   long updateThrottle;
