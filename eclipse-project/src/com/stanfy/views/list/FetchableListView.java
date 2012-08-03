@@ -57,15 +57,6 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
   private void init() {
     if (DEBUG) { Log.d(VIEW_LOG_TAG, "New fetchable list view"); }
     setOnScrollListener(this);
-
-    //    final LayoutInflater inflater = LayoutInflater.from(getContext());
-    //    inflater.inflate(R.layout.fetchable_list_view, this, true);
-    //
-    //    listView = (ListView)findViewById(R.id.fetchable_list);
-    //
-    //    stateWindowHelper = new StateWindowHelper(findViewById(R.id.state_panel), listView);
-    //
-    //    setupListView();
   }
 
   protected int getLoadGap() { return LOAD_GAP_DEFAULT; }
