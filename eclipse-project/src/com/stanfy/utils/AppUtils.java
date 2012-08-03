@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.google.gson.internal.$Gson$Types;
@@ -83,16 +84,16 @@ public class AppUtils {
   public static String convertToHex(final byte[] data) {
     final StringBuilder buf = new StringBuilder();
     final int mask = 0x0F, ten = 10, nine = 9, shiftLength = 4;
-    for (int i = 0; i < data.length; i++) {
-      int halfbyte = (data[i] >>> shiftLength) & mask;
+    for (final byte element : data) {
+      int halfbyte = element >>> shiftLength & mask;
       int twoHalfs = 0;
       do {
-        if ((0 <= halfbyte) && (halfbyte <= nine)) {
+        if (0 <= halfbyte && halfbyte <= nine) {
           buf.append((char) ('0' + halfbyte));
         } else {
           buf.append((char) ('a' + (halfbyte - ten)));
         }
-        halfbyte = data[i] & mask;
+        halfbyte = element & mask;
       } while (twoHalfs++ < 1);
     }
     return buf.toString();
@@ -164,11 +165,46 @@ public class AppUtils {
     }
   }
 
+  public static String buildFilePathById(final long id, final String name) {
+    final StringBuilder sb = new StringBuilder();
+    final int divider = 100;
+    long rest = id;
+    do {
+      final int value = (int)(rest % divider);
+      rest /= divider;
+      sb.append(value).append('/');
+    } while (rest != 0);
+    sb.append(name);
+    return sb.toString();
+  }
+
   @SuppressWarnings("unchecked")
   public static <K, V> Map<K, V> tuples(final Object[][] tuples) {
     final Map<K, V> result = new HashMap<K, V>(tuples.length);
     for (final Object[] tuple : tuples) { result.put((K)tuple[0], (V)tuple[1]); }
     return result;
+  }
+
+  /**
+   * Converts device independent points to actual pixels.
+   * @param context - context
+   * @param dip - dip value
+   * @return pixels count
+   */
+  public static int pixelsWidth(final DisplayMetrics displayMetrics, final int dip) {
+    final float scale = displayMetrics.density;
+    final float alpha = 0.5f;
+    return (int)(dip * scale + alpha);
+  }
+  /**
+   * Converts device independent points to actual pixels.
+   * @param context - context
+   * @param dip - dip value
+   * @return pixels count
+   */
+  public static int pixelsOffset(final DisplayMetrics displayMetrics, final int dip) {
+    final float scale = displayMetrics.density;
+    return (int)(dip * scale);
   }
 
   /**

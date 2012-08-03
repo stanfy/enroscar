@@ -23,9 +23,9 @@ public interface OneRequestModelBehavior<MT> {
 
   /**
    * Process response results. Called in GUI thread.
-   * @param data response date
+   * @param data response data
    */
-  void processModel(MT data);
+  void processSuccess(ResponseData<MT> data);
 
   void processError(ResponseData<MT> data);
 
@@ -57,7 +57,7 @@ public interface OneRequestModelBehavior<MT> {
     @Override
     public void onLoadFinished(final Loader<ResponseData<MT>> loader, final ResponseData<MT> data) {
       if (data.isSuccessful()) {
-        behavior.processModel(data.getModel());
+        behavior.processSuccess(data);
       } else {
         behavior.processError(data);
       }

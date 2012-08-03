@@ -1,6 +1,5 @@
 package com.stanfy.views.list;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.util.AttributeSet;
@@ -12,6 +11,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.WrapperListAdapter;
 
@@ -21,13 +21,14 @@ import com.stanfy.views.gallery.AdapterView;
 import com.stanfy.views.list.FetchableListAdapter.OnListItemsLoadedListener;
 
 /**
- * List view that can call to load more records on scrolling.
- * @author Roman Mazur - Stanfy (http://www.stanfy.com)
+ * Implementation of {@link FetchableAbsListView} which uses {@link GridView} as main view.
+ * @author Vladislav Lipskiy - Stanfy (http://www.stanfy.com)
+ *
  */
-public class FetchableListView extends ListView implements OnScrollListener, FetchableView {
+public class FetchableGridView extends GridView implements OnScrollListener, FetchableView {
 
   /** Gap to load more elements. */
-  public static final int LOAD_GAP_DEFAULT = 5;
+  public static final int LOAD_GAP_DEFAULT = 15;
 
   /** Debug flag. */
   private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
@@ -38,34 +39,35 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
   /** Saved index. */
   private int savedFirstVisibleItem = 0;
 
-  public FetchableListView(final Context context) {
+  public FetchableGridView(final Context context) {
     this(context, null);
   }
-  public FetchableListView(final Context context, final AttributeSet attrs) {
+
+  public FetchableGridView(final Context context, final AttributeSet attrs) {
     super(context, attrs);
     init();
   }
-  public FetchableListView(final Context context, final AttributeSet attrs, final int defStyle) {
+
+  public FetchableGridView(final Context context, final AttributeSet attrs, final int defStyle) {
     super(context, attrs, defStyle);
     init();
   }
-
 
   /**
    * Initialize the view.
    */
   private void init() {
-    if (DEBUG) { Log.d(VIEW_LOG_TAG, "New fetchable list view"); }
+    if (DEBUG) { Log.d(VIEW_LOG_TAG, "New fetchable grid view"); }
     setOnScrollListener(this);
 
-    //    final LayoutInflater inflater = LayoutInflater.from(getContext());
-    //    inflater.inflate(R.layout.fetchable_list_view, this, true);
+    //   final LayoutInflater inflater = LayoutInflater.from(getContext());
+    //   inflater.inflate(R.layout.fetchable_list_view, this, true);
     //
-    //    listView = (ListView)findViewById(R.id.fetchable_list);
+    //   listView = (ListView)findViewById(R.id.fetchable_list);
     //
-    //    stateWindowHelper = new StateWindowHelper(findViewById(R.id.state_panel), listView);
+    //   stateWindowHelper = new StateWindowHelper(findViewById(R.id.state_panel), listView);
     //
-    //    setupListView();
+    //   setupListView();
   }
 
   protected int getLoadGap() { return LOAD_GAP_DEFAULT; }
@@ -92,7 +94,7 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
     if (adapter.isEmpty()) { return; }
     if (totalItemCount - firstVisibleItem - visibleItemCount > getLoadGap()) { return; }
 
-    final FetchableListAdapter coreAdapter = adapter.core;
+    final FetchableListAdapter coreAdapter = adapter.getWrappedAdapter();
     if (!coreAdapter.moreElementsAvailable()) {
       adapter.setLoadFlag(false);
       return;
@@ -107,11 +109,10 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
   /**
    * Adapter that shows load more footer.
    */
-  @SuppressLint("FieldGetter")
   protected static class LoadmoreAdapter implements WrapperListAdapter, Filterable {
 
     /** Main adapter. */
-    final FetchableListAdapter core;
+    private final FetchableListAdapter core;
 
     /** Footer that indicates the loading process. */
     private final View loadView;

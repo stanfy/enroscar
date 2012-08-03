@@ -291,6 +291,9 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
     mSpacing = spacing;
   }
 
+  /** @return The spacing in pixels between items in the Gallery */
+  public int getSpacing() { return mSpacing; }
+
   /**
    * Sets the alpha of items that are not selected in the Gallery.
    *
@@ -505,18 +508,21 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
    * is the gallery's center).
    */
   private void scrollIntoSlots() {
-
-    if (getChildCount() == 0 || mSelectedChild == null) { return; }
-
-    final int selectedCenter = getCenterOfView(mSelectedChild);
-    final int targetCenter = getCenterOfGallery();
-
-    final int scrollAmount = targetCenter - selectedCenter;
+    final int scrollAmount = getScrollIntoSlotsAmount();
     if (scrollAmount != 0) {
       mFlingRunnable.startUsingDistance(scrollAmount);
     } else {
       onFinishedMovement();
     }
+  }
+
+  protected int getScrollIntoSlotsAmount() {
+    if (getChildCount() == 0 || mSelectedChild == null) { return 0; }
+
+    final int selectedCenter = getCenterOfView(mSelectedChild);
+    final int targetCenter = getCenterOfGallery();
+
+    return targetCenter - selectedCenter;
   }
 
   private void onFinishedMovement() {

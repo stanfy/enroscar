@@ -26,7 +26,7 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
   /** Callback registered flag. */
   boolean registered = false;
   /** Callback. */
-  final ApiMethodCallback callback;
+  private final ApiMethodCallback callback;
 
   /** Last descriptions. */
   private final ArrayList<RequestDescription> lastDescriptions = new ArrayList<RequestDescription>();
@@ -44,6 +44,8 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
   protected Class<ApiMethods> getInterfaceClass() { return ApiMethods.class; }
 
   public boolean isRegistered() { return registered; }
+
+  public ApiMethodCallback getCallback() { return callback; }
 
   /** Register operation callback. */
   public void registerCallback() {

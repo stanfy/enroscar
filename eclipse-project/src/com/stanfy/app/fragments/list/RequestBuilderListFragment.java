@@ -21,6 +21,7 @@ import com.stanfy.content.UniqueObject;
 import com.stanfy.serverapi.request.RequestBuilder;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.views.list.FetchableListView;
+import com.stanfy.views.list.FetchableView;
 import com.stanfy.views.list.ModelListAdapter;
 import com.stanfy.views.list.ModelListAdapter.ElementRenderer;
 import com.stanfy.views.list.ResponseDataLoaderAdapter;
@@ -46,7 +47,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   /** Adapter. */
   private ResponseDataLoaderAdapter<MT, LT> rbAdapter;
   /** List view instance. */
-  private FetchableListView listView;
+  private FetchableView listView;
 
   /** Previous locale. */
   private Locale prevLocale;
@@ -93,7 +94,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
     final View result = createView(inflater, container, savedInstanceState);
 
-    final FetchableListView listView = (FetchableListView)result.findViewById(android.R.id.list);
+    final FetchableView listView = (FetchableView)result.findViewById(android.R.id.list);
     this.listView = listView;
 
     if (isDataLocaleDependent()) {
@@ -224,9 +225,9 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   }
 
   /** @return fetchable list view instance from the layout */
-  public FetchableListView getListView() {
+  public FetchableView getListView() {
     if (listView != null) { return listView; }
-    listView = (FetchableListView)getActivity().findViewById(android.R.id.list);
+    listView = (FetchableView)getActivity().findViewById(android.R.id.list);
     return listView;
   }
 

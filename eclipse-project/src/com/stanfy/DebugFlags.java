@@ -32,7 +32,7 @@ public final class DebugFlags {
   public static final boolean DEBUG_API_RESPONSE = true; // @debug.api.response@
 
   /** Utilities debug flag. */
-  public static final boolean DEBUG_UTILS = false; // @debug.utils@
+  public static final boolean DEBUG_UTILS = true; // @debug.utils@
 
   /** Debug service flag. */
   public static final boolean DEBUG_SERVICES = true; // @debug.services@
