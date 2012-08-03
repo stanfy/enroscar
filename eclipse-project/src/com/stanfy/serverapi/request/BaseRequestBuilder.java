@@ -286,6 +286,8 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
       result.cacheName = config.getDefaultCacheBeanName();
     }
 
+    result.setCanceled(false);
+
     if (executor != null) {
       return executor.performRequest(result);
     } else {
