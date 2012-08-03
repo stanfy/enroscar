@@ -1,6 +1,7 @@
 package com.stanfy.app.fragments;
 
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 
 import com.stanfy.app.BaseFragment;
 import com.stanfy.utils.OneRequestModelBehavior;
@@ -15,6 +16,9 @@ public abstract class OneRequestModelFragment<MT> extends BaseFragment implement
 
   /** Core object. */
   private final OneRequestModelHelper<MT> core = new OneRequestModelHelper<MT>(this);
+
+  @Override
+  public LoaderManager getSupportLoaderManager() { return getLoaderManager(); }
 
   @Override
   public void onActivityCreated(final Bundle savedInstanceState) {
