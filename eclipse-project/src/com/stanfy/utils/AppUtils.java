@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.google.gson.internal.$Gson$Types;
@@ -183,28 +182,6 @@ public class AppUtils {
     final Map<K, V> result = new HashMap<K, V>(tuples.length);
     for (final Object[] tuple : tuples) { result.put((K)tuple[0], (V)tuple[1]); }
     return result;
-  }
-
-  /**
-   * Converts device independent points to actual pixels.
-   * @param context - context
-   * @param dip - dip value
-   * @return pixels count
-   */
-  public static int pixelsWidth(final DisplayMetrics displayMetrics, final int dip) {
-    final float scale = displayMetrics.density;
-    final float alpha = 0.5f;
-    return (int)(dip * scale + alpha);
-  }
-  /**
-   * Converts device independent points to actual pixels.
-   * @param context - context
-   * @param dip - dip value
-   * @return pixels count
-   */
-  public static int pixelsOffset(final DisplayMetrics displayMetrics, final int dip) {
-    final float scale = displayMetrics.density;
-    return (int)(dip * scale);
   }
 
   /**
