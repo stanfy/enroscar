@@ -13,7 +13,7 @@ public abstract class AppContentProvider extends ContentProvider {
 
   /** MIME types. */
   protected static final String MIME_DIR = "vnd.android.cursor.dir",
-      MIME_ITEM = "vnd.android.cursor.item";
+                                MIME_ITEM = "vnd.android.cursor.item";
 
   /** URI matcher. */
   private UriMatcher uriMatcher;
