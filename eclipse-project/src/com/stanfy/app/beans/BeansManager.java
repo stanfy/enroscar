@@ -16,6 +16,7 @@ import android.util.Log;
 import com.stanfy.DebugFlags;
 import com.stanfy.app.ActivityBehaviorFactory;
 import com.stanfy.app.CrucialGUIOperationManager;
+import com.stanfy.content.AppDatabaseManager;
 import com.stanfy.images.ImagesManager;
 import com.stanfy.images.cache.ImageFileCache;
 import com.stanfy.images.cache.ImageMemoryCache;
@@ -135,6 +136,8 @@ public class BeansManager {
   public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return container.getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
   /** @return content handler instance */
   public ContentHandler getContentHandler(final String name) { return container.getBean(name, ContentHandler.class); }
+  /** @return application database manager instance */
+  public AppDatabaseManager getAppDatabaseManager() { return container.getBean(AppDatabaseManager.class); }
 
   /**
    * Beans editor.
