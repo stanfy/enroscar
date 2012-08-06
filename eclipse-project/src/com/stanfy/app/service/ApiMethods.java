@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -18,7 +19,6 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.Application;
 import com.stanfy.app.service.serverapi.RequestDescriptionProcessor;
 import com.stanfy.app.service.serverapi.RequestProcessorHooks;
 import com.stanfy.serverapi.RequestMethod;
@@ -447,7 +447,7 @@ public class ApiMethods {
 
     this.parallelProcessorHooks = createRequestDescriptionHooks();
     this.queuedProcessorHooks = new QueueRequestHooks(this.parallelProcessorHooks);
-    this.rdProcessor = createRequestDescriptionProcessor(appService.getApp());
+    this.rdProcessor = createRequestDescriptionProcessor(appService.getApplication());
 
     mainHandler = createApiMethodsHandler(MAIN_WORKER.getLooper());
     if (DEBUG) { Log.d(TAG, "Worker thread is now alive " + this); }

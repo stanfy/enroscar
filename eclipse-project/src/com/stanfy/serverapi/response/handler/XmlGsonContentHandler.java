@@ -46,7 +46,7 @@ public class XmlGsonContentHandler extends BaseContentHandler {
   private GsonXml gsonXml;
 
   protected GsonXml createGsonXml() {
-    return new GsonXmlBuilder().setXmlParserCreator(PARSER_FACTORY).setDateFormat(DEFAULT_DATE_FORMAT).create();
+    return new GsonXmlBuilder().setXmlParserCreator(PARSER_FACTORY).setDateFormat(DEFAULT_DATE_FORMAT).setSameNameLists(true).create();
   }
 
   @Override

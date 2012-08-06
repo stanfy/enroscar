@@ -3,6 +3,7 @@ package com.stanfy.app.service;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import android.app.Application;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -12,7 +13,6 @@ import android.os.Message;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.Application;
 
 /**
  * Base application service which provides API and location methods interfaces.
@@ -38,9 +38,6 @@ public class ApplicationService extends Service {
 
   /** Usage flags. */
   private AtomicBoolean apiMethodsUse = new AtomicBoolean(false), locationMethodsUse = new AtomicBoolean(false);
-
-  /** @return application instance */
-  public Application getApp() { return (Application)getApplication(); }
 
   /** @return API methods implementation */
   protected ApiMethods createApiMethods() { return new ApiMethods(this); }
@@ -77,7 +74,12 @@ public class ApplicationService extends Service {
   @SuppressWarnings("deprecation")
   private void checkForLocationMethodsSupport(final boolean force) {
     if (locationMethodsImpl != null) { return; }
-    if (force || getApp().addLocationSupportToService()) {
+    boolean locationSupport = false;
+    final Application app = getApplication();
+    if (app instanceof com.stanfy.app.Application) {
+      locationSupport = ((com.stanfy.app.Application) app).addLocationSupportToService();
+    }
+    if (force || locationSupport) {
       locationMethodsImpl = createLocationMethods();
     }
   }

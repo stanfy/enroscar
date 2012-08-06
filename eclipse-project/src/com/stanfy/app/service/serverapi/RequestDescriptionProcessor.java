@@ -1,10 +1,10 @@
 package com.stanfy.app.service.serverapi;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.Application;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.serverapi.RemoteServerApiConfiguration;
 import com.stanfy.serverapi.RequestMethod;
