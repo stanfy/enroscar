@@ -7,7 +7,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.net.UrlConnectionBuilder;
 import com.stanfy.serverapi.request.OperationType;
 import com.stanfy.serverapi.request.RequestDescription;
 
@@ -43,13 +42,6 @@ public abstract class BaseRequestDescriptionConverter {
       Log.d(TAG, idPrefix + "Headers: " + connection.getRequestProperties());
     }
     connection.connect();
-  }
-
-  protected UrlConnectionBuilder createUrlConnectionBuilder(final RequestDescription rd) {
-    return new UrlConnectionBuilder()
-      .setCacheManagerName(rd.getCacheName())
-      .setContentHandlerName(rd.getContentHandler())
-      .setModelType(rd.getModelType());
   }
 
 }

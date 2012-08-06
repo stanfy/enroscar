@@ -5,6 +5,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
 import android.net.Uri;
 
 import com.stanfy.net.cache.CacheControlUrlConnection;
@@ -36,6 +39,9 @@ public class UrlConnectionBuilder {
   private String contentHandlerName;
   /** Model type. */
   private ModelTypeToken modelType;
+
+  /** SSL socket factory. */
+  private SSLSocketFactory sslSF;
 
   public UrlConnectionBuilder setUrl(final URL url) {
     this.url = url;
@@ -70,8 +76,19 @@ public class UrlConnectionBuilder {
     return this;
   }
 
+  public UrlConnectionBuilder setSslSocketFactory(final SSLSocketFactory factory) {
+    this.sslSF = factory;
+    return this;
+  }
+
   public URLConnection create() throws IOException {
     URLConnection connection = url.openConnection();
+
+    // SSL
+    if (sslSF != null && connection instanceof HttpsURLConnection) {
+      ((HttpsURLConnection) connection).setSSLSocketFactory(sslSF);
+    }
+
     // cache
     if (cacheManagerName != null) {
       connection.setUseCaches(true); // core

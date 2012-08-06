@@ -24,7 +24,7 @@ public class SimpleGetConverter extends BaseRequestDescriptionConverter {
       }
     }
 
-    final URLConnection connection = createUrlConnectionBuilder(requestDescription)
+    final URLConnection connection = requestDescription.prepareConnectionBuilder(context)
       .setUrl(builder.build())
       .create();
 

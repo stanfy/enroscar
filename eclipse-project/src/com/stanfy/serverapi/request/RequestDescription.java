@@ -17,6 +17,7 @@ import android.util.SparseArray;
 import com.stanfy.DebugFlags;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.io.IoUtils;
+import com.stanfy.net.UrlConnectionBuilder;
 import com.stanfy.serverapi.request.binary.BinaryData;
 import com.stanfy.serverapi.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.serverapi.request.net.SimpleGetConverter;
@@ -327,6 +328,18 @@ public class RequestDescription implements Parcelable {
     }
     urlConnection.addRequestProperty("Accept-Encoding", IoUtils.ENCODING_GZIP);
     urlConnection.addRequestProperty("User-Agent", AppUtils.buildUserAgent(context));
+  }
+
+  /**
+   * Pass cache and content control parameters to URL connection builder.
+   * @param context context instance
+   * @return URL connection builder instance
+   */
+  public UrlConnectionBuilder prepareConnectionBuilder(final Context context) {
+    return new UrlConnectionBuilder()
+      .setCacheManagerName(cacheName)
+      .setContentHandlerName(contentHandler)
+      .setModelType(modelType);
   }
 
   /**

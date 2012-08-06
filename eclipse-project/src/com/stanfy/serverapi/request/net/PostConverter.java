@@ -21,7 +21,7 @@ public abstract class PostConverter extends BaseRequestDescriptionConverter {
 
   @Override
   public URLConnection prepareConnectionInstance(final Context context, final RequestDescription requestDescription) throws IOException {
-    final URLConnection connection = createUrlConnectionBuilder(requestDescription)
+    final URLConnection connection = requestDescription.prepareConnectionBuilder(context)
         .setUrl(requestDescription.getUrl())
         .create();
     connection.setDoOutput(true);
