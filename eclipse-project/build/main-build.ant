@@ -584,7 +584,6 @@
       <cut path="/manifest/@android:versionName" property="publish.version" />
     </xmltask>
     <revision property="revision.number"/>
-    <!--property name="publish.name" value="${ant.project.name}_trunk_${publish.version}_manual_${publish.date}_r${revision.number}${output.publish.name.prefix}.apk" /-->
 
     <condition property="tag.name" value="${TAG_NAME}" else="trunk">
       <isset property="TAG_NAME" />
@@ -595,6 +594,11 @@
         <isset property="env.JOB_NAME" />
         <contains string="${env.JOB_NAME}" substring="-auto" />
       </and>
+    </condition>
+    <condition property="publish.allowed">
+      <not>
+        <equals arg1="${init.type}" arg2="auto" />
+      </not>
     </condition>
     <condition property="build.number" value="${env.BUILD_NUMBER}" else="0">
       <isset property="env.BUILD_NUMBER" />
@@ -611,18 +615,24 @@
     <property file="${repo.access.file}" />
 
     <condition property="publish.dev">
-      <or>
-        <not><isset property="env.BuildDev" /></not>
-        <equals arg1="${env.BuildDev}" arg2="true"/>
-      </or>
+      <and>
+        <or>
+          <not><isset property="env.BuildDev" /></not>
+          <equals arg1="${env.BuildDev}" arg2="true"/>
+        </or>
+        <isset property="publish.allowed"/>
+      </and>
     </condition>
     <antcall target="-publish-dev"/>
 
     <condition property="publish.client">
-      <or>
-        <equals arg1="${customer.sync}" arg2="true"/>
-        <equals arg1="${env.BuildClient}" arg2="true"/>
-      </or>
+      <and>
+        <or>
+          <equals arg1="${customer.sync}" arg2="true"/>
+          <equals arg1="${env.BuildClient}" arg2="true"/>
+        </or>
+        <isset property="publish.allowed"/>
+      </and>
     </condition>
     <antcall target="-publish-client"/>
 
