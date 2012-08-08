@@ -129,8 +129,10 @@ public class BaseFragment extends Fragment {
         @Override
         public void run() {
           if (!isAdded() || isDetached()) { return; }
-          final int toX = (int)(getMainViewContentWidth(view) * scrollX);
-          final int toY = (int)(getMainViewContentHeight(view) * scrollY);
+          final int contentHeight = getMainViewContentHeight(view), contentWidth = getMainViewContentWidth(view);
+          final int maxX = contentWidth - view.getWidth(), maxY = contentHeight - view.getHeight();
+          final int toX = Math.min((int)(contentWidth * scrollX), maxX > 0 ? maxX : 0);
+          final int toY = Math.min((int)(contentHeight * scrollY), maxY > 0 ? maxY : 0);
           if (toX >= 0 && toY >= 0) { view.scrollTo(toX, toY); }
         }
       }, getRestoreScrollDelay());
