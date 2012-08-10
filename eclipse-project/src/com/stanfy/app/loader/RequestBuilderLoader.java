@@ -224,7 +224,9 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
     }
 
     final ResponseData<MT> oldData = receivedResponse;
-    receivedResponse = onAcceptData(oldData, data);
+    if (oldData != data) {
+      receivedResponse = onAcceptData(oldData, data);
+    }
 
     if (isStarted()) {
       super.deliverResult(receivedResponse);
