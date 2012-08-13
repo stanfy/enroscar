@@ -15,6 +15,7 @@ import android.util.SparseIntArray;
 /**
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+// TODO write test
 public final class LoaderChain extends Loader<Object[]> {
 
   /** Array of core loaders. */
@@ -137,7 +138,7 @@ public final class LoaderChain extends Loader<Object[]> {
   private static class CallbacksWrapper implements LoaderCallbacks<Object> {
 
     /** Another callbacks. */
-    private final LoaderCallbacks<?> another;
+    private final LoaderCallbacks another;
 
     /** IDs mapping. */
     private SparseIntArray idsMapping;
@@ -165,11 +166,13 @@ public final class LoaderChain extends Loader<Object[]> {
 
     @Override
     public void onLoadFinished(final Loader<Object> loader, final Object data) {
+      another.onLoadFinished(loader, data);
       chain.onLoadFinished(loader, data, loaderIndexMapping.get(loader));
     }
 
     @Override
     public void onLoaderReset(final Loader<Object> loader) {
+      another.onLoaderReset(loader);
       chain.onLoaderReset(loader, loaderIndexMapping.get(loader));
     }
 
