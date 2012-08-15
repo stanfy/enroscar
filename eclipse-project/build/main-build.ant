@@ -405,7 +405,7 @@
     <echo message="SUCCESS"/>
   </target>
 
-  <target name="-copy-binaries-to-android-dirs" if="codecheck.necessary">
+  <target name="-copy-binaries-to-android-dirs">
     <delete dir="${basedir}/bin/classes" />
     <mkdir dir="${basedir}/bin/classes" />
     <copy todir="${basedir}/bin/classes">
