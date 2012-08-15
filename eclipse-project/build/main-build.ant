@@ -405,6 +405,14 @@
     <echo message="SUCCESS"/>
   </target>
 
+  <target name="-copy-binaries-to-android-dirs" if="codecheck.necessary">
+    <delete dir="${basedir}/bin/classes" />
+    <mkdir dir="${basedir}/bin/classes" />
+    <copy todir="${basedir}/bin/classes">
+      <fileset dir="${output.temp.android}/classes" />
+    </copy>
+  </target>
+
   <!-- *************** Public targets *************** -->
 
   <!--
@@ -420,7 +428,7 @@
   <!--
     Main target. It performs compilation and packaging in the defined mode (configuration).
   -->
-  <target name="build" depends="release" description="--> make a ready for installation package">
+  <target name="build" depends="release, -copy-binaries-to-android-dirs" description="--> make a ready for installation package">
     <mkdir dir="${output.release}" />
     <copy todir="${output.release}">
       <fileset dir="${output.temp.android}" includes="*release*, *debug*" />
@@ -433,12 +441,6 @@
     Perfom code style checks and copy-past detection.
   -->
   <target name="codecheck" depends="build" description="Check the code using PMD" if="codecheck.necessary">
-    <delete dir="${basedir}/bin/classes" />
-    <mkdir dir="${basedir}/bin/classes" />
-    <copy todir="${basedir}/bin/classes">
-      <fileset dir="${output.temp.android}/classes" />
-    </copy>
-  	
   	<path id="pmd.path">
       <fileset dir="${lib.ant}/pmd" includes="*.jar" />
     </path>
