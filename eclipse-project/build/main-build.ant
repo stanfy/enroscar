@@ -244,7 +244,7 @@
   <!-- Hooks -->
   <target name="-package-resources" depends="-preprocess, android_rules.-package-resources" />
   <target name="-pre-build" depends="-prepare-directories, -prepare-sources, -prepare-lang-values"/>
-  <target name="-post-compile" depends="-copy-jar-to-bin, -test" />
+  <target name="-post-compile" depends="-copy-jar-to-bin, -test, -copy-binaries-to-android-dirs" />
   
   <target name="-prepare-directories">
     <mkdir dir="${output.temp.resources}"/>
@@ -428,7 +428,7 @@
   <!--
     Main target. It performs compilation and packaging in the defined mode (configuration).
   -->
-  <target name="build" depends="release, -copy-binaries-to-android-dirs" description="--> make a ready for installation package">
+  <target name="build" depends="release" description="--> make a ready for installation package">
     <mkdir dir="${output.release}" />
     <copy todir="${output.release}">
       <fileset dir="${output.temp.android}" includes="*release*, *debug*" />
