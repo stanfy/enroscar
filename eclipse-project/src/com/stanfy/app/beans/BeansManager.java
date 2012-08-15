@@ -199,6 +199,7 @@ public class BeansManager {
     public Editor required() {
       put(SDKDependentUtilsFactory.class);
       put(BuffersPool.class);
+      put(EmptyStatsManager.class);
       return this;
     }
 
@@ -211,6 +212,7 @@ public class BeansManager {
 
     public Editor activitiesBehavior() {
       put(ActivityBehaviorFactory.class);
+      put(CrucialGUIOperationManager.class);
       return this;
     }
 
@@ -244,8 +246,6 @@ public class BeansManager {
       required();
       images();
       activitiesBehavior();
-      put(EmptyStatsManager.class);
-      put(CrucialGUIOperationManager.class);
       remoteServerApi();
       return this;
     }
