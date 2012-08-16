@@ -18,8 +18,11 @@ import android.util.SparseIntArray;
 // TODO write test
 public final class LoaderChain extends Loader<Object[]> {
 
+  /** Index. */
+  Map<Loader<?>, Integer> loaderIndexMapping;
+
   /** Array of core loaders. */
-  private final Description[] descriptions;
+  private Description[] descriptions;
 
   /** Results. */
   private final Object[] results;
@@ -31,7 +34,7 @@ public final class LoaderChain extends Loader<Object[]> {
   private final LoaderManager loaderManager;
 
   /** Arguments. */
-  private final Bundle arguments;
+  private Bundle arguments;
 
   /** Loader builder. */
   public static class Builder {
@@ -84,13 +87,14 @@ public final class LoaderChain extends Loader<Object[]> {
     super(context);
     if (desc == null || desc.length == 0) { throw new IllegalArgumentException("Loaders are not provided"); }
     this.descriptions = desc;
-
     for (final Description d : desc) { d.attach(this); }
 
+    this.arguments = arguments;
     this.results = new Object[totalCount];
 
     this.loaderManager = loaderManager;
-    this.arguments = arguments;
+
+    this.loaderIndexMapping = new HashMap<Loader<?>, Integer>();
   }
 
   /**
@@ -99,6 +103,15 @@ public final class LoaderChain extends Loader<Object[]> {
    * @return builder for constructing a chain
    */
   public static Builder build(final Context context) { return new Builder(context); }
+
+  public static LoaderChain init(final LoaderManager loaderManager, final int id, final Bundle arguments, final LoaderCallbacks<Object[]> callbacks) {
+    final LoaderChain present = (LoaderChain) loaderManager.<Object[]>getLoader(id);
+    final LoaderChain result = (LoaderChain) loaderManager.restartLoader(id, arguments, callbacks);
+    if (present != null) {
+      result.loaderIndexMapping = present.loaderIndexMapping;
+    }
+    return result;
+  }
 
   @Override
   protected void onStartLoading() {
@@ -116,7 +129,8 @@ public final class LoaderChain extends Loader<Object[]> {
     }
   }
 
-  void onLoadFinished(final Loader<Object> loader, final Object data, final int index) {
+  void onLoadFinished(final Loader<Object> loader, final Object data) {
+    final int index = loaderIndexMapping.get(loader);
     results[index] = data;
     if (resultsCounter < results.length) {
       resultsCounter++;
@@ -129,8 +143,12 @@ public final class LoaderChain extends Loader<Object[]> {
     }
   }
 
-  void onLoaderReset(final Loader<Object> loader, final int index) {
-    results[index] = null;
+  void onLoaderReset(final Loader<Object> loader) {
+    final Integer index = loaderIndexMapping.get(loader);
+    if (index != null) {
+      results[index] = null;
+      loaderIndexMapping.remove(loader);
+    }
   }
 
   /** Another callbacks wrapper. */
@@ -138,20 +156,16 @@ public final class LoaderChain extends Loader<Object[]> {
   private static class CallbacksWrapper implements LoaderCallbacks<Object> {
 
     /** Another callbacks. */
-    private final LoaderCallbacks another;
+    private LoaderCallbacks another;
 
     /** IDs mapping. */
     private SparseIntArray idsMapping;
-
-    /** Index. */
-    private final Map<Loader<?>, Integer> loaderIndexMapping;
 
     /** Chain instance. */
     LoaderChain chain;
 
     public CallbacksWrapper(final LoaderCallbacks<?> another, final SparseIntArray idsMapping) {
       this.another = another;
-      this.loaderIndexMapping = new HashMap<Loader<?>, Integer>(idsMapping.size());
       this.idsMapping = idsMapping;
     }
 
@@ -159,7 +173,7 @@ public final class LoaderChain extends Loader<Object[]> {
     public Loader onCreateLoader(final int id, final Bundle args) {
       final Loader result = another.onCreateLoader(id, args);
       if (result != null) {
-        loaderIndexMapping.put(result, idsMapping.get(id));
+        chain.loaderIndexMapping.put(result, idsMapping.get(id));
       }
       return result;
     }
@@ -167,13 +181,13 @@ public final class LoaderChain extends Loader<Object[]> {
     @Override
     public void onLoadFinished(final Loader<Object> loader, final Object data) {
       another.onLoadFinished(loader, data);
-      chain.onLoadFinished(loader, data, loaderIndexMapping.get(loader));
+      chain.onLoadFinished(loader, data);
     }
 
     @Override
     public void onLoaderReset(final Loader<Object> loader) {
       another.onLoaderReset(loader);
-      chain.onLoaderReset(loader, loaderIndexMapping.get(loader));
+      chain.onLoaderReset(loader);
     }
 
   }
