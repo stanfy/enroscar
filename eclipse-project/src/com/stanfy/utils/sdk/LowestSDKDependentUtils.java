@@ -7,6 +7,7 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.view.View;
@@ -77,5 +78,11 @@ public class LowestSDKDependentUtils implements SDKDependentUtils, SdkDependentU
 
   @Override
   public void setCacheInstaller(final CacheInstaller<?> cacheInstaller) { this.cacheInstaller = cacheInstaller; }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void setBackground(final View view, final Drawable background) {
+    view.setBackgroundDrawable(background);
+  }
 
 }

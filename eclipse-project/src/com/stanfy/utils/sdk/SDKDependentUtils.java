@@ -8,6 +8,7 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.view.View;
 import android.webkit.WebView;
@@ -89,5 +90,12 @@ public interface SDKDependentUtils {
    * @param callbacks callbacks instance
    */
   void registerComponentCallbacks(final Application application, final ComponentCallbacks callbacks);
+
+  /**
+   * Set view background.
+   * @param view view
+   * @param background drawable
+   */
+  void setBackground(final View view, final Drawable background);
 
 }
