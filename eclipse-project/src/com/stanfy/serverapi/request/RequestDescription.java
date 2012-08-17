@@ -23,6 +23,7 @@ import com.stanfy.serverapi.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.serverapi.request.net.SimpleGetConverter;
 import com.stanfy.serverapi.request.net.SimplePostConverter;
 import com.stanfy.serverapi.request.net.UploadPostConverter;
+import com.stanfy.serverapi.response.Model;
 import com.stanfy.serverapi.response.ModelTypeToken;
 import com.stanfy.utils.AppUtils;
 
@@ -261,7 +262,18 @@ public class RequestDescription implements Parcelable {
     this.contentAnalyzer = contentAnalyzer;
   }
   /** @return content analyzer bean name */
-  public String getContentAnalyzer() { return contentAnalyzer; }
+  public String getContentAnalyzer() {
+    synchronized (this) {
+      if (contentAnalyzer == null && modelType != null) {
+        final Model modelAnnotation = modelType.getRawClass().getAnnotation(Model.class);
+        if (modelAnnotation != null) {
+          final String analyzer = modelAnnotation.analyzer();
+          if (analyzer.length() > 0) { contentAnalyzer = analyzer; }
+        }
+      }
+    }
+    return contentAnalyzer;
+  }
 
   public void setCanceled(final boolean canceled) { this.canceled = canceled; }
   public boolean isCanceled() { return canceled; }

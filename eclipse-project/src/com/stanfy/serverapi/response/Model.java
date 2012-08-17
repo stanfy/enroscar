@@ -16,4 +16,7 @@ public @interface Model {
   /** @return wrapper class */
   Class<?> wrapper();
 
+  /** @return analyzer name */
+  String analyzer() default "";
+
 }
