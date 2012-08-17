@@ -44,23 +44,31 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
   }
 
   @Override
-  public ListRequestBuilderWrapper<LT, MT> setLimit(final int limit) {
+  public ListRequestBuilderWrapper<LT, MT> setLimit(final String limit) {
     if (limitValue == null) {
       limitValue = core.addSimpleParameter(limitName, limit);
     } else {
-      limitValue.setValue(String.valueOf(limit));
+      limitValue.setValue(limit);
     }
     return this;
   }
 
   @Override
-  public ListRequestBuilderWrapper<LT, MT> setOffset(final int offset) {
+  public ListRequestBuilderWrapper<LT, MT> setOffset(final String offset) {
     if (offsetValue == null) {
       offsetValue = core.addSimpleParameter(offsetName, offset);
     } else {
-      offsetValue.setValue(String.valueOf(offset));
+      offsetValue.setValue(offset);
     }
     return this;
+  }
+
+  public ListRequestBuilderWrapper<LT, MT> setOffset(final int offset) {
+    return setOffset(String.valueOf(offset));
+  }
+
+  public ListRequestBuilderWrapper<LT, MT> setLimit(final int offset) {
+    return setLimit(String.valueOf(offset));
   }
 
   /** @param offsetName `offset` parameter name */
@@ -82,10 +90,10 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
   public void setExecutor(final RequestExecutor executor) { core.setExecutor(executor); }
 
   @Override
-  public int getOffset() { return offsetValue != null ? Integer.parseInt(offsetValue.getValue()) : 0; }
+  public String getOffset() { return offsetValue != null ? offsetValue.getValue() : "0"; }
 
   @Override
-  public int getLimit() { return limitValue != null ? Integer.parseInt(limitValue.getValue()) : 0; }
+  public String getLimit() { return limitValue != null ? limitValue.getValue() : "0"; }
 
   @Override
   public LoadMoreListLoader<MT, LT> getLoader() {

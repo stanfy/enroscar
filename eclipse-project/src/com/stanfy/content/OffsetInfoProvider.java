@@ -7,10 +7,6 @@ package com.stanfy.content;
  */
 public interface OffsetInfoProvider {
 
-  /** @return current offset value */
-  int getCurrentOffset();
-  
-  /** @return maximum offset value */
-  int getMaxOffset();
-  
+  boolean moreElementsAvailable(final String currentOffset);
+
 }

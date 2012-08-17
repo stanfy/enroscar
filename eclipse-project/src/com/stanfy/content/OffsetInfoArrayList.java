@@ -2,6 +2,8 @@ package com.stanfy.content;
 
 import java.util.Collection;
 
+import android.util.Log;
+
 /**
  * List with offset information.
  * @param <E> element type
@@ -16,14 +18,21 @@ public class OffsetInfoArrayList<E extends UniqueObject> extends TaggedArrayList
   public OffsetInfoArrayList(final Collection<? extends E> collection) { super(collection); }
 
   @Override
-  public int getCurrentOffset() {
+  public boolean moreElementsAvailable(final String currentOffset) {
     final OffsetInfoTag tag = (OffsetInfoTag)this.tag;
-    return tag != null ? tag.getCurrentOffset() : -1;
-  }
-  @Override
-  public int getMaxOffset() {
-    final OffsetInfoTag tag = (OffsetInfoTag)this.tag;
-    return tag != null ? tag.getMaxOffsetCount() : -1;
+    if (tag == null) { return false; }
+
+    try {
+
+      final long currentO = Long.parseLong(currentOffset);
+      return currentO < tag.getMaxOffsetCount();
+
+    } catch (final NumberFormatException e) {
+
+      Log.e("OffsetInfoProvider", "moreElementsAvailable: Cannot parse current offset value <" + currentOffset + ">, return false", e);
+      return false;
+
+    }
   }
 
 }

@@ -10,12 +10,12 @@ import java.util.List;
  */
 public interface ListRequestBuilder<LT extends List<MT>, MT> extends RequestBuilder<LT> {
 
-  ListRequestBuilder<LT, MT> setOffset(final int offset);
+  ListRequestBuilder<LT, MT> setOffset(final String offset);
 
-  ListRequestBuilder<LT, MT> setLimit(final int limit);
+  ListRequestBuilder<LT, MT> setLimit(final String limit);
 
-  int getOffset();
+  String getOffset();
 
-  int getLimit();
+  String getLimit();
 
 }

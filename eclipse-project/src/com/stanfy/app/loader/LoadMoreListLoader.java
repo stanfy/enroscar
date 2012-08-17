@@ -24,13 +24,16 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
   private LT itemsList;
 
   /** Current offset. */
-  private int offset, limit;
+  private String offset, limit;
 
   /** Last loaded count. */
   private int lastLoadedCount;
 
   /** Stop load more state indicator. */
   private boolean stopLoadMore;
+
+  /** Use limit parameter flag. */
+  private boolean useLimitFlag;
 
   public LoadMoreListLoader(final ListRequestBuilder<LT, MT> requestBuilder) {
     super(requestBuilder);
@@ -42,26 +45,31 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
   @Override
   public ListRequestBuilder<LT, MT> getRequestBuilder() { return (ListRequestBuilder<LT, MT>) super.getRequestBuilder(); }
 
-  public RequestBuilderLoader<LT> setOffsetIncrementor(final ValueIncrementor incrementor) {
+  public LoadMoreListLoader<MT, LT> setOffsetIncrementor(final ValueIncrementor incrementor) {
     this.offsetIncrementor = incrementor;
     return this;
   }
-  public RequestBuilderLoader<LT> setLimitIncrementor(final ValueIncrementor incrementor) {
+  public LoadMoreListLoader<MT, LT> setLimitIncrementor(final ValueIncrementor incrementor) {
     this.limitIncrementor = incrementor;
     return this;
   }
 
-  protected final int nextOffset() {
-    if (offsetIncrementor == null) { return offset + 1; }
-    return offsetIncrementor.nextValue(offset, lastLoadedCount, itemsList.size());
+  public LoadMoreListLoader<MT, LT> useLimit(final boolean flag) {
+    this.useLimitFlag = flag;
+    return this;
   }
-  protected final int nextLimit() {
-    if (limitIncrementor == null) { return limit; }
-    return limitIncrementor.nextValue(limit, lastLoadedCount, itemsList.size());
+
+  protected final String nextOffset() {
+    if (offsetIncrementor == null) { return String.valueOf(Integer.parseInt(offset) + 1); }
+    return offsetIncrementor.nextValue(offset, lastLoadedCount, itemsList != null ? itemsList.size() : 0);
+  }
+  protected final String nextLimit() {
+    if (limitIncrementor == null) { return String.valueOf(Integer.parseInt(limit) + 1); }
+    return limitIncrementor.nextValue(limit, lastLoadedCount, itemsList != null ? itemsList.size() : 0);
   }
 
   protected boolean shouldStopLoading(final OffsetInfoProvider offsetInfoProvider) {
-    return offset > offsetInfoProvider.getMaxOffset();
+    return !offsetInfoProvider.moreElementsAvailable(offset);
   }
 
   @Override
@@ -98,9 +106,9 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
 
   @Override
   public void forceLoadMore() {
-    final int nOffset = nextOffset();
-    if (nOffset < 0) {
-      if (DEBUG) { Log.d(TAG, "Negative offset, cancel loadmore"); }
+    final String nOffset = nextOffset();
+    if (nOffset == null) {
+      if (DEBUG) { Log.d(TAG, "Null offset, cancel loadmore"); }
       stopLoadMore = true;
       return;
     }
@@ -108,7 +116,11 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
     offset = nOffset;
     limit = nextLimit();
 
-    getRequestBuilder().setOffset(offset).setLimit(limit);
+    getRequestBuilder().setOffset(offset);
+    if (useLimitFlag) {
+      getRequestBuilder().setLimit(limit);
+    }
+
     forceLoad();
   }
 
@@ -122,7 +134,7 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
    * Offset/limit incrementor.
    */
   public interface ValueIncrementor {
-    int nextValue(int currentValue, int lastLoadedCount, int currentCount);
+    String nextValue(String currentValue, int lastLoadedCount, int currentCount);
   }
 
 }
