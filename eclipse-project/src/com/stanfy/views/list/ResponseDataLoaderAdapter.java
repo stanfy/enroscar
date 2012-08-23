@@ -7,6 +7,7 @@ import android.content.Context;
 
 import com.stanfy.content.UniqueObject;
 import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.views.StateHelper;
 
 /**
  * Adapter that consumes {@link ResponseData}.
@@ -18,6 +19,10 @@ public class ResponseDataLoaderAdapter<T extends UniqueObject, LT extends List<T
 
   public ResponseDataLoaderAdapter(final Context context, final ModelListAdapter<T> coreAdapter) {
     super(context, coreAdapter);
+  }
+
+  public ResponseDataLoaderAdapter(final Context context, final ModelListAdapter<T> coreAdapter, final StateHelper stateHelper) {
+    super(context, coreAdapter, stateHelper);
   }
 
   @Override
