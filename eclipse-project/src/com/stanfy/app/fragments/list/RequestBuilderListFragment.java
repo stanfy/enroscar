@@ -201,10 +201,6 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
 
     // connect list and adapter
     this.listView.setAdapter(this.rbAdapter);
-
-    if (isVisible()) {
-      crucialGUIOperationManager.addCrucialGUIOperationListener(rbAdapter);
-    }
   }
 
   /** Restart loader. */

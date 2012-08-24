@@ -1,10 +1,11 @@
 package com.stanfy.app;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import android.content.Context;
 import android.util.Log;
 
+import com.stanfy.DebugFlags;
 import com.stanfy.app.beans.Bean;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.EnroscarBean;
@@ -22,6 +23,8 @@ public class CrucialGUIOperationManager implements Bean {
 
   /** Logging tag. */
   private static final String TAG = BEAN_NAME;
+  /** Debug flag. */
+  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
 
   /** Main thread instance. */
   private final Thread mainThread;
@@ -30,17 +33,17 @@ public class CrucialGUIOperationManager implements Bean {
   private boolean crucialGuiOperationRunning = false;
 
   /** Crucial GUI operation listeners. */
-  private ArrayList<CrucialGUIOperationListener> crucialGuiOperationListeners;
+  private HashSet<CrucialGUIOperationListener> crucialGuiOperationListeners;
 
   /** Images manager. */
-  private ImagesManager imagesManager;
+  private final ImagesManager imagesManager;
 
   public CrucialGUIOperationManager(final Context context) {
     this.mainThread = Thread.currentThread();
     this.imagesManager = BeansManager.get(context).getImagesManager();
     if (imagesManager == null) {
       Log.i(TAG, "CrucialGUIOperationManager created BUT images manager is null. "
-               + "If it's not an expected behavior, please make sure you declare images manager before this entity.");
+          + "If it's not an expected behavior, please make sure you declare images manager before this entity.");
     }
   }
 
@@ -62,11 +65,10 @@ public class CrucialGUIOperationManager implements Bean {
     if (imagesManager != null) {
       imagesManager.pauseLoading();
     }
-    final ArrayList<CrucialGUIOperationListener> listeners = crucialGuiOperationListeners;
+    final HashSet<CrucialGUIOperationListener> listeners = crucialGuiOperationListeners;
     if (listeners != null) {
-      final int listsnersCount = listeners.size();
-      for (int i = listsnersCount - 1; i >= 0; i--) {
-        listeners.get(i).onStartCrucialGUIOperation();
+      for (final CrucialGUIOperationListener crucialGUIOperationListener : listeners) {
+        crucialGUIOperationListener.onStartCrucialGUIOperation();
       }
     }
   }
@@ -86,11 +88,10 @@ public class CrucialGUIOperationManager implements Bean {
     if (imagesManager != null) {
       imagesManager.resumeLoading();
     }
-    final ArrayList<CrucialGUIOperationListener> listeners = crucialGuiOperationListeners;
+    final HashSet<CrucialGUIOperationListener> listeners = crucialGuiOperationListeners;
     if (listeners != null) {
-      final int listsnersCount = listeners.size();
-      for (int i = listsnersCount - 1; i >= 0; i--) {
-        listeners.get(i).onFinishCrucialGUIOperation();
+      for (final CrucialGUIOperationListener crucialGUIOperationListener : listeners) {
+        crucialGUIOperationListener.onFinishCrucialGUIOperation();
       }
     }
   }
@@ -103,9 +104,11 @@ public class CrucialGUIOperationManager implements Bean {
     if (listener == null) { throw new NullPointerException("Crucial GUI operation listener is null!"); }
     checkThread();
     if (crucialGuiOperationListeners == null) {
-      crucialGuiOperationListeners = new ArrayList<CrucialGUIOperationListener>();
+      crucialGuiOperationListeners = new HashSet<CrucialGUIOperationListener>();
     }
-    crucialGuiOperationListeners.add(listener);
+    final boolean newObject = crucialGuiOperationListeners.add(listener);
+
+    if (DEBUG && !newObject) { Log.e(TAG, "You are trying to add the same listener again"); }
   }
 
   /**
