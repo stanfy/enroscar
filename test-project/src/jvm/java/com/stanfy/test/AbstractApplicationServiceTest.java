@@ -1,10 +1,13 @@
 package com.stanfy.test;
 
+import java.lang.reflect.Field;
+
 import android.support.v4.content.Loader;
 import android.support.v4.content.Loader.OnLoadCompleteListener;
 
 import com.stanfy.app.beans.BeansManager.Editor;
 import com.stanfy.app.loader.LoaderAccess;
+import com.stanfy.app.loader.RbLoaderAccess;
 import com.stanfy.app.loader.RequestBuilderLoader;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.test.Application.ApplicationService;
@@ -37,6 +40,26 @@ public abstract class AbstractApplicationServiceTest extends AbstractMockServerT
 
   protected <T> void waitAndAssertForLoader(final RequestBuilderLoader<T> loader, final Asserter<ResponseData<T>> asserter) {
     waitAndAssert(new LoaderWaiter<T>(loader), asserter);
+  }
+
+  protected static <T extends Loader<?>> T directLoaderCall(final T loader) {
+    return Robolectric.directlyOnFullStack(initLoader(loader));
+  }
+
+  private static <T extends Loader<?>> T initLoader(final T loader) {
+    try {
+      final Field contextField = Loader.class.getDeclaredField("mContext");
+      contextField.setAccessible(true);
+      contextField.set(loader, Robolectric.application);
+
+      if (loader instanceof RequestBuilderLoader<?>) {
+        RbLoaderAccess.initLoader((RequestBuilderLoader<?>)loader);
+      }
+
+      return loader;
+    } catch (final Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   protected <T> void waitAndAssert(final Waiter<T> waiter, final Asserter<T> asserter) {

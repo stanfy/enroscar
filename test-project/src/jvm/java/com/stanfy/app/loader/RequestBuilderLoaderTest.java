@@ -34,11 +34,11 @@ public class RequestBuilderLoaderTest extends AbstractApplicationServiceTest {
     getWebServer().enqueue(new MockResponse().setBody(text));
 
     final RequestBuilderLoader<String> loader = new SimpleRequestBuilder<String>(getApplication()) { }
-    .setUrl(getWebServer().getUrl("/").toString())
-    .setFormat(StringContentHandler.BEAN_NAME)
-    .getLoader();
+      .setUrl(getWebServer().getUrl("/").toString())
+      .setFormat(StringContentHandler.BEAN_NAME)
+      .getLoader();
 
-    loader.startLoading();
+    directLoaderCall(loader).startLoading();
 
     waitAndAssertForLoader(loader, new Asserter<ResponseData<String>>() {
       @Override
@@ -54,13 +54,13 @@ public class RequestBuilderLoaderTest extends AbstractApplicationServiceTest {
     getWebServer().enqueue(new MockResponse().setBody("doLoadShouldDeliverResults"));
 
     final RequestBuilderLoader<String> loader = new SimpleRequestBuilder<String>(getApplication()) { }
-    .setUrl(getWebServer().getUrl("/").toString())
-    .setFormat(StringContentHandler.BEAN_NAME)
-    .setMetaInfo(meta, meta)
-    .setContentAnalyzer("analyzer")
-    .getLoader();
+        .setUrl(getWebServer().getUrl("/").toString())
+        .setFormat(StringContentHandler.BEAN_NAME)
+        .setMetaInfo(meta, meta)
+        .setContentAnalyzer("analyzer")
+        .getLoader();
 
-    loader.startLoading();
+    directLoaderCall(loader).startLoading();
 
     waitAndAssertForLoader(loader, new Asserter<ResponseData<String>>() {
       @Override

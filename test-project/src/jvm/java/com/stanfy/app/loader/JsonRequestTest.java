@@ -72,7 +72,7 @@ public class JsonRequestTest extends AbstractApplicationServiceTest {
         .setFormat(format)
         .getLoader();
 
-    loader.startLoading();
+    directLoaderCall(loader).startLoading();
 
     waitAndAssertForLoader(loader, new Asserter<ResponseData<MyModel>>() {
       @Override

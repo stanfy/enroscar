@@ -73,7 +73,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
 
     final LoadMoreListLoader<String, List<String>> loader = createListRb().getLoader();
 
-    loader.startLoading();
+    directLoaderCall(loader).startLoading();
 
     makeAsyncAssert(loader, "L1", new Asserter<List<String>>() {
       @Override
@@ -92,7 +92,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
 
     final LoadMoreListLoader<String, List<String>> loader = createListRb().setLimit(2).setOffset(1).getLoader();
 
-    loader.startLoading();
+    directLoaderCall(loader).startLoading();
 
     makeAsyncAssert(loader, "LCustom", new Asserter<List<String>>() {
       @Override
@@ -113,7 +113,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
 
     final LoadMoreListLoader<String, List<String>> loader = createListRb().setLimit(limit).setOffset(offset).getLoader();
 
-    loader.forceLoadMore();
+    directLoaderCall(loader).forceLoadMore();
 
     makeAsyncAssert(loader, "LNext", new Asserter<List<String>>() {
       @Override
@@ -150,7 +150,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
     final LoadMoreListLoader<String, List<String>> loader = createListRb().setLimit(limit).setOffset(offset)
         .getLoader().setLimitIncrementor(lInc).setOffsetIncrementor(oInc);
 
-    loader.forceLoadMore();
+    directLoaderCall(loader).forceLoadMore();
 
     makeAsyncAssert(loader, "LNextCustom", new Asserter<List<String>>() {
       @Override
