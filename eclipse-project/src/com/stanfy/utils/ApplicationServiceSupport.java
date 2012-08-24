@@ -16,7 +16,7 @@ import com.stanfy.serverapi.RemoteServerApiConfiguration;
  * @param <T> service object type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-abstract class ApplicationServiceSupport<T> implements ServiceConnection {
+public abstract class ApplicationServiceSupport<T> implements ServiceConnection {
 
   /** Logging tag. */
   private static final String TAG = "ServiceSupport";
