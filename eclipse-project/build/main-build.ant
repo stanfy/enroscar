@@ -385,14 +385,15 @@
   		  classpathref="test.classpath.groovy"
   	    />
   		
-    <echo message="Testing... sdk path: env=${env.ANDROID_HOME}, android.sdk.path=${sdk.dir}"/>
+    <echo message="Testing..." />
     <junit haltonerror="true" haltonfailure="true" fork="once" showoutput="true" printsummary="true">
       <formatter type="xml"/>
       <classpath>
         <path refid="test.classpath.groovy"/>
         <pathelement location="${output.temp.test}" />
       </classpath>
-    	<jvmarg value="-Dandroid.sdk.path=${sdk.dir}"/>
+    	<sysproperty key="android.sdk.path" value="${sdk.dir}" />
+    	<env key="ANDROID_HOME" value="${sdk.dir}" />
       <batchtest todir="${output.junit}">
         <fileset dir="${output.temp.test}">
           <exclude name="**/*Abstract*.class"/>
