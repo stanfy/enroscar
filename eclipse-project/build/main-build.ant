@@ -392,6 +392,7 @@
         <path refid="test.classpath.groovy"/>
         <pathelement location="${output.temp.test}" />
       </classpath>
+    	<jvmarg value="-Dandroid.sdk.path=${sdk.dir}"/>
       <batchtest todir="${output.junit}">
         <fileset dir="${output.temp.test}">
           <exclude name="**/*Abstract*.class"/>
