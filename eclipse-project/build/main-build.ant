@@ -385,7 +385,7 @@
   		  classpathref="test.classpath.groovy"
   	    />
   		
-    <echo message="Testing..."/>
+    <echo message="Testing... sdk path: env=${env.ANDROID_HOME}, android.sdk.path=${sdk.dir}"/>
     <junit haltonerror="true" haltonfailure="true" fork="once" showoutput="true" printsummary="true">
       <formatter type="xml"/>
       <classpath>
