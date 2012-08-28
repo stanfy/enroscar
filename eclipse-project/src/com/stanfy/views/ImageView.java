@@ -590,6 +590,18 @@ public class ImageView extends android.widget.ImageView {
       crossFade = enabled;
     }
 
+    @Override
+    public int getIntrinsicWidth() {
+      final int topIntrinsicWidth = getDrawable(1).getIntrinsicWidth();
+      return topIntrinsicWidth == 0 ? getDrawable(0).getIntrinsicWidth() : topIntrinsicWidth;
+    }
+
+    @Override
+    public int getIntrinsicHeight() {
+      final int topIntrinsicHeight = getDrawable(1).getIntrinsicHeight();
+      return topIntrinsicHeight == 0 ? getDrawable(0).getIntrinsicHeight() : topIntrinsicHeight;
+    }
+
   }
 
 }
