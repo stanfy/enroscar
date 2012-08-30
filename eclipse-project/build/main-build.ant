@@ -358,7 +358,20 @@
     <available file="${src.test.groovy}" property="src.test.groovy.available" />
   </target>
 
-	<target name="-compile-test-java" if="${src.test.java.available}">
+  <target name="-prepare-test-classpath">
+    <path id="test.classpath">
+      <fileset dir="${build.library.path}/libs/test" includes="*.jar" />
+      <pathelement path="${output.temp.android}/classes" />
+      <path refid="project.all.jars.path" />
+      <pathelement location="${project.target.android.jar}"/>
+    </path>
+    <path id="test.classpath.groovy">
+      <path refid="test.classpath" />
+      <pathelement path="${output.temp.test}" />
+    </path>
+  </target>
+	
+	<target name="-compile-test-java" depends="-prepare-test-classpath" if="${src.test.java.available}">
     <echo message="Compiling java tests..."/>
     <javac target="1.5" debug="true" extdirs="" destdir="${output.temp.test}" srcdir="${src.test.java}"
         includeantruntime="false"
@@ -369,7 +382,7 @@
     </javac>
 	</target>
 	
-  <target name="-compile-test-groovy" if="${src.test.groovy.available}">
+  <target name="-compile-test-groovy" depends="-prepare-test-classpath" if="${src.test.groovy.available}">
     <echo message="Compiling groovy tests..."/>
     <taskdef resource="org/codehaus/groovy/antlib.xml" uri="antlib:groovy" classpathref="test.classpath" />
     <groovy:groovyc 
@@ -379,21 +392,7 @@
         />
   </target>
 
-  <target name="-test" depends="-check-tests-available" if="src.test.available">
-    <path id="test.classpath">
-    	<fileset dir="${build.library.path}/libs/test" includes="*.jar" />
-      <pathelement path="${output.temp.android}/classes" />
-    	<path refid="project.all.jars.path" />
-    	<pathelement location="${project.target.android.jar}"/>
-    </path>
-    <antcall target="-compile-test-java" />  
-    
-    <path id="test.classpath.groovy">
-      <path refid="test.classpath" />
-    	<pathelement path="${output.temp.test}" />
-    </path>
-    <antcall target="-compile-test-groovy" />  
-  		
+  <target name="-test" depends="-check-tests-available, -compile-test-java, -compile-test-groovy" if="src.test.available">
     <echo message="Testing..." />
     <junit haltonerror="true" haltonfailure="true" fork="once" showoutput="true" printsummary="true">
       <formatter type="xml"/>
