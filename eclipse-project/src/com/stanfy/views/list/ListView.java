@@ -54,6 +54,13 @@ public class ListView extends android.widget.ListView {
       if (animatedViewHelper != null) {
         if (scrollState == SCROLL_STATE_FLING) {
           animatedViewHelper.notifyCrucialGuiStart();
+
+          final int first = getFirstVisiblePosition();
+          final int count = getChildCount();
+          if (first + count >= getAdapter().getCount()) {
+            animatedViewHelper.notifyCrucialGuiFinish();
+          }
+
         } else {
           animatedViewHelper.notifyCrucialGuiFinish();
         }
