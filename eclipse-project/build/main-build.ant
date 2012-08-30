@@ -354,6 +354,29 @@
 
   <target name="-check-tests-available">
 	  <available file="${src.test}" property="src.test.available" />
+    <available file="${src.test.java}" property="src.test.java.available" />
+    <available file="${src.test.groovy}" property="src.test.groovy.available" />
+  </target>
+
+	<target name="-compile-test-java" if="${src.test.java.available}">
+    <echo message="Compiling java tests..."/>
+    <javac target="1.5" debug="true" extdirs="" destdir="${output.temp.test}" srcdir="${src.test.java}"
+        includeantruntime="false"
+        verbose="${verbose}" 
+        classpathref="test.classpath"
+        >
+      <compilerarg line="${java.compilerargs}"/>
+    </javac>
+	</target>
+	
+  <target name="-compile-test-groovy" if="${src.test.groovy.available}">
+    <echo message="Compiling groovy tests..."/>
+    <taskdef resource="org/codehaus/groovy/antlib.xml" uri="antlib:groovy" classpathref="test.classpath" />
+    <groovy:groovyc 
+        srcdir="${src.test.groovy}"
+        destdir="${output.temp.test}"
+        classpathref="test.classpath.groovy"
+        />
   </target>
 
   <target name="-test" depends="-check-tests-available" if="src.test.available">
@@ -363,27 +386,13 @@
     	<path refid="project.all.jars.path" />
     	<pathelement location="${project.target.android.jar}"/>
     </path>
-      
-    <echo message="Compiling tests..."/>
-    <javac target="1.5" debug="true" extdirs="" destdir="${output.temp.test}" srcdir="${src.test.java}"
-        includeantruntime="false"
-        verbose="${verbose}" 
-        classpathref="test.classpath"
-        >
-      <compilerarg line="${java.compilerargs}"/>
-    </javac>
+    <antcall target="-compile-test-java" />  
     
     <path id="test.classpath.groovy">
       <path refid="test.classpath" />
     	<pathelement path="${output.temp.test}" />
     </path>
-  	
-    <taskdef resource="org/codehaus/groovy/antlib.xml" uri="antlib:groovy" classpathref="test.classpath" />
-  	<groovy:groovyc 
-  		  srcdir="${src.test.groovy}"
-  		  destdir="${output.temp.test}"
-  		  classpathref="test.classpath.groovy"
-  	    />
+    <antcall target="-compile-test-groovy" />  
   		
     <echo message="Testing..." />
     <junit haltonerror="true" haltonfailure="true" fork="once" showoutput="true" printsummary="true">
