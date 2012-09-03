@@ -320,8 +320,12 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
     return new RequestBuilderLoader<MT>(this);
   }
 
+  protected <T, LT extends List<T>> ListRequestBuilderWrapper<LT, T> createLoadMoreListWrapper() {
+    return new ListRequestBuilderWrapper<LT, T>(this) { };
+  }
+
   public <T, LT extends List<T>> ListRequestBuilderWrapper<LT, T> asLoadMoreList(final String offset, final String limit) {
-    final ListRequestBuilderWrapper<LT, T> wrapper = new ListRequestBuilderWrapper<LT, T>(this) { };
+    final ListRequestBuilderWrapper<LT, T> wrapper = createLoadMoreListWrapper();
     if (offset != null) {
       wrapper.setOffsetParamName(offset);
     }
