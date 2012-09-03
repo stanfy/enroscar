@@ -394,7 +394,7 @@
 
   <target name="-test" depends="-check-tests-available, -compile-test-java, -compile-test-groovy" if="src.test.available">
     <echo message="Testing..." />
-    <junit haltonerror="true" haltonfailure="true" fork="once" showoutput="true" printsummary="true">
+    <junit haltonerror="false" haltonfailure="true" fork="once" showoutput="true" printsummary="true">
       <formatter type="xml"/>
       <classpath>
         <path refid="test.classpath.groovy"/>
