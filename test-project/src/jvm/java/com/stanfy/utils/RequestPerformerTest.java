@@ -39,7 +39,7 @@ public class RequestPerformerTest extends AbstractApplicationServiceTest {
   }
 
   @Test
-  public void sendRequestShouldCallCallbacks() throws Exception {
+  public void sendRequestShouldCallCallbacks() throws Throwable {
     getWebServer().enqueue(new MockResponse().setBody("test response body"));
 
     final SimpleRequestBuilder<String> rb = new SimpleRequestBuilder<String>(getApplication()) { };

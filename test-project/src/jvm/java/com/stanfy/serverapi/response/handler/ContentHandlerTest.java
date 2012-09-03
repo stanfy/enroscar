@@ -42,7 +42,7 @@ public class ContentHandlerTest extends AbstractMockServerTest {
     scheduleBadMethodResponse();
 
     URLConnection connection = makeConnection(
-        new MyRequestBuilder(Robolectric.application)
+        new MyRequestBuilder<String>(Robolectric.application) { }
           .setUrl(getWebServer().getUrl("/error").toString())
           .setOperationType(OperationType.SIMPLE_GET)
     );
@@ -61,7 +61,7 @@ public class ContentHandlerTest extends AbstractMockServerTest {
 
     // send request once more
     connection = makeConnection(
-        new MyRequestBuilder(Robolectric.application)
+        new MyRequestBuilder<String>(Robolectric.application) { }
           .setUrl(getWebServer().getUrl("/error").toString())
           .setOperationType(OperationType.SIMPLE_GET)
     );

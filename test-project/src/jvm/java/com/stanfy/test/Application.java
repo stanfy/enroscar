@@ -220,7 +220,10 @@ public class Application extends com.stanfy.app.Application {
   }
 
   public ShadowLooper getApiMainShadowLooper() {
-    return Robolectric.shadowOf(((ApiMethods)appServiceInstance.getApiMethods()).getMainHandler().getLooper());
+    final ApiMethods apiM = (ApiMethods)appServiceInstance.getApiMethods();
+    final Handler shadowedHandler = apiM.getMainHandler();
+    final ShadowLooper looper = Robolectric.shadowOf(shadowedHandler.getLooper());
+    return looper;
   }
 
 }

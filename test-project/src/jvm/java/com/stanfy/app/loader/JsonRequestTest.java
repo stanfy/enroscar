@@ -10,7 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.app.beans.BeansManager.Editor;
-import com.stanfy.serverapi.request.SimpleRequestBuilder;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.test.AbstractApplicationServiceTest;
 
@@ -60,14 +59,15 @@ public class JsonRequestTest extends AbstractApplicationServiceTest {
   }
 
   @Test
-  public void shouldParse() throws Exception {
+  public void shouldParse() throws Throwable {
     final MyModel model = new MyModel();
     model.id = 3;
     model.text = "shouldParseJson";
 
     enqueueResponse(model);
 
-    final RequestBuilderLoader<MyModel> loader = new SimpleRequestBuilder<MyModel>(getApplication()) { }
+    final RequestBuilderLoader<MyModel> loader = new MyRequestBuilder<MyModel>(getApplication()) { }
+        .setStartedLoader(true)
         .setUrl(getWebServer().getUrl("/").toString())
         .setFormat(format)
         .getLoader();

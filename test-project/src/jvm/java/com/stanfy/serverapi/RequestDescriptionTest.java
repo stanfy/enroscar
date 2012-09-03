@@ -39,7 +39,7 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
   @Test
   public void shouldAutomaticallySetModelClass() {
     assertThat(
-        new MyRequestBuilder(getApplication()).getResult().getModelType().getRawClass().getName(),
+        (new MyRequestBuilder<String>(getApplication()) { }).getResult().getModelType().getRawClass().getName(),
         equalTo(String.class.getName()));
   }
 
@@ -48,7 +48,7 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     getWebServer().enqueue(new MockResponse().setBody("test response"));
 
     final URLConnection connection = makeConnection(
-        new MyRequestBuilder(Robolectric.application)
+        new MyRequestBuilder<String>(Robolectric.application) { }
           .setUrl(getWebServer().getUrl("/r1").toString())
     );
 
@@ -67,7 +67,7 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     getWebServer().enqueue(new MockResponse().setBody("test response"));
 
     read(makeConnection(
-        new MyRequestBuilder(Robolectric.application)
+        new MyRequestBuilder<String>(Robolectric.application) { }
           .setUrl(getWebServer().getUrl("/r1").toString())
           .addParam("p1", "v1")
           .addParam("p2", "v2")
@@ -91,7 +91,7 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     getWebServer().enqueue(new MockResponse().setBody("POST response"));
 
     final URLConnection connection = makeConnection(
-        new MyRequestBuilder(Robolectric.application)
+        new MyRequestBuilder<String>(Robolectric.application) { }
           .setUrl(getWebServer().getUrl("/post").toString())
           .setOperationType(OperationType.SIMPLE_POST)
     );

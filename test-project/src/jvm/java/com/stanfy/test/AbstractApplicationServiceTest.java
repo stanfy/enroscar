@@ -1,13 +1,12 @@
 package com.stanfy.test;
 
-import java.lang.reflect.Field;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import android.support.v4.content.Loader;
 import android.support.v4.content.Loader.OnLoadCompleteListener;
 
 import com.stanfy.app.beans.BeansManager.Editor;
 import com.stanfy.app.loader.LoaderAccess;
-import com.stanfy.app.loader.RbLoaderAccess;
 import com.stanfy.app.loader.RequestBuilderLoader;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.test.Application.ApplicationService;
@@ -22,7 +21,7 @@ import com.xtremelabs.robolectric.Robolectric;
 public abstract class AbstractApplicationServiceTest extends AbstractMockServerTest {
 
   /** Error. */
-  private AssertionError error;
+  private Throwable error;
 
   @Override
   protected void configureBeansManager(final Editor editor) {
@@ -38,45 +37,30 @@ public abstract class AbstractApplicationServiceTest extends AbstractMockServerT
 
   protected ApplicationService createApplicationService(final Application app) { return app.new ApplicationService(); }
 
-  protected <T> void waitAndAssertForLoader(final RequestBuilderLoader<T> loader, final Asserter<ResponseData<T>> asserter) {
+  protected <T> void waitAndAssertForLoader(final RequestBuilderLoader<T> loader, final Asserter<ResponseData<T>> asserter) throws Throwable {
     waitAndAssert(new LoaderWaiter<T>(loader), asserter);
   }
 
-  protected static <T extends Loader<?>> T directLoaderCall(final T loader) {
-    return Robolectric.directlyOnFullStack(initLoader(loader));
-  }
-
-  private static <T extends Loader<?>> T initLoader(final T loader) {
-    try {
-      final Field contextField = Loader.class.getDeclaredField("mContext");
-      contextField.setAccessible(true);
-      contextField.set(loader, Robolectric.application);
-
-      if (loader instanceof RequestBuilderLoader<?>) {
-        RbLoaderAccess.initLoader((RequestBuilderLoader<?>)loader);
-      }
-
-      return loader;
-    } catch (final Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  protected <T> void waitAndAssert(final Waiter<T> waiter, final Asserter<T> asserter) {
+  protected <T> void waitAndAssert(final Waiter<T> waiter, final Asserter<T> asserter) throws Throwable {
     final Thread checker = new Thread() {
       @Override
       public void run() {
         final T data = waiter.waitForData();
         try {
           asserter.makeAssertions(data);
-        } catch (final AssertionError e) {
-          error = e;
         } catch (final Exception e) {
-          throw new RuntimeException(e);
+          error = e;
         }
       }
     };
-    checker.setUncaughtExceptionHandler(Thread.currentThread().getUncaughtExceptionHandler());
+    checker.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(final Thread thread, final Throwable ex) {
+        ex.printStackTrace();
+        error = ex;
+        throw new AssertionError("Exception occured: " + ex.getMessage());
+      }
+    });
     checker.start();
 
     // boilerplate to make posted operations run
@@ -109,16 +93,16 @@ public abstract class AbstractApplicationServiceTest extends AbstractMockServerT
 
     public LoaderWaiter(final RequestBuilderLoader<T> loader) {
       this.loader = loader;
-    }
-
-    @Override
-    public ResponseData<T> waitForData() {
-      loader.registerListener(1, new OnLoadCompleteListener<ResponseData<T>>() {
+      directLoaderCall(loader).registerListener(1, new OnLoadCompleteListener<ResponseData<T>>() {
         @Override
         public void onLoadComplete(final Loader<ResponseData<T>> loader, final ResponseData<T> data) {
           LoaderWaiter.this.data = data;
         }
       });
+    }
+
+    @Override
+    public ResponseData<T> waitForData() {
       LoaderAccess.waitForLoader(loader);
       return data;
     }

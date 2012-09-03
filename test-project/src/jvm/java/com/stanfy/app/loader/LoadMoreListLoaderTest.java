@@ -17,7 +17,6 @@ import com.stanfy.app.loader.LoadMoreListLoader.ValueIncrementor;
 import com.stanfy.serverapi.RequestMethod.RequestMethodException;
 import com.stanfy.serverapi.request.ListRequestBuilderWrapper;
 import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.request.SimpleRequestBuilder;
 import com.stanfy.serverapi.response.ContentAnalyzer;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.test.AbstractApplicationServiceTest;
@@ -48,14 +47,15 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
   }
 
   private ListRequestBuilderWrapper<List<String>, String> createListRb() throws IOException {
-    return new SimpleRequestBuilder<List<String>>(getApplication()) { }
+    return new MyRequestBuilder<List<String>>(getApplication()) { }
+      .setStartedLoader(true)
       .setUrl(getWebServer().getUrl("/").toString())
       .setFormat("string")
       .setContentAnalyzer("sa")
       .<String, List<String>>asLoadMoreList("o", "l");
   }
 
-  private void makeAsyncAssert(final LoadMoreListLoader<String, List<String>> loader, final String response, final Asserter<List<String>> asserter) {
+  private void makeAsyncAssert(final LoadMoreListLoader<String, List<String>> loader, final String response, final Asserter<List<String>> asserter) throws Throwable {
     waitAndAssertForLoader(loader, new Asserter<ResponseData<List<String>>>() {
       @Override
       public void makeAssertions(final ResponseData<List<String>> data) throws Exception {
@@ -68,7 +68,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
   }
 
   @Test
-  public void firstRequestWithoutOffsetLimit() throws Exception {
+  public void firstRequestWithoutOffsetLimit() throws Throwable {
     getWebServer().enqueue(new MockResponse().setBody("L1"));
 
     final LoadMoreListLoader<String, List<String>> loader = createListRb().getLoader();
@@ -87,7 +87,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
   }
 
   @Test
-  public void firstRequestWithCustomOffsetLimit() throws Exception {
+  public void firstRequestWithCustomOffsetLimit() throws Throwable {
     getWebServer().enqueue(new MockResponse().setBody("LCustom"));
 
     final LoadMoreListLoader<String, List<String>> loader = createListRb().setLimit(2).setOffset(1).getLoader();
@@ -106,7 +106,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
   }
 
   @Test
-  public void nextRequestShouldIncrementOffsetLimit() throws Exception {
+  public void nextRequestShouldIncrementOffsetLimit() throws Throwable {
     getWebServer().enqueue(new MockResponse().setBody("LNext"));
 
     final int limit = 3, offset = 2;
@@ -127,7 +127,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
   }
 
   @Test
-  public void nextRequestShouldIncrementOffsetLimitCustomType() throws Exception {
+  public void nextRequestShouldIncrementOffsetLimitCustomType() throws Throwable {
     getWebServer().enqueue(new MockResponse().setBody("LNextCustom"));
 
     final String limit = "abcd", offset = "dbca", nextLimit = "abc", nextOffset = "bdc";
