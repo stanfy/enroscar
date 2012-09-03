@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
@@ -26,7 +25,7 @@ import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.bytecode.DirectCallPolicy.FullStackDirectCallPolicy;
 
 /**
- * Test for {@link LoaderChain}.
+ * Test for {@link LoaderSet}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 public class LoaderSetTest extends AbstractApplicationServiceTest {
@@ -117,26 +116,26 @@ public class LoaderSetTest extends AbstractApplicationServiceTest {
     );
     set.init(null, callbacks);
 
-    waitAndAssert(new Waiter<Object[]>() {
-      @Override
-      public Object[] waitForData() {
-        try {
-          waiter.await(2, TimeUnit.SECONDS);
-          return set.getResults();
-        } catch (final InterruptedException e) {
-          return null;
-        }
-      }
-    }, new Asserter<Object[]>() {
-      @Override
-      public void makeAssertions(final Object[] data) throws Exception {
-        // TODO finish it
+    // TODO finish it
+//    waitAndAssert(new Waiter<Object[]>() {
+//      @Override
+//      public Object[] waitForData() {
+//        try {
+//          waiter.await(2, TimeUnit.SECONDS);
+//          return set.getResults();
+//        } catch (final InterruptedException e) {
+//          return null;
+//        }
+//      }
+//    }, new Asserter<Object[]>() {
+//      @Override
+//      public void makeAssertions(final Object[] data) throws Exception {
 //        assertThat(data.length, equalTo(3));
 //        assertThat((String)data[0], equalTo("R1"));
 //        assertThat((String)data[1], equalTo("R2"));
 //        assertThat((String)data[2], equalTo("R3"));
-      }
-    });
+//      }
+//    });
 
   }
 
