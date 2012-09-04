@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
+
 import com.stanfy.views.StateHelper;
 
 /**
