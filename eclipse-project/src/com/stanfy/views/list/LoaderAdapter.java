@@ -74,6 +74,7 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
   protected MT getLastResponseData() { return lastResponseData; }
   protected ListAdapter getCore() { return core; }
   public StateHelper getStateHelper() { return stateHelper; }
+  public int getState() { return state; }
 
   // =========================== Wrapping ===========================
 
