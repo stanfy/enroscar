@@ -21,7 +21,7 @@ public class StateView extends ViewAnimator {
   private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
 
   /** State helper. */
-  private final StateHelper stateHelper = new StateHelper();
+  private final StateHelper stateHelper;
 
   /** Current state. */
   private int state;
@@ -56,10 +56,20 @@ public class StateView extends ViewAnimator {
 
   public StateView(final Context context) {
     super(context);
+    stateHelper = createStateHelper();
   }
 
   public StateView(final Context context, final AttributeSet attrs) {
     super(context, attrs);
+    stateHelper = createStateHelper();
+  }
+  
+  protected StateHelper createStateHelper() {
+    return new StateHelper();
+  }
+
+  public StateHelper getStateHelper() {
+    return stateHelper;
   }
 
   private void checkAddChild() {

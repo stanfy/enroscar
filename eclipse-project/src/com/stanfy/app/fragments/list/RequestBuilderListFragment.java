@@ -152,6 +152,9 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   @Override
   public Loader<ResponseData<LT>> onCreateLoader(final int id, final Bundle bundle) {
     if (id == LIST_LOADER_ID) {
+      if (rbAdapter != null) {
+        rbAdapter.onLoadStart();
+      }
       return modifyLoader(createRequestBuilder().getLoader());
     }
     throw new IllegalArgumentException("Cannot create loader with id=" + id);

@@ -6,8 +6,6 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.View;
@@ -26,7 +24,7 @@ import com.stanfy.views.StateHelper;
  * @param <MT> container model type
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public abstract class LoaderAdapter<MT> implements WrapperListAdapter, FetchableListAdapter, CrucialGUIOperationListener, LoaderCallbacks<MT> {
+public abstract class LoaderAdapter<MT> implements WrapperListAdapter, FetchableListAdapter, CrucialGUIOperationListener {
 
   /** Logging tag. */
   private static final String TAG = "LoaderAdapter";
@@ -58,6 +56,9 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
   /** Last response data. */
   private MT lastResponseData;
 
+  /** Used to sync states with core. */
+  private final DataSetObserver observer;
+
   public LoaderAdapter(final Context context, final ListAdapter coreAdapter) {
     this(context, coreAdapter, new StateHelper());
   }
@@ -65,6 +66,8 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
     this.stateHelper = stateHelper;
     this.context = context;
     this.core = coreAdapter;
+    this.observer = new Observer();
+    this.core.registerDataSetObserver(observer);
   }
 
   protected void setState(final int state) { this.state = state; }
@@ -185,15 +188,16 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
     this.listener = listener;
   }
 
-  @Override
-  public Loader<MT> onCreateLoader(final int i, final Bundle bundle) { throw new UnsupportedOperationException(); }
-  @Override
+  public void onLoadStart() {
+    state = STATE_LOADING;
+    notifyDataSetChanged();
+  }
+
   public void onLoaderReset(final Loader<MT> loader) {
     if (DEBUG) { Log.i(TAG, "Loader <" + loader + "> reset; adapter: <" + this + ">"); }
     lastResponseData = null;
   }
 
-  @Override
   public void onLoadFinished(final Loader<MT> loader, final MT data) {
     this.loader = loader;
     if (listener != null) { listener.onListItemsLoaded(); }
@@ -251,6 +255,22 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
 
     @Override
     public void run() { addNewData(data); }
+  }
+
+  /** Data set observer. */
+  private final class Observer extends DataSetObserver {
+
+    @Override
+    public void onChanged() {
+      if (state == STATE_NORMAL && core.isEmpty()) {
+        state = STATE_EMPTY;
+        notifyDataSetChanged();
+      } else if (state == STATE_EMPTY && !core.isEmpty()) {
+        state = STATE_NORMAL;
+        notifyDataSetChanged();
+      }
+    }
+
   }
 
 }
