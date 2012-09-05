@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -228,6 +229,19 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
 
   protected void addParameter(final Parameter p) {
     result.simpleParameters.addParameter(p);
+  }
+
+  protected Parameter removeParameter(final String name) {
+    if (name == null) { throw new IllegalArgumentException("Parameter name cannot be null"); }
+    final Iterator<Parameter> iter = result.simpleParameters.getChildren().iterator();
+    while (iter.hasNext()) {
+      final Parameter p = iter.next();
+      if (name.equals(p.name)) {
+        iter.remove();
+        return p;
+      }
+    }
+    return null;
   }
 
   /**
