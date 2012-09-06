@@ -228,4 +228,17 @@ public class GUIUtils {
     return (int)(dip * scale);
   }
 
+  /**
+   * Find view by ID.
+   * @param view view to start search
+   * @param id view identifier
+   * @return view instance, null if nothing was found
+   * @see View#findViewById(int)
+   */
+  @SuppressWarnings("unchecked")
+  public static <T extends View> T find(final View view, final int id) {
+    final View result = view.findViewById(id);
+    return (T)result;
+  }
+
 }
