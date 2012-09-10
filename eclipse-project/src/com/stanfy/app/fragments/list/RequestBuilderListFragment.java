@@ -97,6 +97,13 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     final FetchableView listView = (FetchableView)result.findViewById(android.R.id.list);
     this.listView = listView;
 
+    // create adapter
+    this.coreAdapter = createAdapter(createRenderer());
+    this.rbAdapter = wrapAdapter(this.coreAdapter);
+
+    // connect list and adapter
+    listView.setAdapter(this.rbAdapter);
+
     if (isDataLocaleDependent()) {
       final Configuration config = getResources().getConfiguration();
       final Locale newLocale = config.locale;
@@ -193,17 +200,9 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
    * Call it from {@link #onActivityCreated(Bundle)}.
    */
   public void startLoad() {
-    if (this.listView.getAdapter() != null) { return; }
-
-    // create adapter
-    this.coreAdapter = createAdapter(createRenderer());
-    this.rbAdapter = wrapAdapter(this.coreAdapter);
     // init loader, data can passed to adapter at once
     onLoadStart();
     getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
-
-    // connect list and adapter
-    this.listView.setAdapter(this.rbAdapter);
   }
 
   /** Restart loader. */
