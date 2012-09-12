@@ -1,5 +1,6 @@
 package com.stanfy.utils;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -238,6 +239,19 @@ public class GUIUtils {
   @SuppressWarnings("unchecked")
   public static <T extends View> T find(final View view, final int id) {
     final View result = view.findViewById(id);
+    return (T)result;
+  }
+
+  /**
+   * Find view by ID.
+   * @param activity activity to search in
+   * @param id view identifier
+   * @return view instance, null if nothing was found
+   * @see Activity#findViewById(int)
+   */
+  @SuppressWarnings("unchecked")
+  public static <T extends View> T find(final Activity activity, final int id) {
+    final View result = activity.findViewById(id);
     return (T)result;
   }
 

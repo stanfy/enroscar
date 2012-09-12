@@ -201,7 +201,6 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
 
   public void onLoadFinished(final Loader<MT> loader, final MT data) {
     this.loader = loader;
-    if (listener != null) { listener.onListItemsLoaded(); }
     lastResponseData = data;
     if (isResponseSuccessful(data)) {
 
@@ -224,6 +223,7 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
     state = STATE_NORMAL;
     // this will cause notifyDataSetChanged
     replaceDataInCore(data);
+    if (listener != null) { listener.onListItemsLoaded(); }
   }
 
   protected void onDataSuccess(final MT data) {
