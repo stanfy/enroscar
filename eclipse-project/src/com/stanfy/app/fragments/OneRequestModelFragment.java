@@ -23,6 +23,10 @@ public abstract class OneRequestModelFragment<MT> extends BaseFragment implement
   @Override
   public void onActivityCreated(final Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
+    fetch();
+  }
+
+  public void fetch() {
     core.fetch();
   }
 
