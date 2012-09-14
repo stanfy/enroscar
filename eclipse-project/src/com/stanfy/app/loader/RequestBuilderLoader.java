@@ -164,11 +164,12 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   void executeRequestNow() {
     requestWaiting = false;
     requestId = requestBuilder.execute();
+    if (DEBUG) { Log.v(TAG, "executeRequestNow, " + this); }
   }
 
-  private void checkForUpdateRequest(final String message) {
+  private void checkForUpdateRequest() {
     if (updateRequested) {
-      if (DEBUG) { Log.d(TAG, message); }
+      if (DEBUG) { Log.d(TAG, "try to execute pending request"); }
       executePendingRequest();
     }
   }
@@ -182,13 +183,15 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
     resetStateAfterComplete();
     deliverResult(data);
 
-    checkForUpdateRequest("Request is finished now, try to execute pending request");
+    if (DEBUG) { Log.d(TAG, "Request data delivered, " + this); }
+    checkForUpdateRequest();
   }
 
   protected void dispatchCanceledData(final ResponseData<MT> data) {
     resetStateAfterComplete();
     onCanceled(data);
-    checkForUpdateRequest("Request is canceled now, try to execute pending request");
+    if (DEBUG) { Log.d(TAG, "Request data canceled, " + this); }
+    checkForUpdateRequest();
   }
 
   /**
@@ -208,7 +211,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
    * @param responseData received response
    */
   protected void onReleaseData(final ResponseData<MT> responseData) {
-    // nothing
+    if (DEBUG) { Log.v(TAG, "onReleaseData, " + this); }
   }
 
   protected ResponseData<MT> onAcceptData(final ResponseData<MT> previousData, final ResponseData<MT> responseData) {
@@ -259,6 +262,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   // request to completely reset the loader
   @Override
   protected void onReset() {
+    if (DEBUG) { Log.v(TAG, "onReset " + this); }
     super.onReset();
     onStopLoading();
 
@@ -295,6 +299,11 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
       writer.print(" lastLoadCompleteTime=" + lastLoadCompleteTime);
       writer.println();
     }
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getName() + "{id=" + getId() + ", reqId=" + requestId + ", rb=" + requestBuilder + "}";
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -119,6 +119,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   @Override
   public void onStart() {
     super.onStart();
+    if (DEBUG) { Log.v(TAG, "Start " + this); }
     if (rbAdapter != null) {
       crucialGUIOperationManager.addCrucialGUIOperationListener(rbAdapter);
     }
@@ -127,6 +128,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   @Override
   public void onStop() {
     super.onStop();
+    if (DEBUG) { Log.v(TAG, "Stop " + this); }
     if (rbAdapter != null) {
       crucialGUIOperationManager.removeCrucialGUIOperationListener(rbAdapter);
     }
@@ -169,6 +171,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
 
   @Override
   public void onLoaderReset(final Loader<ResponseData<LT>> loader) {
+    if (DEBUG) { Log.v(TAG, "onLoaderReset, " + this); }
     if (rbAdapter != null) {
       this.rbAdapter.onLoaderReset(loader);
     }
@@ -176,6 +179,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
 
   @Override
   public void onLoadFinished(final Loader<ResponseData<LT>> loader, final ResponseData<LT> data) {
+    if (DEBUG) { Log.v(TAG, "onLoadFinished, " + this); }
     if (rbAdapter != null) {
       this.rbAdapter.onLoadFinished(loader, data);
     }
@@ -200,6 +204,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
    * Call it from {@link #onActivityCreated(Bundle)}.
    */
   public void startLoad() {
+    if (DEBUG) { Log.v(TAG, "startLoad, " + this); }
     // init loader, data can passed to adapter at once
     onLoadStart();
     getLoaderManager().initLoader(LIST_LOADER_ID, null, this);

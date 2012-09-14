@@ -103,4 +103,9 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
   @Override
   public ModelTypeToken getExpectedModelType() { return expectedTypeToken; }
 
+  @Override
+  public String toString() {
+    return "wrapper-" + getClass().getName() + "(" + core + ")";
+  }
+
 }
