@@ -241,6 +241,11 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
   protected void onDataError(final MT data) {
     state = STATE_MESSAGE;
     notifyDataSetChanged();
+
+    // notify listener
+    if (listener != null) {
+      listener.onListItemsLoaded();
+    }
   }
 
   protected void onDataEmpty(final MT data) {
