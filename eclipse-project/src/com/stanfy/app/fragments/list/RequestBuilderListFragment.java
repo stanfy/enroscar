@@ -230,7 +230,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   /** @return fetchable list view instance from the layout */
   public FetchableView getListView() {
     if (listView != null) { return listView; }
-    listView = (FetchableView)getActivity().findViewById(android.R.id.list);
+    listView = (FetchableView) getView().findViewById(android.R.id.list);
     return listView;
   }
 
