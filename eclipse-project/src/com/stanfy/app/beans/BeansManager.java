@@ -4,7 +4,6 @@ import java.net.ContentHandler;
 import java.net.ResponseCache;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import android.app.Application;
 import android.content.Context;
@@ -149,14 +148,6 @@ public class BeansManager {
     /** Editor actions. */
     private final LinkedHashMap<String, Runnable> editorActions = new LinkedHashMap<String, Runnable>();
 
-    /** Content format mappings. */
-    private final TreeMap<String, Class<?>> formatMappings = new TreeMap<String, Class<?>>();
-    {
-      formatMappings.put(SimpleRequestBuilder.JSON, GsonContentHandler.class);
-      formatMappings.put(SimpleRequestBuilder.XML, XmlGsonContentHandler.class);
-      formatMappings.put(SimpleRequestBuilder.STRING, StringContentHandler.class);
-    }
-
     void checkIntrfaces(final Object bean) {
       if (bean instanceof ManagerAwareBean) {
         ((ManagerAwareBean) bean).setBeansManager(BeansManager.this);
@@ -220,15 +211,26 @@ public class BeansManager {
       put(RemoteServerApiConfiguration.class);
       if (formats.length > 0) {
 
+        Class<?> mainClass = null;
         for (final String format : formats) {
-          final Class<?> handlerClass = formatMappings.get(format);
+          Class<?> handlerClass = null;
+
+          if (SimpleRequestBuilder.JSON.equals(format)) {
+            handlerClass = GsonContentHandler.class;
+          } else if (SimpleRequestBuilder.XML.equals(format)) {
+            handlerClass = XmlGsonContentHandler.class;
+          } else if (SimpleRequestBuilder.STRING.equals(format)) {
+            handlerClass = StringContentHandler.class;
+          }
+
           if (handlerClass == null) {
             throw new RuntimeException("Unknown format " + format);
           }
+
+          if (mainClass == null) { mainClass = handlerClass; }
           put(handlerClass);
         }
 
-        final Class<?> mainClass = formatMappings.get(formats[0]);
         final String mainContentHandlerName = AppUtils.getBeanInfo(mainClass).value();
         editorActions.put("remoteServerApi-config", new Runnable() {
           @Override
