@@ -617,17 +617,16 @@ public class ImagesManager implements Bean {
       }
     }
 
-    private BitmapDrawable prepare(final BitmapDrawable bd) {
+    private Bitmap prepare(final Bitmap map) {
       int dstW = mainTarget.getRequiredWidth(), dstH = mainTarget.getRequiredHeight();
       if (dstW <= 0 || dstH <= 0 || mainTarget.skipScaleBeforeCache()) {
         if (DEBUG) { Log.d(TAG, "Skip scaling for " + mainTarget + " skip flag: " + mainTarget.skipScaleBeforeCache()); }
-        return bd;
+        return map;
       }
 
-      final Bitmap map = bd.getBitmap();
-      final int w = bd.getIntrinsicWidth(), h = bd.getIntrinsicHeight();
+      final int w = map.getWidth(), h = map.getHeight();
 
-      if (w <= dstW && h <= dstH) { return bd; }
+      if (w <= dstW && h <= dstH) { return map; }
 
       final double ratio = (double)w / h;
       if (w > h) {
@@ -636,19 +635,20 @@ public class ImagesManager implements Bean {
         dstW = (int)(dstH * ratio);
       }
 
-      if (dstW <= 0 || dstH <= 0) { return bd; }
+      if (dstW <= 0 || dstH <= 0) { return map; }
 
       final Bitmap scaled = Bitmap.createScaledBitmap(map, dstW, dstH, true);
       scaled.setDensity(imagesManager.resources.getDisplayMetrics().densityDpi);
-      return new BitmapDrawable(imagesManager.resources, scaled);
+      return scaled;
     }
 
     private Drawable memCacheImage(final Drawable d) {
       Drawable result = d;
       if (d instanceof BitmapDrawable) {
-        final BitmapDrawable bmd = (BitmapDrawable)d;
-        result = prepare(bmd);
-        if (result != bmd) { bmd.getBitmap().recycle(); }
+        Bitmap incomeBitmap = ((BitmapDrawable) d).getBitmap();
+        Bitmap resultBitmap = prepare(incomeBitmap);
+        if (resultBitmap != incomeBitmap) { incomeBitmap.recycle(); }
+        result = new BitmapDrawable(imagesManager.resources, resultBitmap);
       }
       imagesManager.memCacheImage(url, result);
       return result;
