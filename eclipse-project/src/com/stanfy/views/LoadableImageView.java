@@ -65,7 +65,7 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     final boolean skipLoadIndicator = a.getBoolean(R.styleable.LoadableImageView_skipLoadingImage, false);
     final Drawable loadingImage = a.getDrawable(R.styleable.LoadableImageView_loadingImage);
     final int type = a.getInt(R.styleable.LoadableImageView_imageType, 0);
-    final int sourceDensity = a.getInt(R.styleable.LoadableTextView_sourceDensity, -1);
+    final int sourceDensity = a.getInt(R.styleable.LoadableImageView_sourceDensity, -1);
     final int useTransition = a.getInt(R.styleable.LoadableImageView_useTransition, USE_TRANSITION_NO);
     a.recycle();
 
