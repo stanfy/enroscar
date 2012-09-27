@@ -40,8 +40,6 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
 
   /** Loader instance. */
   private Loader<MT> loader;
-  /** Listener. */
-  private OnListItemsLoadedListener listener;
 
   /** Pending operations. */
   private final ArrayList<Runnable> afterAnimationOperations = new ArrayList<Runnable>(3);
@@ -58,9 +56,6 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
 
   /** Used to sync states with core. */
   private final DataSetObserver observer;
-
-  /** Listener call runnable. */
-  private CallOnListItemsLoadedListener callOnListItemsLoadedListener;
 
   public LoaderAdapter(final Context context, final ListAdapter coreAdapter) {
     this(context, coreAdapter, new StateHelper());
@@ -153,6 +148,7 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
 
   @Override
   public boolean moreElementsAvailable() {
+    if (state != STATE_NORMAL) { return false; }
     return loader instanceof LoadmoreLoader
         ? ((LoadmoreLoader) loader).moreElementsAvailable()
             : false;
@@ -186,11 +182,6 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
   }
 
   // ================================= Loader =================================
-
-  @Override
-  public void setOnListItemsLoadedListener(final OnListItemsLoadedListener listener) {
-    this.listener = listener;
-  }
 
   public void onLoadStart() {
     state = STATE_LOADING;
@@ -226,8 +217,6 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
     state = STATE_NORMAL;
     // this will cause notifyDataSetChanged
     replaceDataInCore(data);
-    // notify listener
-    if (listener != null) { listener.onListItemsLoaded(); }
   }
 
   protected void onDataSuccess(final MT data) {
@@ -241,30 +230,13 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
   protected void onDataError(final MT data) {
     state = STATE_MESSAGE;
     notifyDataSetChanged();
-
-    // notify listener
-    if (listener != null) {
-      listener.onListItemsLoaded();
-    }
   }
 
   protected void onDataEmpty(final MT data) {
     if (core.isEmpty()) {
       state = STATE_EMPTY;
-      notifyDataSetChanged();
     }
-
-    // notify listener
-    if (listener != null) {
-      if (animationsRunning) {
-        if (callOnListItemsLoadedListener == null) {
-          callOnListItemsLoadedListener = new CallOnListItemsLoadedListener();
-        }
-        afterAnimationOperations.add(callOnListItemsLoadedListener);
-      } else {
-        listener.onListItemsLoaded();
-      }
-    }
+    notifyDataSetChanged();
   }
 
   /** Add data runnable. */
@@ -277,14 +249,6 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
 
     @Override
     public void run() { addNewData(data); }
-  }
-
-  /** Call listener runnable. */
-  private final class CallOnListItemsLoadedListener implements Runnable {
-    @Override
-    public void run() {
-      if (listener != null) { listener.onListItemsLoaded(); }
-    }
   }
 
   /** Data set observer. */

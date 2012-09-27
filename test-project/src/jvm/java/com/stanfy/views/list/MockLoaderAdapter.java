@@ -3,6 +3,7 @@ package com.stanfy.views.list;
 import java.util.List;
 
 import android.content.Context;
+import android.support.v4.content.Loader;
 import android.widget.ArrayAdapter;
 
 import com.stanfy.views.StateHelper;
@@ -14,6 +15,9 @@ import com.stanfy.views.StateHelper;
  *
  */
 public class MockLoaderAdapter<T> extends LoaderAdapter<List<T>> {
+
+  /** What was called? */
+  boolean onSuccessCalled, onEmptyCalled, onErrorCalled;
 
   public MockLoaderAdapter(final Context context, final ArrayAdapter<T> coreAdapter) {
     super(context, coreAdapter);
@@ -52,6 +56,33 @@ public class MockLoaderAdapter<T> extends LoaderAdapter<List<T>> {
     for (final T element : data) {
       core.add(element);
     }
+    notifyDataSetChanged();
+  }
+
+  @Override
+  public void onLoadFinished(final Loader<List<T>> loader, final List<T> data) {
+    onSuccessCalled = false;
+    onEmptyCalled = false;
+    onErrorCalled = false;
+    super.onLoadFinished(loader, data);
+  }
+
+  @Override
+  protected void onDataSuccess(final List<T> data) {
+    onSuccessCalled = true;
+    super.onDataSuccess(data);
+  }
+
+  @Override
+  protected void onDataEmpty(final List<T> data) {
+    onEmptyCalled = true;
+    super.onDataEmpty(data);
+  }
+
+  @Override
+  protected void onDataError(final List<T> data) {
+    onErrorCalled = true;
+    super.onDataError(data);
   }
 
 }

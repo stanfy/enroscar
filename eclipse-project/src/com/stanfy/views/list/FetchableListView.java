@@ -2,6 +2,7 @@ package com.stanfy.views.list;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.DataSetObservable;
 import android.database.DataSetObserver;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -18,7 +19,6 @@ import android.widget.WrapperListAdapter;
 import com.stanfy.DebugFlags;
 import com.stanfy.views.R;
 import com.stanfy.views.gallery.AdapterView;
-import com.stanfy.views.list.FetchableListAdapter.OnListItemsLoadedListener;
 
 /**
  * List view that can call to load more records on scrolling.
@@ -101,6 +101,9 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
   @SuppressLint("FieldGetter")
   public static class LoadmoreAdapter implements WrapperListAdapter, Filterable {
 
+    /** Observable helper. */
+    private final DataSetObservable dataSetObservable = new DataSetObservable();
+
     /** Main adapter. */
     final FetchableListAdapter core;
 
@@ -111,18 +114,23 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
     /** Load tag. */
     private Object loadTag;
 
-    /** Load listener. */
-    private final OnListItemsLoadedListener loadListener = new OnListItemsLoadedListener() {
+    /** Core adapter observer. */
+    private final DataSetObserver coreObserver = new DataSetObserver() {
       @Override
-      public void onListItemsLoaded() {
-        setLoadFlag(false);
+      public void onChanged() {
+        setLoadFlag(false, false);
+        dataSetObservable.notifyChanged();
+      }
+      @Override
+      public void onInvalidated() {
+        dataSetObservable.notifyInvalidated();
       }
     };
 
     public LoadmoreAdapter(final LayoutInflater inflater, final FetchableListAdapter core) {
       this.core = core;
       this.loadView = createLoadView(inflater);
-      core.setOnListItemsLoadedListener(loadListener);
+      core.registerDataSetObserver(coreObserver);
     }
 
     public void setLoadTag(final Object loadTag) {
@@ -136,7 +144,7 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
       final boolean prev = this.loadFlag;
       this.loadFlag = loadFlag;
       if (notify && prev != loadFlag) {
-        core.notifyDataSetChanged();
+        dataSetObservable.notifyChanged();
       }
     }
 
@@ -155,12 +163,12 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
 
     @Override
     public void registerDataSetObserver(final DataSetObserver observer) {
-      core.registerDataSetObserver(observer);
+      dataSetObservable.registerObserver(observer);
     }
 
     @Override
     public void unregisterDataSetObserver(final DataSetObserver observer) {
-      core.unregisterDataSetObserver(observer);
+      dataSetObservable.unregisterObserver(observer);
     }
 
     @Override

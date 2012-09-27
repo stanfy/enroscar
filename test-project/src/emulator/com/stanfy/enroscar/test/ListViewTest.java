@@ -18,16 +18,10 @@ public class ListViewTest extends BaseTestActivity<ListViewActivity> {
   }
 
   /**
-   * Test initialization.
-   */
-  public void testPreConditions() {
-    assertNotNull(getActivity().getListAdapter());
-  }
-
-  /**
    * Test saving state.
    */
   public synchronized void testSavingState() throws Exception {
+    assertNotNull(getActivity().getListAdapter());
     final ListViewActivity activity = getActivity();
     final Instrumentation instrumentation = getInstrumentation();
 
@@ -37,11 +31,20 @@ public class ListViewTest extends BaseTestActivity<ListViewActivity> {
     final View old = activity.getListView();
     final int pos = activity.getListView().getFirstVisiblePosition();
     assertTrue(pos > 0);
+
     final Bundle b = new Bundle();
-    instrumentation.callActivityOnSaveInstanceState(activity, b);
-    final ListViewActivity a = activity;
     final Semaphore s = new Semaphore(0);
-    final Runnable r = new Runnable() {
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        instrumentation.callActivityOnSaveInstanceState(activity, b);
+        s.release();
+      }
+    };
+    activity.runOnUiThread(r);
+    s.acquire();
+    final ListViewActivity a = activity;
+    r = new Runnable() {
       @Override
       public void run() {
         instrumentation.callActivityOnCreate(a, b);

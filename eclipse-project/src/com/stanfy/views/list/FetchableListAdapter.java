@@ -26,17 +26,4 @@ public interface FetchableListAdapter extends ListAdapter {
   /** @see android.widget.BaseAdapter#notifyDataSetChanged() */
   void notifyDataSetChanged();
 
-  /**
-   * @param listener listener instance
-   */
-  void setOnListItemsLoadedListener(final OnListItemsLoadedListener listener);
-
-  /**
-   * @param <MT> model type
-   * @param <LT> list type
-   */
-  public interface OnListItemsLoadedListener {
-    void onListItemsLoaded();
-  }
-
 }

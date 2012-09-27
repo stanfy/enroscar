@@ -3,10 +3,13 @@ package com.stanfy.views.list;
 import static org.hamcrest.Matchers.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -24,49 +27,109 @@ import com.xtremelabs.robolectric.Robolectric;
  */
 public class LoaderAdapterTest extends AbstractEnroscarTest {
 
+  /** Aadapter to test. */
+  private MockLoaderAdapter<CharSequence> loaderAdapter;
+
+  /** Core adapter. */
+  private ArrayAdapter<CharSequence> coreAdapter;
+
+  /** Test data to add to adapter. */
+  private CharSequence[] testData;
+
+  /** Context instance to use. */
+  private Context context;
+
+  /** List view instance. */
+  private ListView listView;
+
+  /** Observers notified? */
+  private boolean notifyChangedCalled;
+
+  /** Adapter observer. */
+  private final DataSetObserver notifyObserver = new DataSetObserver() {
+    @Override
+    public void onChanged() {
+      notifyChangedCalled = true;
+    }
+  };
+
+  @Before
+  public void init() {
+    context = Robolectric.application;
+    testData = context.getResources().getTextArray(R.array.adapter_test);
+    listView = new ListView(context);
+    coreAdapter = new ArrayAdapter<CharSequence>(context, 0) {
+      @Override
+      public View getView(final int position, final View convertView, final ViewGroup parent) {
+        return null;
+      }
+    };
+    loaderAdapter = new MockLoaderAdapter<CharSequence>(context, coreAdapter);
+  }
+
   /**
    * Check that wrapper-adapter changes its state
    * consistently with its core adapter.
    */
   @Test
   public void changeStateWithCore() {
-    final Context context = Robolectric.application;
-    final CharSequence[] strings = context.getResources().getTextArray(R.array.adapter_test);
-    final ListView listView = new ListView(context);
-    final ArrayAdapter<CharSequence> core = new ArrayAdapter<CharSequence>(context, 0) {
-      @Override
-      public View getView(final int position, final View convertView, final ViewGroup parent) {
-        return null;
-      }
-    };
-    final MockLoaderAdapter<CharSequence> wrapper = new MockLoaderAdapter<CharSequence>(context, core);
-    wrapper.onLoadFinished(null, Arrays.asList(strings));
-    assertThat(wrapper.getCount(), is(strings.length));   // pre-test
+    loaderAdapter.onLoadFinished(null, Arrays.asList(testData));
+    assertThat(loaderAdapter.getCount(), is(testData.length));   // pre-test
 
     // 1. If adapter had some data, but then elements were removed through core adapter, wrapper must change its state too.
-    core.clear();
-    core.notifyDataSetChanged();
+    coreAdapter.clear();
+    coreAdapter.notifyDataSetChanged();
 
     // Key test. State should be set to empty.
-    assertThat(wrapper.getState(), is(StateHelper.STATE_EMPTY));
+    assertThat(loaderAdapter.getState(), is(StateHelper.STATE_EMPTY));
     // StateHelper should create a state view.
-    assertThat(wrapper.getView(0, null, listView), notNullValue());
+    assertThat(loaderAdapter.getView(0, null, listView), notNullValue());
     // And adapter count should be equal to 1
-    assertThat(wrapper.getCount(), is(1));
+    assertThat(loaderAdapter.getCount(), is(1));
 
     // 2. Same goes in case adapter received empty data, but then elements added to core adapter
-    for (final CharSequence cs : strings) {
-      core.add(cs);
+    for (final CharSequence cs : testData) {
+      coreAdapter.add(cs);
     }
-    core.notifyDataSetChanged();
+    coreAdapter.notifyDataSetChanged();
 
     // Key test. State should be set to normal.
-    assertThat(wrapper.getState(), is(StateHelper.STATE_NORMAL));
+    assertThat(loaderAdapter.getState(), is(StateHelper.STATE_NORMAL));
     // Delegate view creation to our ArrayAdapter which returns null.
-    assertThat(wrapper.getView(0, null, listView), nullValue());
+    assertThat(loaderAdapter.getView(0, null, listView), nullValue());
     // And adapter count should be equal to array length.
-    assertThat(wrapper.getCount(), is(strings.length));
+    assertThat(loaderAdapter.getCount(), is(testData.length));
   }
 
+
+  @Test
+  public void successDataShouldCauseNotifyChanged() {
+    loaderAdapter.registerDataSetObserver(notifyObserver);
+
+    notifyChangedCalled = false;
+    loaderAdapter.onLoadFinished(null, Arrays.asList(testData));
+    assertThat(notifyChangedCalled, is(true));
+    assertThat(loaderAdapter.onSuccessCalled, is(true));
+  }
+
+  @Test
+  public void emptyDataShouldCauseNotifyChanged() {
+    loaderAdapter.registerDataSetObserver(notifyObserver);
+
+    notifyChangedCalled = false;
+    loaderAdapter.onLoadFinished(null, Collections.<CharSequence>emptyList());
+    assertThat(notifyChangedCalled, is(true));
+    assertThat(loaderAdapter.onEmptyCalled, is(true));
+  }
+
+  @Test
+  public void errorDataShouldCauseNotifyChanged() {
+    loaderAdapter.registerDataSetObserver(notifyObserver);
+
+    notifyChangedCalled = false;
+    loaderAdapter.onLoadFinished(null, null);
+    assertThat(notifyChangedCalled, is(true));
+    assertThat(loaderAdapter.onErrorCalled, is(true));
+  }
 
 }

@@ -12,7 +12,7 @@ import android.widget.ArrayAdapter;
 public class ListViewActivity extends ListActivity {
 
   /** Items count. */
-  public static final int ITEMS_COUNT = 25;
+  public static final int ITEMS_COUNT = 225;
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
