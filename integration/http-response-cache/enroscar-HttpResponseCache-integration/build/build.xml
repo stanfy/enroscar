@@ -1,17 +1,16 @@
-<project name="enroscar-HttpResponseCache-integration" default="build" basedir="./..">
-	
-	<property name="build.library.path" value="${basedir}/../../../eclipse-project" />
-	<import file="${build.library.path}/build/main-build.ant"/>
-	
-	<target name="build" depends="clean, release" description="Build a jar file">
-		<echo message="Copy newly created jar file" />
-    <xmltask source="AndroidManifest.xml">
-      <cut path="/manifest/@android:versionName" property="manifest.version" />
-    </xmltask>
-		<copy file="${out.library.jar.file}" tofile="${output.release}/${ant.project.name}-${manifest.version}.jar" />
-    <copy todir="${output.release}">
-    	<fileset dir="${src.libs}" />
-    </copy>
-	</target>
-	
+<project name="enroscar-HttpResponseCache-integration" default="help" basedir="./..">
+  
+  <import file="${basedir}/build/main/main-build.ant"/>
+  
+  <target name="build" depends="clean, release" description="Build a jar file">
+    <echo message="Copy newly created jar file" />
+    <copy file="${out.library.jar.file}" tofile="${output.release}/${ant.project.name}.jar" />
+  </target>
+  
+  <target name="source" description="Prepare source artifact">
+    <jar destfile="${output.release}/${ant.project.name}-sources.jar">
+      <fileset dir="${src.java}" />
+    </jar>
+  </target>
+
 </project>

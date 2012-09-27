@@ -4,7 +4,6 @@
   <property name="src.java" value="${basedir}/src/emulator"/>
   <property name="src.test" value="${basedir}/src/jvm"/>
 	
-	<property name="build.library.path" value="${basedir}/../eclipse-project" />
-  <import file="${build.library.path}/build/main-build.ant"/>
+  <import file="build/main/main-build.ant"/>
 
 </project>
