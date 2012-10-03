@@ -11,7 +11,7 @@ import java.io.OutputStream;
 public class ProgressListenerOutputStream extends FilterOutputStream {
 
   /** Default throttle. */
-  private static final float THROTTLE_DEFAULT = .05f;
+  static final float THROTTLE_DEFAULT = .05f;
 
   /** Total length. */
   private final long totalLength;
@@ -49,24 +49,30 @@ public class ProgressListenerOutputStream extends FilterOutputStream {
 
   @Override
   public void write(final byte[] buffer) throws IOException {
-    write(buffer, 0, buffer.length);
+    out.write(buffer);
+    trackProgress(buffer.length);
   }
 
   @Override
   public void write(final byte[] buffer, final int offset, final int length) throws IOException {
     out.write(buffer, offset, length);
-    counter += length;
-    trackProgress();
+    trackProgress(length);
   }
 
   @Override
   public void write(final int oneByte) throws IOException {
     out.write(oneByte);
-    ++counter;
-    trackProgress();
+    trackProgress(1);
   }
 
-  private void trackProgress() {
+  @Override
+  public void close() throws IOException {
+    super.close();
+    listener.onOutputClosed();
+  }
+
+  private void trackProgress(final int increment) {
+    counter += increment;
     final float p = (float)counter / totalLength;
     if (p - lastProgress >= throttle) {
       lastProgress = p;
@@ -79,6 +85,7 @@ public class ProgressListenerOutputStream extends FilterOutputStream {
    */
   public interface ProgressListener {
     void onOutputProgress(final long bytesWritten, final long totalCount, final float percent);
+    void onOutputClosed();
   }
 
 }
