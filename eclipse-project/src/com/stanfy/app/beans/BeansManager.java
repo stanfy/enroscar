@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.os.Handler;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
@@ -57,6 +58,9 @@ public class BeansManager {
 
   /** Register callbacks flag. */
   private boolean callbacksRegistered = false;
+
+  /** Whether commit is currently performed. */
+  private boolean commitInProgress = false;
 
   protected BeansManager(final Application application) {
     this.application = application;
@@ -252,8 +256,23 @@ public class BeansManager {
       return this;
     }
 
+    /**
+     * Commit all bean changes.
+     * This method is supposed to be called from the main thread.
+     */
     public void commit() {
+      if (commitInProgress) {
+        // postpone commit
+        new Handler().post(new Runnable() {
+          @Override
+          public void run() { commit(); }
+        });
+        return;
+      }
+
       final long start = System.currentTimeMillis();
+      commitInProgress = true;
+
       for (final Entry<String, Runnable> entry : editorActions.entrySet()) {
         final long startAction = System.currentTimeMillis();
         entry.getValue().run();
@@ -263,6 +282,8 @@ public class BeansManager {
       registerComponentCallbacks();
       if (DEBUG) { Log.d(TAG, "Before init time: " + (System.currentTimeMillis() - start)); }
       container.triggerInitFinished();
+
+      commitInProgress = false;
       if (DEBUG) { Log.d(TAG, "All commit time: " + (System.currentTimeMillis() - start)); }
     }
 
