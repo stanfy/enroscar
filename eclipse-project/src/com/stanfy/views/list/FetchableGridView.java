@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.GridView;
@@ -100,6 +101,13 @@ public class FetchableGridView extends GridView implements OnScrollListener, Fet
     if (DEBUG) { Log.d(VIEW_LOG_TAG, "Load more"); }
     adapter.setLoadFlag(true);
     coreAdapter.loadMoreRecords();
+  }
+
+  @Override
+  public boolean performItemClick(final View view, final int position, final long id) {
+    // do not allow click on footer (footer is enabled in order to maintain dividers)
+    if (adapter != null && adapter.isLoadFooterPosition(position)) { return false; }
+    return super.performItemClick(view, position, id);
   }
 
 }
