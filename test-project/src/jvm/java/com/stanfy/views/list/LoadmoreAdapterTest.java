@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 
 import com.stanfy.enroscar.test.R;
 import com.stanfy.test.AbstractEnroscarTest;
-import com.stanfy.views.list.FetchableListView.LoadmoreAdapter;
 import com.xtremelabs.robolectric.Robolectric;
 
 
