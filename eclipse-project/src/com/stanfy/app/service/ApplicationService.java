@@ -13,6 +13,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.serverapi.request.RequestDescription;
 
 /**
  * Base application service which provides API and location methods interfaces.
@@ -27,6 +28,12 @@ public class ApplicationService extends Service {
 
   /** Check for stop message. */
   private static final int MSG_CHECK_FOR_STOP = 1;
+
+  /** Send request action. */
+  public static final String ACTION_SEND_REQUEST = ApiMethods.class.getName() + "#SEND_REQUEST";
+
+  /** Intent extra parameter name: request description. */
+  public static final String EXTRA_REQUEST_DESCRIPTION = "request_description";
 
   /** Handler instance. */
   private Handler handler;
@@ -56,6 +63,17 @@ public class ApplicationService extends Service {
   public int onStartCommand(final Intent intent, final int flags, final int startId) {
     if (DEBUG) { Log.d(TAG, "Start command"); }
     handler.removeMessages(MSG_CHECK_FOR_STOP);
+
+    if (intent != null) {
+      if (ACTION_SEND_REQUEST.equals(intent.getAction())) {
+        RequestDescription requestDescription = intent.getParcelableExtra(EXTRA_REQUEST_DESCRIPTION);
+        if (requestDescription != null) {
+          ensureApiMethods();
+          apiMethods.performRequest(requestDescription);
+        }
+      }
+    }
+
     return START_STICKY;
   }
 
@@ -92,9 +110,7 @@ public class ApplicationService extends Service {
 
     if (action.equals(ApiMethods.class.getName())) {
       apiMethodsUse.set(true);
-      if (apiMethods == null) {
-        apiMethods = createApiMethods();
-      }
+      ensureApiMethods();
       checkForLocationMethodsSupport(false);
       return new ApiMethodsBinder(apiMethods);
     }
@@ -145,6 +161,12 @@ public class ApplicationService extends Service {
   }
 
   protected ApiMethods getApiMethods() { return apiMethods; }
+
+  private void ensureApiMethods() {
+    if (apiMethods == null) {
+      apiMethods = createApiMethods();
+    }
+  }
 
   /** API methods binder. */
   public static class ApiMethodsBinder extends Binder {

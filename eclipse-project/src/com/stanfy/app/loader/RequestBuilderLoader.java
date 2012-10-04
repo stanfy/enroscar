@@ -349,7 +349,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   }
 
   /**
-   * Special executor for this loader. Has similar behavior to {@link com.stanfy.utils.ServiceRequestPerformer}.
+   * Special executor for this loader.
    * @author Roman Mazur (Stanfy - http://stanfy.com)
    */
   protected class ApiMethodsExecutor extends ApiMethodsSupport {
