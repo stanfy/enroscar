@@ -10,7 +10,7 @@ import android.widget.GridView;
 import android.widget.ListAdapter;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.views.list.FetchableListView.LoadmoreAdapter;
+import com.stanfy.views.R;
 
 /**
  * Implementation of {@link FetchableAbsListView} which uses {@link GridView} as main view.
@@ -30,6 +30,9 @@ public class FetchableGridView extends GridView implements OnScrollListener, Fet
 
   /** Saved index. */
   private int savedFirstVisibleItem = 0;
+
+  /** Footer layout ID. */
+  private int footerLayoutId = R.layout.footer_loading;
 
   public FetchableGridView(final Context context) {
     this(context, null);
@@ -54,6 +57,16 @@ public class FetchableGridView extends GridView implements OnScrollListener, Fet
   }
 
   protected int getLoadGap() { return LOAD_GAP_DEFAULT; }
+
+  protected LoadmoreAdapter createLoadmoreAdapter(final FetchableListAdapter core) {
+    LoadmoreAdapter adapter = new LoadmoreAdapter(LayoutInflater.from(getContext()), core);
+    adapter.setFooterLayoutId(footerLayoutId);
+    return adapter;
+  }
+
+  public void setFooterLayoutId(final int footerLayoutId) {
+    this.footerLayoutId = footerLayoutId;
+  }
 
   @Override
   public void setAdapter(final ListAdapter listAdapter) {
