@@ -172,7 +172,7 @@ public final class SharingHelper {
     }
 
     SharingData(final Parcel in) {
-      this.intent = in.readParcelable(null);
+      this.intent = in.readParcelable(getClass().getClassLoader());
       this.contentNames = in.createStringArray();
     }
 

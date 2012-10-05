@@ -123,22 +123,25 @@ public class RequestDescription implements Parcelable {
    */
   protected RequestDescription(final Parcel source) {
     this(source.readInt());
+    ClassLoader cl = getClass().getClassLoader();
+
     this.operationType = source.readInt();
     this.url = source.readString();
     this.cacheName = source.readString();
-    this.simpleParameters = source.readParcelable(null);
+    ParametersGroup.class.getName();
+    this.simpleParameters = source.readParcelable(cl);
     this.contentType = source.readString();
     this.encoding = Charset.forName(source.readString());
     this.contentLanguage = source.readString();
     this.parallelMode = source.readInt() == 1;
     this.canceled = source.readInt() == 1;
 
-    this.modelType = source.readParcelable(null);
+    this.modelType = source.readParcelable(cl);
     this.contentHandler = source.readString();
     this.contentAnalyzer = source.readString();
 
     // binary content fields
-    final BinaryData<?>[] binary = (BinaryData<?>[]) source.readParcelableArray(null);
+    final BinaryData<?>[] binary = (BinaryData<?>[]) source.readParcelableArray(cl);
     if (binary != null) {
       this.binaryData = new ArrayList<BinaryData<?>>(Arrays.asList(binary));
     }

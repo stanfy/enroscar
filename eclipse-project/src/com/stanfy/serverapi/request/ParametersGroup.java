@@ -53,8 +53,9 @@ public class ParametersGroup extends Parameter {
   protected void loadValueFromParcel(final Parcel source) {
     final int size = source.readInt();
     if (size > 0) {
+      ClassLoader cl = getClass().getClassLoader();
       for (int i = size - 1; i >= 0; i--) {
-        final Parameter p = source.readParcelable(null);
+        final Parameter p = source.readParcelable(cl);
         children.add(p);
       }
     }

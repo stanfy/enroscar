@@ -170,11 +170,12 @@ public class DownloadsService extends Service {
     public Request() { }
 
     protected Request(final Parcel in) {
+      ClassLoader cl = getClass().getClassLoader();
       this.id = in.readLong();
       this.title = in.readString();
       this.description = in.readString();
-      this.uri = in.readParcelable(null);
-      this.destinationUri = in.readParcelable(null);
+      this.uri = in.readParcelable(cl);
+      this.destinationUri = in.readParcelable(cl);
       this.success = in.readInt() == 1;
     }
 

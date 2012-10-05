@@ -36,7 +36,7 @@ public abstract class BinaryData<T extends Parcelable> implements Parcelable {
   public BinaryData(final Parcel source) {
     this.name = source.readString();
     this.contentName = source.readString();
-    this.data = source.readParcelable(null);
+    this.data = source.readParcelable(getClass().getClassLoader());
   }
 
   @Override

@@ -2,7 +2,9 @@ package com.stanfy.app.beans;
 
 import java.net.ContentHandler;
 import java.net.ResponseCache;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import android.app.Application;
@@ -10,7 +12,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.os.Handler;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
@@ -61,6 +62,9 @@ public class BeansManager {
 
   /** Whether commit is currently performed. */
   private boolean commitInProgress = false;
+
+  /** Postponed edit actions. */
+  private LinkedHashMap<String, PutBean> postponedActions;
 
   protected BeansManager(final Application application) {
     this.application = application;
@@ -150,42 +154,46 @@ public class BeansManager {
     final BeansContainer container = getContainer();
 
     /** Editor actions. */
-    private final LinkedHashMap<String, Runnable> editorActions = new LinkedHashMap<String, Runnable>();
+    private final LinkedHashMap<String, PutBean> editorActions = new LinkedHashMap<String, PutBean>();
 
-    void checkIntrfaces(final Object bean) {
+    private void checkIntrfacesOnCreate(final Object bean) {
       if (bean instanceof ManagerAwareBean) {
         ((ManagerAwareBean) bean).setBeansManager(BeansManager.this);
       }
     }
+    private void checkIntrfacesOnInit(final Object bean) {
+      if (bean instanceof InitializingBean) {
+        ((InitializingBean) bean).onInitializationFinished(container);
+      }
+    }
 
     public <T> Editor put(final String name, final T bean) {
-      editorActions.put(name, new Runnable() {
+      editorActions.put(name, new PutBean() {
         @Override
-        public void run() {
+        public Object put() {
           container.putEntityInstance(name, bean);
-          checkIntrfaces(bean);
+          return bean;
         }
       });
       return this;
     }
     public <T> Editor put(final Class<T> beanClass) {
       final EnroscarBean info = AppUtils.getBeanInfo(beanClass);
-      editorActions.put(info.value(), new Runnable() {
+      editorActions.put(info.value(), new PutBean() {
         @Override
-        public void run() {
-          final T bean = container.putEntityInstance(beanClass, application);
-          checkIntrfaces(bean);
+        public Object put() {
+          return container.putEntityInstance(beanClass, application);
         }
       });
       return this;
     }
     public <T> Editor put(final T bean) {
       final EnroscarBean info = AppUtils.getBeanInfo(bean.getClass());
-      editorActions.put(info.value(), new Runnable() {
+      editorActions.put(info.value(), new PutBean() {
         @Override
-        public void run() {
+        public Object put() {
           container.putEntityInstance(bean);
-          checkIntrfaces(bean);
+          return bean;
         }
       });
       return this;
@@ -236,11 +244,12 @@ public class BeansManager {
         }
 
         final String mainContentHandlerName = AppUtils.getBeanInfo(mainClass).value();
-        editorActions.put("remoteServerApi-config", new Runnable() {
+        editorActions.put("remoteServerApi-config", new PutBean() {
           @Override
-          public void run() {
+          public Object put() {
             getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class)
-              .setDefaultContentHandlerName(mainContentHandlerName);
+                .setDefaultContentHandlerName(mainContentHandlerName);
+            return null;
           }
         });
 
@@ -256,6 +265,28 @@ public class BeansManager {
       return this;
     }
 
+    private void performActions(final Map<String, PutBean> editorActions) {
+      final long start = System.currentTimeMillis();
+      ArrayList<Object> editedBeans = new ArrayList<Object>(editorActions.size());
+
+      for (final Entry<String, PutBean> entry : editorActions.entrySet()) {
+        final long startAction = System.currentTimeMillis();
+        Object bean = entry.getValue().put();
+        if (bean != null) {
+          checkIntrfacesOnCreate(bean);
+          editedBeans.add(bean);
+        }
+        if (DEBUG) { Log.d(TAG, "One action time: " + (System.currentTimeMillis() - startAction)); }
+      }
+      if (DEBUG) { Log.d(TAG, "Run actions time: " + (System.currentTimeMillis() - start)); }
+
+      if (DEBUG) { Log.d(TAG, "Before init time: " + (System.currentTimeMillis() - start)); }
+      for (int i = 0; i < editedBeans.size(); i++) {
+        checkIntrfacesOnInit(editedBeans.get(i));
+      }
+      if (DEBUG) { Log.d(TAG, "After init time: " + (System.currentTimeMillis() - start)); }
+    }
+
     /**
      * Commit all bean changes.
      * This method is supposed to be called from the main thread.
@@ -263,30 +294,34 @@ public class BeansManager {
     public void commit() {
       if (commitInProgress) {
         // postpone commit
-        new Handler().post(new Runnable() {
-          @Override
-          public void run() { commit(); }
-        });
+        if (postponedActions == null) {
+          postponedActions = new LinkedHashMap<String, PutBean>();
+        }
+        postponedActions.putAll(editorActions);
         return;
       }
 
       final long start = System.currentTimeMillis();
       commitInProgress = true;
 
-      for (final Entry<String, Runnable> entry : editorActions.entrySet()) {
-        final long startAction = System.currentTimeMillis();
-        entry.getValue().run();
-        if (DEBUG) { Log.d(TAG, "One action time: " + (System.currentTimeMillis() - startAction)); }
-      }
-      if (DEBUG) { Log.d(TAG, "Run actions time: " + (System.currentTimeMillis() - start)); }
+      performActions(editorActions);
+
       registerComponentCallbacks();
-      if (DEBUG) { Log.d(TAG, "Before init time: " + (System.currentTimeMillis() - start)); }
-      container.triggerInitFinished();
+
+      if (postponedActions != null && !postponedActions.isEmpty()) {
+        performActions(postponedActions);
+        postponedActions.clear();
+      }
 
       commitInProgress = false;
       if (DEBUG) { Log.d(TAG, "All commit time: " + (System.currentTimeMillis() - start)); }
     }
 
+  }
+
+  /** Put bean operation. */
+  private interface PutBean {
+    Object put();
   }
 
 }

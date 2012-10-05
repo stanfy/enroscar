@@ -54,11 +54,6 @@ public interface BeansContainer extends ComponentCallbacks {
   void removeEntityInstance(final String name);
 
   /**
-   * Check for {@link InitializingBean} instances.
-   */
-  void triggerInitFinished();
-
-  /**
    * Destroy all beans.
    */
   void destroy();
