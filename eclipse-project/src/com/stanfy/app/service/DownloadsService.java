@@ -173,8 +173,8 @@ public class DownloadsService extends Service {
       this.id = in.readLong();
       this.title = in.readString();
       this.description = in.readString();
-      this.uri = in.readParcelable(Thread.currentThread().getContextClassLoader());
-      this.destinationUri = in.readParcelable(Thread.currentThread().getContextClassLoader());
+      this.uri = in.readParcelable(null);
+      this.destinationUri = in.readParcelable(null);
       this.success = in.readInt() == 1;
     }
 
