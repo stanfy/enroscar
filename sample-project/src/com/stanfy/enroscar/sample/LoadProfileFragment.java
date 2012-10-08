@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.stanfy.app.loader.RequestBuilderLoader;
 import com.stanfy.app.loader.RequestBuilderLoaderCallbacks;
 import com.stanfy.enroscar.sample.model.Profile;
 import com.stanfy.serverapi.request.SimpleRequestBuilder;
@@ -40,7 +39,7 @@ public class LoadProfileFragment extends Fragment implements RequestBuilderLoade
   }
 
   @Override
-  public RequestBuilderLoader<Profile> onCreateLoader(final int arg0, final Bundle arg1) {
+  public Loader<ResponseData<Profile>> onCreateLoader(final int arg0, final Bundle arg1) {
     return new SimpleRequestBuilder<Profile>(getActivity()) { }
       .setUrl("https://api.twitter.com/1/users/show.json")
       .addParam("screen_name", "TwitterAPI")

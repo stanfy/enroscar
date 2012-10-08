@@ -2,6 +2,7 @@ package com.stanfy.app.loader;
 
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 
 import com.stanfy.serverapi.response.ResponseData;
 
@@ -13,6 +14,6 @@ import com.stanfy.serverapi.response.ResponseData;
 public interface RequestBuilderLoaderCallbacks<D> extends LoaderCallbacks<ResponseData<D>> {
 
   @Override
-  RequestBuilderLoader<D> onCreateLoader(int id, Bundle args);
+  Loader<ResponseData<D>> onCreateLoader(int id, Bundle args);
 
 }
