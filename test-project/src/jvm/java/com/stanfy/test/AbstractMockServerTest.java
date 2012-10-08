@@ -145,7 +145,7 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
 
     @Override
     public RequestBuilderLoader<MT> getLoader() {
-      return startedLoader ? new StartedLoader<MT>(this) : super.getLoader();
+      return (RequestBuilderLoader<MT>) (startedLoader ? new StartedLoader<MT>(this) : super.getLoader());
     }
 
     @Override

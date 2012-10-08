@@ -5,9 +5,11 @@ package com.stanfy.serverapi.request;
 import java.util.List;
 
 import android.content.Context;
+import android.support.v4.content.Loader;
 
 import com.stanfy.app.loader.LoadMoreListLoader;
 import com.stanfy.serverapi.response.ModelTypeToken;
+import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.utils.RequestExecutor;
 
 /**
@@ -96,7 +98,7 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
   public String getLimit() { return limitValue != null ? limitValue.getValue() : "0"; }
 
   @Override
-  public LoadMoreListLoader<MT, LT> getLoader() {
+  public Loader<ResponseData<LT>> getLoader() {
     return new LoadMoreListLoader<MT, LT>(this);
   }
 

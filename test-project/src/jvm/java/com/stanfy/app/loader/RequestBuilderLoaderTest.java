@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 import org.junit.Test;
 
 import android.content.Context;
+import android.support.v4.content.Loader;
 
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.app.beans.BeansManager.Editor;
@@ -32,7 +33,7 @@ public class RequestBuilderLoaderTest extends AbstractApplicationServiceTest {
     final String text = "doLoadShouldDeliverResults";
     getWebServer().enqueue(new MockResponse().setBody(text));
 
-    final RequestBuilderLoader<String> loader = new MyRequestBuilder<String>(getApplication()) { }
+    final Loader<ResponseData<String>> loader = new MyRequestBuilder<String>(getApplication()) { }
       .setStartedLoader(true)
       .setUrl(getWebServer().getUrl("/").toString())
       .setFormat(StringContentHandler.BEAN_NAME)
@@ -54,7 +55,7 @@ public class RequestBuilderLoaderTest extends AbstractApplicationServiceTest {
     final String meta = "meta";
     getWebServer().enqueue(new MockResponse().setBody("doLoadShouldDeliverResults"));
 
-    final RequestBuilderLoader<String> loader = new MyRequestBuilder<String>(getApplication()) { }
+    final Loader<ResponseData<String>> loader = new MyRequestBuilder<String>(getApplication()) { }
         .setStartedLoader(true)
         .setUrl(getWebServer().getUrl("/").toString())
         .setFormat(StringContentHandler.BEAN_NAME)

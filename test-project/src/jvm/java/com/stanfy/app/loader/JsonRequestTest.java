@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.equalTo;
 import org.junit.Before;
 import org.junit.Test;
 
+import android.support.v4.content.Loader;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.mockwebserver.MockResponse;
@@ -66,7 +68,7 @@ public class JsonRequestTest extends AbstractApplicationServiceTest {
 
     enqueueResponse(model);
 
-    final RequestBuilderLoader<MyModel> loader = new MyRequestBuilder<MyModel>(getApplication()) { }
+    final Loader<ResponseData<MyModel>> loader = new MyRequestBuilder<MyModel>(getApplication()) { }
         .setStartedLoader(true)
         .setUrl(getWebServer().getUrl("/").toString())
         .setFormat(format)

@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Test;
 
 import android.content.Context;
+import android.support.v4.content.Loader;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
@@ -55,7 +56,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
       .<String, List<String>>asLoadMoreList("o", "l");
   }
 
-  private void makeAsyncAssert(final LoadMoreListLoader<String, List<String>> loader, final String response, final Asserter<List<String>> asserter) throws Throwable {
+  private void makeAsyncAssert(final Loader<ResponseData<List<String>>> loader, final String response, final Asserter<List<String>> asserter) throws Throwable {
     waitAndAssertForLoader(loader, new Asserter<ResponseData<List<String>>>() {
       @Override
       public void makeAssertions(final ResponseData<List<String>> data) throws Exception {
@@ -71,7 +72,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
   public void firstRequestWithoutOffsetLimit() throws Throwable {
     getWebServer().enqueue(new MockResponse().setBody("L1"));
 
-    final LoadMoreListLoader<String, List<String>> loader = createListRb().getLoader();
+    final Loader<ResponseData<List<String>>> loader = createListRb().getLoader();
 
     directLoaderCall(loader).startLoading();
 
@@ -90,7 +91,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
   public void firstRequestWithCustomOffsetLimit() throws Throwable {
     getWebServer().enqueue(new MockResponse().setBody("LCustom"));
 
-    final LoadMoreListLoader<String, List<String>> loader = createListRb().setLimit(2).setOffset(1).getLoader();
+    final Loader<ResponseData<List<String>>> loader = createListRb().setLimit(2).setOffset(1).getLoader();
 
     directLoaderCall(loader).startLoading();
 
@@ -111,9 +112,9 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
 
     final int limit = 3, offset = 2;
 
-    final LoadMoreListLoader<String, List<String>> loader = createListRb().setLimit(limit).setOffset(offset).getLoader();
+    final Loader<ResponseData<List<String>>> loader = createListRb().setLimit(limit).setOffset(offset).getLoader();
 
-    directLoaderCall(loader).forceLoadMore();
+    ((LoadmoreLoader)directLoaderCall(loader)).forceLoadMore();
 
     makeAsyncAssert(loader, "LNext", new Asserter<List<String>>() {
       @Override
@@ -147,8 +148,10 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
       }
     };
 
-    final LoadMoreListLoader<String, List<String>> loader = createListRb().setLimit(limit).setOffset(offset)
-        .getLoader().setLimitIncrementor(lInc).setOffsetIncrementor(oInc);
+    @SuppressWarnings("unchecked")
+    final LoadMoreListLoader<String, List<String>> loader =
+        ((LoadMoreListLoader<String, List<String>>)createListRb().setLimit(limit).setOffset(offset).getLoader())
+        .setLimitIncrementor(lInc).setOffsetIncrementor(oInc);
 
     directLoaderCall(loader).forceLoadMore();
 

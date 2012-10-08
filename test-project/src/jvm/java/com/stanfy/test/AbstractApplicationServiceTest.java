@@ -37,8 +37,8 @@ public abstract class AbstractApplicationServiceTest extends AbstractMockServerT
 
   protected ApplicationService createApplicationService(final Application app) { return app.new ApplicationService(); }
 
-  protected <T> void waitAndAssertForLoader(final RequestBuilderLoader<T> loader, final Asserter<ResponseData<T>> asserter) throws Throwable {
-    waitAndAssert(new LoaderWaiter<T>(loader), asserter);
+  protected <T> void waitAndAssertForLoader(final Loader<ResponseData<T>> loader, final Asserter<ResponseData<T>> asserter) throws Throwable {
+    waitAndAssert(new LoaderWaiter<T>((RequestBuilderLoader<T>)loader), asserter);
   }
 
   protected <T> void waitAndAssert(final Waiter<T> waiter, final Asserter<T> asserter) throws Throwable {

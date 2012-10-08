@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.stanfy.app.beans.BeansManager;
@@ -27,6 +28,7 @@ import com.stanfy.serverapi.request.binary.BitmapBinaryData;
 import com.stanfy.serverapi.request.binary.ContentUriBinaryData;
 import com.stanfy.serverapi.request.binary.EmptyBinaryData;
 import com.stanfy.serverapi.response.ModelTypeToken;
+import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.utils.RequestExecutor;
 
 /**
@@ -330,7 +332,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
    * @return loader instance that uses this request builder
    */
   @Override
-  public RequestBuilderLoader<MT> getLoader() {
+  public Loader<ResponseData<MT>> getLoader() {
     return new RequestBuilderLoader<MT>(this);
   }
 

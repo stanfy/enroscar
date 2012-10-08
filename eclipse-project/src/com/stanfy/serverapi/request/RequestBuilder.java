@@ -1,9 +1,10 @@
 package com.stanfy.serverapi.request;
 
 import android.content.Context;
+import android.support.v4.content.Loader;
 
-import com.stanfy.app.loader.RequestBuilderLoader;
 import com.stanfy.serverapi.response.ModelTypeToken;
+import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.utils.RequestExecutor;
 
 /**
@@ -18,7 +19,7 @@ public interface RequestBuilder<MT> {
   Context getContext();
 
   /** @return corresponding loader */
-  RequestBuilderLoader<MT> getLoader();
+  Loader<ResponseData<MT>> getLoader();
 
   /**
    * Send request.

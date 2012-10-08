@@ -16,7 +16,6 @@ import com.stanfy.DebugFlags;
 import com.stanfy.app.BaseFragment;
 import com.stanfy.app.CrucialGUIOperationManager;
 import com.stanfy.app.beans.BeansManager;
-import com.stanfy.app.loader.RequestBuilderLoader;
 import com.stanfy.content.UniqueObject;
 import com.stanfy.serverapi.request.RequestBuilder;
 import com.stanfy.serverapi.response.ResponseData;
@@ -75,7 +74,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
    * @param loader loader instance
    * @return loader instance
    */
-  protected Loader<ResponseData<LT>> modifyLoader(final RequestBuilderLoader<LT> loader) {
+  protected Loader<ResponseData<LT>> modifyLoader(final Loader<ResponseData<LT>> loader) {
     return loader;
   }
 
