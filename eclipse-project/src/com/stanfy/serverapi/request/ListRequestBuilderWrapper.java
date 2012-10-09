@@ -82,7 +82,7 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
     this.limitName = limitName;
   }
 
-  /** @return core request vuilder */
+  /** @return core request builder */
   public RequestBuilder<LT> getCore() { return core; }
 
   @Override
