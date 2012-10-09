@@ -82,6 +82,9 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
     this.limitName = limitName;
   }
 
+  /** @return core request vuilder */
+  public RequestBuilder<LT> getCore() { return core; }
+
   @Override
   public Context getContext() { return core.getContext(); }
 
