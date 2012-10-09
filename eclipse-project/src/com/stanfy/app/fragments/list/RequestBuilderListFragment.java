@@ -211,9 +211,10 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
 
   /** Restart loader. */
   public void reload() {
-    if (this.rbAdapter != null && !this.rbAdapter.isEmpty()) {
-      getListView().setSelection(0);
+    if (coreAdapter != null) {
+      coreAdapter.clear();
     }
+
     onLoadStart();
     getLoaderManager().restartLoader(LIST_LOADER_ID, null, this);
   }
