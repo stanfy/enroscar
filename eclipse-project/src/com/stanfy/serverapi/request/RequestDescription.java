@@ -128,7 +128,6 @@ public class RequestDescription implements Parcelable {
     this.operationType = source.readInt();
     this.url = source.readString();
     this.cacheName = source.readString();
-    ParametersGroup.class.getName();
     this.simpleParameters = source.readParcelable(cl);
     this.contentType = source.readString();
     this.encoding = Charset.forName(source.readString());
