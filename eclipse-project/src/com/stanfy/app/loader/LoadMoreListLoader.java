@@ -88,8 +88,14 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
 
     lastLoadedCount = list.size();
     if (lastLoadedCount == 0) {
+
       stopLoadMore = true;
+      if (itemsList != null) {
+        data.setModel(itemsList);
+      }
+
     } else {
+
       if (itemsList != null) {
         list.addAll(0, itemsList);
       }
