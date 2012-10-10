@@ -75,7 +75,12 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
   @Override
   protected ResponseData<LT> onAcceptData(final ResponseData<LT> oldData, final ResponseData<LT> data) {
     final LT list = data.getModel();
-    if (list == null) {
+    if (!data.isSuccessful() || list == null) {
+
+      if (DEBUG && data.isSuccessful() && list == null) {
+        Log.e(TAG, "onAcceptData: response is successfull but model is null!");
+      }
+
       // error case
       stopLoadMore = true;
       return data;

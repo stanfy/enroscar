@@ -181,7 +181,20 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
     }
 
     resetStateAfterComplete();
+
+    final ResponseData<MT> oldData = receivedResponse;
+    if (oldData != data) {
+      receivedResponse = onAcceptData(oldData, data);
+    }
+
     deliverResult(data);
+
+    if (oldData != null && oldData != receivedResponse) {
+      onReleaseData(oldData);
+    }
+    if (data != null && data != receivedResponse) {
+      onReleaseData(data);
+    }
 
     if (DEBUG) { Log.d(TAG, "Request data delivered, " + this); }
     checkForUpdateRequest();
@@ -226,20 +239,8 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
       return;
     }
 
-    final ResponseData<MT> oldData = receivedResponse;
-    if (oldData != data) {
-      receivedResponse = onAcceptData(oldData, data);
-    }
-
     if (isStarted()) {
       super.deliverResult(receivedResponse);
-    }
-
-    if (oldData != null && oldData != receivedResponse) {
-      onReleaseData(oldData);
-    }
-    if (data != null && data != receivedResponse) {
-      onReleaseData(data);
     }
   }
 
