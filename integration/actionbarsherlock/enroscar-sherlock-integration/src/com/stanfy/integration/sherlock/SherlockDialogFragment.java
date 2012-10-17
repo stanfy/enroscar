@@ -1,10 +1,11 @@
 package com.stanfy.integration.sherlock;
 
 import android.app.Activity;
-import android.support.v4.app._ActionBarSherlockTrojanHorse.OnCreateOptionsMenuListener;
-import android.support.v4.app._ActionBarSherlockTrojanHorse.OnOptionsItemSelectedListener;
-import android.support.v4.app._ActionBarSherlockTrojanHorse.OnPrepareOptionsMenuListener;
+import android.support.v4.app.Watson.OnCreateOptionsMenuListener;
+import android.support.v4.app.Watson.OnOptionsItemSelectedListener;
+import android.support.v4.app.Watson.OnPrepareOptionsMenuListener;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.internal.view.menu.MenuItemWrapper;
 import com.actionbarsherlock.internal.view.menu.MenuWrapper;
 import com.actionbarsherlock.view.Menu;
@@ -20,7 +21,7 @@ public class SherlockDialogFragment extends BaseDialogFragment implements OnCrea
   }
 
   @Override
-  public void onAttach(final Activity activity) {
+  public void onAttach(Activity activity) {
     if (!(activity instanceof SherlockFragmentActivity)) {
       throw new IllegalStateException(getClass().getSimpleName() + " must be attached to a SherlockFragmentActivity.");
     }
@@ -36,32 +37,32 @@ public class SherlockDialogFragment extends BaseDialogFragment implements OnCrea
   }
 
   @Override
-  public final void onCreateOptionsMenu(final android.view.Menu menu, final android.view.MenuInflater inflater) {
+  public final void onCreateOptionsMenu(android.view.Menu menu, android.view.MenuInflater inflater) {
     onCreateOptionsMenu(new MenuWrapper(menu), mActivity.getSupportMenuInflater());
   }
 
   @Override
-  public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     //Nothing to see here.
   }
 
   @Override
-  public final void onPrepareOptionsMenu(final android.view.Menu menu) {
+  public final void onPrepareOptionsMenu(android.view.Menu menu) {
     onPrepareOptionsMenu(new MenuWrapper(menu));
   }
 
   @Override
-  public void onPrepareOptionsMenu(final Menu menu) {
+  public void onPrepareOptionsMenu(Menu menu) {
     //Nothing to see here.
   }
 
   @Override
-  public final boolean onOptionsItemSelected(final android.view.MenuItem item) {
+  public final boolean onOptionsItemSelected(android.view.MenuItem item) {
     return onOptionsItemSelected(new MenuItemWrapper(item));
   }
 
   @Override
-  public boolean onOptionsItemSelected(final MenuItem item) {
+  public boolean onOptionsItemSelected(MenuItem item) {
     //Nothing to see here.
     return false;
   }
