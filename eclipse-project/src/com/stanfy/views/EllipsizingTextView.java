@@ -2,22 +2,34 @@ package com.stanfy.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.text.Layout;
 import android.text.Layout.Alignment;
 import android.text.StaticLayout;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
+import android.view.accessibility.AccessibilityEvent;
+import android.widget.Checkable;
 import android.widget.TextView;
 
 /**
  * Workaround for an android <a href="http://code.google.com/p/android/issues/detail?id=2254">bug</a>.
  * Ellipsize settings are not respected!
+ * Please use it only as a workaround.
  */
-public class EllipsizingTextView extends TextView {
+public class EllipsizingTextView extends TextView implements Checkable {
 
   /** How to ellipsize. */
   private static final String ELLIPSIS = "...";
+
+  /** Checked state attributes. */
+  private static final int[] CHECKED_ATTRS = {android.R.attr.checked};
+  /** Checked state set. */
+  private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
+
+  /** Checked state. */
+  private boolean checked;
 
   /** Affect flag. */
   private boolean isEllipsized;
@@ -40,10 +52,59 @@ public class EllipsizingTextView extends TextView {
 
   public EllipsizingTextView(final Context context, final AttributeSet attrs) {
     super(context, attrs);
+    init(context, attrs);
   }
 
   public EllipsizingTextView(final Context context, final AttributeSet attrs, final int defStyle) {
     super(context, attrs, defStyle);
+    init(context, attrs);
+  }
+
+  private void init(final Context context, final AttributeSet attrs) {
+    TypedArray a = context.obtainStyledAttributes(attrs, CHECKED_ATTRS);
+    setChecked(a.getBoolean(0, false));
+    a.recycle();
+  }
+
+  /**
+   * <p>Changes the checked state of this text view.</p>
+   *
+   * @param checked true to check the text, false to uncheck it
+   */
+  @Override
+  public void setChecked(final boolean checked) {
+    if (this.checked != checked) {
+      this.checked = checked;
+      refreshDrawableState();
+    }
+  }
+
+  @Override
+  public void toggle() {
+    setChecked(!checked);
+  }
+
+  @Override
+  public boolean isChecked() {
+    return checked;
+  }
+
+  @Override
+  public boolean dispatchPopulateAccessibilityEvent(final AccessibilityEvent event) {
+      boolean populated = super.dispatchPopulateAccessibilityEvent(event);
+      if (!populated) {
+          event.setChecked(checked);
+      }
+      return populated;
+  }
+
+  @Override
+  protected int[] onCreateDrawableState(final int extraSpace) {
+    final int[] drawableState = super.onCreateDrawableState(extraSpace + 1);
+    if (isChecked()) {
+      mergeDrawableStates(drawableState, CHECKED_STATE_SET);
+    }
+    return drawableState;
   }
 
   public boolean isEllipsized() { return isEllipsized; }
