@@ -76,10 +76,6 @@
     <attr name="checkedButton" format="integer" />
   </declare-styleable>
 
-  <declare-styleable name="RelativeLayout">
-    <attr name="checkedBgDrawable" format="integer" />
-  </declare-styleable>
-      
   <declare-styleable name="Gallery">
     <attr name="android:gravity" />
     <!-- Sets how long a transition animation should run (in milliseconds) 

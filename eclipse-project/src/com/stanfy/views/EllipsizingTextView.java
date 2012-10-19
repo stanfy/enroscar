@@ -1,5 +1,7 @@
 package com.stanfy.views;
 
+import static com.stanfy.views.CheckableConsts.CHECKED_ATTRS;
+import static com.stanfy.views.CheckableConsts.CHECKED_STATE_SET;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -22,11 +24,6 @@ public class EllipsizingTextView extends TextView implements Checkable {
 
   /** How to ellipsize. */
   private static final String ELLIPSIS = "...";
-
-  /** Checked state attributes. */
-  private static final int[] CHECKED_ATTRS = {android.R.attr.checked};
-  /** Checked state set. */
-  private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
 
   /** Checked state. */
   private boolean checked;
