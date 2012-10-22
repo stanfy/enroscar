@@ -32,7 +32,7 @@ public class StateHelper {
   }
 
   /** Special views. */
-  private final StateViewCreator[] viewCreators = constructCreatorsArray();
+  private StateViewCreator[] viewCreators;
 
   protected StateViewCreator[] constructCreatorsArray() {
     final StateViewCreator[] result = new StateViewCreator[DEFAULT_STATES.length];
@@ -46,12 +46,22 @@ public class StateHelper {
   }
 
   public void setStateViewCreator(final int state, final StateViewCreator creator) {
+    final StateViewCreator[] viewCreators = getViewCreators();
     if (state != STATE_NORMAL && state > 0 && state < viewCreators.length) {
       viewCreators[state] = creator;
     }
   }
 
+  private StateViewCreator[] getViewCreators() {
+    if (viewCreators == null) {
+      viewCreators = constructCreatorsArray();
+    }
+
+    return viewCreators;
+  }
+
   public View getCustomStateView(final int state, final Context context, final Object lastDataObject, final ViewGroup parent) {
+    final StateViewCreator[] viewCreators = getViewCreators();
     final StateViewCreator creator = state > 0 && state < viewCreators.length ? viewCreators[state] : null;
     if (creator == null) { return null; }
     final View view = creator.getView(context, lastDataObject, parent);
@@ -60,7 +70,7 @@ public class StateHelper {
     return view;
   }
 
-  public boolean hasState(final int state) { return viewCreators[state] != null; }
+  public boolean hasState(final int state) { return getViewCreators()[state] != null; }
 
   protected void configureStateViewHeight(final ViewGroup parent, final View stateView) {
     if (stateView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) { return; }
