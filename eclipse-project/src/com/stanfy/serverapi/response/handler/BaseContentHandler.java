@@ -99,7 +99,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
     if (modelAnnotation == null) { return modelType.getType(); }
 
     final Class<?> wrapper = modelAnnotation.wrapper();
-    return wrapper != null ? wrapper : modelType.getType();
+    return wrapper != null && wrapper != Model.class ? wrapper : modelType.getType();
   }
 
   public void setCharset(final Charset charset) { this.charset = charset; }

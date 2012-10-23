@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 public @interface Model {
 
   /** @return wrapper class */
-  Class<?> wrapper();
+  Class<?> wrapper() default Model.class;
 
   /** @return analyzer name */
   String analyzer() default "";
