@@ -22,13 +22,15 @@ public class ServiceRequestPerformer implements RequestExecutor  {
 
   @Override
   public int performRequest(final RequestDescription description) {
-    Class<?> serviceClass = BeansManager.get(context).getRemoteServerApiConfiguration().getApplicationServiceClass();
-    context.startService(
-        new Intent(context, serviceClass)
-        .setAction(ApplicationService.ACTION_SEND_REQUEST)
-        .putExtra(ApplicationService.EXTRA_REQUEST_DESCRIPTION, description)
-    );
+    context.startService(constructIntent(description));
     return description.getId();
+  }
+
+  public Intent constructIntent(final RequestDescription description) {
+    Class<?> serviceClass = BeansManager.get(context).getRemoteServerApiConfiguration().getApplicationServiceClass();
+    return new Intent(context, serviceClass)
+        .setAction(ApplicationService.ACTION_SEND_REQUEST)
+        .putExtra(ApplicationService.EXTRA_REQUEST_DESCRIPTION, description);
   }
 
 }
