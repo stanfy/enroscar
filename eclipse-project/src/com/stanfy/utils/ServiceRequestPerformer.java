@@ -8,7 +8,7 @@ import com.stanfy.app.service.ApplicationService;
 import com.stanfy.serverapi.request.RequestDescription;
 
 /**
- * Requests performer for the server side.
+ * Requests performer that sends {@link RequestDescription} to the service as an {@link Intent}.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class ServiceRequestPerformer implements RequestExecutor  {
