@@ -95,7 +95,7 @@ public class RequestDescriptionProcessor {
       }
 
     } catch (final RequestMethodException e) {
-      Log.e(TAG, "Request method error", e);
+      Log.e(TAG, "Request method error while processing " + description, e);
       hooks.onRequestError(description, converter.toResponseData(description, e));
     } finally {
       hooks.afterRequestProcessingFinished(description, requestMethod);

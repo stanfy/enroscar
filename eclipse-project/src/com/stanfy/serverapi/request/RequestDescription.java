@@ -377,4 +377,9 @@ public class RequestDescription implements Parcelable {
     return connection;
   }
 
+  @Override
+  public String toString() {
+    return "RequestDescription[id=" + id + ", url" + url + "]";
+  }
+
 }
