@@ -804,6 +804,11 @@ public final class DiskLruCache implements Closeable {
       completeEdit(this, false);
     }
 
+    @Override
+    public String toString() {
+      return "DiskLruCache-" + hashCode() + "[workingDirectory=" + directory + "]";
+    }
+
     /**
      * Output streams that sets a flag about I/O errors.
      */

@@ -39,9 +39,6 @@ import com.stanfy.net.cache.CacheEntry.CacheEntryRequest;
 public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     implements EnhancedResponseCache, ManagerAwareBean, CacheEntryListener, DestroyingBean, InitializingBean {
 
-  /** Exception message. */
-  private static final String ILLEGAL_STATE_MESSSAGE = "File cache is being used but not installed";
-
   /** Cache entry index. */
   private static final int ENTRY_BODY = 0, ENTRY_METADATA = 1;
   /** Count of cache entries. */
@@ -90,6 +87,8 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   public DiskLruCache getDiskCache() { return diskCache; }
 
   private DiskLruCache.Snapshot readCacheInfo(final CacheEntry requestInfo, final CacheEntry entry) {
+    if (!checkDiskCache()) { return null; }
+
     final String key = requestInfo.getCacheKey();
 
     DiskLruCache.Snapshot snapshot;
@@ -203,8 +202,8 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   }
 
   private boolean checkDiskCache() {
-    if (diskCache == null) {
-      Log.e(TAG, ILLEGAL_STATE_MESSSAGE);
+    if (diskCache == null || diskCache.isClosed()) {
+      Log.e(TAG, "File cache is being used but not properly installed, diskCache = " + diskCache);
       return false;
     }
     return true;
