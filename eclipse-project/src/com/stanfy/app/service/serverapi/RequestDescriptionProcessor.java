@@ -38,7 +38,7 @@ public class RequestDescriptionProcessor {
   public RemoteServerApiConfiguration getConfig() { return config; }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  private ResponseData<?> analyze(final Context context, final ContentAnalyzer analyzer, final ResponseData<?> responseData,
+  private static ResponseData<?> analyze(final Context context, final ContentAnalyzer analyzer, final ResponseData<?> responseData,
       final RequestDescription description) throws RequestMethodException {
     final ResponseData data = responseData;
     return analyzer.analyze(context, description, data);
@@ -54,9 +54,21 @@ public class RequestDescriptionProcessor {
     final RequestMethod requestMethod = config.getRequestMethod(description);
     final ResponseModelConverter converter = config.getResponseModelConverter(description);
 
+    ContentAnalyzer<?, ?> analyzer = null;
+
+    final String analyzerBeanName = description.getContentAnalyzer();
+    if (analyzerBeanName != null) {
+      analyzer = BeansManager.get(context).getContainer().getBean(analyzerBeanName, ContentAnalyzer.class);
+      if (analyzer == null) {
+        throw new RuntimeException("ContentAnalyzer bean with name " + analyzerBeanName + " is not declared.");
+      }
+    }
+
     if (DEBUG) { Log.d(TAG, "Process request id " + description.getId()); }
 
     hooks.beforeRequestProcessingStarted(description, requestMethod);
+
+    boolean passedToAnalyzer = false;
 
     try {
       // execute request method
@@ -79,11 +91,9 @@ public class RequestDescriptionProcessor {
       }
 
       // analyze
-      final String analyzerBeanName = description.getContentAnalyzer();
-      if (analyzerBeanName != null) {
-        response = analyze(context,
-            BeansManager.get(context).getContainer().getBean(analyzerBeanName, ContentAnalyzer.class),
-            response, description);
+      passedToAnalyzer = true;
+      if (analyzer != null) {
+        response = analyze(context, analyzer, response, description);
       }
 
       // report results
@@ -95,8 +105,22 @@ public class RequestDescriptionProcessor {
       }
 
     } catch (final RequestMethodException e) {
+
       Log.e(TAG, "Request method error while processing " + description, e);
-      hooks.onRequestError(description, converter.toResponseData(description, e));
+      ResponseData<?> data = converter.toResponseData(description, e);
+
+      if (analyzer != null && !passedToAnalyzer) {
+        try {
+          data = analyze(context, analyzer, data, description);
+        } catch (RequestMethodException analyzerException) {
+          Log.e(TAG, "Analyzer exception analyzerName=" + analyzerBeanName + " for " + description, analyzerException);
+          // repack data to use the current exception
+          data = converter.toResponseData(description, analyzerException);
+        }
+      }
+
+      hooks.onRequestError(description, data);
+
     } finally {
       hooks.afterRequestProcessingFinished(description, requestMethod);
     }
