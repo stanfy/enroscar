@@ -30,4 +30,8 @@ public abstract class OneRequestModelFragment<MT> extends BaseFragment implement
     core.fetch();
   }
 
+  public void reload() {
+    getSupportLoaderManager().restartLoader(MODEL_LOADER_ID, null, core);
+  }
+
 }
