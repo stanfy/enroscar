@@ -3,6 +3,7 @@ package com.stanfy.utils;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.service.ApplicationService;
@@ -32,6 +33,7 @@ public class ServiceRequestPerformer implements RequestExecutor  {
     Class<?> serviceClass = BeansManager.get(context).getRemoteServerApiConfiguration().getApplicationServiceClass();
     return new Intent(context, serviceClass)
       .setAction(ApplicationService.ACTION_SEND_REQUEST)
+      .setData(Uri.parse("request://" + description.getId()))
       .putExtra(ApplicationService.EXTRA_REQUEST_DESCRIPTION, description);
   }
 
