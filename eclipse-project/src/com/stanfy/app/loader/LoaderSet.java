@@ -98,7 +98,14 @@ public final class LoaderSet {
   Object[] getResults() { return results; }
 
   public void init(final Bundle arguments, final LoaderSetCallback callbacks) {
+    touchLoader(arguments, callbacks, false);
+  }
 
+  public void restart(final Bundle arguments, final LoaderSetCallback callbacks) {
+    touchLoader(arguments, callbacks, true);
+  }
+
+  private void touchLoader(final Bundle arguments, final LoaderSetCallback callbacks, final boolean reload) {
     this.callbacks = callbacks;
     this.resultsCounter = 0;
 
@@ -106,7 +113,11 @@ public final class LoaderSet {
     final Description[] descriptions = LoaderSet.this.descriptions;
     for (final Description desc : descriptions) {
       for (final int id : desc.ids) {
-        loaderManager.initLoader(id, arguments, desc.callbacks);
+        if (!reload) {
+          loaderManager.initLoader(id, arguments, desc.callbacks);
+        } else {
+          loaderManager.restartLoader(id, arguments, desc.callbacks);
+        }
       }
     }
   }
