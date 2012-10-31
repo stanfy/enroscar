@@ -2,6 +2,7 @@ package com.stanfy.utils.notifications;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Build;
 
@@ -13,6 +14,12 @@ public class JellyBeanNotificationBuilder extends IcsNotificationBuilder {
 
   public JellyBeanNotificationBuilder(final Context context) {
     super(context);
+  }
+
+  @Override
+  public NotificationBuilder addAction(final int icon, final CharSequence title, final PendingIntent intent) {
+    core.addAction(icon, title, intent);
+    return this;
   }
 
   @Override

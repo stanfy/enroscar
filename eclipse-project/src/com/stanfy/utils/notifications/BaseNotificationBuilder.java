@@ -259,6 +259,12 @@ public class BaseNotificationBuilder implements NotificationBuilder {
   }
 
   @Override
+  public NotificationBuilder addAction(final int icon, final CharSequence title, final PendingIntent intent) {
+    // TODO implement
+    return this;
+  }
+
+  @Override
   public Notification build() {
     final Notification n = new Notification();
     n.when = when;

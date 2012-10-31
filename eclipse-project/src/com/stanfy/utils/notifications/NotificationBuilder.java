@@ -188,6 +188,16 @@ public interface NotificationBuilder {
   NotificationBuilder setDefaults(int defaults);
 
   /**
+   * Add an action to this notification. Actions are typically displayed by
+   * the system as a button adjacent to the notification content.
+   *
+   * @param icon Resource ID of a drawable that represents the action.
+   * @param title Text describing the action.
+   * @param intent PendingIntent to be fired when the action is invoked.
+   */
+  NotificationBuilder addAction(int icon, CharSequence title, PendingIntent intent);
+
+  /**
    * Combine all of the options that have been set and return a new {@link Notification}
    * object.
    */

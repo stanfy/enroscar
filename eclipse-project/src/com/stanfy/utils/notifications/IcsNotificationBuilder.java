@@ -162,6 +162,12 @@ public class IcsNotificationBuilder implements NotificationBuilder {
     return this;
   }
 
+  @Override
+  public NotificationBuilder addAction(final int icon, final CharSequence title, final PendingIntent intent) {
+    // TODO implement
+    return this;
+  }
+
   @SuppressWarnings("deprecation")
   @Override
   public Notification build() {
