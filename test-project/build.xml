@@ -1,5 +1,6 @@
 <project name="enroscar-tests" basedir="." default="help">
 
+
 	<!-- Change main directories structure. -->
   <property name="src.java" value="${basedir}/src/emulator"/>
   <property name="src.test" value="${basedir}/src/jvm"/>
