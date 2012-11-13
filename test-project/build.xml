@@ -5,6 +5,6 @@
   <property name="src.java" value="${basedir}/src/emulator"/>
   <property name="src.test" value="${basedir}/src/jvm"/>
 	
-  <import file="build/main/main-build.ant"/>
+  <import file="${basedir}/../cintegration/main-build.ant"/>
 
 </project>
