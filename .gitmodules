@@ -1,0 +1,3 @@
+[submodule "cintegration"]
+	path = cintegration
+	url = ssh://git@dev.stanfy.com:8822/cintegration-android.git
