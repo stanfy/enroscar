@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import android.os.Build;
 import android.util.Log;
 
 import com.stanfy.net.UrlConnectionWrapper;
@@ -49,7 +52,30 @@ public class CacheControlUrlConnection extends UrlConnectionWrapper {
     if (getDoInput() || getDoOutput()) {
       ResponseCacheSwitcher.saveUrlConnection(this);
     }
-    super.connect();
+    connectWithWorkaround();
+  }
+
+  // XXX on 2.3 we get NP exception in case of HTTPs connection and cache
+  private void connectWithWorkaround() throws IOException {
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD) {
+      super.connect();
+      return;
+    }
+
+    URLConnection coreConnection = UrlConnectionWrapper.unwrap(getCore());
+    if (coreConnection instanceof HttpsURLConnection) {
+
+      // CHECKSTYLE:OFF
+      try {
+        super.connect();
+      } catch (NullPointerException e) {
+        // ignore this NP
+      }
+      // CHECKSTYLE:ON
+
+    } else {
+      super.connect();
+    }
   }
 
   @Override
