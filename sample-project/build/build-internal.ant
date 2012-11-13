@@ -1,3 +1,3 @@
 <project name="enroscar-sample" basedir=".." default="help">
-  <import file="${basedir}/build/main/main-build.ant"/>
+  <import file="${basedir}/../cintegration/main-build.ant"/>
 </project>
