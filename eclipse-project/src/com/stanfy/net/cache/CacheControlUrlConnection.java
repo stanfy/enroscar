@@ -57,7 +57,7 @@ public class CacheControlUrlConnection extends UrlConnectionWrapper {
 
   // XXX on 2.3 we get NP exception in case of HTTPs connection and cache
   private void connectWithWorkaround() throws IOException {
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD) {
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
       super.connect();
       return;
     }
