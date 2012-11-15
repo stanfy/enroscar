@@ -1,6 +1,7 @@
-<project name="enroscar-sherlock-integration" default="help" basedir="./..">
+<project name="enroscar-sherlock-integration" default="help" basedir="..">
 	
-	<import file="${basedir}/build/main/main-build.ant"/>
+	<property name="build.main" value="${basedir}/../../../cintegration"/>
+	<import file="${build.main}/main-build.ant"/>
 	
 	<target name="build" depends="clean, release" description="Build a jar file">
 		<echo message="Copy newly created jar file" />

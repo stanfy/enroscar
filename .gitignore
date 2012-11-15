@@ -1,0 +1,8 @@
+.DS_Store
+
+# Local properties
+dev.properties
+
+# Generated
+gen
+bin
