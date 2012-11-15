@@ -98,7 +98,7 @@ public class EllipsizingTextView extends TextView implements Checkable {
   @Override
   protected int[] onCreateDrawableState(final int extraSpace) {
     final int[] drawableState = super.onCreateDrawableState(extraSpace + 1);
-    if (isChecked()) {
+    if (checked) {
       mergeDrawableStates(drawableState, CHECKED_STATE_SET);
     }
     return drawableState;
