@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
   <!-- 
   
     Describe themes directly in your main project.
@@ -20,4 +20,5 @@
     </style>
   
   -->
+  
 </resources>
