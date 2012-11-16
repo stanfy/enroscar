@@ -45,7 +45,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   private static final String TAG = "RequestBuilder";
 
   /** Date format. */
-  private final SimpleDateFormat dateFormat = new SimpleDateFormat(getDateTimeFormat());
+  private final SimpleDateFormat dateFormat = new SimpleDateFormat(getDateTimeFormat(), Locale.US);
 
   /** Configuration. */
   private final RemoteServerApiConfiguration config;
