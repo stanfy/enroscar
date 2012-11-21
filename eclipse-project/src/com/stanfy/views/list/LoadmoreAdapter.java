@@ -1,11 +1,11 @@
 package com.stanfy.views.list;
 
 import android.annotation.SuppressLint;
-import android.database.DataSetObservable;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.WrapperListAdapter;
@@ -17,10 +17,7 @@ import com.stanfy.views.gallery.AdapterView;
  * Adapter that shows load more footer.
  */
 @SuppressLint("FieldGetter")
-public class LoadmoreAdapter implements WrapperListAdapter, Filterable {
-
-  /** Observable helper. */
-  private final DataSetObservable dataSetObservable = new DataSetObservable();
+public class LoadmoreAdapter extends BaseAdapter implements WrapperListAdapter, Filterable {
 
   /** Main adapter. */
   final FetchableListAdapter core;
@@ -40,11 +37,11 @@ public class LoadmoreAdapter implements WrapperListAdapter, Filterable {
     @Override
     public void onChanged() {
       setLoadFlag(false, false);
-      dataSetObservable.notifyChanged();
+      notifyDataSetChanged();
     }
     @Override
     public void onInvalidated() {
-      dataSetObservable.notifyInvalidated();
+      notifyDataSetInvalidated();
     }
   };
 
@@ -69,7 +66,7 @@ public class LoadmoreAdapter implements WrapperListAdapter, Filterable {
     final boolean prev = this.loadFlag;
     this.loadFlag = loadFlag;
     if (notify && prev != loadFlag) {
-      dataSetObservable.notifyChanged();
+      notifyDataSetChanged();
     }
   }
 
@@ -85,16 +82,6 @@ public class LoadmoreAdapter implements WrapperListAdapter, Filterable {
   }
 
   protected int transformPositionForCore(final int position) { return position; }
-
-  @Override
-  public void registerDataSetObserver(final DataSetObserver observer) {
-    dataSetObservable.registerObserver(observer);
-  }
-
-  @Override
-  public void unregisterDataSetObserver(final DataSetObserver observer) {
-    dataSetObservable.unregisterObserver(observer);
-  }
 
   @Override
   public boolean areAllItemsEnabled() { return false; }
