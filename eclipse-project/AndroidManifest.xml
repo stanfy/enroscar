@@ -11,6 +11,6 @@
       android:targetSdkVersion="16"
       />
 
-  <application android:label="Enroscar" />
+  <application />
 
 </manifest>

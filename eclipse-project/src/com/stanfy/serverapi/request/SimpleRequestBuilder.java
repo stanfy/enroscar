@@ -1,5 +1,6 @@
 package com.stanfy.serverapi.request;
 
+import java.util.Locale;
 import java.util.TreeMap;
 
 import android.content.Context;
@@ -61,7 +62,7 @@ public abstract class SimpleRequestBuilder<MT> extends BaseRequestBuilder<MT> {
   }
 
   public SimpleRequestBuilder<MT> setFormat(final String format) {
-    final String name = FORMAT_MAPPINGS.get(format.toLowerCase());
+    final String name = FORMAT_MAPPINGS.get(format.toLowerCase(Locale.US));
     setRequestContentHandler(name != null ? name : format);
     return this;
   }

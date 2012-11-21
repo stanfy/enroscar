@@ -1,6 +1,7 @@
 package com.stanfy.utils;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import android.content.ContentValues;
@@ -135,7 +136,7 @@ public final class DBInsertHelper {
         }
         String insertSQL = mInsertSQL;
         if (conflictPolicy != null) {
-          insertSQL = "INSERT OR " + conflictPolicy.toUpperCase() + mInsertSQL.substring(offset);
+          insertSQL = "INSERT OR " + conflictPolicy.toUpperCase(Locale.US) + mInsertSQL.substring(offset);
         }
         mInsertStatement = mDb.compileStatement(insertSQL);
       }

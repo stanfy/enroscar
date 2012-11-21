@@ -3,6 +3,7 @@ package com.stanfy.serverapi.request.net.multipart.android;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -39,7 +40,7 @@ public class BitmapPart extends FilePart {
    */
   public void setCompressFormat(final CompressFormat compressFormat) {
     this.compressFormat = compressFormat;
-    setContentType("image/" + compressFormat.name().toLowerCase());
+    setContentType("image/" + compressFormat.name().toLowerCase(Locale.US));
   }
   /**
    * @see Bitmap#compress(CompressFormat, int, OutputStream)
