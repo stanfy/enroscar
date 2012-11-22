@@ -1,6 +1,3 @@
-[submodule "cintegration"]
-	path = cintegration
-	url = ssh://git@dev.stanfy.com:8822/cintegration-android.git
 [submodule "integration/actionbarsherlock/actionbarscherlock-enroscar"]
 	path = integration/actionbarsherlock/actionbarscherlock-enroscar
-	url = ssh://git@dev.stanfy.com:8822/actionbarsherlock-android.git
+	url = git://github.com/JakeWharton/ActionBarSherlock.git
