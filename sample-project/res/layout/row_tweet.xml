@@ -8,8 +8,9 @@
   <com.stanfy.views.LoadableImageView
       android:layout_width="48dp"
       android:layout_height="48dp"
-      enroscar:sourceDensity="1"
+      enroscar:sourceDensity="160"
       enroscar:loadingImage="@drawable/no_image"
+      enroscar:useTransition="yes"
       android:layout_marginRight="10dp"
       android:id="@+id/tweet_image"
       />
