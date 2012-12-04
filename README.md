@@ -57,7 +57,7 @@ Use `SimpleRequestBuilder`
 --------------------------
 
 Use `SimpleRequestBuilder` for creating Android loader that uses the declared service for performing requests to the remote server API.
-Please, go through [Android loaders docs][http://developer.android.com/guide/components/loaders.html] to refresh in mind how to use loaders.
+Please, go through [Android loaders docs](http://developer.android.com/guide/components/loaders.html) to refresh in mind how to use loaders.
 
 ```java
   
