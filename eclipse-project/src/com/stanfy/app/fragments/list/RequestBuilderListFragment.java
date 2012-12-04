@@ -81,6 +81,9 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   /** @return true if data should be reloaded on locale changes */
   protected boolean isDataLocaleDependent() { return false; }
 
+  /** @return model loader ID */
+  protected int getLoaderId() { return LIST_LOADER_ID; }
+
   // =============================== STATES ===============================
   @Override
   public void onCreate(final Bundle savedInstanceState) {
@@ -107,7 +110,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
       final Configuration config = getResources().getConfiguration();
       final Locale newLocale = config.locale;
       if (prevLocale != null && !prevLocale.equals(newLocale)) {
-        getLoaderManager().destroyLoader(LIST_LOADER_ID);
+        getLoaderManager().destroyLoader(getLoaderId());
       }
       prevLocale = newLocale;
     }
@@ -159,7 +162,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
 
   @Override
   public Loader<ResponseData<LT>> onCreateLoader(final int id, final Bundle bundle) {
-    if (id == LIST_LOADER_ID) {
+    if (id == getLoaderId()) {
       if (rbAdapter != null) {
         rbAdapter.onLoadStart();
       }
@@ -206,7 +209,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     if (DEBUG) { Log.v(TAG, "startLoad, " + this); }
     // init loader, data can passed to adapter at once
     onLoadStart();
-    getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
+    getLoaderManager().initLoader(getLoaderId(), null, this);
   }
 
   /** Restart loader. */
@@ -216,7 +219,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     }
 
     onLoadStart();
-    getLoaderManager().restartLoader(LIST_LOADER_ID, null, this);
+    getLoaderManager().restartLoader(getLoaderId(), null, this);
   }
 
   protected View createView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
