@@ -59,7 +59,7 @@ public final class ImageHolders {
     public void setImage(final Drawable d, final boolean animate) {
       final LoadableImageView view = (LoadableImageView)this.view;
       if (animate && view.isUseTransition()) {
-        view.setImageDrawableWithTransition(d);
+        view.setImageDrawableWithTransition(d, view.isTransitionCrossfade());
       } else {
         view.setImageDrawable(d);
       }
