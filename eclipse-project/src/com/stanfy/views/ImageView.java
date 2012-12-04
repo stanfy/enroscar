@@ -10,12 +10,14 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.stanfy.images.decorator.ImageDecorator;
 import com.stanfy.images.decorator.MaskImageDecorator;
@@ -302,10 +304,10 @@ public class ImageView extends android.widget.ImageView {
     if (transitionArray[1] != null) { transitionArray[1].setCallback(null); }
   }
 
-  public void setImageDrawableWithTransition(final Drawable drawable) {
-    setImageDrawableWithTransition(drawable, TRANSITION_DURATION_DEFAULT);
+  public void setImageDrawableWithTransition(final Drawable drawable, final boolean crossfade) {
+    setImageDrawableWithTransition(drawable, TRANSITION_DURATION_DEFAULT, false);
   }
-  public void setImageDrawableWithTransition(final Drawable drawable, final int duration) {
+  public void setImageDrawableWithTransition(final Drawable drawable, final int duration, final boolean crossfade) {
     final Drawable[] transitionArray = this.transitionArray;
     final Drawable prev = getDrawable();
 
@@ -550,9 +552,8 @@ public class ImageView extends android.widget.ImageView {
           secondAlpha = FINAL_ALPHA;
           second.setAlpha(FINAL_ALPHA);
         }
-        // the setAlpha() calls below trigger invalidation and redraw. If we're done, just draw
-        // the appropriate drawable[s] and return
-        if (!crossFade || alpha == 0) {
+
+        if (alpha == 0 || (!crossFade && second.getOpacity() != PixelFormat.OPAQUE)) {
           first.draw(canvas);
         }
         if (alpha == FINAL_ALPHA) {

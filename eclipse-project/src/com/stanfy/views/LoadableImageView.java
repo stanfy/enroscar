@@ -18,7 +18,7 @@ import com.stanfy.images.ImagesManager.ImageHolder;
 public class LoadableImageView extends ImageView implements ImagesLoadListenerProvider, RemoteImageDensityProvider {
 
   /** Use transition. */
-  public static final int USE_TRANSITION_NO = 0, USE_TRANSITION_YES = 1, USE_TRANSITION_AUTO = 2;
+  public static final int USE_TRANSITION_NO = 0, USE_TRANSITION_YES = 1, USE_TRANSITION_CROSSFADE = 2;
 
   /** Skip scaling before caching flag. */
   private boolean skipScaleBeforeCache;
@@ -81,10 +81,12 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     this.imagesManager = BeansManager.get(context).getImagesManager();
   }
 
-  /** @param mode mode specification (see {@link #USE_TRANSITION_NO}, {@link #USE_TRANSITION_YES}, {@link #USE_TRANSITION_AUTO}) */
+  /** @param mode mode specification (see {@link #USE_TRANSITION_NO}, {@link #USE_TRANSITION_YES}, {@link #USE_TRANSITION_CROSSFADE}) */
   public void setUseTransitionMode(final int mode) { this.useTransition = mode; }
   /** @return whether this view wants to use transitions */
   public boolean isUseTransition() { return this.useTransition != USE_TRANSITION_NO; }
+  /** @return whether transition must be performed with crossfade option */
+  public boolean isTransitionCrossfade() { return this.useTransition == USE_TRANSITION_CROSSFADE; }
 
   /** @param imageType the imageType to set */
   public void setImageType(final int imageType) { this.imageType = imageType; }
