@@ -68,13 +68,18 @@ public class BeansManager {
 
   protected BeansManager(final Application application) {
     this.application = application;
-    this.container = createContainer(application);
+    container = createContainer(application);
   }
 
   public static synchronized BeansManager get(final Context context) {
     if (instance == null) {
       if (context == null) { return null; }
-      instance = new BeansManager((Application)context.getApplicationContext());
+      final Context appContext = context.getApplicationContext();
+      if (appContext instanceof Application) {
+        instance = new BeansManager((Application)appContext);
+      } else if (DEBUG) {
+        Log.v(TAG, "Can't instantiate BeansManager because of bad context: " + appContext);
+      }
     }
     return instance;
   }
@@ -105,7 +110,7 @@ public class BeansManager {
    */
   void registerComponentCallbacks() {
     if (callbacksRegistered) { return; } // do it once only
-    AppUtils.getSdkDependentUtils().registerComponentCallbacks(application, this.container);
+    AppUtils.getSdkDependentUtils().registerComponentCallbacks(application, container);
     callbacksRegistered = true;
   }
 
@@ -248,7 +253,7 @@ public class BeansManager {
           @Override
           public Object put() {
             getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class)
-                .setDefaultContentHandlerName(mainContentHandlerName);
+            .setDefaultContentHandlerName(mainContentHandlerName);
             return null;
           }
         });
@@ -267,11 +272,11 @@ public class BeansManager {
 
     private void performActions(final Map<String, PutBean> editorActions) {
       final long start = System.currentTimeMillis();
-      ArrayList<Object> editedBeans = new ArrayList<Object>(editorActions.size());
+      final ArrayList<Object> editedBeans = new ArrayList<Object>(editorActions.size());
 
       for (final Entry<String, PutBean> entry : editorActions.entrySet()) {
         final long startAction = System.currentTimeMillis();
-        Object bean = entry.getValue().put();
+        final Object bean = entry.getValue().put();
         if (bean != null) {
           checkIntrfacesOnCreate(bean);
           editedBeans.add(bean);
