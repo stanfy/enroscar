@@ -1903,7 +1903,7 @@ public class StaggeredGridView extends ViewGroup {
       mRecycler.clearTransientViews();
 
       if (!mHasStableIds
-          || (mItemCount != mOldItemCount && mItemCount <= mHeaderViewInfos.size() + mFooterViewInfos.size())) {
+          || (mItemCount != mOldItemCount && getChildCount() > 0 && mItemCount < getChildCount())) {
         // Clear all layout records and recycle the views
         mLayoutRecords.clear();
         removeHeaderViews();
