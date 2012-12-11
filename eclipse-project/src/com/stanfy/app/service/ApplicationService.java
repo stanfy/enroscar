@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.serverapi.request.RequestDescription;
+import com.stanfy.utils.Time;
 
 /**
  * Base application service which provides API and location methods interfaces.
@@ -28,6 +29,8 @@ public class ApplicationService extends Service {
 
   /** Check for stop message. */
   private static final int MSG_CHECK_FOR_STOP = 1;
+  /** Check for stop delay. */
+  private static final long DELAY_CHECK_FOR_STOP = Time.SECONDS >> 1;
 
   /** Send request action. */
   public static final String ACTION_SEND_REQUEST = ApiMethods.class.getName() + "#SEND_REQUEST";
@@ -44,7 +47,7 @@ public class ApplicationService extends Service {
   private LocationMethodsImpl locationMethodsImpl;
 
   /** Usage flags. */
-  private AtomicBoolean apiMethodsUse = new AtomicBoolean(false), locationMethodsUse = new AtomicBoolean(false);
+  private final AtomicBoolean apiMethodsUse = new AtomicBoolean(false), locationMethodsUse = new AtomicBoolean(false);
 
   /** @return API methods implementation */
   protected ApiMethods createApiMethods() { return new ApiMethods(this); }
@@ -66,7 +69,7 @@ public class ApplicationService extends Service {
 
     if (intent != null) {
       if (ACTION_SEND_REQUEST.equals(intent.getAction())) {
-        RequestDescription requestDescription = intent.getParcelableExtra(EXTRA_REQUEST_DESCRIPTION);
+        final RequestDescription requestDescription = intent.getParcelableExtra(EXTRA_REQUEST_DESCRIPTION);
         if (requestDescription != null) {
           ensureApiMethods();
           apiMethods.performRequest(requestDescription);
@@ -151,9 +154,12 @@ public class ApplicationService extends Service {
   }
 
   void checkForStop() {
+    checkForStop(DELAY_CHECK_FOR_STOP);
+  }
+  void checkForStop(final long delay) {
     if (DEBUG) { Log.d(TAG, "Schedule check for stop"); }
     handler.removeMessages(MSG_CHECK_FOR_STOP);
-    handler.sendEmptyMessage(MSG_CHECK_FOR_STOP);
+    handler.sendEmptyMessageDelayed(MSG_CHECK_FOR_STOP, delay);
   }
 
   protected void doStop() {
@@ -187,7 +193,7 @@ public class ApplicationService extends Service {
     private final WeakReference<ApplicationService> serviceRef;
 
     public InternalHandler(final ApplicationService service) {
-      this.serviceRef = new WeakReference<ApplicationService>(service);
+      serviceRef = new WeakReference<ApplicationService>(service);
     }
 
     @Override
@@ -200,9 +206,12 @@ public class ApplicationService extends Service {
         // here we decide whether to stop the service
         if (DEBUG) { Log.d(TAG, "Check for stop"); }
         final boolean hasUsers = service.apiMethodsUse.get() || service.locationMethodsUse.get();
-        if (!hasUsers) {
-          final boolean apiWorking = service.apiMethods != null && service.apiMethods.isWorking();
-          if (!apiWorking) {
+        if (hasUsers) {
+          if (DEBUG) { Log.d(TAG, "We have users"); }
+        } else {
+          if (service.apiMethods != null && service.apiMethods.isWorking()) {
+            if (DEBUG) { Log.d(TAG, "Api is working"); }
+          } else {
             if (DEBUG) { Log.d(TAG, "Stopping"); }
             service.doStop();
           }
