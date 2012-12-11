@@ -26,7 +26,8 @@ public class GUICrucialStaggeredGridView extends StaggeredGridView {
     @Override
     public void onScrollStateChanged(final StaggeredGridView view, final int scrollState) {
       if (animatedViewHelper != null) {
-        if (scrollState == SCROLL_STATE_FLING) {
+        if (scrollState == SCROLL_STATE_FLING
+            || scrollState == SCROLL_STATE_TOUCH_SCROLL) {
           animatedViewHelper.notifyCrucialGuiStart();
 
           final int first = getFirstPosition();

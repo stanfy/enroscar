@@ -921,6 +921,7 @@ public class StaggeredGridView extends ViewGroup {
       LayoutParams lp = (LayoutParams) child.getLayoutParams();
       int col = lp.column;
       final int oldSpan = lp.span;
+      final int[] margins = lp.margins;
       final int position = mFirstPosition + i;
       final boolean needsLayout = queryAdapter || child.isLayoutRequested();
       boolean newChild = false;
@@ -953,6 +954,7 @@ public class StaggeredGridView extends ViewGroup {
           }
         }
         lp.column = col; // XXX Initial version of StaggeredGridView actually forgets to correct columns which is a nasty bug
+        lp.margins = margins;
       }
 
       final int span = Math.min(mColCount, lp.span);
@@ -1903,7 +1905,7 @@ public class StaggeredGridView extends ViewGroup {
       mRecycler.clearTransientViews();
 
       if (!mHasStableIds
-          || (mItemCount != mOldItemCount && mItemCount <= mHeaderViewInfos.size() + mFooterViewInfos.size())) {
+          || (mItemCount != mOldItemCount && getChildCount() > 0 && mItemCount < getChildCount())) {
         // Clear all layout records and recycle the views
         mLayoutRecords.clear();
         removeHeaderViews();

@@ -6,6 +6,7 @@ import android.support.v4.widget.StaggeredGridView.OnScrollListener;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.widget.ListAdapter;
 
 import com.stanfy.DebugFlags;
@@ -62,7 +63,6 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
   @Override
   public void setSelection(final int i) {
     // TODO Auto-generated method stub
-
   }
 
   @Override
@@ -108,13 +108,27 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
     /* empty */
   }
 
-  /*@Override
-  public boolean performItemClick(final View view, final int position, final long id) {
-    // do not allow click on footer (footer is enabled in order to maintain dividers)
-    if (adapter != null && adapter.isLoadFooterPosition(position)) { return false; }
-    return super.performItemClick(view, position, id);
-  }*/
+  @Override
+  public boolean onTouchEvent(final MotionEvent ev) {
+    if (adapter != null && adapter.getWrappedAdapter() instanceof LoaderAdapter<?>) {
+      final LoaderAdapter<?> a = (LoaderAdapter<?>) adapter.getWrappedAdapter();
+      if (!a.isInNormalState()) {
+        return false;
+      }
+    }
+    return super.onTouchEvent(ev);
+  }
 
+  @Override
+  public boolean onInterceptTouchEvent(final MotionEvent ev) {
+    if (adapter != null && adapter.getWrappedAdapter() instanceof LoaderAdapter<?>) {
+      final LoaderAdapter<?> a = (LoaderAdapter<?>) adapter.getWrappedAdapter();
+      if (!a.isInNormalState()) {
+        return false;
+      }
+    }
+    return super.onInterceptTouchEvent(ev);
+  }
 
 
 }

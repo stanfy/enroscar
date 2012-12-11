@@ -2,6 +2,7 @@ package com.stanfy.views.list;
 
 import android.annotation.SuppressLint;
 import android.database.DataSetObserver;
+import android.support.v4.widget.StaggeredGridView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,8 +136,17 @@ public class LoadmoreAdapter extends BaseAdapter implements WrapperListAdapter, 
   @Override
   public View getView(final int position, final View convertView, final ViewGroup parent) {
     return isLoadFooterPosition(position)
-        ? loadView
+        ? configureLoadView(loadView, parent)
             : core.getView(position, convertView, parent);
+  }
+
+  protected View configureLoadView(final View loadView, final ViewGroup parent) {
+    if (parent instanceof StaggeredGridView && loadView != null && !(loadView.getLayoutParams() instanceof StaggeredGridView.LayoutParams)) {
+      final StaggeredGridView.LayoutParams lp = new StaggeredGridView.LayoutParams(loadView.getLayoutParams());
+      lp.span = StaggeredGridView.LayoutParams.SPAN_MAX;
+      loadView.setLayoutParams(lp);
+    }
+    return loadView;
   }
 
   @Override
