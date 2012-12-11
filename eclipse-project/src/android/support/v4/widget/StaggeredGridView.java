@@ -182,14 +182,47 @@ public class StaggeredGridView extends ViewGroup {
         int totalItemCount);
   }
 
-  private static final class LayoutRecord {
+  /** Layout record. */
+  private static final class LayoutRecord implements Parcelable {
+    /** Creator. */
+    public static final Parcelable.Creator<LayoutRecord> CREATOR = new Creator<StaggeredGridView.LayoutRecord>() {
+      @Override
+      public LayoutRecord createFromParcel(final Parcel source) {
+        return new LayoutRecord(source);
+      }
+
+      @Override
+      public LayoutRecord[] newArray(final int size) {
+        return new LayoutRecord[size];
+      }
+
+    };
     public int column;
     public long id = -1;
     public int height;
     public int span;
     private int[] mMargins;
 
-    private final void ensureMargins() {
+    public LayoutRecord() { /* empty */ }
+
+    private LayoutRecord(final Parcel in) {
+      column = in.readInt();
+      id = in.readLong();
+      height = in.readInt();
+      span = in.readInt();
+      in.readIntArray(mMargins);
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+      dest.writeInt(column);
+      dest.writeLong(id);
+      dest.writeInt(height);
+      dest.writeInt(span);
+      dest.writeIntArray(mMargins);
+    }
+
+    private void ensureMargins() {
       if (mMargins == null) {
         // Don't need to confirm length;
         // all layoutrecords are purged when column count changes.
@@ -240,8 +273,11 @@ public class StaggeredGridView extends ViewGroup {
       }
       return result + "}";
     }
+
+    @Override
+    public int describeContents() { return 0; }
   }
-  private final SparseArrayCompat<LayoutRecord> mLayoutRecords =
+  private SparseArrayCompat<LayoutRecord> mLayoutRecords =
       new SparseArrayCompat<LayoutRecord>();
 
   public StaggeredGridView(final Context context) {
@@ -566,6 +602,7 @@ public class StaggeredGridView extends ViewGroup {
    * is always the view corresponding to position mFirstPosition + i.
    */
   private void recycleOffscreenViews() {
+    final int oldChildCount = getChildCount();
     final int height = getHeight();
     final int clearAbove = -height - mItemMargin;     // XXX increased clearAbove and clearBelow values
     final int clearBelow = height * 2 + mItemMargin;  // to reduce recycling.
@@ -605,7 +642,7 @@ public class StaggeredGridView extends ViewGroup {
     }
 
     final int childCount = getChildCount();
-    if (childCount > 0) {
+    if (childCount > 0 && childCount != oldChildCount) {
       // Repair the top and bottom column boundaries from the views we still have
       Arrays.fill(mItemTops, Integer.MAX_VALUE);
       Arrays.fill(mItemBottoms, Integer.MIN_VALUE);
@@ -833,7 +870,9 @@ public class StaggeredGridView extends ViewGroup {
       final int offset = top + Math.min(mRestoreOffset, 0);
       Arrays.fill(mItemTops, offset);
       Arrays.fill(mItemBottoms, offset);
-      mLayoutRecords.clear();
+      if (mItemTops.length != colCount) {
+        mLayoutRecords.clear();
+      }
       if (mInLayout) {
         removeAllViewsInLayout();
       } else {
@@ -1023,6 +1062,7 @@ public class StaggeredGridView extends ViewGroup {
             rec.span = span;
             rebuildLayoutRecordsAfter = position;
           }
+
     }
 
     // Update mItemBottoms for any empty columns
@@ -1332,6 +1372,9 @@ public class StaggeredGridView extends ViewGroup {
    */
   final LayoutRecord getNextRecordUp(final int position, final int span) {
     LayoutRecord rec = mLayoutRecords.get(position);
+    if (position == 10) {
+      Log.d("123", "getNextRecordUp: " + rec);
+    }
     if (rec == null) {
       rec = new LayoutRecord();
       rec.span = span;
@@ -1706,6 +1749,8 @@ public class StaggeredGridView extends ViewGroup {
     if (getChildCount() > 0) {
       ss.topOffset = getChildAt(0).getTop() - mItemMargin - getPaddingTop();
     }
+    ss.layoutRecords = mLayoutRecords;
+    Log.d("123", "onSaveInstanceState: " + mLayoutRecords.get(10));
     return ss;
   }
 
@@ -1716,6 +1761,8 @@ public class StaggeredGridView extends ViewGroup {
     mDataChanged = true;
     mFirstPosition = ss.position;
     mRestoreOffset = ss.topOffset;
+    mLayoutRecords = ss.layoutRecords;
+    Log.d("123", "onRestoreInstanceState: " + mLayoutRecords.get(10));
     requestLayout();
   }
 
@@ -1800,6 +1847,11 @@ public class StaggeredGridView extends ViewGroup {
         // XXX Allow full-sized children
         // this.height = WRAP_CONTENT;
       }
+    }
+
+    @Override
+    public String toString() {
+      return "{span=" + span + "; pos=" + position + "; col=" + column + "; margins=" + margins;
     }
   }
 
@@ -1940,6 +1992,7 @@ public class StaggeredGridView extends ViewGroup {
     long firstId = -1;
     int position;
     int topOffset;
+    SparseArrayCompat<LayoutRecord> layoutRecords;
 
     SavedState(final Parcelable superState) {
       super(superState);
@@ -1950,6 +2003,18 @@ public class StaggeredGridView extends ViewGroup {
       firstId = in.readLong();
       position = in.readInt();
       topOffset = in.readInt();
+
+      // read layout records
+      int n = in.readInt();
+      if (n >= 0) {
+        layoutRecords = new SparseArrayCompat<StaggeredGridView.LayoutRecord>(n);
+        while (n > 0) {
+          int key = in.readInt();
+          final LayoutRecord value = (LayoutRecord) in.readValue(LayoutRecord.class.getClassLoader());
+          layoutRecords.append(key, value);
+          n--;
+        }
+      }
     }
 
     @Override
@@ -1958,6 +2023,20 @@ public class StaggeredGridView extends ViewGroup {
       out.writeLong(firstId);
       out.writeInt(position);
       out.writeInt(topOffset);
+
+      // write layout records
+      if (layoutRecords == null) {
+        out.writeInt(-1);
+      } else {
+        final int n = layoutRecords.size();
+        out.writeInt(n);
+        int i = 0;
+        while (i < n) {
+          out.writeInt(layoutRecords.keyAt(i));
+          out.writeValue(layoutRecords.valueAt(i));
+          i++;
+        }
+      }
     }
 
     @Override
