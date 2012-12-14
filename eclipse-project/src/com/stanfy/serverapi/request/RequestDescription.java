@@ -30,7 +30,6 @@ import com.stanfy.utils.AppUtils;
 /**
  * Request method description. This object is passed to the service describing the request.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
- * @author Michael Pustovit (Stanfy - http://www.stanfy.com) (proxy methods)
  */
 public class RequestDescription implements Parcelable {
 
@@ -48,7 +47,7 @@ public class RequestDescription implements Parcelable {
 
   /** Debug flag. */
   public static final boolean DEBUG = DebugFlags.DEBUG_API;
-  
+
   /** Creator. */
   public static final Creator<RequestDescription> CREATOR = new Creator<RequestDescription>() {
     @Override
@@ -104,12 +103,6 @@ public class RequestDescription implements Parcelable {
   /** Content analyzer. */
   String contentAnalyzer;
 
-  /** Proxy host. null if proxy isn't used. */
-  String proxyHost;
-  
-  /** Proxy port. */
-  int proxyPort;
-  
   /**
    * Create with predefined ID.
    * @param id request ID
@@ -333,38 +326,6 @@ public class RequestDescription implements Parcelable {
     return this.metaParameters == null ? false : this.metaParameters.containsKey(name);
   }
 
-  /**
-   * @param proxyHost the proxy host (null if proxy isn't used)
-   * @return instance for queing
-   */
-  public RequestDescription setProxyHost(final String proxyHost) {
-    this.proxyHost = proxyHost;
-    return this;
-  }
-  
-  /**
-   * @param proxyPort the proxy port
-   * @return instance for queing
-   */
-  public RequestDescription setProxyPort(final int proxyPort) {
-    this.proxyPort = proxyPort;
-    return this;
-  }
-  
-  /**
-   * @return the proxy host (null if proxy isn't used)
-   */
-  public String getProxyHost() {
-    return proxyHost;
-  }
-  
-  /**
-   * @return the proxy port
-   */
-  public int getProxyPort() {
-    return proxyPort;
-  }
-  
   // ============================ HTTP REQUESTS ============================
 
   /**
@@ -384,13 +345,6 @@ public class RequestDescription implements Parcelable {
   }
 
   /**
-   * @return UrlConnectionBuilder factory method
-   */
-  protected UrlConnectionBuilder createUrlConnectionBuilder() {
-    return new UrlConnectionBuilder();
-  }
-  
-  /**
    * Pass cache and content control parameters to URL connection builder.
    * @param context context instance
    * @return URL connection builder instance
@@ -399,10 +353,16 @@ public class RequestDescription implements Parcelable {
     return createUrlConnectionBuilder()
       .setCacheManagerName(cacheName)
       .setContentHandlerName(contentHandler)
-      .setProxy(proxyHost, proxyPort)
       .setModelType(modelType);
   }
 
+  /**
+   * @return UrlConnectionBuilder factory method
+   */
+  protected UrlConnectionBuilder createUrlConnectionBuilder() {
+    return new UrlConnectionBuilder();
+  }
+  
   /**
    * Build {@link URLConnection} instance, connect, write request.
    * @param context context instance
@@ -424,7 +384,6 @@ public class RequestDescription implements Parcelable {
     return connection;
   }
 
-  
   @Override
   public String toString() {
     return "RequestDescription[id=" + id + ", url=" + url + "]";

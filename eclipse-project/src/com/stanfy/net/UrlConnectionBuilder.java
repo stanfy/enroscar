@@ -1,7 +1,6 @@
 package com.stanfy.net;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
@@ -18,8 +17,10 @@ import com.stanfy.utils.Time;
 
 /**
  * Builder for creating URL connections.
+ * 
+ * **WARNING: this implementation won't work correctly in case HTTPS throw HTTP-proxy**.
+ * 
  * @author Roman Mazur (Stanfy - http://stanfy.com)
- * @author Michael Pustovit (Stanfy - http://www.stanfy.com) (proxy methods)
  */
 public class UrlConnectionBuilder {
 
@@ -32,9 +33,9 @@ public class UrlConnectionBuilder {
   private URL url;
 
   /** Connection timeout. */
-  private final int connectTimeout = TIMEOUT_CONNECTION_DEFAULT;
+  private int connectTimeout = TIMEOUT_CONNECTION_DEFAULT;
   /** Read timeout. */
-  private final int readTimeout = TIMEOUT_READ_DEFAULT;
+  private int readTimeout = TIMEOUT_READ_DEFAULT;
 
   /** Cache manager name. */
   private String cacheManagerName;
@@ -46,17 +47,42 @@ public class UrlConnectionBuilder {
   /** SSL socket factory. */
   private SSLSocketFactory sslSF;
 
-  /** Proxy host. */
-  private String proxyHost;
-  
-  /** Proxy port. */
-  private int proxyPort;
+  /** Proxy object. */
+  private Proxy proxy;
   
   public UrlConnectionBuilder setUrl(final URL url) {
     this.url = url;
     return this;
   }
 
+  /**
+   * @param connectTimeout the connect timeout
+   */
+  public void setConnectTimeout(final int connectTimeout) {
+    this.connectTimeout = connectTimeout;
+  }
+  
+  /**
+   * @param readTimeout the read timeout
+   */
+  public void setReadTimeout(final int readTimeout) {
+    this.readTimeout = readTimeout;
+  }
+  
+  /**
+   * @return the connect timeout
+   */
+  public int getConnectTimeout() {
+    return connectTimeout;
+  }
+  
+  /**
+   * @return the read timeout
+   */
+  public int getReadTimeout() {
+    return readTimeout;
+  }
+  
   public UrlConnectionBuilder setUrl(final String url) {
     try {
       this.url = new URL(url);
@@ -90,29 +116,23 @@ public class UrlConnectionBuilder {
     return this;
   }
 
-  public UrlConnectionBuilder setProxy(final String proxyHost, final int proxyPort) {
-    this.proxyHost = proxyHost;
-    this.proxyPort = proxyPort;
-    
+  /**
+   * @param proxy the proxy
+   * @return instance for queing
+   */
+  public UrlConnectionBuilder setProxy(final Proxy proxy) {
+    this.proxy = proxy;
     return this;
   }
   
   /**
-   * @return the proxy host (null if proxy isn't used)
+   * @return the connection proxy (null if proxy isn'used)
    */
-  public String getProxyHost() {
-    return proxyHost;
+  public Proxy getProxy() {
+    return proxy;
   }
   
   /**
-   * @return the proxy port
-   */
-  public int getProxyPort() {
-    return proxyPort;
-  }
-  
-  /**
-   * **WARNING: this implementation won't work correctly in case HTTPS throw HTTP-proxy**.
    * @param url the URL of resource to which we make connection
    * @return the opened URLConnection
    * @throws IOException during connection opening some IOException can be raised
@@ -120,8 +140,7 @@ public class UrlConnectionBuilder {
   protected URLConnection openConnection(final URL url) throws IOException {
     URLConnection connection;
     
-    if (proxyHost != null) {
-      final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+    if (proxy != null) {
       connection = url.openConnection(proxy);
     } else {
       connection = url.openConnection();
@@ -131,7 +150,6 @@ public class UrlConnectionBuilder {
   }
 
   /**
-   * **WARNING: this implementation won't work correctly in case HTTPS throw HTTP-proxy**.
    * @param connection the URLConnection for which we try to enable cache
    * @return connection with right tuned cache
    */
