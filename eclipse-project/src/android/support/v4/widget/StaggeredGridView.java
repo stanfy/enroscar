@@ -1750,7 +1750,6 @@ public class StaggeredGridView extends ViewGroup {
       ss.topOffset = getChildAt(0).getTop() - mItemMargin - getPaddingTop();
     }
     ss.layoutRecords = mLayoutRecords;
-    Log.d("123", "onSaveInstanceState: " + mLayoutRecords.get(10));
     return ss;
   }
 
@@ -1762,7 +1761,6 @@ public class StaggeredGridView extends ViewGroup {
     mFirstPosition = ss.position;
     mRestoreOffset = ss.topOffset;
     mLayoutRecords = ss.layoutRecords;
-    Log.d("123", "onRestoreInstanceState: " + mLayoutRecords.get(10));
     requestLayout();
   }
 
@@ -1957,7 +1955,8 @@ public class StaggeredGridView extends ViewGroup {
       mRecycler.clearTransientViews();
 
       if (!mHasStableIds
-          || (mItemCount != mOldItemCount && getChildCount() > 0 && mItemCount < getChildCount())) {
+          || (mItemCount != mOldItemCount && getChildCount() > 0 && mItemCount < getChildCount())
+          || (mItemCount == 0)) {
         // Clear all layout records and recycle the views
         mLayoutRecords.clear();
         removeHeaderViews();
