@@ -1,7 +1,9 @@
 package com.stanfy.net;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -17,6 +19,7 @@ import com.stanfy.utils.Time;
 /**
  * Builder for creating URL connections.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * @author Michael Pustovit (Stanfy - http://www.stanfy.com) (proxy methods)
  */
 public class UrlConnectionBuilder {
 
@@ -29,9 +32,9 @@ public class UrlConnectionBuilder {
   private URL url;
 
   /** Connection timeout. */
-  private int connectTimeout = TIMEOUT_CONNECTION_DEFAULT;
+  private final int connectTimeout = TIMEOUT_CONNECTION_DEFAULT;
   /** Read timeout. */
-  private int readTimeout = TIMEOUT_READ_DEFAULT;
+  private final int readTimeout = TIMEOUT_READ_DEFAULT;
 
   /** Cache manager name. */
   private String cacheManagerName;
@@ -43,6 +46,12 @@ public class UrlConnectionBuilder {
   /** SSL socket factory. */
   private SSLSocketFactory sslSF;
 
+  /** Proxy host. */
+  private String proxyHost;
+  
+  /** Proxy port. */
+  private int proxyPort;
+  
   public UrlConnectionBuilder setUrl(final URL url) {
     this.url = url;
     return this;
@@ -81,20 +90,73 @@ public class UrlConnectionBuilder {
     return this;
   }
 
-  public URLConnection create() throws IOException {
-    URLConnection connection = url.openConnection();
+  public UrlConnectionBuilder setProxy(final String proxyHost, final int proxyPort) {
+    this.proxyHost = proxyHost;
+    this.proxyPort = proxyPort;
+    
+    return this;
+  }
+  
+  /**
+   * @return the proxy host (null if proxy isn't used)
+   */
+  public String getProxyHost() {
+    return proxyHost;
+  }
+  
+  /**
+   * @return the proxy port
+   */
+  public int getProxyPort() {
+    return proxyPort;
+  }
+  
+  /**
+   * **WARNING: this implementation won't work correctly in case HTTPS throw HTTP-proxy**.
+   * @param url the URL of resource to which we make connection
+   * @return the opened URLConnection
+   * @throws IOException during connection opening some IOException can be raised
+   */
+  protected URLConnection openConnection(final URL url) throws IOException {
+    URLConnection connection;
+    
+    if (proxyHost != null) {
+      final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+      connection = url.openConnection(proxy);
+    } else {
+      connection = url.openConnection();
+    }
+    
+    return connection;
+  }
 
+  /**
+   * **WARNING: this implementation won't work correctly in case HTTPS throw HTTP-proxy**.
+   * @param connection the URLConnection for which we try to enable cache
+   * @return connection with right tuned cache
+   */
+  protected URLConnection prepareCache(final URLConnection connection) {
+    if (cacheManagerName != null) {
+      connection.setUseCaches(true); // core
+      final URLConnection wrappedConnection = new CacheControlUrlConnection(connection, cacheManagerName);
+      wrappedConnection.setUseCaches(true); // wrapper
+      return wrappedConnection;
+    } else {
+      return connection;
+    }
+  }
+  
+  public URLConnection create() throws IOException {
+    // open connection
+    URLConnection connection = openConnection(url);
+    
     // SSL
     if (sslSF != null && connection instanceof HttpsURLConnection) {
       ((HttpsURLConnection) connection).setSSLSocketFactory(sslSF);
     }
 
     // cache
-    if (cacheManagerName != null) {
-      connection.setUseCaches(true); // core
-      connection = new CacheControlUrlConnection(connection, cacheManagerName);
-      connection.setUseCaches(true); // wrapper
-    }
+    connection = prepareCache(connection);
 
     // content handler
     if (contentHandlerName != null || modelType != null) {
