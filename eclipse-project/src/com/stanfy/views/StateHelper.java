@@ -74,7 +74,7 @@ public class StateHelper {
 
   protected void configureStateViewHeight(final ViewGroup parent, final View stateView) {
     if (stateView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) { return; }
-    int h = -1;
+    int h = ViewGroup.LayoutParams.MATCH_PARENT;
     if (parent instanceof ListView) {
       final ListView listView = (ListView) parent;
 
@@ -103,7 +103,7 @@ public class StateHelper {
       h = parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
     }
 
-    if (h != -1) {
+    if (h > 0) {
       final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
       lp.height = h;
       stateView.setLayoutParams(lp);
@@ -112,10 +112,9 @@ public class StateHelper {
 
   protected void configureStateViewWidth(final ViewGroup parent, final View stateView) {
     if (stateView.getLayoutParams().width != ViewGroup.LayoutParams.MATCH_PARENT) { return; }
-    int w = -1;
-    w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+    int w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
 
-    if (w != -1) {
+    if (w > 0) {
       final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
       lp.width = w;
       stateView.setLayoutParams(lp);
