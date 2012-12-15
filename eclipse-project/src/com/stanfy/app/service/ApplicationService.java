@@ -29,7 +29,7 @@ public class ApplicationService extends Service {
 
   /** Check for stop message. */
   private static final int MSG_CHECK_FOR_STOP = 1;
-  /** Check for stop delay. */
+  /** Check for stop delay. */  
   private static final long DELAY_CHECK_FOR_STOP = Time.SECONDS >> 1;
 
   /** Send request action. */
@@ -47,7 +47,7 @@ public class ApplicationService extends Service {
   private LocationMethodsImpl locationMethodsImpl;
 
   /** Usage flags. */
-  private final AtomicBoolean apiMethodsUse = new AtomicBoolean(false), locationMethodsUse = new AtomicBoolean(false);
+  private AtomicBoolean apiMethodsUse = new AtomicBoolean(false), locationMethodsUse = new AtomicBoolean(false);
 
   /** @return API methods implementation */
   protected ApiMethods createApiMethods() { return new ApiMethods(this); }
@@ -69,7 +69,7 @@ public class ApplicationService extends Service {
 
     if (intent != null) {
       if (ACTION_SEND_REQUEST.equals(intent.getAction())) {
-        final RequestDescription requestDescription = intent.getParcelableExtra(EXTRA_REQUEST_DESCRIPTION);
+        RequestDescription requestDescription = intent.getParcelableExtra(EXTRA_REQUEST_DESCRIPTION);
         if (requestDescription != null) {
           ensureApiMethods();
           apiMethods.performRequest(requestDescription);
@@ -153,10 +153,19 @@ public class ApplicationService extends Service {
     return true;
   }
 
-  void checkForStop() {
+  /**
+   * Perform check for stop with default {@link ApplicationService#DELAY_CHECK_FOR_STOP} delay.
+   * This check is automatically performed each time someone unbinds from service or request finished.
+   */
+  protected void checkForStop() {
     checkForStop(DELAY_CHECK_FOR_STOP);
   }
-  void checkForStop(final long delay) {
+  /**
+   * Perform check for stop with given delay.
+   * 
+   * @param delay time in milliseconds
+   */
+  protected void checkForStop(final long delay) {
     if (DEBUG) { Log.d(TAG, "Schedule check for stop"); }
     handler.removeMessages(MSG_CHECK_FOR_STOP);
     handler.sendEmptyMessageDelayed(MSG_CHECK_FOR_STOP, delay);
@@ -193,7 +202,7 @@ public class ApplicationService extends Service {
     private final WeakReference<ApplicationService> serviceRef;
 
     public InternalHandler(final ApplicationService service) {
-      serviceRef = new WeakReference<ApplicationService>(service);
+      this.serviceRef = new WeakReference<ApplicationService>(service);
     }
 
     @Override

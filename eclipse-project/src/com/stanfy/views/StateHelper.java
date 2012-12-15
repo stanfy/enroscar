@@ -57,15 +57,18 @@ public class StateHelper {
     final StateViewCreator creator = state > 0 && state < viewCreators.length ? viewCreators[state] : null;
     if (creator == null) { return null; }
     final View view = creator.getView(context, lastDataObject, parent);
-    configureStateViewHeight(parent, view);
-    configureStateViewWidth(parent, view);
+    if (view.getLayoutParams() != null) {
+      configureStateViewHeight(parent, view);
+      configureStateViewWidth(parent, view);
+    }
     return view;
   }
 
   public boolean hasState(final int state) { return viewCreators[state] != null; }
 
   protected void configureStateViewHeight(final ViewGroup parent, final View stateView) {
-    if (stateView.getLayoutParams() == null || stateView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) { return; }
+    if (stateView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) { return; }
+    
     int h = ViewGroup.LayoutParams.MATCH_PARENT;
     if (parent instanceof ListView) {
       final ListView listView = (ListView) parent;
@@ -103,19 +106,20 @@ public class StateHelper {
   }
 
   protected void configureStateViewWidth(final ViewGroup parent, final View stateView) {
-    if (stateView.getLayoutParams() == null) { return; }
-    int w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
-    if (w <= 0) { w = ViewGroup.LayoutParams.MATCH_PARENT; }
 
     final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
     if (parent instanceof StaggeredGridView) {
       final StaggeredGridView.LayoutParams params = (LayoutParams) lp;
       params.span = StaggeredGridView.LayoutParams.SPAN_MAX;
     } else {
+      int w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+      if (w <= 0) { w = ViewGroup.LayoutParams.MATCH_PARENT; }
       lp.width = w;
     }
+    
     stateView.setLayoutParams(lp);
   }
+
 
   /**
    * State view creator.

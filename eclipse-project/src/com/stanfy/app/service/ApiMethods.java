@@ -55,7 +55,7 @@ public class ApiMethods {
 
   /** Message code. */
   protected static final int MSG_REQUEST = 0, // make a request
-      MSG_FINISH = 1;  // all requests are done
+                             MSG_FINISH = 1;  // all requests are done
 
   /** Null operation data. */
   static final APICallInfoData NULL_OPERATION_DATA = new APICallInfoData();
@@ -68,7 +68,7 @@ public class ApiMethods {
 
     /** Preference key names. */
     private static final String ID = "rid",
-        RD_MESSAGE = "msg", RD_ERROR = "errorCode";
+                                RD_MESSAGE = "msg", RD_ERROR = "errorCode";
 
     /** Request ID. */
     int id = -1;
@@ -76,8 +76,8 @@ public class ApiMethods {
     ResponseData<?> responseData = new ResponseData<Object>();
 
     public void set(final APICallInfoData data) {
-      id = data.id;
-      responseData = data.responseData;
+      this.id = data.id;
+      this.responseData = data.responseData;
     }
     public void set(final ResponseData<?> rd) {
       final ResponseData<?> responseData = this.responseData;
@@ -85,18 +85,18 @@ public class ApiMethods {
       responseData.setMessage(rd.getMessage());
     }
     public void set(final int requestId) {
-      id = requestId;
+      this.id = requestId;
     }
     public boolean hasData() { return id != -1; }
 
     public void save(final SharedPreferences preferences) {
       final Editor lastOperationEditor = preferences.edit();
-      lastOperationEditor.putInt(ID, id);
-      final ResponseData<?> rd = responseData;
+      lastOperationEditor.putInt(ID, this.id);
+      final ResponseData<?> rd = this.responseData;
       if (rd != null) {
         lastOperationEditor
-        .putString(RD_MESSAGE, rd.getMessage())
-        .putInt(RD_ERROR, rd.getErrorCode());
+          .putString(RD_MESSAGE, rd.getMessage())
+          .putInt(RD_ERROR, rd.getErrorCode());
       }
       lastOperationEditor.commit();
     }
@@ -193,15 +193,15 @@ public class ApiMethods {
 
     /** Description to process. */
     private final RequestDescription target;
-
+    
     /** Does doInBackground was executed. */
     private boolean doInBackgroundExecuted = false;
 
     public AsyncRequestTask(final RequestDescription rd) {
-      target = rd;
+      this.target = rd;
     }
-
-    private void finish() {
+    
+    private void onExecuted() {
       activeWorkersCount.decrementAndGet();
       mainHandler.sendEmptyMessage(MSG_FINISH);
     }
@@ -215,7 +215,7 @@ public class ApiMethods {
       try {
         rdProcessor.process(appService, target, parallelProcessorHooks);
       } finally {
-        finish();
+        onExecuted();
         doInBackgroundExecuted = true;
       }
       return null;
@@ -227,7 +227,7 @@ public class ApiMethods {
         parallelProcessorHooks.beforeRequestProcessingStarted(target, null);
         parallelProcessorHooks.onRequestCancel(target, null);
         parallelProcessorHooks.afterRequestProcessingFinished(target, null);
-        finish();
+        onExecuted();
       }
     }
 
@@ -286,7 +286,6 @@ public class ApiMethods {
     }
     @Override
     public void onRequestCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-      if (DEBUG) { Log.v(TAG, "MainHooks.onRequestCancel"); }
       reportToCallbacks(requestDescription, responseData, CANCEL_REPORTER);
     }
   }
@@ -305,6 +304,7 @@ public class ApiMethods {
 
     @Override
     public void beforeRequestProcessingStarted(final RequestDescription requestDescription, final RequestMethod requestMethod) {
+
       mainHooks.beforeRequestProcessingStarted(requestDescription, requestMethod);
 
       pending.set(NULL_OPERATION_DATA);
@@ -313,6 +313,7 @@ public class ApiMethods {
     }
     @Override
     public void afterRequestProcessingFinished(final RequestDescription requestDescription, final RequestMethod requestMethod) {
+
       mainHooks.afterRequestProcessingFinished(requestDescription, requestMethod);
 
       if (DEBUG) { Log.d(TAG, "Dump " + lastOperation.id); }
@@ -352,7 +353,7 @@ public class ApiMethods {
     final RequestDescription requestDescription;
 
     public RequestTracker(final RequestDescription rd) {
-      requestDescription = rd;
+      this.requestDescription = rd;
     }
 
     /** @return request description */
@@ -459,12 +460,12 @@ public class ApiMethods {
   protected ApiMethods(final ApplicationService appService) {
     this.appService = appService;
 
-    lastOperationStore = appService.getSharedPreferences("last-operation", Context.MODE_PRIVATE);
+    this.lastOperationStore = appService.getSharedPreferences("last-operation", Context.MODE_PRIVATE);
     loadLastOperation();
 
-    parallelProcessorHooks = createRequestDescriptionHooks();
-    queuedProcessorHooks = new QueueRequestHooks(parallelProcessorHooks);
-    rdProcessor = createRequestDescriptionProcessor(appService.getApplication());
+    this.parallelProcessorHooks = createRequestDescriptionHooks();
+    this.queuedProcessorHooks = new QueueRequestHooks(this.parallelProcessorHooks);
+    this.rdProcessor = createRequestDescriptionProcessor(appService.getApplication());
 
     mainHandler = createApiMethodsHandler(MAIN_WORKER.getLooper());
     if (DEBUG) { Log.d(TAG, "Worker thread is now alive " + this); }
@@ -476,15 +477,15 @@ public class ApiMethods {
    */
   private void loadLastOperation() {
     AppUtils.getSdkDependentUtils().executeAsyncTaskParallel(
-        new AsyncTask<Void, Void, Void>() {
-          @Override
-          protected Void doInBackground(final Void... params) {
-            lastOperation.load(lastOperationStore);
-            initSync.countDown();
-            return null;
-          }
+      new AsyncTask<Void, Void, Void>() {
+        @Override
+        protected Void doInBackground(final Void... params) {
+          lastOperation.load(lastOperationStore);
+          initSync.countDown();
+          return null;
         }
-        );
+      }
+    );
   }
 
   /**
@@ -524,14 +525,14 @@ public class ApiMethods {
 
   protected RequestTracker createRequestTracker(final RequestDescription description) {
     return description.isParallelMode()
-        ? new ParallelRequestTracker(description)  // request must be parallel
-    : new EnqueuedRequestTracker(description); // request must be enqueued
+      ? new ParallelRequestTracker(description)  // request must be parallel
+      : new EnqueuedRequestTracker(description); // request must be enqueued
   }
 
   // --------------------------------------------------------------------------------------------
 
   public void performRequest(final RequestDescription description) {
-    if (mainHandler == null) { return; }
+    if (this.mainHandler == null) { return; }
     if (DEBUG) { Log.d(TAG, "Perform " + description + " " + this); }
 
     final RequestTracker tracker = createRequestTracker(description);
