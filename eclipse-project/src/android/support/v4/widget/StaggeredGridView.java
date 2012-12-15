@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
+
 import com.stanfy.DebugFlags;
 
 /**
@@ -1036,14 +1037,6 @@ public class StaggeredGridView extends ViewGroup {
         }
         lp = (LayoutParams) child.getLayoutParams(); // Might have changed
 
-        final int newSpan = lp.span;
-        if (oldSpan != newSpan && newSpan == 1) {
-          // XXX correct column for new child
-          final View v = getChildAt(i - 1);
-          if (v != null && v.getLayoutParams() instanceof LayoutParams) {
-            col = (((LayoutParams) v.getLayoutParams()).column + 1) % mColCount;
-          }
-        }
         lp.column = col; // XXX Initial version of StaggeredGridView actually forgets to correct columns which is a nasty bug
         lp.margins = margins;
       }
