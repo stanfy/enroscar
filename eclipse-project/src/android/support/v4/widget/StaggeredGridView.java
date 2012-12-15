@@ -41,7 +41,6 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import com.stanfy.DebugFlags;
-import com.stanfy.views.R;
 
 /**
  * ListView and GridView just not complex enough? Try StaggeredGridView!
@@ -58,7 +57,10 @@ import com.stanfy.views.R;
  * <p>This class is still under development and is not fully functional yet.</p>
  */
 public class StaggeredGridView extends ViewGroup {
+
+  /** Log tag. */
   private static final String TAG = "StaggeredGridView";
+  /** Debug flag. */
   protected static final boolean DEBUG = DebugFlags.DEBUG_GUI;
 
   /*
@@ -88,6 +90,56 @@ public class StaggeredGridView extends ViewGroup {
    * of columns it spans changes, all bets for other items in the same direction are off
    * since the cached information no longer applies.
    */
+
+  /**  View scrollbars attrs. */
+  private static final int[] VIEW_ATTRS = new int[]
+  {
+    android.R.attr.scrollbarSize,
+    android.R.attr.scrollbarThumbHorizontal,
+    android.R.attr.scrollbarThumbVertical,
+    android.R.attr.scrollbarTrackHorizontal,
+    android.R.attr.scrollbarTrackVertical,
+    android.R.attr.scrollbarAlwaysDrawHorizontalTrack,
+    android.R.attr.scrollbarAlwaysDrawVerticalTrack,
+    android.R.attr.scrollbarStyle,
+    android.R.attr.id,
+    android.R.attr.tag,
+    android.R.attr.scrollX,
+    android.R.attr.scrollY,
+    android.R.attr.background,
+    android.R.attr.padding,
+    android.R.attr.paddingLeft,
+    android.R.attr.paddingTop,
+    android.R.attr.paddingRight,
+    android.R.attr.paddingBottom,
+    android.R.attr.focusable,
+    android.R.attr.focusableInTouchMode,
+    android.R.attr.visibility,
+    android.R.attr.fitsSystemWindows,
+    android.R.attr.scrollbars,
+    android.R.attr.fadingEdge,
+    android.R.attr.fadingEdgeLength,
+    android.R.attr.nextFocusLeft,
+    android.R.attr.nextFocusRight,
+    android.R.attr.nextFocusUp,
+    android.R.attr.nextFocusDown,
+    android.R.attr.clickable,
+    android.R.attr.longClickable,
+    android.R.attr.saveEnabled,
+    android.R.attr.drawingCacheQuality,
+    android.R.attr.duplicateParentState,
+    android.R.attr.minWidth,
+    android.R.attr.minHeight,
+    android.R.attr.soundEffectsEnabled,
+    android.R.attr.keepScreenOn,
+    android.R.attr.isScrollContainer,
+    android.R.attr.hapticFeedbackEnabled,
+    android.R.attr.onClick,
+    android.R.attr.contentDescription,
+    android.R.attr.scrollbarFadeDuration,
+    android.R.attr.scrollbarDefaultDelayBeforeFade,
+    android.R.attr.fadeScrollbars
+  };
 
   private ListAdapter mAdapter;
 
@@ -284,7 +336,7 @@ public class StaggeredGridView extends ViewGroup {
     this(context, null);
 
     setVerticalScrollBarEnabled(true);
-    TypedArray a = context.obtainStyledAttributes(R.styleable.View);
+    TypedArray a = context.obtainStyledAttributes(VIEW_ATTRS);
     initializeScrollbars(a);
     a.recycle();
   }
@@ -1372,16 +1424,20 @@ public class StaggeredGridView extends ViewGroup {
    */
   final LayoutRecord getNextRecordUp(final int position, final int span) {
     LayoutRecord rec = mLayoutRecords.get(position);
-    if (position == 10) {
-      Log.d("123", "getNextRecordUp: " + rec);
-    }
     if (rec == null) {
       rec = new LayoutRecord();
       rec.span = span;
       mLayoutRecords.put(position, rec);
     } else if (rec.span != span) {
-      throw new IllegalStateException("Invalid LayoutRecord! Record had span=" + rec.span
-          + " but caller requested span=" + span + " for position=" + position);
+      if (DEBUG) {
+        Log.w(TAG, "Invalid LayoutRecord! Record had span=" + rec.span
+            + " but caller requested span=" + span + " for position=" + position);
+      }
+      rec = new LayoutRecord();
+      rec.span = span;
+      mLayoutRecords.put(position, rec);
+      /*throw new IllegalStateException("Invalid LayoutRecord! Record had span=" + rec.span
+          + " but caller requested span=" + span + " for position=" + position);*/
     }
     int targetCol = -1;
     int bottomMost = Integer.MIN_VALUE;
@@ -1436,8 +1492,15 @@ public class StaggeredGridView extends ViewGroup {
       rec.span = span;
       mLayoutRecords.put(position, rec);
     } else if (rec.span != span) {
-      throw new IllegalStateException("Invalid LayoutRecord! Record had span=" + rec.span
-          + " but caller requested span=" + span + " for position=" + position);
+      if (DEBUG) {
+        Log.w(TAG, "Invalid LayoutRecord! Record had span=" + rec.span
+            + " but caller requested span=" + span + " for position=" + position);
+      }
+      rec = new LayoutRecord();
+      rec.span = span;
+      mLayoutRecords.put(position, rec);
+      /*throw new IllegalStateException("Invalid LayoutRecord! Record had span=" + rec.span
+          + " but caller requested span=" + span + " for position=" + position);*/
     }
     int targetCol = -1;
     int topMost = Integer.MAX_VALUE;
