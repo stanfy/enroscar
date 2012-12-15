@@ -74,7 +74,12 @@ public class BeansManager {
   public static synchronized BeansManager get(final Context context) {
     if (instance == null) {
       if (context == null) { return null; }
-      instance = new BeansManager((Application)context.getApplicationContext());
+      final Context appContext = context.getApplicationContext();
+      if (appContext != null && appContext instanceof Application) {
+        instance = new BeansManager((Application) appContext);
+      } else if (DEBUG) {
+        Log.v(TAG, "Context " + context + " provides wrong application context " + appContext);
+      }
     }
     return instance;
   }

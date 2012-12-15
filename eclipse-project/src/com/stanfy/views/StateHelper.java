@@ -65,8 +65,13 @@ public class StateHelper {
     final StateViewCreator creator = state > 0 && state < viewCreators.length ? viewCreators[state] : null;
     if (creator == null) { return null; }
     final View view = creator.getView(context, lastDataObject, parent);
-    configureStateViewHeight(parent, view);
-    configureStateViewWidth(parent, view);
+
+    // do some tricks
+    if (view.getLayoutParams() != null) {
+      configureStateViewHeight(parent, view);
+      configureStateViewWidth(parent, view);
+    }
+
     return view;
   }
 
