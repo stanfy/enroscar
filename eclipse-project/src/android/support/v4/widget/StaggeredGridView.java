@@ -42,6 +42,7 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.views.R;
 
 /**
  * ListView and GridView just not complex enough? Try StaggeredGridView!
@@ -1884,6 +1885,11 @@ public class StaggeredGridView extends ViewGroup {
 
       TypedArray a = c.obtainStyledAttributes(attrs, LAYOUT_ATTRS);
       span = a.getInteger(SPAN_INDEX, 1);
+      a.recycle();
+      
+      a = c.obtainStyledAttributes(attrs, R.styleable.StaggeredGridView);
+      final boolean maxSpan = a.getBoolean(R.styleable.StaggeredGridView_maxSpan, false);
+      if (maxSpan) { span = SPAN_MAX; }
       a.recycle();
     }
 

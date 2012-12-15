@@ -122,5 +122,10 @@
   <declare-styleable name="GridView">
     <attr name="notifyCrucialGUIOperations" />
   </declare-styleable>
+  
+  <!-- Grid view attributes. -->
+  <declare-styleable name="StaggeredGridView">
+    <attr name="maxSpan" format="boolean" />
+  </declare-styleable>
 
 </resources>
