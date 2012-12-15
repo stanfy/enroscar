@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.serverapi.request.RequestDescription;
+import com.stanfy.utils.Time;
 
 /**
  * Base application service which provides API and location methods interfaces.
@@ -28,6 +29,8 @@ public class ApplicationService extends Service {
 
   /** Check for stop message. */
   private static final int MSG_CHECK_FOR_STOP = 1;
+  /** Check for stop delay. */  
+  private static final long DELAY_CHECK_FOR_STOP = Time.SECONDS >> 1;
 
   /** Send request action. */
   public static final String ACTION_SEND_REQUEST = ApiMethods.class.getName() + "#SEND_REQUEST";
@@ -150,10 +153,22 @@ public class ApplicationService extends Service {
     return true;
   }
 
-  void checkForStop() {
+  /**
+   * Perform check for stop with default {@link ApplicationService#DELAY_CHECK_FOR_STOP} delay.
+   * This check is automatically performed each time someone unbinds from service or request finished.
+   */
+  protected void checkForStop() {
+    checkForStop(DELAY_CHECK_FOR_STOP);
+  }
+  /**
+   * Perform check for stop with given delay.
+   * 
+   * @param delay time in milliseconds
+   */
+  protected void checkForStop(final long delay) {
     if (DEBUG) { Log.d(TAG, "Schedule check for stop"); }
     handler.removeMessages(MSG_CHECK_FOR_STOP);
-    handler.sendEmptyMessage(MSG_CHECK_FOR_STOP);
+    handler.sendEmptyMessageDelayed(MSG_CHECK_FOR_STOP, delay);
   }
 
   protected void doStop() {
@@ -200,9 +215,12 @@ public class ApplicationService extends Service {
         // here we decide whether to stop the service
         if (DEBUG) { Log.d(TAG, "Check for stop"); }
         final boolean hasUsers = service.apiMethodsUse.get() || service.locationMethodsUse.get();
-        if (!hasUsers) {
-          final boolean apiWorking = service.apiMethods != null && service.apiMethods.isWorking();
-          if (!apiWorking) {
+        if (hasUsers) {
+          if (DEBUG) { Log.d(TAG, "We have users"); }
+        } else {
+          if (service.apiMethods != null && service.apiMethods.isWorking()) {
+            if (DEBUG) { Log.d(TAG, "Api is working"); }
+          } else {
             if (DEBUG) { Log.d(TAG, "Stopping"); }
             service.doStop();
           }
