@@ -108,6 +108,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   public void cancelLoad() {
     if (requestId != -1) {
       final boolean willCancel = apiSupport.cancelRequest(requestId);
+      requestId = -1;
       if (willCancel) {
         // we will wait for #onCancel for further actions
         cancelingRequestId = requestId;
@@ -115,7 +116,6 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
         // we have a new request, let it live
         executePendingRequest();
       }
-      requestId = -1;
     } else if (requestWaiting) {
       removeWaitingRequest();
     }
