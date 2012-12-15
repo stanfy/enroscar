@@ -34,8 +34,15 @@ public class RequestMethod {
     URLConnection connection = null;
     try {
 
+      // don't even make a connection if request is canceled
+      if (description.isCanceled()) { return null; }
+      
       // send request
       connection = description.makeConnection(systemContext);
+      
+      // request is canceled - don't parse a model
+      if (description.isCanceled()) { return null; }
+      
       // parse response
       final Object model = connection.getContent();
       // return parsed response and connection

@@ -193,9 +193,17 @@ public class ApiMethods {
 
     /** Description to process. */
     private final RequestDescription target;
+    
+    /** Does doInBackground was executed. */
+    private boolean doInBackgroundExecuted = false;
 
     public AsyncRequestTask(final RequestDescription rd) {
       this.target = rd;
+    }
+    
+    private void onExecuted() {
+      activeWorkersCount.decrementAndGet();
+      mainHandler.sendEmptyMessage(MSG_FINISH);
     }
 
     @Override
@@ -207,10 +215,20 @@ public class ApiMethods {
       try {
         rdProcessor.process(appService, target, parallelProcessorHooks);
       } finally {
-        activeWorkersCount.decrementAndGet();
-        mainHandler.sendEmptyMessage(MSG_FINISH);
+        onExecuted();
+        doInBackgroundExecuted = true;
       }
       return null;
+    }
+
+    @Override
+    protected void onCancelled() {
+      if (!doInBackgroundExecuted) {
+        parallelProcessorHooks.beforeRequestProcessingStarted(target, null);
+        parallelProcessorHooks.onRequestCancel(target, null);
+        parallelProcessorHooks.afterRequestProcessingFinished(target, null);
+        onExecuted();
+      }
     }
 
   }
