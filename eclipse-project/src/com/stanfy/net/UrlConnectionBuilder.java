@@ -21,6 +21,7 @@ import com.stanfy.utils.Time;
  * **WARNING: this implementation won't work correctly in case HTTPS throw HTTP-proxy**.
  * 
  * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * @author Michael Pustovit (Stanfy - http://www.stanfy.com) (proxy methods)  
  */
 public class UrlConnectionBuilder {
 
@@ -57,16 +58,20 @@ public class UrlConnectionBuilder {
 
   /**
    * @param connectTimeout the connect timeout
+   * @return instance for queuing
    */
-  public void setConnectTimeout(final int connectTimeout) {
+  public UrlConnectionBuilder setConnectTimeout(final int connectTimeout) {
     this.connectTimeout = connectTimeout;
+    return this;
   }
   
   /**
    * @param readTimeout the read timeout
+   * @return instance for queuing
    */
-  public void setReadTimeout(final int readTimeout) {
+  public UrlConnectionBuilder setReadTimeout(final int readTimeout) {
     this.readTimeout = readTimeout;
+    return this;
   }
   
   /**

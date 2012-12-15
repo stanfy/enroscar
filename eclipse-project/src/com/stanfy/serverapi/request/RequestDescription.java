@@ -350,19 +350,12 @@ public class RequestDescription implements Parcelable {
    * @return URL connection builder instance
    */
   public UrlConnectionBuilder prepareConnectionBuilder(final Context context) {
-    return createUrlConnectionBuilder()
+    return new UrlConnectionBuilder()
       .setCacheManagerName(cacheName)
       .setContentHandlerName(contentHandler)
       .setModelType(modelType);
   }
 
-  /**
-   * @return UrlConnectionBuilder factory method
-   */
-  protected UrlConnectionBuilder createUrlConnectionBuilder() {
-    return new UrlConnectionBuilder();
-  }
-  
   /**
    * Build {@link URLConnection} instance, connect, write request.
    * @param context context instance
