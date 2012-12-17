@@ -1858,9 +1858,9 @@ public class StaggeredGridView extends ViewGroup {
     int[] margins;
 
     public LayoutParams(final int height) {
-      super(FILL_PARENT, height);
+      super(MATCH_PARENT, height);
 
-      if (this.height == FILL_PARENT) {
+      if (this.height == MATCH_PARENT) {
         Log.w(TAG, "Constructing LayoutParams with height FILL_PARENT - "
             + "impossible! Falling back to WRAP_CONTENT");
         // XXX Allow full-sized children
@@ -1871,12 +1871,12 @@ public class StaggeredGridView extends ViewGroup {
     public LayoutParams(final Context c, final AttributeSet attrs) {
       super(c, attrs);
 
-      if (this.width != FILL_PARENT) {
+      if (this.width != MATCH_PARENT) {
         Log.w(TAG, "Inflation setting LayoutParams width to " + this.width
             + " - must be MATCH_PARENT");
-        this.width = FILL_PARENT;
+        this.width = MATCH_PARENT;
       }
-      if (this.height == FILL_PARENT) {
+      if (this.height == MATCH_PARENT) {
         Log.w(TAG, "Inflation setting LayoutParams height to MATCH_PARENT - "
             + "impossible! Falling back to WRAP_CONTENT");
         // XXX Allow full-sized children
@@ -1896,12 +1896,12 @@ public class StaggeredGridView extends ViewGroup {
     public LayoutParams(final ViewGroup.LayoutParams other) {
       super(other);
 
-      if (this.width != FILL_PARENT) {
+      if (this.width != MATCH_PARENT) {
         Log.w(TAG, "Constructing LayoutParams with width " + this.width
             + " - must be MATCH_PARENT");
-        this.width = FILL_PARENT;
+        this.width = MATCH_PARENT;
       }
-      if (this.height == FILL_PARENT) {
+      if (this.height == MATCH_PARENT) {
         Log.w(TAG, "Constructing LayoutParams with height MATCH_PARENT - "
             + "impossible! Falling back to WRAP_CONTENT");
         // XXX Allow full-sized children

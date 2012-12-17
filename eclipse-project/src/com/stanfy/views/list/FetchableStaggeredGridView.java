@@ -31,8 +31,8 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
   /** Saved index. */
   private int savedFirstVisibleItem = 0;
 
-  /** Footer layout ID. */
-  private int footerLayoutId = R.layout.footer_loading;
+  /** Load view layout ID. */
+  private int loadViewLayoutId = R.layout.loadview_grid;
 
   public FetchableStaggeredGridView(final Context context) {
     super(context);
@@ -54,7 +54,7 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
    * Initialize the view.
    */
   private void init() {
-    if (DEBUG) { Log.d(VIEW_LOG_TAG, "New fetchable grid view"); }
+    if (DEBUG) { Log.d(VIEW_LOG_TAG, "New FetchableStaggeredGridView"); }
     setOnScrollListener(this);
   }
 
@@ -75,8 +75,12 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
 
   protected LoadmoreAdapter createLoadmoreAdapter(final FetchableListAdapter core) {
     LoadmoreAdapter adapter = new LoadmoreAdapter(LayoutInflater.from(getContext()), core);
-    adapter.setFooterLayoutId(footerLayoutId);
+    adapter.setLoadViewLayoutId(loadViewLayoutId);
     return adapter;
+  }
+  
+  public void setLoadViewLayoutId(final int loadViewLayoutId) {
+    this.loadViewLayoutId = loadViewLayoutId;
   }
 
   @Override
