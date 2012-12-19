@@ -920,6 +920,11 @@ public class StaggeredGridView extends ViewGroup {
     if (mItemTops == null || mItemTops.length != colCount) {
       mItemTops = new int[colCount];
       mItemBottoms = new int[colCount];
+      if (mItemCount <= mHeaderViewInfos.size() + mFooterViewInfos.size() + 1) {
+        // Fix for issue when restoring state with offset, but the list was reloaded.
+        mRestoreOffset = 0;
+        mFirstPosition = 0;
+      }
       final int top = getPaddingTop();
       final int offset = top + Math.min(mRestoreOffset, 0);
       Arrays.fill(mItemTops, offset);
