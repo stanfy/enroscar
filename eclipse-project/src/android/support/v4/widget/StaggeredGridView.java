@@ -1892,8 +1892,9 @@ public class StaggeredGridView extends ViewGroup {
       span = a.getInteger(SPAN_INDEX, 1);
       a.recycle();
       
-      a = c.obtainStyledAttributes(attrs, R.styleable.StaggeredGridView);
-      final boolean maxSpan = a.getBoolean(R.styleable.StaggeredGridView_maxSpan, false);
+      a = c.obtainStyledAttributes(attrs, R.styleable.StaggeredGridView_LayoutParams);
+      final boolean maxSpan =
+          a.getBoolean(R.styleable.StaggeredGridView_LayoutParams_maxSpan, false);
       if (maxSpan) { span = SPAN_MAX; }
       a.recycle();
     }

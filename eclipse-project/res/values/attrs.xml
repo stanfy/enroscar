@@ -124,7 +124,7 @@
   </declare-styleable>
   
   <!-- Grid view attributes. -->
-  <declare-styleable name="StaggeredGridView">
+  <declare-styleable name="StaggeredGridView_LayoutParams">
     <attr name="maxSpan" format="boolean" />
   </declare-styleable>
 
