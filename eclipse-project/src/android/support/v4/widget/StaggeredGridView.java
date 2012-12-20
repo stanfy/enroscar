@@ -441,9 +441,11 @@ public class StaggeredGridView extends ViewGroup {
     case MotionEvent.ACTION_MOVE: {
       final int index = MotionEventCompat.findPointerIndex(ev, mActivePointerId);
       if (index < 0) {
-        Log.e(TAG, "onInterceptTouchEvent could not find pointer with id " +
-            mActivePointerId + " - did StaggeredGridView receive an inconsistent " +
-            "event stream?");
+        if (DEBUG) {
+          Log.e(TAG, "onInterceptTouchEvent could not find pointer with id " +
+              mActivePointerId + " - did StaggeredGridView receive an inconsistent " +
+              "event stream?");
+        }
         return false;
       }
       final float y = MotionEventCompat.getY(ev, index);
@@ -479,9 +481,11 @@ public class StaggeredGridView extends ViewGroup {
     case MotionEvent.ACTION_MOVE: {
       final int index = MotionEventCompat.findPointerIndex(ev, mActivePointerId);
       if (index < 0) {
-        Log.e(TAG, "onInterceptTouchEvent could not find pointer with id "
-            + mActivePointerId + " - did StaggeredGridView receive an inconsistent "
-            + "event stream?");
+        if (DEBUG) {
+          Log.e(TAG, "onInterceptTouchEvent could not find pointer with id "
+              + mActivePointerId + " - did StaggeredGridView receive an inconsistent "
+              + "event stream?");
+        }
         return false;
       }
       final float y = MotionEventCompat.getY(ev, index);
@@ -870,13 +874,17 @@ public class StaggeredGridView extends ViewGroup {
     int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
     if (widthMode != MeasureSpec.EXACTLY) {
-      Log.e(TAG, "onMeasure: must have an exact width or match_parent! "
-          + "Using fallback spec of EXACTLY " + widthSize);
+      if (DEBUG) {
+        Log.e(TAG, "onMeasure: must have an exact width or match_parent! "
+            + "Using fallback spec of EXACTLY " + widthSize);
+      }
       widthMode = MeasureSpec.EXACTLY;
     }
     if (heightMode != MeasureSpec.EXACTLY) {
-      Log.e(TAG, "onMeasure: must have an exact height or match_parent! "
-          + "Using fallback spec of EXACTLY " + heightSize);
+      if (DEBUG) {
+        Log.e(TAG, "onMeasure: must have an exact height or match_parent! "
+            + "Using fallback spec of EXACTLY " + heightSize);
+      }
       heightMode = MeasureSpec.EXACTLY;
     }
 
@@ -951,10 +959,14 @@ public class StaggeredGridView extends ViewGroup {
   @SuppressWarnings("unused")
   private void dumpItemPositions() {
     final int childCount = getChildCount();
-    Log.d(TAG, "dumpItemPositions:");
-    Log.d(TAG, " => Tops:");
+    if (DEBUG) {
+      Log.d(TAG, "dumpItemPositions:");
+      Log.d(TAG, " => Tops:");
+    }
     for (int i = 0; i < mColCount; i++) {
-      Log.d(TAG, "  => " + mItemTops[i]);
+      if (DEBUG) {
+        Log.d(TAG, "  => " + mItemTops[i]);
+      }
       boolean found = false;
       for (int j = 0; j < childCount; j++) {
         final View child = getChildAt(j);
@@ -962,13 +974,17 @@ public class StaggeredGridView extends ViewGroup {
           found = true;
         }
       }
-      if (!found) {
+      if (!found && DEBUG) {
         Log.d(TAG, "!!! No top item found for column " + i + " value " + mItemTops[i]);
       }
     }
-    Log.d(TAG, " => Bottoms:");
+    if (DEBUG) {
+      Log.d(TAG, " => Bottoms:");
+    }
     for (int i = 0; i < mColCount; i++) {
-      Log.d(TAG, "  => " + mItemBottoms[i]);
+      if (DEBUG) {
+        Log.d(TAG, "  => " + mItemBottoms[i]);
+      }
       boolean found = false;
       for (int j = 0; j < childCount; j++) {
         final View child = getChildAt(j);
@@ -976,7 +992,7 @@ public class StaggeredGridView extends ViewGroup {
           found = true;
         }
       }
-      if (!found) {
+      if (!found && DEBUG) {
         Log.d(TAG, "!!! No bottom item found for column " + i + " value " + mItemBottoms[i]);
       }
     }
@@ -1864,28 +1880,17 @@ public class StaggeredGridView extends ViewGroup {
 
     public LayoutParams(final int height) {
       super(MATCH_PARENT, height);
-
-      if (this.height == MATCH_PARENT) {
-        Log.w(TAG, "Constructing LayoutParams with height FILL_PARENT - "
-            + "impossible! Falling back to WRAP_CONTENT");
-        // XXX Allow full-sized children
-        // this.height = WRAP_CONTENT;
-      }
     }
 
     public LayoutParams(final Context c, final AttributeSet attrs) {
       super(c, attrs);
 
       if (this.width != MATCH_PARENT) {
-        Log.w(TAG, "Inflation setting LayoutParams width to " + this.width
-            + " - must be MATCH_PARENT");
+        if (DEBUG) {
+          Log.w(TAG, "Inflation setting LayoutParams width to " + this.width
+              + " - must be MATCH_PARENT");
+        }
         this.width = MATCH_PARENT;
-      }
-      if (this.height == MATCH_PARENT) {
-        Log.w(TAG, "Inflation setting LayoutParams height to MATCH_PARENT - "
-            + "impossible! Falling back to WRAP_CONTENT");
-        // XXX Allow full-sized children
-        // this.height = WRAP_CONTENT;
       }
 
       TypedArray a = c.obtainStyledAttributes(attrs, LAYOUT_ATTRS);
@@ -1903,15 +1908,11 @@ public class StaggeredGridView extends ViewGroup {
       super(other);
 
       if (this.width != MATCH_PARENT) {
-        Log.w(TAG, "Constructing LayoutParams with width " + this.width
-            + " - must be MATCH_PARENT");
+        if (DEBUG) {
+          Log.w(TAG, "Constructing LayoutParams with width " + this.width
+              + " - must be MATCH_PARENT");
+        }
         this.width = MATCH_PARENT;
-      }
-      if (this.height == MATCH_PARENT) {
-        Log.w(TAG, "Constructing LayoutParams with height MATCH_PARENT - "
-            + "impossible! Falling back to WRAP_CONTENT");
-        // XXX Allow full-sized children
-        // this.height = WRAP_CONTENT;
       }
     }
 
