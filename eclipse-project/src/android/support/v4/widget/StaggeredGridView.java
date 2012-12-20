@@ -1018,7 +1018,6 @@ public class StaggeredGridView extends ViewGroup {
       View child = getChildAt(i);
       LayoutParams lp = (LayoutParams) child.getLayoutParams();
       int col = lp.column;
-      final int oldSpan = lp.span;
       final int[] margins = lp.margins;
       final int position = mFirstPosition + i;
       final boolean needsLayout = queryAdapter || child.isLayoutRequested();
@@ -1063,7 +1062,7 @@ public class StaggeredGridView extends ViewGroup {
                         lp.height
                     );*/
           // XXX HACK
-          heightSpec = MeasureSpec.makeMeasureSpec(getMeasuredHeight() - getPaddingTop() - getPaddingBottom() - mItemMargin,
+          heightSpec = MeasureSpec.makeMeasureSpec(getMeasuredHeight() - getPaddingTop() - getPaddingBottom(),
               MeasureSpec.EXACTLY);
         } else {
           heightSpec = MeasureSpec.makeMeasureSpec(lp.height, MeasureSpec.EXACTLY);
@@ -2022,8 +2021,7 @@ public class StaggeredGridView extends ViewGroup {
       // TODO: Consider matching these back up if we have stable IDs.
       mRecycler.clearTransientViews();
 
-      if (!mHasStableIds
-          || (mItemCount != mOldItemCount && getChildCount() > 0 && mItemCount < getChildCount())
+      if ((mItemCount != mOldItemCount && getChildCount() > 0 && mItemCount < getChildCount())
           || (mItemCount == 0)) {
         // Clear all layout records and recycle the views
         mLayoutRecords.clear();
