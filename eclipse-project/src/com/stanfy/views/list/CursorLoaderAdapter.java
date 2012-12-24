@@ -5,11 +5,10 @@ import android.database.Cursor;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 
-import com.stanfy.views.list.LoaderAdapter;
-
-/** Results wrapper. */
-// TODO move this class to Enroscar
-class CursorLoaderAdapter extends LoaderAdapter<Cursor> {
+/**
+ * {@link LoaderAdapter} implementation that wraps {@link CursorAdapter}.
+ */
+public class CursorLoaderAdapter extends LoaderAdapter<Cursor> {
 
   public CursorLoaderAdapter(final Context context, final CursorAdapter coreAdapter) {
     super(context, coreAdapter);
