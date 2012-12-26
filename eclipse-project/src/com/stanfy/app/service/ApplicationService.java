@@ -29,8 +29,8 @@ public class ApplicationService extends Service {
 
   /** Check for stop message. */
   private static final int MSG_CHECK_FOR_STOP = 1;
-  /** Check for stop delay. */  
-  private static final long DELAY_CHECK_FOR_STOP = Time.SECONDS >> 1;
+  /** Check for stop delay. */
+  private static final long DELAY_CHECK_FOR_STOP = Time.SECONDS / 2;
 
   /** Send request action. */
   public static final String ACTION_SEND_REQUEST = ApiMethods.class.getName() + "#SEND_REQUEST";
@@ -40,6 +40,9 @@ public class ApplicationService extends Service {
 
   /** Handler instance. */
   private Handler handler;
+
+  /** Recent start ID. */
+  private int recentStartId = -1;
 
   /** API methods. */
   private ApiMethods apiMethods;
@@ -66,6 +69,7 @@ public class ApplicationService extends Service {
   public int onStartCommand(final Intent intent, final int flags, final int startId) {
     if (DEBUG) { Log.d(TAG, "Start command"); }
     handler.removeMessages(MSG_CHECK_FOR_STOP);
+    recentStartId = startId;
 
     if (intent != null) {
       if (ACTION_SEND_REQUEST.equals(intent.getAction())) {
@@ -162,7 +166,7 @@ public class ApplicationService extends Service {
   }
   /**
    * Perform check for stop with given delay.
-   * 
+   *
    * @param delay time in milliseconds
    */
   protected void checkForStop(final long delay) {
@@ -172,7 +176,10 @@ public class ApplicationService extends Service {
   }
 
   protected void doStop() {
-    stopSelf();
+    boolean reallyStopping = stopSelfResult(recentStartId);
+    if (DEBUG && !reallyStopping) {
+      Log.d(TAG, "Not stopped. Got another start command");
+    }
   }
 
   protected ApiMethods getApiMethods() { return apiMethods; }
