@@ -39,7 +39,10 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
 
   /** List loader ID. */
-  protected static final int LIST_LOADER_ID = 1;
+  protected static final int LIST_LOADER_DEFAULT_ID = 1;
+
+  /** Loader ID. */
+  private int loaderId = LIST_LOADER_DEFAULT_ID;
 
   /** Core adapter instance. */
   private ModelListAdapter<MT> coreAdapter;
@@ -82,7 +85,13 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   protected boolean isDataLocaleDependent() { return false; }
 
   /** @return model loader ID */
-  protected int getLoaderId() { return LIST_LOADER_ID; }
+  protected int getLoaderId() { return loaderId; }
+  /**
+   * Set loader ID that is used for operating with loader created
+   * by {@link #onCreateLoader(int, Bundle)}.
+   * @param loaderId loader identifier
+   */
+  public void setLoaderId(final int loaderId) { this.loaderId = loaderId; }
 
   // =============================== STATES ===============================
   @Override
@@ -110,7 +119,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
       final Configuration config = getResources().getConfiguration();
       final Locale newLocale = config.locale;
       if (prevLocale != null && !prevLocale.equals(newLocale)) {
-        getLoaderManager().destroyLoader(getLoaderId());
+        getLoaderManager().destroyLoader(loaderId);
       }
       prevLocale = newLocale;
     }
@@ -162,7 +171,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
 
   @Override
   public Loader<ResponseData<LT>> onCreateLoader(final int id, final Bundle bundle) {
-    if (id == getLoaderId()) {
+    if (id == loaderId) {
       if (rbAdapter != null) {
         rbAdapter.onLoadStart();
       }
@@ -209,7 +218,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     if (DEBUG) { Log.v(TAG, "startLoad, " + this); }
     // init loader, data can passed to adapter at once
     onLoadStart();
-    getLoaderManager().initLoader(getLoaderId(), null, this);
+    getLoaderManager().initLoader(loaderId, null, this);
   }
 
   /** Restart loader. */
@@ -219,7 +228,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     }
 
     onLoadStart();
-    getLoaderManager().restartLoader(getLoaderId(), null, this);
+    getLoaderManager().restartLoader(loaderId, null, this);
   }
 
   protected View createView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {

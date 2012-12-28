@@ -193,7 +193,7 @@ public class ApiMethods {
 
     /** Description to process. */
     private final RequestDescription target;
-    
+
     /** Does doInBackground was executed. */
     private boolean doInBackgroundExecuted = false;
 
@@ -551,7 +551,7 @@ public class ApiMethods {
   }
 
   public void registerCallback(final ApiMethodCallback callback) {
-    if (DEBUG) { Log.d(TAG, "Register API callback " + callback); }
+    if (DEBUG) { Log.d(TAG, "Register API callback " + callback + " to " + this); }
     final APICallInfoData b = new APICallInfoData();
     b.set(lastOperation);
     if (b.hasData()) {

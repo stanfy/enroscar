@@ -28,9 +28,10 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.beans.Bean;
+import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.app.beans.InitializingBean;
 import com.stanfy.images.cache.ImageMemoryCache;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.FlushedInputStream;
@@ -46,7 +47,7 @@ import com.stanfy.views.RemoteImageDensityProvider;
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 @EnroscarBean(value = ImagesManager.BEAN_NAME, contextDependent = true)
-public class ImagesManager implements Bean {
+public class ImagesManager implements InitializingBean {
 
   /** Bean name. */
   public static final String BEAN_NAME = "ImagesManager";
@@ -69,20 +70,18 @@ public class ImagesManager implements Bean {
   /** Debug flag. */
   private static final boolean DEBUG = DebugFlags.DEBUG_IMAGES;
 
-  /** Empty drawable. */
-  protected static final ColorDrawable EMPTY_DRAWABLE = new ColorDrawable(0xeeeeee);
-
   /** Resources. */
   private final Resources resources;
+
   /** Buffers pool. */
-  private final BuffersPool buffersPool;
+  private BuffersPool buffersPool;
   /** Memory cache. */
-  private final ImageMemoryCache memCache;
+  private ImageMemoryCache memCache;
   /** Images response cache. */
-  private final ResponseCache imagesResponseCache;
+  private ResponseCache imagesResponseCache;
 
   /** Target density from source. */
-  private int sourceDensity = 0;
+  private int defaultSourceDensity = 0;
 
   /** Images format. */
   private Bitmap.Config imagesFormat = Bitmap.Config.ARGB_8888;
@@ -103,13 +102,27 @@ public class ImagesManager implements Bean {
       throw new IllegalStateException("Buffers pool and images memory cache must be initialized before images manager.");
     }
     imagesResponseCache = beansManager.getResponseCache(CACHE_BEAN_NAME);
+  }
+
+  /**
+   * Set count of working threads used to load images.
+   * @param count count of threads
+   */
+  public static void configureImageTaskExecutorsCount(final int count) {
+    Threading.configureImageTasksExecutor(count);
+  }
+
+  @Override
+  public void onInitializationFinished(final BeansContainer beansContainer) {
+    buffersPool = beansContainer.getBean(BuffersPool.BEAN_NAME, BuffersPool.class);
+    memCache = beansContainer.getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class);
+    if (buffersPool == null || memCache == null) {
+      throw new IllegalStateException("Buffers pool and images memory cache must be initialized before images manager.");
+    }
+    imagesResponseCache = beansContainer.getBean(CACHE_BEAN_NAME, ResponseCache.class);
     if (imagesResponseCache == null) {
       Log.w(TAG, "Response cache for images is not defined");
     }
-  }
-
-  public static void configureImageTaskExecutorsCount(final int count) {
-    Threading.configureImageTasksExecutor(count);
   }
 
   /** @return images response cache instance */
@@ -117,8 +130,14 @@ public class ImagesManager implements Bean {
 
   /** @param imagesFormat the imagesFormat to set */
   public void setImagesFormat(final Bitmap.Config imagesFormat) { this.imagesFormat = imagesFormat; }
-  /** @param sourceDensity the sourceDensity to set */
-  public void setSourceDensity(final int sourceDensity) { this.sourceDensity = sourceDensity; }
+  /** @return images format used to create bitmaps */
+  public Bitmap.Config getImagesFormat() { return imagesFormat; }
+
+  /**
+   * Configure default density of images. Every {@link ImageHolder} can return its own density.
+   * @param sourceDensity the sourceDensity to set
+   */
+  public void setDefaultSourceDensity(final int sourceDensity) { this.defaultSourceDensity = sourceDensity; }
 
   /**
    * Ensure that all the images are loaded. Not loaded images will be downloaded in this thread or in a seperate thread.
@@ -284,7 +303,8 @@ public class ImagesManager implements Bean {
    */
   protected Drawable getLoadingDrawable(final ImageHolder holder) {
     final Drawable d = holder.getLoadingImage();
-    return d != null ? d : EMPTY_DRAWABLE;
+    final int color = 0xffeeeeee;
+    return d != null ? d : new ColorDrawable(color);
   }
 
   /**
@@ -379,20 +399,17 @@ public class ImagesManager implements Bean {
     }
   }
 
-  protected void setupDensityAndFormat(final BitmapFactory.Options options, final int sourceDensity) {
-    options.inDensity = sourceDensity > 0 ? sourceDensity : this.sourceDensity;
-    options.inPreferredConfig = imagesFormat;
-  }
-
   protected Drawable readImage(final String url, final ImageHolder holder) throws IOException {
     if (holder == null) { return null; }
     InputStream imageStream = newConnection(url).getInputStream();
     final BitmapFactory.Options options = new BitmapFactory.Options();
+
     if (holder.useSampling() && !holder.isDynamicSize()) {
       options.inSampleSize = resolveSampleFactor(imageStream, holder.getSourceDensity(), holder.getRequiredWidth(), holder.getRequiredHeight());
       // image must have been cached now
       imageStream = newConnection(url).getInputStream();
     }
+
     final Drawable d = decodeStream(imageStream, holder.getSourceDensity(), options);
     return d;
   }
@@ -400,11 +417,14 @@ public class ImagesManager implements Bean {
   private InputStream prepareImageOptionsAndInput(final InputStream is, final int sourceDensity, final BitmapFactory.Options options) {
     final BuffersPool bp = buffersPool;
     final int bCapacity = BuffersPool.DEFAULT_SIZE_FOR_IMAGES;
+
     InputStream src = new FlushedInputStream(is);
     if (!src.markSupported()) { src = new PoolableBufferedInputStream(src, bCapacity, bp); }
+
     final BitmapFactory.Options opts = options != null ? options : new BitmapFactory.Options();
     opts.inTempStorage = bp.get(bCapacity);
-    setupDensityAndFormat(opts, sourceDensity);
+    options.inDensity = sourceDensity > 0 ? sourceDensity : this.defaultSourceDensity;
+    options.inPreferredConfig = imagesFormat;
     return src;
   }
 
@@ -426,7 +446,7 @@ public class ImagesManager implements Bean {
   /**
    * Possible factors: <code>2, 4, 7, 8, (8 + {@link #MAX_POWER_OF_2_DISTANCE} = 11), 12, 13, 14, 15, 16, 16 + {@link #MAX_POWER_OF_2_DISTANCE}...</code>
    */
-  protected int calculateSampleFactor(final int inW, final int inH, final int width, final int height) {
+  protected static int calculateSampleFactor(final int inW, final int inH, final int width, final int height) {
     int result = 1;
     final int factor = inW > inH ? inW / width : inH / height;
     if (factor > 1) {
