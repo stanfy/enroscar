@@ -21,6 +21,7 @@ public class SampleActivity extends OneFragmentActivity implements TweetsListene
     super.onInitialize(savedInstanceState);
     findViewById(R.id.button_qademo).setOnClickListener(this);
     findViewById(R.id.button_gallerydemo).setOnClickListener(this);
+    findViewById(R.id.button_pendingdemo).setOnClickListener(this);
   }
 
   @Override
@@ -44,6 +45,8 @@ public class SampleActivity extends OneFragmentActivity implements TweetsListene
     case R.id.button_gallerydemo:
       startActivity(new Intent(this, GallerySampleActivity.class));
       break;
+    case R.id.button_pendingdemo:
+      startActivity(new Intent(this, PendingRequestExample.class));
     default:
     }
   }

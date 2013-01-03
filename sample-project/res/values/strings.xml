@@ -16,5 +16,6 @@
   <string name="gallerydemo_description">
       Consult LogCat to see how convertView is used. Se bug http://code.google.com/p/android/issues/detail?id=3376 for details.
   </string>
+  <string name="pendingdemo">Pending request demo</string>
 
 </resources>

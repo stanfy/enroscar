@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.service.ApplicationService;
@@ -29,22 +30,20 @@ public class ServiceRequestPerformer implements RequestExecutor  {
     return description.getId();
   }
 
-  private Intent constructIntent(final RequestDescription description) {
+  protected Intent constructIntent(final RequestDescription description) {
     Class<?> serviceClass = BeansManager.get(context).getRemoteServerApiConfiguration().getApplicationServiceClass();
+
+    // XXX we wrap our parcelable into Bundle, see http://code.google.com/p/android/issues/detail?id=6822
+    Bundle descriptionBundle = new Bundle(1);
+    descriptionBundle.putParcelable(ApplicationService.EXTRA_REQUEST_DESCRIPTION, description);
+
     return new Intent(context, serviceClass)
       .setAction(ApplicationService.ACTION_SEND_REQUEST)
       .setData(Uri.parse("request://" + description.getId()))
-      .putExtra(ApplicationService.EXTRA_REQUEST_DESCRIPTION, description);
+      .putExtra(ApplicationService.EXTRA_REQUEST_DESCRIPTION_BUNDLE, descriptionBundle);
   }
 
-  /**
-   * Construct a pending intent that can be used for starting request processing.
-   * Note that after this method is executed executor of the request builder is always null.
-   * @param requestBuilder request builder instance
-   * @param flags flags to pass to {@link PendingIntent#getService(Context, int, Intent, int)}
-   * @return pending intent for starting request processing
-   */
-  public PendingIntent getPendingIntent(final RequestBuilder<?> requestBuilder, final int flags) {
+  protected final Intent getIntent(final RequestBuilder<?> requestBuilder) {
     final RequestDescription[] requestDescription = new RequestDescription[1];
     requestBuilder.setExecutor(new RequestExecutor() {
       @Override
@@ -55,7 +54,19 @@ public class ServiceRequestPerformer implements RequestExecutor  {
     });
     requestBuilder.execute();
     requestBuilder.setExecutor(null);
-    return PendingIntent.getService(context, 0, constructIntent(requestDescription[0]), flags);
+
+    return constructIntent(requestDescription[0]);
+  }
+
+  /**
+   * Construct a pending intent that can be used for starting request processing.
+   * Note that after this method is executed executor of the request builder is always null.
+   * @param requestBuilder request builder instance
+   * @param flags flags to pass to {@link PendingIntent#getService(Context, int, Intent, int)}
+   * @return pending intent for starting request processing
+   */
+  public PendingIntent getPendingIntent(final RequestBuilder<?> requestBuilder, final int flags) {
+    return PendingIntent.getService(context, 0, getIntent(requestBuilder), flags);
   }
 
 }

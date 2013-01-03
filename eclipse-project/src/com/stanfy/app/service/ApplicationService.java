@@ -7,6 +7,7 @@ import android.app.Application;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -37,6 +38,8 @@ public class ApplicationService extends Service {
 
   /** Intent extra parameter name: request description. */
   public static final String EXTRA_REQUEST_DESCRIPTION = "request_description";
+  /** Intent extra parameter name: request description. */
+  public static final String EXTRA_REQUEST_DESCRIPTION_BUNDLE = "request_description_bundle";
 
   /** Handler instance. */
   private Handler handler;
@@ -73,7 +76,17 @@ public class ApplicationService extends Service {
 
     if (intent != null) {
       if (ACTION_SEND_REQUEST.equals(intent.getAction())) {
-        RequestDescription requestDescription = intent.getParcelableExtra(EXTRA_REQUEST_DESCRIPTION);
+
+        RequestDescription requestDescription = null;
+        if (intent.hasExtra(EXTRA_REQUEST_DESCRIPTION)) {
+          requestDescription = intent.getParcelableExtra(EXTRA_REQUEST_DESCRIPTION);
+        } else if (intent.hasExtra(EXTRA_REQUEST_DESCRIPTION_BUNDLE)) {
+          Bundle b = intent.getBundleExtra(EXTRA_REQUEST_DESCRIPTION_BUNDLE);
+          if (b != null) {
+            requestDescription = b.getParcelable(EXTRA_REQUEST_DESCRIPTION);
+          }
+        }
+
         if (requestDescription != null) {
           ensureApiMethods();
           apiMethods.performRequest(requestDescription);
