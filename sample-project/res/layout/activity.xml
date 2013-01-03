@@ -30,6 +30,13 @@
         android:id="@+id/button_gallerydemo" 
         android:text="@string/gallerydemo" 
         />
-  </LinearLayout>
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/button_pendingdemo" 
+        android:text="@string/pendingdemo" 
+        />
+    </LinearLayout>
     
 </LinearLayout>
