@@ -52,9 +52,12 @@ public class StateHelper {
       viewCreators[state] = creator;
     }
   }
+  public StateViewCreator getStateViewCreator(final int state) {
+    return state > 0 && state < viewCreators.length ? viewCreators[state] : null;
+  }
 
   public View getCustomStateView(final int state, final Context context, final Object lastDataObject, final ViewGroup parent) {
-    final StateViewCreator creator = state > 0 && state < viewCreators.length ? viewCreators[state] : null;
+    final StateViewCreator creator = getStateViewCreator(state);
     if (creator == null) { return null; }
     final View view = creator.getView(context, lastDataObject, parent);
     // do some tricks
