@@ -1038,12 +1038,8 @@ public class StaggeredGridView extends ViewGroup {
       final int position = mFirstPosition + i;
       final boolean needsLayout = queryAdapter || child.isLayoutRequested();
       boolean newChild = false;
-      if (lp.viewType == AdapterView.ITEM_VIEW_TYPE_IGNORE
-          && position >= mItemCount) {
-        // XXX HACK
-        // OOB otherwise, in case we are layouting after loadmore,
-        // when loadmore view is still in layout,
-        // but there is no more elements in adapter
+      if (position >= mItemCount) {
+        // Sometimes it happens...
         removeViewAt(i);
         continue;
       }
