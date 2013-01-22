@@ -212,12 +212,23 @@ public class BeansManager {
       return this;
     }
 
-    public Editor images() {
+    public Editor images(final EnroscarConnectionsEngine.Config config) {
       put(ImageFileCache.class);
       put(SupportLruImageMemoryCache.class);
       put(ImagesManager.class);
+
+      editorActions.put("images-connections-config", new PutBean() {
+        @Override
+        public Object put() {
+          // install connections engine
+          config.install(application);
+          return null;
+        }
+      });
       return this;
     }
+
+    public Editor images() { return images(EnroscarConnectionsEngine.config()); }
 
     public Editor activitiesBehavior() {
       put(ActivityBehaviorFactory.class);
