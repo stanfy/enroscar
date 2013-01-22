@@ -23,6 +23,7 @@ import com.stanfy.images.cache.ImageFileCache;
 import com.stanfy.images.cache.ImageMemoryCache;
 import com.stanfy.images.cache.SupportLruImageMemoryCache;
 import com.stanfy.io.BuffersPool;
+import com.stanfy.net.EnroscarConnectionsEngine;
 import com.stanfy.serverapi.RemoteServerApiConfiguration;
 import com.stanfy.serverapi.request.SimpleRequestBuilder;
 import com.stanfy.serverapi.response.handler.GsonContentHandler;
@@ -224,7 +225,7 @@ public class BeansManager {
       return this;
     }
 
-    public Editor remoteServerApi(final String... formats) {
+    public Editor remoteServerApi(final EnroscarConnectionsEngine.Config config, final String... formats) {
       put(RemoteServerApiConfiguration.class);
       if (formats.length > 0) {
 
@@ -252,14 +253,23 @@ public class BeansManager {
         editorActions.put("remoteServerApi-config", new PutBean() {
           @Override
           public Object put() {
+            // set default content handler
             getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class)
                 .setDefaultContentHandlerName(mainContentHandlerName);
+
+            // install connections engine
+            config.install(application);
+
             return null;
           }
         });
 
       }
       return this;
+    }
+
+    public Editor remoteServerApi(final String... formats) {
+      return remoteServerApi(EnroscarConnectionsEngine.config(), formats);
     }
 
     public Editor defaults() {
