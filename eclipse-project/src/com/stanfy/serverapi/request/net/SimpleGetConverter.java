@@ -15,6 +15,14 @@ import com.stanfy.serverapi.request.RequestDescription;
  */
 public class SimpleGetConverter extends BaseRequestDescriptionConverter {
 
+  /** Simple GET converter factory. */
+  public static final ConverterFactory FACTORY = new ConverterFactory() {
+    @Override
+    public BaseRequestDescriptionConverter createConverter() {
+      return new SimpleGetConverter();
+    }
+  };
+
   @Override
   public URLConnection prepareConnectionInstance(final Context context, final RequestDescription requestDescription) throws IOException {
     final Uri.Builder builder = Uri.parse(requestDescription.getUrl()).buildUpon();
