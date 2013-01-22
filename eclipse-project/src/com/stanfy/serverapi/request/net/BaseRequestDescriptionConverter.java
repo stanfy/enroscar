@@ -44,4 +44,10 @@ public abstract class BaseRequestDescriptionConverter {
     connection.connect();
   }
 
+  /** Converter factory. */
+  public interface ConverterFactory {
+    /** @return converter instance */
+    BaseRequestDescriptionConverter createConverter();
+  }
+
 }

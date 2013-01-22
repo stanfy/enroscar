@@ -27,6 +27,14 @@ import com.stanfy.serverapi.request.net.multipart.StringPart;
  */
 public class UploadPostConverter extends PostConverter {
 
+  /** Multipart POST converter factory. */
+  public static final ConverterFactory FACTORY = new ConverterFactory() {
+    @Override
+    public BaseRequestDescriptionConverter createConverter() {
+      return new UploadPostConverter();
+    }
+  };
+
   /**
    * The pool of ASCII chars to be used for generating a multipart boundary.
    */
@@ -34,6 +42,9 @@ public class UploadPostConverter extends PostConverter {
 
   /** Boundary. */
   private final byte[] boundary;
+
+  /** Composed parts. */
+  private Part[] parts;
 
   public UploadPostConverter() {
     super(null);
@@ -58,16 +69,17 @@ public class UploadPostConverter extends PostConverter {
   public URLConnection prepareConnectionInstance(final Context context, final RequestDescription requestDescription) throws IOException {
     final URLConnection connection = super.prepareConnectionInstance(context, requestDescription);
     connection.addRequestProperty("Content-Type", "multipart/form-data; boundary=" + EncodingUtils.getAsciiString(boundary));
+
+    this.parts = composeParts(context, requestDescription);
+
+    final HttpURLConnection http = (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
+    http.setFixedLengthStreamingMode((int)Part.getLengthOfParts(parts, boundary));
+
     return connection;
   }
 
   @Override
   public void sendRequest(final Context context, final URLConnection connection, final RequestDescription requestDescription) throws IOException {
-    final Part[] parts = composeParts(context, requestDescription);
-
-    final HttpURLConnection http = (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
-    http.setFixedLengthStreamingMode((int)Part.getLengthOfParts(parts, boundary));
-
     final BuffersPool buffersPool = BeansManager.get(context).getMainBuffersPool();
     final PoolableBufferedOutputStream out = new PoolableBufferedOutputStream(connection.getOutputStream(), buffersPool);
 
