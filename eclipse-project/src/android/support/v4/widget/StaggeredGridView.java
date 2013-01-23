@@ -1040,7 +1040,13 @@ public class StaggeredGridView extends ViewGroup {
       boolean newChild = false;
       if (position >= mItemCount) {
         // Sometimes it happens...
+        final View toDelete = getSpannedChildAt(i);
         removeViewAt(i);
+        if (toDelete != null) {
+          // Offset children in case our last child was max spanned
+          final int height = toDelete.getHeight();
+          offsetChildren(height);
+        }
         continue;
       }
 
@@ -1649,6 +1655,15 @@ public class StaggeredGridView extends ViewGroup {
     // Reset the first visible position in the grid to be item 0
     mFirstPosition = 0;
     mRestoreOffset = 0;
+  }
+  
+  private View getSpannedChildAt(final int position) {
+    final View child = getChildAt(position);
+    if (child == null || !(child.getLayoutParams() instanceof LayoutParams)
+        || ((LayoutParams) child.getLayoutParams()).span != LayoutParams.SPAN_MAX) {
+      return null;
+    }
+    return child;
   }
 
   /**
