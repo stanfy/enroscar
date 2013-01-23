@@ -98,7 +98,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     crucialGUIOperationManager = BeansManager.get(getActivity()).getCrucialGUIOperationManager();
-    setRetainInstance(true);
+    if (getParentFragment() == null) { setRetainInstance(true); }
   }
 
   @Override
