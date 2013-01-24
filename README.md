@@ -47,7 +47,6 @@ public class SampleApplication extends Application {
         .defaults()                   // default components configuration
         .remoteServerApi("json")      // use JSON format to communicate with remote server
         .commit();
-    EnroscarConnectionsEngine.config().install(this);
   }
 
 }

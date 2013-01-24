@@ -9,6 +9,7 @@ import android.content.Context;
 
 import com.stanfy.app.beans.BeansManager.Editor;
 import com.stanfy.images.cache.SupportLruImageMemoryCache;
+import com.stanfy.net.EnroscarConnectionsEngine;
 import com.stanfy.test.AbstractEnroscarTest;
 import com.xtremelabs.robolectric.Robolectric;
 
@@ -37,6 +38,16 @@ public class BeansEditorTest extends AbstractEnroscarTest {
   @Test
   public void testBeansConfiguration() {
     assertThat(BeansManager.get(Robolectric.application).getImageMemoryCache(), is(instanceOf(MyImagesCache.class)));
+  }
+
+  @Test
+  public void remoteServerConfigurationShouldInstallConnectionsEngine() {
+    assertThat(EnroscarConnectionsEngine.isInstalled(), is(true));
+  }
+
+  public void secondConnectionsInstallShouldNotFail() {
+    EnroscarConnectionsEngine.config().install(getApplication());
+    assertThat(EnroscarConnectionsEngine.isInstalled(), is(true));
   }
 
 }
