@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -20,6 +19,7 @@ import com.stanfy.io.IoUtils;
 import com.stanfy.net.UrlConnectionBuilder;
 import com.stanfy.serverapi.request.binary.BinaryData;
 import com.stanfy.serverapi.request.net.BaseRequestDescriptionConverter;
+import com.stanfy.serverapi.request.net.BaseRequestDescriptionConverter.ConverterFactory;
 import com.stanfy.serverapi.request.net.SimpleGetConverter;
 import com.stanfy.serverapi.request.net.SimplePostConverter;
 import com.stanfy.serverapi.request.net.UploadPostConverter;
@@ -57,11 +57,11 @@ public class RequestDescription implements Parcelable {
   };
 
   /** Converters to {@link URLConnection}. */
-  private static final SparseArray<BaseRequestDescriptionConverter> CONVERTERS = new SparseArray<BaseRequestDescriptionConverter>(3);
+  private static final SparseArray<ConverterFactory> CONVERTER_FACTORIES = new SparseArray<ConverterFactory>(3);
   static {
-    CONVERTERS.put(OperationType.SIMPLE_GET, new SimpleGetConverter());
-    CONVERTERS.put(OperationType.SIMPLE_POST, new SimplePostConverter());
-    CONVERTERS.put(OperationType.UPLOAD_POST, new UploadPostConverter());
+    registerConverterFactory(OperationType.SIMPLE_GET, SimpleGetConverter.FACTORY);
+    registerConverterFactory(OperationType.SIMPLE_POST, SimplePostConverter.FACTORY);
+    registerConverterFactory(OperationType.UPLOAD_POST, UploadPostConverter.FACTORY);
   }
 
   /** Request ID. */
@@ -140,10 +140,17 @@ public class RequestDescription implements Parcelable {
     this.contentAnalyzer = source.readString();
 
     // binary content fields
-    final BinaryData<?>[] binary = (BinaryData<?>[]) source.readParcelableArray(cl);
+    final Parcelable[] binary = source.readParcelableArray(cl);
     if (binary != null) {
-      this.binaryData = new ArrayList<BinaryData<?>>(Arrays.asList(binary));
+      this.binaryData = new ArrayList<BinaryData<?>>(binary.length);
+      for (Parcelable b : binary) {
+        this.binaryData.add((BinaryData<?>) b);
+      }
     }
+  }
+
+  public static void registerConverterFactory(final int opertationType, final ConverterFactory factory) {
+    CONVERTER_FACTORIES.put(opertationType, factory);
   }
 
   private static synchronized int nextId() {
@@ -363,7 +370,11 @@ public class RequestDescription implements Parcelable {
    * @throws IOException in case of I/O errors
    */
   public URLConnection makeConnection(final Context context) throws IOException {
-    final BaseRequestDescriptionConverter converter = CONVERTERS.get(operationType);
+    ConverterFactory factory = CONVERTER_FACTORIES.get(operationType);
+    if (factory == null) {
+      throw new IllegalArgumentException("Don't know how to convert operation type " + operationType);
+    }
+    final BaseRequestDescriptionConverter converter = factory.createConverter();
 
     // create instance
     final URLConnection connection = converter.prepareConnectionInstance(context, this);

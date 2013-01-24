@@ -19,6 +19,14 @@ import com.stanfy.serverapi.request.RequestDescription;
  */
 public class SimplePostConverter extends PostConverter {
 
+  /** Simple POST converter factory. */
+  public static final ConverterFactory FACTORY = new ConverterFactory() {
+    @Override
+    public BaseRequestDescriptionConverter createConverter() {
+      return new SimplePostConverter();
+    }
+  };
+
   public SimplePostConverter() {
     super("application/x-www-form-urlencoded");
   }
