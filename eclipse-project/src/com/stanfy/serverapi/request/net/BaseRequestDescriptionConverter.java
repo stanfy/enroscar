@@ -1,12 +1,14 @@
 package com.stanfy.serverapi.request.net;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.serverapi.request.OperationType;
 import com.stanfy.serverapi.request.RequestDescription;
 
@@ -22,9 +24,20 @@ public abstract class BaseRequestDescriptionConverter {
   /** Debug flag. */
   protected static final boolean DEBUG = DebugFlags.DEBUG_API;
 
-  public abstract URLConnection prepareConnectionInstance(final Context context, final RequestDescription requestDescription) throws IOException;
+  /** Request description. */
+  final RequestDescription requestDescription;
 
-  public abstract void sendRequest(final Context context, final URLConnection connection, final RequestDescription requestDescription) throws IOException;
+  /** Context. */
+  final Context context;
+
+  public BaseRequestDescriptionConverter(final RequestDescription requestDescription, final Context context) {
+    this.requestDescription = requestDescription;
+    this.context = context;
+  }
+
+  public abstract URLConnection prepareConnectionInstance() throws IOException;
+
+  public abstract void sendRequest(final URLConnection connection) throws IOException;
 
   private static String opertionTypeToString(final int type) {
     switch (type) {
@@ -35,19 +48,23 @@ public abstract class BaseRequestDescriptionConverter {
     }
   }
 
-  public void connect(final URLConnection connection, final RequestDescription description) throws IOException {
+  public void connect(final URLConnection connection) throws IOException {
     if (DEBUG) {
-      final String idPrefix = "(" + description.getId() + ") ";
-      Log.d(TAG, idPrefix + "Connect to " + connection.getURL() + " <" + opertionTypeToString(description.getOperationType()) + ">");
+      final String idPrefix = "(" + requestDescription.getId() + ") ";
+      Log.d(TAG, idPrefix + "Connect to " + connection.getURL() + " <" + opertionTypeToString(requestDescription.getOperationType()) + ">");
       Log.d(TAG, idPrefix + "Headers: " + connection.getRequestProperties());
     }
     connection.connect();
   }
 
+  protected static HttpURLConnection asHttp(final URLConnection connection) {
+    return (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
+  }
+
   /** Converter factory. */
   public interface ConverterFactory {
     /** @return converter instance */
-    BaseRequestDescriptionConverter createConverter();
+    BaseRequestDescriptionConverter createConverter(final RequestDescription requestDescription, final Context context);
   }
 
 }

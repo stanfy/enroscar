@@ -1,6 +1,7 @@
 package com.stanfy.serverapi.request.binary;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -43,6 +44,21 @@ public class EmptyBinaryData extends BinaryData<Parcelable> {
   @Override
   public Part createHttpPart(final Context context) throws IOException {
     return new FilePart(getName(), new ByteArrayPartSource(getContentName(), EMPTY), getContentType(), null);
+  }
+
+  @Override
+  protected void writeData(final Parcel dest, final Parcelable data, final int flags) {
+    // nothing
+  }
+
+  @Override
+  protected Parcelable readData(final Parcel source) {
+    return null;
+  }
+
+  @Override
+  public void writeContentTo(final Context context, final OutputStream stream) throws IOException {
+    // nothing
   }
 
 }

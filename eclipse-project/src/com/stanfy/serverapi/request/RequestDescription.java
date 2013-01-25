@@ -374,16 +374,16 @@ public class RequestDescription implements Parcelable {
     if (factory == null) {
       throw new IllegalArgumentException("Don't know how to convert operation type " + operationType);
     }
-    final BaseRequestDescriptionConverter converter = factory.createConverter();
+    final BaseRequestDescriptionConverter converter = factory.createConverter(this, context);
 
     // create instance
-    final URLConnection connection = converter.prepareConnectionInstance(context, this);
+    final URLConnection connection = converter.prepareConnectionInstance();
     // setup headers
     onURLConnectionPrepared(context, connection);
     // make a connection
-    converter.connect(connection, this);
+    converter.connect(connection);
     // send data, if required
-    converter.sendRequest(context, connection, this);
+    converter.sendRequest(connection);
 
     return connection;
   }

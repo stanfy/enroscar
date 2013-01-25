@@ -2,6 +2,7 @@ package com.stanfy.serverapi.request.binary;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -75,6 +76,12 @@ public class ContentUriBinaryData extends BinaryData<Uri> {
         getContentType(),
         null
     );
+  }
+
+  @Override
+  public void writeContentTo(final Context context, final OutputStream stream) throws IOException {
+    final ContentResolver resolver = context.getContentResolver();
+    writeInputStreamToOutput(context, resolver.openInputStream(getData()), stream);
   }
 
 }
