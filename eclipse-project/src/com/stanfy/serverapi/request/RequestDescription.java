@@ -20,6 +20,7 @@ import com.stanfy.net.UrlConnectionBuilder;
 import com.stanfy.serverapi.request.binary.BinaryData;
 import com.stanfy.serverapi.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.serverapi.request.net.BaseRequestDescriptionConverter.ConverterFactory;
+import com.stanfy.serverapi.request.net.PayloadPostConverter;
 import com.stanfy.serverapi.request.net.SimpleGetConverter;
 import com.stanfy.serverapi.request.net.SimplePostConverter;
 import com.stanfy.serverapi.request.net.UploadPostConverter;
@@ -62,6 +63,7 @@ public class RequestDescription implements Parcelable {
     registerConverterFactory(OperationType.SIMPLE_GET, SimpleGetConverter.FACTORY);
     registerConverterFactory(OperationType.SIMPLE_POST, SimplePostConverter.FACTORY);
     registerConverterFactory(OperationType.UPLOAD_POST, UploadPostConverter.FACTORY);
+    registerConverterFactory(OperationType.PAYLOAD_POST, PayloadPostConverter.FACTORY);
   }
 
   /** Request ID. */
