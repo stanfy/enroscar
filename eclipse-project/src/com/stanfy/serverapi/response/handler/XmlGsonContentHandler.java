@@ -12,10 +12,11 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import com.google.gson.GsonXml;
-import com.google.gson.GsonXmlBuilder;
+import com.google.gson.GsonBuilder;
 import com.stanfy.app.beans.BeansContainer;
 import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.gsonxml.GsonXml;
+import com.stanfy.gsonxml.GsonXmlBuilder;
 import com.stanfy.gsonxml.XmlParserCreator;
 import com.stanfy.serverapi.response.ModelTypeToken;
 
@@ -46,7 +47,8 @@ public class XmlGsonContentHandler extends BaseContentHandler {
   private GsonXml gsonXml;
 
   protected GsonXml createGsonXml() {
-    return new GsonXmlBuilder().setXmlParserCreator(PARSER_FACTORY).setDateFormat(DEFAULT_DATE_FORMAT).setSameNameLists(true).create();
+    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat(DEFAULT_DATE_FORMAT);
+    return new GsonXmlBuilder().setXmlParserCreator(PARSER_FACTORY).wrap(gsonBuilder).setSameNameLists(true).create();
   }
 
   @Override
