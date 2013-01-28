@@ -44,6 +44,7 @@ public abstract class BaseRequestDescriptionConverter {
     case OperationType.SIMPLE_GET: return "GET";
     case OperationType.SIMPLE_POST: return "POST";
     case OperationType.UPLOAD_POST: return "POST, multipart";
+    case OperationType.PAYLOAD_POST: return "POST, payload";
     default: return "unknown";
     }
   }
