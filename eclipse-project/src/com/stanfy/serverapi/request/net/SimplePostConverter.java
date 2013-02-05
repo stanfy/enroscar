@@ -22,17 +22,17 @@ public class SimplePostConverter extends PostConverter {
   /** Simple POST converter factory. */
   public static final ConverterFactory FACTORY = new ConverterFactory() {
     @Override
-    public BaseRequestDescriptionConverter createConverter() {
-      return new SimplePostConverter();
+    public BaseRequestDescriptionConverter createConverter(final RequestDescription requestDescription, final Context context) {
+      return new SimplePostConverter(requestDescription, context);
     }
   };
 
-  public SimplePostConverter() {
-    super("application/x-www-form-urlencoded");
+  public SimplePostConverter(final RequestDescription requestDescription, final Context context) {
+    super(requestDescription, context, "application/x-www-form-urlencoded");
   }
 
   @Override
-  public void sendRequest(final Context context, final URLConnection connection, final RequestDescription requestDescription) throws IOException {
+  public void sendRequest(final URLConnection connection) throws IOException {
     final LinkedList<ParameterValue> parameters = new LinkedList<ParameterValue>();
     for (final Parameter p : requestDescription.getSimpleParameters().getChildren()) {
       if (p instanceof ParameterValue) {

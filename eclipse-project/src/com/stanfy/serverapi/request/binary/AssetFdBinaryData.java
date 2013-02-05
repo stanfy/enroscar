@@ -1,6 +1,7 @@
 package com.stanfy.serverapi.request.binary;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -49,6 +50,11 @@ public class AssetFdBinaryData extends BinaryData<AssetFileDescriptor> {
         getContentType(),
         null
     );
+  }
+
+  @Override
+  public void writeContentTo(final Context context, final OutputStream stream) throws IOException {
+    writeInputStreamToOutput(context, getData().createInputStream(), stream);
   }
 
 }

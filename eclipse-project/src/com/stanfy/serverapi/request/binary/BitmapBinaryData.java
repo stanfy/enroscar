@@ -1,5 +1,8 @@
 package com.stanfy.serverapi.request.binary;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -22,6 +25,9 @@ public class BitmapBinaryData extends BinaryData<Bitmap> {
     public BitmapBinaryData[] newArray(final int size) { return new BitmapBinaryData[size]; }
   };
 
+  /** Default compress options. */
+  protected static final Options DEFAULT_OPTIONS = new Options(CompressFormat.JPEG, BitmapPart.COMPRESS_QUALITY_DEFAULT);
+
   public BitmapBinaryData() {
     // nothing
   }
@@ -43,16 +49,42 @@ public class BitmapBinaryData extends BinaryData<Bitmap> {
     setContentName(name);
   }
 
-  protected void configureBitmapPart(final BitmapPart bitmapPart) {
-    bitmapPart.setCompressFormat(CompressFormat.JPEG);
-    bitmapPart.setCompressQuality(BitmapPart.COMPRESS_QUALITY_DEFAULT);
-  }
+  protected Options getOptions() { return DEFAULT_OPTIONS; }
 
   @Override
   public Part createHttpPart(final Context context) {
     final BitmapPart bitmapPart = new BitmapPart(getName(), getContentName(), getData());
-    configureBitmapPart(bitmapPart);
+    Options opts = getOptions();
+    bitmapPart.setCompressQuality(opts.quality);
+    bitmapPart.setCompressFormat(opts.format);
     return bitmapPart;
+  }
+
+  @Override
+  public void writeContentTo(final Context context, final OutputStream stream) throws IOException {
+    Options opts = getOptions();
+    getData().compress(opts.format, opts.quality, stream);
+  }
+
+  /** Options object. */
+  public static class Options {
+    /** Format. */
+    final CompressFormat format;
+    /** Quality. */
+    final int quality;
+
+    public Options(final CompressFormat format, final int quality) {
+      this.format = format;
+      this.quality = quality;
+    }
+
+
+    public CompressFormat getFormat() {
+      return format;
+    }
+    public int getQuality() {
+      return quality;
+    }
   }
 
 }

@@ -6,7 +6,7 @@ package com.stanfy.serverapi.request;
  */
 public class OperationType {
 
-  /** Simple post. */
+  /** Simple post (parameters as an HTML form data). */
   public static final int SIMPLE_POST = 0;
 
   /** Upload post. Multi-part should be used for HTTP. */
@@ -14,6 +14,9 @@ public class OperationType {
 
   /** Simple get. */
   public static final int SIMPLE_GET = 2;
+
+  /** Post with payload (uses binary content as a payload). */
+  public static final int PAYLOAD_POST = 3;
 
   protected OperationType() { /* hide and allow extending */ }
 
