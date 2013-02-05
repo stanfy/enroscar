@@ -1,15 +1,20 @@
 package com.stanfy.serverapi.request.net;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.os.Build;
+import android.util.Log;
 
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.IoUtils;
 import com.stanfy.io.PoolableBufferedOutputStream;
+import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.request.binary.BinaryData;
 
@@ -35,7 +40,8 @@ public class PayloadPostConverter extends PostConverter {
   @Override
   public URLConnection prepareConnectionInstance() throws IOException {
     URLConnection connection = super.prepareConnectionInstance();
-    asHttp(connection).setChunkedStreamingMode(0);
+    final int chunkSize = 8192;
+    asHttp(connection).setChunkedStreamingMode(chunkSize);
     return connection;
   }
 
@@ -51,8 +57,21 @@ public class PayloadPostConverter extends PostConverter {
         for (int i = 0; i < size; i++) {
           binaryData.get(i).writeContentTo(context, out);
         }
+        doSendWorkarounds(UrlConnectionWrapper.unwrap(connection));
       } finally {
         IoUtils.closeQuietly(out);
+      }
+    }
+  }
+
+  protected void doSendWorkarounds(final URLConnection connection) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD && connection instanceof HttpURLConnection) {
+      try {
+        Field resHeaderField = connection.getClass().getDeclaredField("resHeader");
+        resHeaderField.setAccessible(true);
+        resHeaderField.set(connection, null);
+      } catch (Exception e) {
+        Log.w("Workaround", "Failed to make a wrokaround for Android 2.2", e);
       }
     }
   }
