@@ -1,7 +1,6 @@
 package com.stanfy.serverapi.request.net;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +12,8 @@ import android.content.Context;
 
 import com.stanfy.app.beans.BeansManager;
 import com.stanfy.io.BuffersPool;
+import com.stanfy.io.IoUtils;
 import com.stanfy.io.PoolableBufferedOutputStream;
-import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.serverapi.request.Parameter;
 import com.stanfy.serverapi.request.ParameterValue;
 import com.stanfy.serverapi.request.RequestDescription;
@@ -30,8 +29,8 @@ public class UploadPostConverter extends PostConverter {
   /** Multipart POST converter factory. */
   public static final ConverterFactory FACTORY = new ConverterFactory() {
     @Override
-    public BaseRequestDescriptionConverter createConverter() {
-      return new UploadPostConverter();
+    public BaseRequestDescriptionConverter createConverter(final RequestDescription requestDescription, final Context context) {
+      return new UploadPostConverter(requestDescription, context);
     }
   };
 
@@ -46,8 +45,8 @@ public class UploadPostConverter extends PostConverter {
   /** Composed parts. */
   private Part[] parts;
 
-  public UploadPostConverter() {
-    super(null);
+  public UploadPostConverter(final RequestDescription requestDescription, final Context context) {
+    super(requestDescription, context, null);
     this.boundary = generateMultipartBoundary();
   }
 
@@ -66,32 +65,31 @@ public class UploadPostConverter extends PostConverter {
   }
 
   @Override
-  public URLConnection prepareConnectionInstance(final Context context, final RequestDescription requestDescription) throws IOException {
-    final URLConnection connection = super.prepareConnectionInstance(context, requestDescription);
+  public URLConnection prepareConnectionInstance() throws IOException {
+    final URLConnection connection = super.prepareConnectionInstance();
     connection.addRequestProperty("Content-Type", "multipart/form-data; boundary=" + EncodingUtils.getAsciiString(boundary));
 
     this.parts = composeParts(context, requestDescription);
 
-    final HttpURLConnection http = (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
-    http.setFixedLengthStreamingMode((int)Part.getLengthOfParts(parts, boundary));
+    asHttp(connection).setFixedLengthStreamingMode((int)Part.getLengthOfParts(parts, boundary));
 
     return connection;
   }
 
   @Override
-  public void sendRequest(final Context context, final URLConnection connection, final RequestDescription requestDescription) throws IOException {
+  public void sendRequest(final URLConnection connection) throws IOException {
     final BuffersPool buffersPool = BeansManager.get(context).getMainBuffersPool();
     final PoolableBufferedOutputStream out = new PoolableBufferedOutputStream(connection.getOutputStream(), buffersPool);
 
     try {
       Part.sendParts(out, parts, boundary);
     } finally {
-      out.close();
+      IoUtils.closeQuietly(out);
     }
 
   }
 
-  protected Part[] composeParts(final Context context, final RequestDescription requestDescription) throws IOException {
+  protected static Part[] composeParts(final Context context, final RequestDescription requestDescription) throws IOException {
     final ArrayList<BinaryData<?>> binaryData = requestDescription.getBinaryData();
     final List<Parameter> params = requestDescription.getSimpleParameters().getChildren();
     int realCount = 0;

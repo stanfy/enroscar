@@ -18,13 +18,17 @@ public class SimpleGetConverter extends BaseRequestDescriptionConverter {
   /** Simple GET converter factory. */
   public static final ConverterFactory FACTORY = new ConverterFactory() {
     @Override
-    public BaseRequestDescriptionConverter createConverter() {
-      return new SimpleGetConverter();
+    public BaseRequestDescriptionConverter createConverter(final RequestDescription requestDescription, final Context context) {
+      return new SimpleGetConverter(requestDescription, context);
     }
   };
 
+  public SimpleGetConverter(final RequestDescription requestDescription, final Context context) {
+    super(requestDescription, context);
+  }
+
   @Override
-  public URLConnection prepareConnectionInstance(final Context context, final RequestDescription requestDescription) throws IOException {
+  public URLConnection prepareConnectionInstance() throws IOException {
     final Uri.Builder builder = Uri.parse(requestDescription.getUrl()).buildUpon();
     for (final Parameter p : requestDescription.getSimpleParameters().getChildren()) {
       if (p instanceof ParameterValue) {
@@ -40,7 +44,7 @@ public class SimpleGetConverter extends BaseRequestDescriptionConverter {
   }
 
   @Override
-  public void sendRequest(final Context context, final URLConnection connection, final RequestDescription requestDescription) {
+  public void sendRequest(final URLConnection connection) {
     // nothing, it's GET ;)
   }
 
