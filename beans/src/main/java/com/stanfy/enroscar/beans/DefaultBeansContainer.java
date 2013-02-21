@@ -1,4 +1,4 @@
-package com.stanfy.app.beans;
+package com.stanfy.enroscar.beans;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -7,8 +7,6 @@ import java.util.Map.Entry;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.Log;
-
-import com.stanfy.utils.AppUtils;
 
 /**
  * A class that contains instances of different named application entities.
@@ -21,7 +19,7 @@ public class DefaultBeansContainer implements BeansContainer {
 
   @Override
   public <T> T putEntityInstance(final Class<T> clazz, final Context context) {
-    final EnroscarBean beanAnnotation = AppUtils.getBeanInfo(clazz);
+    final EnroscarBean beanAnnotation = BeanUtils.getBeanInfo(clazz);
     T instance;
     try {
       if (beanAnnotation.contextDependent()) {

@@ -214,22 +214,6 @@ public class AppUtils {
         && intentAction != null && intentAction.equals(Intent.ACTION_MAIN);
   }
 
-  public static EnroscarBean getBeanInfo(final Class<?> clazz) {
-    final EnroscarBean beanAnnotation = getAnnotationFromHierarchy(clazz, EnroscarBean.class);
-    if (beanAnnotation == null) { throw new IllegalArgumentException(clazz + " and its supers are not annotated as @" + EnroscarBean.class.getSimpleName()); }
-    return beanAnnotation;
-  }
-
-  public static <A extends Annotation> A getAnnotationFromHierarchy(final Class<?> clazz, final Class<A> annotation) {
-    Class<?> currentClass = clazz;
-    A annotationInstance;
-    do {
-      annotationInstance = currentClass.getAnnotation(annotation);
-      currentClass = currentClass.getSuperclass();
-    } while (annotationInstance == null && currentClass != Object.class);
-    return annotationInstance;
-  }
-
   public static Class<?> getGenericParameterClass(final Class<?> clazz) {
     final Type superclass = clazz.getGenericSuperclass();
     if (superclass instanceof Class) {

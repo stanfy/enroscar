@@ -1,4 +1,4 @@
-package com.stanfy.app.beans;
+package com.stanfy.enroscar.beans;
 
 import java.net.ContentHandler;
 import java.net.ResponseCache;
@@ -14,26 +14,6 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Log;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.app.ActivityBehaviorFactory;
-import com.stanfy.app.CrucialGUIOperationManager;
-import com.stanfy.content.AppDatabaseManager;
-import com.stanfy.images.ImagesManager;
-import com.stanfy.images.cache.ImageFileCache;
-import com.stanfy.images.cache.ImageMemoryCache;
-import com.stanfy.images.cache.SupportLruImageMemoryCache;
-import com.stanfy.io.BuffersPool;
-import com.stanfy.net.EnroscarConnectionsEngine;
-import com.stanfy.serverapi.RemoteServerApiConfiguration;
-import com.stanfy.serverapi.request.SimpleRequestBuilder;
-import com.stanfy.serverapi.response.handler.GsonContentHandler;
-import com.stanfy.serverapi.response.handler.StringContentHandler;
-import com.stanfy.serverapi.response.handler.XmlGsonContentHandler;
-import com.stanfy.stats.EmptyStatsManager;
-import com.stanfy.stats.StatsManager;
-import com.stanfy.utils.AppUtils;
-import com.stanfy.utils.sdk.SDKDependentUtilsFactory;
-
 /**
  * Beans manager.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
@@ -41,7 +21,7 @@ import com.stanfy.utils.sdk.SDKDependentUtilsFactory;
 public class BeansManager {
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  private static final boolean DEBUG = DebugFlags.DEBUG_BEANS_CREATE;
 
   /** Logging tag. */
   private static final String TAG = "Beans";
@@ -129,28 +109,28 @@ public class BeansManager {
   /** @return beans editor instance */
   public Editor edit() { return new Editor(); }
 
-  /** @return images manager instance */
-  public ImagesManager getImagesManager() { return container.getBean(ImagesManager.BEAN_NAME, ImagesManager.class); }
-  /** @return main buffers pool instance */
-  public BuffersPool getMainBuffersPool() { return container.getBean(BuffersPool.BEAN_NAME, BuffersPool.class); }
-  /** @return image memory cache instance */
-  public ImageMemoryCache getImageMemoryCache() { return container.getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class); }
-  /** @return response cache instance */
-  public ResponseCache getResponseCache(final String name) { return container.getBean(name, ResponseCache.class); }
-  /** @return crucial GUI operation manager */
-  public CrucialGUIOperationManager getCrucialGUIOperationManager() { return container.getBean(CrucialGUIOperationManager.BEAN_NAME, CrucialGUIOperationManager.class); }
-  /** @return activity behavior factory */
-  public ActivityBehaviorFactory getActivityBehaviorFactory() { return container.getBean(ActivityBehaviorFactory.BEAN_NAME, ActivityBehaviorFactory.class); }
-  /** @return statistics manager */
-  public StatsManager getStatsManager() { return container.getBean(StatsManager.BEAN_NAME, StatsManager.class); }
-  /** @return SDK dependent utilities factory */
-  public SDKDependentUtilsFactory getSdkDependentUtilsFactory() { return container.getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class); }
-  /** @return remote server API access configuration */
-  public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return container.getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
-  /** @return content handler instance */
-  public ContentHandler getContentHandler(final String name) { return container.getBean(name, ContentHandler.class); }
-  /** @return application database manager instance */
-  public AppDatabaseManager getAppDatabaseManager() { return container.getBean(AppDatabaseManager.class); }
+//  /** @return images manager instance */
+//  public ImagesManager getImagesManager() { return container.getBean(ImagesManager.BEAN_NAME, ImagesManager.class); }
+//  /** @return main buffers pool instance */
+//  public BuffersPool getMainBuffersPool() { return container.getBean(BuffersPool.BEAN_NAME, BuffersPool.class); }
+//  /** @return image memory cache instance */
+//  public ImageMemoryCache getImageMemoryCache() { return container.getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class); }
+//  /** @return response cache instance */
+//  public ResponseCache getResponseCache(final String name) { return container.getBean(name, ResponseCache.class); }
+//  /** @return crucial GUI operation manager */
+//  public CrucialGUIOperationManager getCrucialGUIOperationManager() { return container.getBean(CrucialGUIOperationManager.BEAN_NAME, CrucialGUIOperationManager.class); }
+//  /** @return activity behavior factory */
+//  public ActivityBehaviorFactory getActivityBehaviorFactory() { return container.getBean(ActivityBehaviorFactory.BEAN_NAME, ActivityBehaviorFactory.class); }
+//  /** @return statistics manager */
+//  public StatsManager getStatsManager() { return container.getBean(StatsManager.BEAN_NAME, StatsManager.class); }
+//  /** @return SDK dependent utilities factory */
+//  public SDKDependentUtilsFactory getSdkDependentUtilsFactory() { return container.getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class); }
+//  /** @return remote server API access configuration */
+//  public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return container.getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
+//  /** @return content handler instance */
+//  public ContentHandler getContentHandler(final String name) { return container.getBean(name, ContentHandler.class); }
+//  /** @return application database manager instance */
+//  public AppDatabaseManager getAppDatabaseManager() { return container.getBean(AppDatabaseManager.class); }
 
   /**
    * Beans editor.
@@ -184,7 +164,7 @@ public class BeansManager {
       return this;
     }
     public <T> Editor put(final Class<T> beanClass) {
-      final EnroscarBean info = AppUtils.getBeanInfo(beanClass);
+      final EnroscarBean info = BeanUtils.getBeanInfo(beanClass);
       editorActions.put(info.value(), new PutBean() {
         @Override
         public Object put() {
@@ -194,7 +174,7 @@ public class BeansManager {
       return this;
     }
     public <T> Editor put(final T bean) {
-      final EnroscarBean info = AppUtils.getBeanInfo(bean.getClass());
+      final EnroscarBean info = BeanUtils.getBeanInfo(bean.getClass());
       editorActions.put(info.value(), new PutBean() {
         @Override
         public Object put() {

@@ -1,4 +1,4 @@
-package com.stanfy.app.beans;
+package com.stanfy.enroscar.beans;
 
 /**
  * Marker interface for beans (optional).

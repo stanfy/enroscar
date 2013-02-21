@@ -1,4 +1,4 @@
-package com.stanfy.app.beans;
+package com.stanfy.enroscar.beans;
 
 /**
  * Interface of an object that can flush its resources on demand.

@@ -1,4 +1,4 @@
-package com.stanfy.app.beans;
+package com.stanfy.enroscar.beans;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

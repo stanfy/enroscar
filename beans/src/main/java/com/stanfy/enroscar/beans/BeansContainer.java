@@ -1,6 +1,6 @@
-package com.stanfy.app.beans;
+package com.stanfy.enroscar.beans;
 
-import static com.stanfy.DebugFlags.DEBUG_BEANS;
+import static com.stanfy.enroscar.beans.DebugFlags.DEBUG_BEANS;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 
@@ -16,12 +16,14 @@ public interface BeansContainer extends ComponentCallbacks {
   boolean DEBUG = DEBUG_BEANS;
 
   /**
+   * @param <T> bean type
    * @param clazz bean class (it must be annotated with {@link EnroscarBean})
    * @return bean instance
    */
   <T> T getBean(final Class<T> clazz);
 
   /**
+   * @param <T> bean type
    * @param name bean name
    * @param clazz bean class
    * @return bean instance
@@ -30,6 +32,7 @@ public interface BeansContainer extends ComponentCallbacks {
 
   /**
    * Register the entity.
+   * @param <T> bean type
    * @param clazz entity class
    * @param context context instance that can be used for bean creation
    * @return entity instance
