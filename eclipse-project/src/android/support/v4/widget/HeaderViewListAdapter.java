@@ -14,7 +14,7 @@ import android.widget.WrapperListAdapter;
 /**
  * Copypaste from {@link android.widget.HeaderViewListAdapter}.
  */
-public class HeaderViewListAdapter implements WrapperListAdapter, Filterable {
+class HeaderViewListAdapter implements WrapperListAdapter, Filterable {
 
   private final ListAdapter mAdapter;
 

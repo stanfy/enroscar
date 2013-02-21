@@ -2140,7 +2140,7 @@ public class StaggeredGridView extends ViewGroup {
    * A class that represents a fixed view in a list, for example a header at the top
    * or a footer at the bottom.
    */
-  public class FixedViewInfo {
+  static class FixedViewInfo {
     /** The view to add to the list. */
     View view;
     /** The data backing the view. This is returned from {@link ListAdapter#getItem(int)}. */
