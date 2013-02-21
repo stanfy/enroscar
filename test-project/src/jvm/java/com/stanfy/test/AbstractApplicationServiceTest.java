@@ -11,6 +11,7 @@ import com.stanfy.app.loader.RequestBuilderLoader;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.test.Application.ApplicationService;
 import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.shadows.ShadowLooper;
 
 /**
  * Base class for tests that require {@link ApplicationService} communication.
@@ -63,9 +64,6 @@ public abstract class AbstractApplicationServiceTest extends AbstractMockServerT
     });
     checker.start();
 
-    // boilerplate to make posted operations run
-    getApplication().getApiMainShadowLooper().runToEndOfTasks();
-
     try {
       checker.join();
     } catch (final InterruptedException e) {
@@ -104,6 +102,7 @@ public abstract class AbstractApplicationServiceTest extends AbstractMockServerT
     @Override
     public ResponseData<T> waitForData() {
       LoaderAccess.waitForLoader(loader);
+      Robolectric.shadowOf(ShadowLooper.getMainLooper()).runToEndOfTasks();
       return data;
     }
 

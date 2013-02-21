@@ -105,6 +105,9 @@ public class RequestDescription implements Parcelable {
   /** Content analyzer. */
   String contentAnalyzer;
 
+  /** Task queue name. */
+  String taskQueueName;
+
   /**
    * Create with predefined ID.
    * @param id request ID
@@ -134,7 +137,10 @@ public class RequestDescription implements Parcelable {
     this.contentType = source.readString();
     this.encoding = Charset.forName(source.readString());
     this.contentLanguage = source.readString();
+
     this.parallelMode = source.readInt() == 1;
+    this.taskQueueName = source.readString();
+
     this.canceled = source.readInt() == 1;
 
     this.modelType = source.readParcelable(cl);
@@ -180,7 +186,10 @@ public class RequestDescription implements Parcelable {
     dest.writeString(contentType);
     dest.writeString(encoding.name());
     dest.writeString(contentLanguage);
+
     dest.writeInt(parallelMode ? 1 : 0);
+    dest.writeString(taskQueueName);
+
     dest.writeInt(canceled ? 1 : 0);
 
     dest.writeParcelable(modelType, 0);
@@ -308,6 +317,11 @@ public class RequestDescription implements Parcelable {
   public void setParallelMode(final boolean parallelMode) { this.parallelMode = parallelMode; }
   /** @return parallel mode flag */
   public boolean isParallelMode() { return parallelMode; }
+
+  /** @param taskQueueName task queue name */
+  public void setTaskQueueName(final String taskQueueName) { this.taskQueueName = taskQueueName; }
+  /** @return task queue name */
+  public String getTaskQueueName() { return taskQueueName; }
 
   /** @return the metaParameters */
   public Map<String, Object> getMetaParameters() { return metaParameters; }
