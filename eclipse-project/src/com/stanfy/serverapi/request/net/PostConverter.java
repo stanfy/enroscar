@@ -15,12 +15,13 @@ public abstract class PostConverter extends BaseRequestDescriptionConverter {
   /** Default content type. */
   private final String contentType;
 
-  public PostConverter(final String contentType) {
+  public PostConverter(final RequestDescription requestDescription, final Context context, final String contentType) {
+    super(requestDescription, context);
     this.contentType = contentType;
   }
 
   @Override
-  public URLConnection prepareConnectionInstance(final Context context, final RequestDescription requestDescription) throws IOException {
+  public URLConnection prepareConnectionInstance() throws IOException {
     final URLConnection connection = requestDescription.prepareConnectionBuilder(context)
         .setUrl(requestDescription.getUrl())
         .create();

@@ -1,12 +1,17 @@
 package com.stanfy.serverapi.request.binary;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.stanfy.app.beans.BeansManager;
+import com.stanfy.io.BuffersPool;
+import com.stanfy.io.IoUtils;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.request.net.multipart.Part;
 
@@ -36,7 +41,7 @@ public abstract class BinaryData<T extends Parcelable> implements Parcelable {
   public BinaryData(final Parcel source) {
     this.name = source.readString();
     this.contentName = source.readString();
-    this.data = source.readParcelable(getClass().getClassLoader());
+    this.data = readData(source);
   }
 
   @Override
@@ -46,7 +51,7 @@ public abstract class BinaryData<T extends Parcelable> implements Parcelable {
   public void writeToParcel(final Parcel dest, final int flags) {
     dest.writeString(name);
     dest.writeString(contentName);
-    dest.writeParcelable(data, flags);
+    writeData(dest, data, flags);
   }
 
   /** @param binaryDataName string used to name binary data */
@@ -84,5 +89,24 @@ public abstract class BinaryData<T extends Parcelable> implements Parcelable {
 
   /** @return part instance */
   public abstract Part createHttpPart(final Context context) throws IOException;
+
+  /**
+   * @param stream output
+   * @throws IOException if I/O error happens
+   */
+  public abstract void writeContentTo(final Context context, final OutputStream stream) throws IOException;
+
+  protected void writeData(final Parcel dest, final T data, final int flags) {
+    dest.writeParcelable(data, flags);
+  }
+
+  protected T readData(final Parcel source) {
+    return source.readParcelable(getClass().getClassLoader());
+  }
+
+  protected static void writeInputStreamToOutput(final Context context, final InputStream source, final OutputStream output) throws IOException {
+    BuffersPool pool = BeansManager.get(context).getMainBuffersPool();
+    IoUtils.transfer(source, output, pool);
+  }
 
 }
