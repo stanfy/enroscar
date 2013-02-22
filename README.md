@@ -107,4 +107,65 @@ public class ExampleFragment extends Fragment implements LoaderCallbacks<Respons
 
 ```
 
+Create your own request builders
+--------------------------------
 
+Extend `BaseRequestBuilder` class to create your own request builder that exposes convenient methods for request parameters configuration.
+
+```java
+/**
+ * Custom builder for requests that load twitter user timeline.
+ */
+public class TweetsRequestBuilder extends BaseRequestBuilder<List<Tweet>> {
+
+  public TweetsRequestBuilder(final Context context) {
+    super(context);
+    setTargetUrl("https://api.twitter.com/1/statuses/user_timeline.json");
+  }
+
+  public TweetsRequestBuilder setScreenname(final String name) {
+    addSimpleParameter("screen_name", name);
+    return this;
+  }
+
+}
+```
+
+And now use your own request builder to create a loader.
+
+```java
+public class TweetsAcivity extends FragmentActivity implements LoaderCallbacks<ResponseData<List<Tweet>> {
+
+  @Override
+  protected void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getSupportLoaderManager().initLoader(0, null, this);
+  }
+
+  @Override
+  public Loader<ResponseData<List<Tweet>> onCreateLoader(final int id, final Bundle args) {
+    return new TweetsRequestBuilder(this)
+        .setScreenname("TwitterAPI")
+        .getLoader();
+  }
+
+  @Override
+  public void onLoadFinished(Loader<ResponseData<List<Tweet>> loader, ResponseData<List<Tweet> data) {
+    // display list
+  }
+
+  // ...
+}
+```
+
+Task queues
+-----------
+
+Be default all the requests are processed one-by-one outside the main thread.
+But you can specify the queue name used for your request processing. Requests that share the same queue are processed one-by-one. And multiple queues are processed in parallel.
+
+Use `setTasksQueueName` method of your request builders to specify the queue name.
+Default queue name is "default".
+
+You may also call method `setParallel` on your request builder in order to schedule your request processing outside queues in a thread from the pool.
+On Honeycomb and later Android versions `AsyncTask`'s thread pool is used. And a separate pool is created for earlier versions.
