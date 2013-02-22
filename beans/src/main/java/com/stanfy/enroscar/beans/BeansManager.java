@@ -1,7 +1,5 @@
 package com.stanfy.enroscar.beans;
 
-import java.net.ContentHandler;
-import java.net.ResponseCache;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,6 +8,7 @@ import java.util.Map.Entry;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Log;
@@ -91,7 +90,9 @@ public class BeansManager {
    */
   void registerComponentCallbacks() {
     if (callbacksRegistered) { return; } // do it once only
-    AppUtils.getSdkDependentUtils().registerComponentCallbacks(application, this.container);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      application.registerComponentCallbacks(this.container);
+    }
     callbacksRegistered = true;
   }
 
@@ -185,91 +186,91 @@ public class BeansManager {
       return this;
     }
 
-    public Editor required() {
-      put(SDKDependentUtilsFactory.class);
-      put(BuffersPool.class);
-      put(EmptyStatsManager.class);
-      return this;
-    }
-
-    public Editor images(final EnroscarConnectionsEngine.Config config) {
-      put(ImageFileCache.class);
-      put(SupportLruImageMemoryCache.class);
-      put(ImagesManager.class);
-
-      editorActions.put("images-connections-config", new PutBean() {
-        @Override
-        public Object put() {
-          // install connections engine
-          config.install(application);
-          return null;
-        }
-      });
-      return this;
-    }
-
-    public Editor images() { return images(EnroscarConnectionsEngine.config()); }
-
-    public Editor activitiesBehavior() {
-      put(ActivityBehaviorFactory.class);
-      put(CrucialGUIOperationManager.class);
-      return this;
-    }
-
-    public Editor remoteServerApi(final EnroscarConnectionsEngine.Config config, final String... formats) {
-      put(RemoteServerApiConfiguration.class);
-      if (formats.length > 0) {
-
-        Class<?> mainClass = null;
-        for (final String format : formats) {
-          Class<?> handlerClass = null;
-
-          if (SimpleRequestBuilder.JSON.equals(format)) {
-            handlerClass = GsonContentHandler.class;
-          } else if (SimpleRequestBuilder.XML.equals(format)) {
-            handlerClass = XmlGsonContentHandler.class;
-          } else if (SimpleRequestBuilder.STRING.equals(format)) {
-            handlerClass = StringContentHandler.class;
-          }
-
-          if (handlerClass == null) {
-            throw new RuntimeException("Unknown format " + format);
-          }
-
-          if (mainClass == null) { mainClass = handlerClass; }
-          put(handlerClass);
-        }
-
-        final String mainContentHandlerName = AppUtils.getBeanInfo(mainClass).value();
-        editorActions.put("remoteServerApi-config", new PutBean() {
-          @Override
-          public Object put() {
-            // set default content handler
-            getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class)
-                .setDefaultContentHandlerName(mainContentHandlerName);
-
-            // install connections engine
-            config.install(application);
-
-            return null;
-          }
-        });
-
-      }
-      return this;
-    }
-
-    public Editor remoteServerApi(final String... formats) {
-      return remoteServerApi(EnroscarConnectionsEngine.config(), formats);
-    }
-
-    public Editor defaults() {
-      required();
-      images();
-      activitiesBehavior();
-      remoteServerApi();
-      return this;
-    }
+//    public Editor required() {
+//      put(SDKDependentUtilsFactory.class);
+//      put(BuffersPool.class);
+//      put(EmptyStatsManager.class);
+//      return this;
+//    }
+//
+//    public Editor images(final EnroscarConnectionsEngine.Config config) {
+//      put(ImageFileCache.class);
+//      put(SupportLruImageMemoryCache.class);
+//      put(ImagesManager.class);
+//
+//      editorActions.put("images-connections-config", new PutBean() {
+//        @Override
+//        public Object put() {
+//          // install connections engine
+//          config.install(application);
+//          return null;
+//        }
+//      });
+//      return this;
+//    }
+//
+//    public Editor images() { return images(EnroscarConnectionsEngine.config()); }
+//
+//    public Editor activitiesBehavior() {
+//      put(ActivityBehaviorFactory.class);
+//      put(CrucialGUIOperationManager.class);
+//      return this;
+//    }
+//
+//    public Editor remoteServerApi(final EnroscarConnectionsEngine.Config config, final String... formats) {
+//      put(RemoteServerApiConfiguration.class);
+//      if (formats.length > 0) {
+//
+//        Class<?> mainClass = null;
+//        for (final String format : formats) {
+//          Class<?> handlerClass = null;
+//
+//          if (SimpleRequestBuilder.JSON.equals(format)) {
+//            handlerClass = GsonContentHandler.class;
+//          } else if (SimpleRequestBuilder.XML.equals(format)) {
+//            handlerClass = XmlGsonContentHandler.class;
+//          } else if (SimpleRequestBuilder.STRING.equals(format)) {
+//            handlerClass = StringContentHandler.class;
+//          }
+//
+//          if (handlerClass == null) {
+//            throw new RuntimeException("Unknown format " + format);
+//          }
+//
+//          if (mainClass == null) { mainClass = handlerClass; }
+//          put(handlerClass);
+//        }
+//
+//        final String mainContentHandlerName = AppUtils.getBeanInfo(mainClass).value();
+//        editorActions.put("remoteServerApi-config", new PutBean() {
+//          @Override
+//          public Object put() {
+//            // set default content handler
+//            getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class)
+//                .setDefaultContentHandlerName(mainContentHandlerName);
+//
+//            // install connections engine
+//            config.install(application);
+//
+//            return null;
+//          }
+//        });
+//
+//      }
+//      return this;
+//    }
+//
+//    public Editor remoteServerApi(final String... formats) {
+//      return remoteServerApi(EnroscarConnectionsEngine.config(), formats);
+//    }
+//
+//    public Editor defaults() {
+//      required();
+//      images();
+//      activitiesBehavior();
+//      remoteServerApi();
+//      return this;
+//    }
 
     private void performActions(final Map<String, PutBean> editorActions) {
       final long start = System.currentTimeMillis();

@@ -7,8 +7,10 @@ import java.lang.annotation.Annotation;
  * Bean utilities.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public class BeanUtils {
+public final class BeanUtils {
 
+  private BeanUtils() { /* hidden */ }
+  
   public static EnroscarBean getBeanInfo(final Class<?> clazz) {
     final EnroscarBean beanAnnotation = getAnnotationFromHierarchy(clazz, EnroscarBean.class);
     if (beanAnnotation == null) { throw new IllegalArgumentException(clazz + " and its supers are not annotated as @" + EnroscarBean.class.getSimpleName()); }
