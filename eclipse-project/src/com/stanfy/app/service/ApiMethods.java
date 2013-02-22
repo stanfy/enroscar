@@ -15,11 +15,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -67,16 +69,20 @@ public class ApiMethods {
   /** Threads pool. */
   private static final Executor THREAD_POOL_EXECUTOR;
   static {
-    final AtomicInteger threadCounter = new AtomicInteger(1);
-    ThreadFactory tFactory = new ThreadFactory() {
-      @Override
-      public Thread newThread(final Runnable r) {
-        return new Thread(r, "Tasks Queue Thread #" + threadCounter.getAndIncrement());
-      }
-    };
-    final LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(MAX_QUEUE_LENGTH);
     // TODO think about rejects
-    THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, queue, tFactory);
+    Executor executor = getAsyncTaskThreadPool();
+    if (executor == null) {
+      final AtomicInteger threadCounter = new AtomicInteger(1);
+      ThreadFactory tFactory = new ThreadFactory() {
+        @Override
+        public Thread newThread(final Runnable r) {
+          return new Thread(r, "Tasks Queue Thread #" + threadCounter.getAndIncrement());
+        }
+      };
+      final LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(MAX_QUEUE_LENGTH);
+      executor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, queue, tFactory);
+    }
+    THREAD_POOL_EXECUTOR = executor;
   }
 
   /** Executor for the task queue. */
@@ -508,6 +514,11 @@ public class ApiMethods {
       TASK_QUEUE_EXECUTORS.put(name, exec);
     }
     return exec;
+  }
+
+  @SuppressLint("NewApi")
+  private static Executor getAsyncTaskThreadPool() {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? AsyncTask.THREAD_POOL_EXECUTOR : null;
   }
 
   /**
