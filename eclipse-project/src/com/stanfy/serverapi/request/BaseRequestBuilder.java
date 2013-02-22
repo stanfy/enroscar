@@ -286,6 +286,12 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
     return this;
   }
 
+  public BaseRequestBuilder<?> setTaskQueueName(final String taskQueue) {
+    result.parallelMode = false;
+    result.taskQueueName = taskQueue;
+    return this;
+  }
+
   @Override
   public ModelTypeToken getExpectedModelType() { return expectedModelType; }
 

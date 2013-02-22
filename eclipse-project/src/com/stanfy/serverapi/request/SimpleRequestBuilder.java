@@ -73,6 +73,11 @@ public abstract class SimpleRequestBuilder<MT> extends BaseRequestBuilder<MT> {
     return (SimpleRequestBuilder<MT>)super.setParallel(value);
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public SimpleRequestBuilder<MT> setTaskQueueName(final String taskQueue) {
+    return (SimpleRequestBuilder<MT>)super.setTaskQueueName(taskQueue);
+  }
 
   /**
    * Add string parameter.
