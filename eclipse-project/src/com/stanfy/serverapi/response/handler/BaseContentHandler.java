@@ -12,8 +12,8 @@ import java.nio.charset.Charset;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.InitializingBean;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.InitializingBean;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.IoUtils;
 import com.stanfy.io.PoolableBufferedInputStream;

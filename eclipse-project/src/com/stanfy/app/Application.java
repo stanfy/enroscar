@@ -2,7 +2,7 @@ package com.stanfy.app;
 
 import android.content.res.Configuration;
 
-import com.stanfy.app.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager;
 
 /**
  * Base application class.

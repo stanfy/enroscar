@@ -3,8 +3,8 @@ package com.stanfy.utils.sdk;
 import android.os.Build;
 import android.util.Log;
 
-import com.stanfy.app.beans.Bean;
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.Bean;
+import com.stanfy.enroscar.beans.EnroscarBean;
 
 /**
  * Factory for {@link SDKDependentUtils}.

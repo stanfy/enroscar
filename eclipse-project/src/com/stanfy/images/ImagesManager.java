@@ -28,9 +28,9 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.EnroscarBean;
-import com.stanfy.app.beans.InitializingBean;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.InitializingBean;
 import com.stanfy.images.cache.ImageMemoryCache;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.FlushedInputStream;

@@ -2,9 +2,9 @@ package com.stanfy.app;
 
 import android.app.Activity;
 
-import com.stanfy.app.beans.Bean;
-import com.stanfy.app.beans.BeansManager;
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.Bean;
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.beans.EnroscarBean;
 
 /**
  * Factory for {@link BaseActivityBehavior}.

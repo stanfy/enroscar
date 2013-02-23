@@ -13,8 +13,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import com.google.gson.GsonBuilder;
-import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.gsonxml.GsonXml;
 import com.stanfy.gsonxml.GsonXmlBuilder;
 import com.stanfy.gsonxml.XmlParserCreator;

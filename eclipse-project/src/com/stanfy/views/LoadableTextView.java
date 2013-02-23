@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import com.stanfy.app.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.images.ImagesManager;
 
 /**

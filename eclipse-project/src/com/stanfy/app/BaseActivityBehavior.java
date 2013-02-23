@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.stats.StatsManager;
 import com.stanfy.utils.AppUtils;
 import com.stanfy.utils.LocationMethodsSupport;

@@ -1,11 +1,11 @@
 package com.stanfy.serverapi;
 
-import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.BeansManager;
-import com.stanfy.app.beans.EnroscarBean;
-import com.stanfy.app.beans.InitializingBean;
-import com.stanfy.app.beans.ManagerAwareBean;
 import com.stanfy.app.service.ApplicationService;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.InitializingBean;
+import com.stanfy.enroscar.beans.ManagerAwareBean;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.response.DefaultResponseModelConverter;
 import com.stanfy.serverapi.response.ResponseModelConverter;

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.io.IoUtils;
 import com.stanfy.serverapi.response.ModelTypeToken;
 

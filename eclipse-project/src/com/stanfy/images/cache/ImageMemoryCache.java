@@ -2,7 +2,7 @@ package com.stanfy.images.cache;
 
 import android.graphics.Bitmap;
 
-import com.stanfy.app.beans.FlushableBean;
+import com.stanfy.enroscar.beans.FlushableBean;
 
 /**
  * Interface of images memory cache.

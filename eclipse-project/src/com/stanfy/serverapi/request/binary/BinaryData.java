@@ -9,7 +9,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.stanfy.app.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.IoUtils;
 import com.stanfy.serverapi.request.RequestDescription;

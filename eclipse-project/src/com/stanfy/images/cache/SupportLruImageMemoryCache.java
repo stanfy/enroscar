@@ -6,9 +6,9 @@ import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
-import com.stanfy.app.beans.Bean;
-import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.Bean;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.utils.AppUtils;
 import com.stanfy.utils.sdk.SDKDependentUtils;
 

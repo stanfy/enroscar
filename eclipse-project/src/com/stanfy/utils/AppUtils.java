@@ -2,7 +2,6 @@ package com.stanfy.utils;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -30,8 +29,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.internal.$Gson$Types;
-import com.stanfy.app.beans.BeansManager;
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.io.IoUtils;
 import com.stanfy.utils.sdk.SDKDependentUtils;
 

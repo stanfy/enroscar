@@ -16,10 +16,10 @@ import android.os.Build.VERSION;
 import android.os.Environment;
 import android.util.Log;
 
-import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.DestroyingBean;
-import com.stanfy.app.beans.EnroscarBean;
-import com.stanfy.app.beans.InitializingBean;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.DestroyingBean;
+import com.stanfy.enroscar.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.InitializingBean;
 import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.net.cache.BaseSizeRestrictedCache;
 import com.stanfy.net.cache.CacheInstaller;
