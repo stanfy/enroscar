@@ -1,0 +1,7 @@
+#Gradle
+build
+
+#Eclipse
+.settings
+.classpath
+.project

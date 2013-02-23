@@ -1,5 +1,0 @@
-<project name="enroscar-beans" basedir=".." default="build">
-	
-	<import file="../../build/java-build.ant" />
-	
-</project>
