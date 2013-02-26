@@ -1,7 +1,17 @@
-apply plugin : 'java'
-apply plugin : 'eclipse'
 apply plugin : 'checkstyle'
-apply plugin : JavaRobolectricPlugin
+apply plugin : 'eclipse'
+apply plugin : 'java-robolectric'
+
+buildscript {
+  repositories {
+    maven { 
+      url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
+  }
+  dependencies {
+    classpath group: 'com.stanfy.android', name: 'gradle-plugin-java-robolectric', version: '1.0-SNAPSHOT'
+  }
+}
 
 sourceCompatibility = 1.6
 version = '0.2'
@@ -29,109 +39,4 @@ dependencies {
   compile fileTree(dir : 'libs', include : '*.jar')
   testCompile group: 'junit', name: 'junit', version: '4.10'
   testCompile group: 'com.pivotallabs', name: 'robolectric', version: '0.9.8'
-}
-
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-
-class JavaRobolectricPlugin implements Plugin<Project> {
-  
-  private static final Logger LOG = LoggerFactory.getLogger('JavaRobolectricPlugin')
-  
-  private void writeTo(String path, String value) {
-    writeTo new File(path), value
-  }
-  
-  private void writeTo(File f, String value) {
-    f.delete()
-    f.parentFile.mkdirs()
-    f << value
-  }
-
-  private void genSources(Project project) {
-    def pckg = project.javarob.packageName
-    if (!pckg) { throw new RuntimeException("Package name is not defined") }
-    def pckgPath = pckg.replaceAll(/\./, '/')
-
-    // R file    
-    def rFilePath = "${project.buildDir}/tmp/android/gen/$pckgPath/R.java"
-    LOG.info "Create R file at $rFilePath"
-    writeTo rFilePath, "package $pckg;\npublic class R { /* fake */ }\n" 
-    
-    // Manifest
-    def mFilePath = "${project.buildDir}/tmp/android/AndroidManifest.xml"
-    LOG.info "Create manifest file at $mFilePath"
-    writeTo mFilePath, ('<?xml version="1.0" encoding="utf-8"?>'
-        + '<manifest xmlns:android="http://schemas.android.com/apk/res/android"\n'
-        + "          package=\"$pckg\"\n"
-        + "          android:versionCode=\"1\" android.versionName=\"0\">"
-        + "  <appliaction/>"
-        + "</manifest>")
-    
-    // res folder
-    new File("${project.buildDir}/tmp/android/res").mkdirs()
-  }
-  
-  private void makeTestRunner(Project project) {
-    def pckg = project.javarob.packageName
-    if (!pckg) { throw new RuntimeException("Package name is not defined") }
-    def pckgPath = pckg.replaceAll(/\./, '/')
-
-    def baseDir = project.sourceSets.test.java.srcDirs.iterator().next()
-    def runnerFile = new File(baseDir, "$pckgPath/test/Runner.java")
-    writeTo runnerFile, ("package ${pckg}.test;\n\n"
-      + 'import java.io.File;\n'
-      + 'import org.junit.runners.model.InitializationError;\n'
-      + 'import com.xtremelabs.robolectric.RobolectricTestRunner;\n\n\n'
-      + '/** Use this runner instead of RobolectricTestRunner. */\n'
-      + 'public class Runner extends RobolectricTestRunner {\n'
-      + '  public Runner(final Class<?> testClass) throws InitializationError {\n'
-      + "    super(testClass, new File(\"build/tmp/android\"));\n"
-      + '  }\n'
-      + '}\n')
-  }
-  
-  @Override
-  void apply(Project project) {
-
-    // aply java plugin
-    project.apply plugin : JavaPlugin
-        
-    // define our config
-    project.extensions.create("javarob", JavaRobSettings)
-    
-    // generate fake R file, Manifest, and res folder
-    project.compileTestJava.doFirst {
-      genSources project
-    }
-    
-    // add out sources to sourse sets
-    project.sourceSets.test.java.srcDirs += new File("${project.buildDir}/tmp/android/gen")
-    
-    // add 'test-runner' task
-    project.task('test-runner') << {
-      makeTestRunner(project)
-    }
-
-    // create test runner before importing to IDE    
-    ['eclipse', 'idea'].each {
-      def task
-      try {
-        task = project.tasks.getByName(it)
-      } catch (UnknownTaskException e) {
-        task = null
-      }
-      if (task) {
-        task << {
-          makeTestRunner(project)
-        }
-      }
-    }
-    
-  }
-  
-}
-
-class JavaRobSettings {
-  String packageName
 }
