@@ -11,8 +11,8 @@ import java.io.Writer;
 import android.content.Context;
 import android.os.Environment;
 
-import com.stanfy.app.beans.Bean;
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.Bean;
+import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.images.ImagesManager;
 import com.stanfy.net.cache.BaseFileResponseCache;
 import com.stanfy.net.cache.CacheEntry;

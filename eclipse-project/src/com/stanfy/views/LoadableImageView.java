@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 
-import com.stanfy.app.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.images.ImagesLoadListener;
 import com.stanfy.images.ImagesManager;
 import com.stanfy.images.ImagesManager.ImageHolder;

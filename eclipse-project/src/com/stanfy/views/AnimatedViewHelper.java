@@ -3,7 +3,7 @@ package com.stanfy.views;
 import android.view.View;
 
 import com.stanfy.app.CrucialGUIOperationManager;
-import com.stanfy.app.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager;
 
 /**
  * @author Roman Mazur (Stanfy - http://stanfy.com)

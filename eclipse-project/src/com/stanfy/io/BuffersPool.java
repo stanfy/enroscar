@@ -9,9 +9,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.EnroscarBean;
-import com.stanfy.app.beans.FlushableBean;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.FlushableBean;
 
 /**
  * A pool of temporary storages required for images decoding or other IO operations.

@@ -5,8 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.stanfy.app.beans.Bean;
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.Bean;
+import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.views.R;
 
 /**

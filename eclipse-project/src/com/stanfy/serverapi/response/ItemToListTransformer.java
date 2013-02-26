@@ -8,7 +8,7 @@ import java.util.List;
 
 import android.content.Context;
 
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.serverapi.RequestMethod.RequestMethodException;
 import com.stanfy.serverapi.request.RequestDescription;
 

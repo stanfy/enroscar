@@ -15,9 +15,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.EnroscarBean;
-import com.stanfy.app.beans.InitializingBean;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.InitializingBean;
 
 
 /**

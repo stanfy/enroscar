@@ -3,7 +3,7 @@ package com.stanfy.content;
 import android.content.ContentProvider;
 import android.content.UriMatcher;
 
-import com.stanfy.app.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager;
 
 /**
  * Default application content provider. Provides access to API and images cache.

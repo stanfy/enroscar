@@ -20,8 +20,8 @@ import android.net.Uri;
 import android.support.v4.content.Loader;
 import android.util.Log;
 
-import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.loader.RequestBuilderLoader;
+import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.serverapi.RemoteServerApiConfiguration;
 import com.stanfy.serverapi.request.binary.AssetFdBinaryData;
 import com.stanfy.serverapi.request.binary.BitmapBinaryData;

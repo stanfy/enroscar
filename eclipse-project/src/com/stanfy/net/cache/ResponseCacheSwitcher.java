@@ -14,7 +14,7 @@ import java.util.Map;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.net.UrlConnectionWrapper;
 
 /**

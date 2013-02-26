@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 import android.app.Activity;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.beans.Bean;
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.Bean;
+import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.utils.AppUtils;
 
 /**

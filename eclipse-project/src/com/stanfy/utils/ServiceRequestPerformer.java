@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.service.ApplicationService;
+import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.serverapi.request.RequestBuilder;
 import com.stanfy.serverapi.request.RequestDescription;
 

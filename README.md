@@ -3,6 +3,17 @@ Enroscar
 
 **An Android library focused on web-service clients implementation**
 
+Modules branch
+==============
+
+This branch is used for dividing Enroscar into several independent modules.
+Modules can be built separately. 
+
+Building
+--------
+
+Gradle is used for building. 
+Simple Java projects that use Robolectric for testing are built with [Gradle Java Robolectric plugin](https://github.com/stanfy/gradle-plugin-java-robolectric).
 
 Quick Start Guide
 =================

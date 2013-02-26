@@ -2,7 +2,6 @@ package com.stanfy.utils;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -30,8 +29,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.internal.$Gson$Types;
-import com.stanfy.app.beans.BeansManager;
-import com.stanfy.app.beans.EnroscarBean;
+import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.io.IoUtils;
 import com.stanfy.utils.sdk.SDKDependentUtils;
 
@@ -212,22 +210,6 @@ public class AppUtils {
     final String intentAction = intent.getAction();
     return intent.hasCategory(Intent.CATEGORY_LAUNCHER)
         && intentAction != null && intentAction.equals(Intent.ACTION_MAIN);
-  }
-
-  public static EnroscarBean getBeanInfo(final Class<?> clazz) {
-    final EnroscarBean beanAnnotation = getAnnotationFromHierarchy(clazz, EnroscarBean.class);
-    if (beanAnnotation == null) { throw new IllegalArgumentException(clazz + " and its supers are not annotated as @" + EnroscarBean.class.getSimpleName()); }
-    return beanAnnotation;
-  }
-
-  public static <A extends Annotation> A getAnnotationFromHierarchy(final Class<?> clazz, final Class<A> annotation) {
-    Class<?> currentClass = clazz;
-    A annotationInstance;
-    do {
-      annotationInstance = currentClass.getAnnotation(annotation);
-      currentClass = currentClass.getSuperclass();
-    } while (annotationInstance == null && currentClass != Object.class);
-    return annotationInstance;
   }
 
   public static Class<?> getGenericParameterClass(final Class<?> clazz) {

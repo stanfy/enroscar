@@ -10,7 +10,7 @@ import org.apache.http.util.EncodingUtils;
 
 import android.content.Context;
 
-import com.stanfy.app.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.IoUtils;
 import com.stanfy.io.PoolableBufferedOutputStream;

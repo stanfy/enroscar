@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.ContentHandler;
 import java.net.URLConnection;
 
-import com.stanfy.app.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager;
 
 /**
  * Content handler switcher.

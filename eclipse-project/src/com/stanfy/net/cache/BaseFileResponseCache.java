@@ -17,11 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.BeansManager;
-import com.stanfy.app.beans.DestroyingBean;
-import com.stanfy.app.beans.InitializingBean;
-import com.stanfy.app.beans.ManagerAwareBean;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.beans.DestroyingBean;
+import com.stanfy.enroscar.beans.InitializingBean;
+import com.stanfy.enroscar.beans.ManagerAwareBean;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.DiskLruCache;
 import com.stanfy.io.DiskLruCache.Snapshot;
