@@ -4,9 +4,7 @@ apply plugin : 'java-robolectric'
 
 buildscript {
   repositories {
-    maven { 
-      url 'https://oss.sonatype.org/content/repositories/releases/'
-    }
+    mavenCentral()
   }
   dependencies {
     classpath group: 'com.stanfy.android', name: 'gradle-plugin-java-robolectric', version: '1.0'
