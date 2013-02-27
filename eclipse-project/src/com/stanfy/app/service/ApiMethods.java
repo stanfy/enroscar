@@ -195,6 +195,7 @@ public class ApiMethods {
         trackersMap.remove(requestDescription.getId());
         if (DEBUG) { Log.d(TAG, "Request trackers count: " + trackersMap.size()); }
       }
+      appService.checkForStop();
     }
 
     protected void reportToCallbacks(final RequestDescription description, final ResponseData<?> responseData, final CallbackReporter reporter) {
@@ -386,9 +387,11 @@ public class ApiMethods {
    */
   protected RequestProcessorHooks createRequestDescriptionHooks() { return new CommonHooks(); }
 
-
-  // Note: must be accessed from the main thread
-  boolean isWorking() { return trackersMap.size() > 0; }
+  boolean isWorking() {
+    synchronized (trackersMap) {
+      return trackersMap.size() > 0;
+    }
+  }
 
   protected void destroy() {
     apiCallbacks.clear();
