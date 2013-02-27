@@ -30,17 +30,4 @@ public interface ApiMethodCallback {
    */
   void reportCancel(final RequestDescription requestDescription, final ResponseData<?> responseData);
 
-  /**
-   * Report about pending API operation (this operation is handled by the main queue executor).
-   * @param requestId request ID
-   */
-  void reportPending(final int requestId);
-
-  /**
-   * Report about last operation (this operation was handled by the main queue executor).
-   * @param requestId request ID
-   * @param responseData response data instance
-   */
-  void reportLastOperation(final int requestId, final ResponseData<?> responseData);
-
 }
