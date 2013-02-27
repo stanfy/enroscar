@@ -22,8 +22,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseArray;
@@ -183,9 +181,6 @@ public class ApiMethods {
 
   // =======================================================================================
 
-  /** Main thread handler. */
-  private static final Handler MAIN_THREAD_HANDLER = new Handler(Looper.getMainLooper());
-
   /**
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
@@ -264,13 +259,10 @@ public class ApiMethods {
     }
     @Override
     public void afterRequestProcessingFinished(final RequestDescription requestDescription, final RequestMethod requestMethod) {
-      MAIN_THREAD_HANDLER.post(new Runnable() {
-        @Override
-        public void run() {
-          trackersMap.remove(requestDescription.getId());
-        }
-      });
-      if (DEBUG) { Log.d(TAG, "Request trackers count: " + trackersMap.size()); }
+      synchronized (trackersMap) {
+        trackersMap.remove(requestDescription.getId());
+        if (DEBUG) { Log.d(TAG, "Request trackers count: " + trackersMap.size()); }
+      }
     }
 
     protected void reportToCallbacks(final RequestDescription description, final ResponseData<?> responseData, final CallbackReporter reporter) {
@@ -438,7 +430,11 @@ public class ApiMethods {
       if (queueName == null) { queueName = DEFAULT_QUEUE; }
       if (DEBUG) { Log.d(TAG, "Will process request description in queue " + queueName + ", rd=" + requestDescription); }
       Executor exec = getTaskQueueExecutor(queueName);
-      if (DEBUG) { Log.v(TAG, "Executors: " + TASK_QUEUE_EXECUTORS.keySet()); }
+      if (DEBUG) {
+        synchronized (TASK_QUEUE_EXECUTORS) {
+          Log.v(TAG, "Executors: " + TASK_QUEUE_EXECUTORS.keySet());
+        }
+      }
       exec.execute(future);
     }
 
@@ -506,14 +502,15 @@ public class ApiMethods {
     this.rdProcessor = createRequestDescriptionProcessor(appService.getApplication());
   }
 
-  // Note: must be access from the main thread only
   private static Executor getTaskQueueExecutor(final String name) {
-    Executor exec = TASK_QUEUE_EXECUTORS.get(name);
-    if (exec == null) {
-      exec = new TaskQueueExecutor();
-      TASK_QUEUE_EXECUTORS.put(name, exec);
+    synchronized (TASK_QUEUE_EXECUTORS) {
+      Executor exec = TASK_QUEUE_EXECUTORS.get(name);
+      if (exec == null) {
+        exec = new TaskQueueExecutor();
+        TASK_QUEUE_EXECUTORS.put(name, exec);
+      }
+      return exec;
     }
-    return exec;
   }
 
   @SuppressLint("NewApi")
@@ -568,36 +565,30 @@ public class ApiMethods {
       : new TaskQueueRequestTracker(description, defaultQueue ? defaultQueueProcessorHooks : commonProcessorHooks); // request must be enqueued
   }
 
-  protected void checkClientThread() {
-    if (Looper.myLooper() != Looper.getMainLooper()) {
-      throw new IllegalStateException("Wrong thread " + Thread.currentThread() + ". You must use main thread to call ApiMethods.");
-    }
-  }
-
   // -------------------------------------------- Client-side API ------------------------------------------------
 
   public void performRequest(final RequestDescription description) {
-    checkClientThread();
     if (DEBUG) { Log.d(TAG, "Perform " + description + " " + this); }
 
     final RequestTracker tracker = createRequestTracker(description);
-
-    trackersMap.put(description.getId(), tracker);
+    synchronized (trackersMap) {
+      trackersMap.put(tracker.requestDescription.getId(), tracker);
+    }
     tracker.performRequest();
   }
 
   public boolean cancelRequest(final int id) {
-    checkClientThread();
-    final RequestTracker tracker = trackersMap.get(id);
+    final RequestTracker tracker;
+    synchronized (trackersMap) {
+      tracker = trackersMap.get(id);
+    }
     if (tracker != null) {
-      trackersMap.remove(id);
       return tracker.cancelRequest();
     }
     return false;
   }
 
   public void registerCallback(final ApiMethodCallback callback) {
-    checkClientThread();
     if (DEBUG) { Log.d(TAG, "Register API callback " + callback + " to " + this); }
     final APICallInfoData b = new APICallInfoData();
     b.set(lastOperation);
@@ -613,7 +604,6 @@ public class ApiMethods {
   }
 
   public void removeCallback(final ApiMethodCallback callback) {
-    checkClientThread();
     if (DEBUG) { Log.d(TAG, "Remove API callback " + callback); }
     synchronized (apiCallbacks) {
       apiCallbacks.remove(callback);
