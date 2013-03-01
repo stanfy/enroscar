@@ -92,29 +92,11 @@ public class ChainedRequestCallback extends ApiSupportRequestCallback {
   }
 
   @Override
-  protected void onLastOperationReport(final int requestId, final ResponseData<?> responseData) {
-    final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
-    for (int i = callbacks.size() - 1; i >= 0; i--) {
-      final ApiSupportRequestCallback rc = callbacks.get(i);
-      rc.onLastOperationReport(requestId, responseData);
-    }
-  }
-
-  @Override
   protected void onOperationFinished(final RequestDescription requestDescription) {
     final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
     for (int i = callbacks.size() - 1; i >= 0; i--) {
       final ApiSupportRequestCallback rc = callbacks.get(i);
       rc.onOperationFinished(requestDescription);
-    }
-  }
-
-  @Override
-  protected void onOperationPending(final int requestId) {
-    final ArrayList<ApiSupportRequestCallback> callbacks = getFilterCallbacks();
-    for (int i = callbacks.size() - 1; i >= 0; i--) {
-      final ApiSupportRequestCallback rc = callbacks.get(i);
-      rc.onOperationPending(requestId);
     }
   }
 

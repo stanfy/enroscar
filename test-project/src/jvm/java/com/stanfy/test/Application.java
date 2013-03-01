@@ -7,15 +7,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 
 import com.stanfy.app.service.ApiMethodCallback;
+import com.stanfy.app.service.ApiMethods;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.response.ResponseData;
 import com.xtremelabs.robolectric.Robolectric;
-import com.xtremelabs.robolectric.shadows.ShadowLooper;
 
 /**
  * Test application.
@@ -35,50 +34,17 @@ public class Application extends com.stanfy.app.Application {
     }
 
     @Override
-    protected com.stanfy.app.service.ApiMethods createApiMethods() {
-      return new ApiMethods(this);
+    protected ApiMethods createApiMethods() {
+      return new MyApiMethods(this);
     }
 
   }
 
-  /**
-   * Special API methods implementation.
-   */
-  private static final class ApiMethods extends com.stanfy.app.service.ApiMethods {
-
-    ApiMethods(final ApplicationService appService) {
-      super(appService);
+  /** Api methods. */
+  private static class MyApiMethods extends ApiMethods {
+    public MyApiMethods(final ApplicationService service) {
+      super(service);
     }
-
-    @Override
-    protected RequestTracker createRequestTracker(final RequestDescription description) {
-      return description.isParallelMode()
-        ? new ParallelRequestTracker(description)  // request must be parallel
-        : new EnqueuedRequestTracker(description); // request must be enqueued
-    }
-
-    /** Special tracker. */
-    private final class EnqueuedRequestTracker extends com.stanfy.app.service.ApiMethods.EnqueuedRequestTracker {
-
-      public EnqueuedRequestTracker(final RequestDescription rd) {
-        super(rd);
-      }
-
-      @Override
-      public void performRequest() {
-        final Handler handler = getMainHandler();
-        handler.removeMessages(MSG_FINISH);
-        handler.sendMessageDelayed(handler.obtainMessage(MSG_REQUEST, getRequestDescription()), 1);
-        handler.sendEmptyMessageDelayed(MSG_FINISH, 2);
-      }
-
-    }
-
-    @Override
-    public Handler getMainHandler() {
-      return super.getMainHandler();
-    }
-
   }
 
   /** Callback for testing. */
@@ -97,12 +63,6 @@ public class Application extends com.stanfy.app.Application {
     public void reportSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
       data = responseData;
       latch.countDown();
-    }
-    @Override
-    public void reportPending(final int requestId) {
-    }
-    @Override
-    public void reportLastOperation(final int requestId, final ResponseData<?> responseData) {
     }
     @Override
     public void reportError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
@@ -217,13 +177,6 @@ public class Application extends com.stanfy.app.Application {
       destroyService();
     }
     return result;
-  }
-
-  public ShadowLooper getApiMainShadowLooper() {
-    final ApiMethods apiM = (ApiMethods)appServiceInstance.getApiMethods();
-    final Handler shadowedHandler = apiM.getMainHandler();
-    final ShadowLooper looper = Robolectric.shadowOf(shadowedHandler.getLooper());
-    return looper;
   }
 
 }

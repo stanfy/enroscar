@@ -147,20 +147,6 @@ public class ApiMethodsSupport extends RequestPerformer {
       }
     }
 
-    /**
-     * @see ApiMethodCallback#reportPending(int)
-     */
-    protected void onOperationPending(final int requestId) {
-      // nothing
-    }
-
-    /**
-     * @see ApiMethodCallback#reportLastOperation(int, ResponseData<?>)
-     */
-    protected void onLastOperationReport(final int requestId, final ResponseData<?> responseData) {
-      // nothing
-    }
-
     protected void onError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
     }
 
@@ -199,20 +185,6 @@ public class ApiMethodsSupport extends RequestPerformer {
         processServerError(requestDescription, responseData);
       }
       onOperationFinished(requestDescription);
-    }
-
-    @Override
-    public final void reportPending(final int requestId) {
-      if (!filterOperation(requestId, null)) { return; }
-      if (DEBUG) { Log.d(TAG, "Operation " + requestId + " is already pending"); }
-      onOperationPending(requestId);
-    }
-
-    @Override
-    public final void reportLastOperation(final int requestId, final ResponseData<?> responseData) {
-      if (!filterOperation(requestId, null)) { return; }
-      if (DEBUG) { Log.d(TAG, "Last operation " + requestId); }
-      onLastOperationReport(requestId, responseData);
     }
 
     @Override
