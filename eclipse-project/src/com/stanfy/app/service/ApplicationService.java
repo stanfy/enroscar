@@ -19,7 +19,6 @@ import com.stanfy.utils.Time;
 
 /**
  * Base application service which provides API and location methods interfaces.
- * 
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class ApplicationService extends Service {
@@ -180,6 +179,7 @@ public class ApplicationService extends Service {
   }
   /**
    * Perform check for stop with given delay.
+   * 
    * @param delay time in milliseconds
    */
   protected void checkForStop(final long delay) {
