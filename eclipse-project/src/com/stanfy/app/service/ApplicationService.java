@@ -179,7 +179,7 @@ public class ApplicationService extends Service {
   }
   /**
    * Perform check for stop with given delay.
-   * 
+   *
    * @param delay time in milliseconds
    */
   protected void checkForStop(final long delay) {
