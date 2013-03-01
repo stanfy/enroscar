@@ -29,6 +29,10 @@ public class StateHelper {
     DEFAULT_STATES[STATE_MESSAGE] = messageCreator;
   }
 
+  public static void setDefaultStateViewCreator(final int state, final StateViewCreator creator) {
+    DEFAULT_STATES[state] = creator;
+  }
+
   /** Special views. */
   private StateViewCreator[] viewCreators;
 
@@ -58,11 +62,6 @@ public class StateHelper {
     return viewCreators;
   }
 
-  public static void setDefaultStateViewCreator(final int state, final StateViewCreator creator) {
-    DEFAULT_STATES[state] = creator;
-  }
-
-
   public StateViewCreator getStateViewCreator(final int state) {
     final StateViewCreator[] viewCreators = getViewCreators();
     return state > 0 && state < viewCreators.length ? viewCreators[state] : null;
@@ -72,11 +71,13 @@ public class StateHelper {
     final StateViewCreator creator = getStateViewCreator(state);
     if (creator == null) { return null; }
     final View view = creator.getView(context, lastDataObject, parent);
+    
     // do some tricks
     if (view.getLayoutParams() != null) {
       configureStateViewHeight(parent, view);
       configureStateViewWidth(parent, view);
     }
+    
     return view;
   }
 
