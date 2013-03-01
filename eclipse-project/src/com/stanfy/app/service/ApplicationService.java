@@ -19,6 +19,7 @@ import com.stanfy.utils.Time;
 
 /**
  * Base application service which provides API and location methods interfaces.
+ * 
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class ApplicationService extends Service {

@@ -30,11 +30,7 @@ public class StateHelper {
   }
 
   /** Special views. */
-  private final StateViewCreator[] viewCreators = constructCreatorsArray();
-
-  public static void setDefaultStateViewCreator(final int state, final StateViewCreator creator) {
-    DEFAULT_STATES[state] = creator;
-  }
+  private StateViewCreator[] viewCreators;
 
   protected StateViewCreator[] constructCreatorsArray() {
     final StateViewCreator[] result = new StateViewCreator[DEFAULT_STATES.length];
@@ -48,11 +44,27 @@ public class StateHelper {
   }
 
   public void setStateViewCreator(final int state, final StateViewCreator creator) {
+    final StateViewCreator[] viewCreators = getViewCreators();
     if (state != STATE_NORMAL && state > 0 && state < viewCreators.length) {
       viewCreators[state] = creator;
     }
   }
+
+  private StateViewCreator[] getViewCreators() {
+    if (viewCreators == null) {
+      viewCreators = constructCreatorsArray();
+    }
+
+    return viewCreators;
+  }
+
+  public static void setDefaultStateViewCreator(final int state, final StateViewCreator creator) {
+    DEFAULT_STATES[state] = creator;
+  }
+
+
   public StateViewCreator getStateViewCreator(final int state) {
+    final StateViewCreator[] viewCreators = getViewCreators();
     return state > 0 && state < viewCreators.length ? viewCreators[state] : null;
   }
 
@@ -68,7 +80,7 @@ public class StateHelper {
     return view;
   }
 
-  public boolean hasState(final int state) { return viewCreators[state] != null; }
+  public boolean hasState(final int state) { return getStateViewCreator(state) != null; }
 
   protected void configureStateViewHeight(final ViewGroup parent, final View stateView) {
     if (stateView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) { return; }

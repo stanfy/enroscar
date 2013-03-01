@@ -29,7 +29,6 @@ import android.view.ViewGroup.LayoutParams;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.BeansManager;
 import com.stanfy.app.beans.EnroscarBean;
 import com.stanfy.app.beans.InitializingBean;
 import com.stanfy.images.cache.ImageMemoryCache;
@@ -93,15 +92,7 @@ public class ImagesManager implements InitializingBean {
   private boolean paused = false;
 
   public ImagesManager(final Context context) {
-    resources = context.getResources();
-
-    final BeansManager beansManager = BeansManager.get(context);
-    buffersPool = beansManager.getMainBuffersPool();
-    memCache = beansManager.getImageMemoryCache();
-    if (buffersPool == null || memCache == null) {
-      throw new IllegalStateException("Buffers pool and images memory cache must be initialized before images manager.");
-    }
-    imagesResponseCache = beansManager.getResponseCache(CACHE_BEAN_NAME);
+    this.resources = context.getResources();
   }
 
   /**
@@ -114,12 +105,12 @@ public class ImagesManager implements InitializingBean {
 
   @Override
   public void onInitializationFinished(final BeansContainer beansContainer) {
-    buffersPool = beansContainer.getBean(BuffersPool.BEAN_NAME, BuffersPool.class);
-    memCache = beansContainer.getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class);
+    this.buffersPool = beansContainer.getBean(BuffersPool.BEAN_NAME, BuffersPool.class);
+    this.memCache = beansContainer.getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class);
     if (buffersPool == null || memCache == null) {
       throw new IllegalStateException("Buffers pool and images memory cache must be initialized before images manager.");
     }
-    imagesResponseCache = beansContainer.getBean(CACHE_BEAN_NAME, ResponseCache.class);
+    this.imagesResponseCache = beansContainer.getBean(CACHE_BEAN_NAME, ResponseCache.class);
     if (imagesResponseCache == null) {
       Log.w(TAG, "Response cache for images is not defined");
     }
@@ -147,28 +138,28 @@ public class ImagesManager implements InitializingBean {
   public void ensureImages(final List<String> images, final boolean newThread) {
     final EnhancedResponseCache enhancedResponseCache = imagesResponseCache instanceof EnhancedResponseCache
         ? (EnhancedResponseCache)imagesResponseCache : null;
-        final Runnable task = new Runnable() {
-          @Override
-          public void run() {
-            for (final String url : images) {
-              try {
-                final boolean mustRead = enhancedResponseCache == null || !enhancedResponseCache.contains(url);
-                if (mustRead) {
-                  IoUtils.consumeStream(newConnection(url).getInputStream(), buffersPool);
-                }
-              } catch (final IOException e) {
-                if (DEBUG_IO) { Log.e(TAG, "IO error for " + url + ": " + e.getMessage()); }
-              } catch (final Exception e) {
-                Log.e(TAG, "Ignored error for ensureImages", e);
-              }
+    final Runnable task = new Runnable() {
+      @Override
+      public void run() {
+        for (final String url : images) {
+          try {
+            final boolean mustRead = enhancedResponseCache == null || !enhancedResponseCache.contains(url);
+            if (mustRead) {
+              IoUtils.consumeStream(newConnection(url).getInputStream(), buffersPool);
             }
+          } catch (final IOException e) {
+            if (DEBUG_IO) { Log.e(TAG, "IO error for " + url + ": " + e.getMessage()); }
+          } catch (final Exception e) {
+            Log.e(TAG, "Ignored error for ensureImages", e);
           }
-        };
-        if (newThread) {
-          getImageTaskExecutor().execute(task);
-        } else {
-          task.run();
         }
+      }
+    };
+    if (newThread) {
+      getImageTaskExecutor().execute(task);
+    } else {
+      task.run();
+    }
   }
 
   /**
@@ -519,18 +510,14 @@ public class ImagesManager implements InitializingBean {
    * Pause all future loading tasks.
    */
   public final synchronized void pauseLoading() {
-    paused = true;
+    this.paused = true;
   }
   /**
    * Resume all the loading tasks.
    */
   public final synchronized void resumeLoading() {
-    paused = false;
-    try {
-      notifyAll();
-    } catch (final Throwable t) {
-      if (DEBUG) { Log.d(TAG, "Unexpected exception", t); }
-    }
+    this.paused = false;
+    notifyAll();
   }
 
   /**
@@ -564,7 +551,7 @@ public class ImagesManager implements InitializingBean {
       this.url = url;
       this.key = key;
       this.imagesManager = imagesManager;
-      future = new FutureTask<Void>(this);
+      this.future = new FutureTask<Void>(this);
     }
 
     /** Called from UI thread. */
@@ -683,8 +670,8 @@ public class ImagesManager implements InitializingBean {
     private Drawable memCacheImage(final Drawable d) {
       Drawable result = d;
       if (d instanceof BitmapDrawable) {
-        final Bitmap incomeBitmap = ((BitmapDrawable) d).getBitmap();
-        final Bitmap resultBitmap = prepare(incomeBitmap);
+        Bitmap incomeBitmap = ((BitmapDrawable) d).getBitmap();
+        Bitmap resultBitmap = prepare(incomeBitmap);
         if (resultBitmap != incomeBitmap) { incomeBitmap.recycle(); }
         result = new BitmapDrawable(imagesManager.resources, resultBitmap);
       }
@@ -707,7 +694,7 @@ public class ImagesManager implements InitializingBean {
     private void finish() {
       final ArrayList<ImageHolder> targets = this.targets;
       final int count = targets.size();
-      final Drawable d = resultDrawable;
+      final Drawable d = this.resultDrawable;
       for (int i = 0; i < count; i++) {
         targets.get(i).onFinish(url, d);
       }
@@ -770,10 +757,10 @@ public class ImagesManager implements InitializingBean {
       } finally {
 
         final boolean removed = imagesManager.currentLoads.remove(key, this);
-        if (!removed && DEBUG) {
-          Log.w(TAG, "Incorrect loader in currents for " + key);
+        if (DEBUG) {
+          Log.d(TAG, "Current loaders count: " + imagesManager.currentLoads.size());
+          if (!removed) { Log.w(TAG, "Incorrect loader in currents for " + key); }
         }
-        if (DEBUG) { Log.d(TAG, "Current loaders count: " + imagesManager.currentLoads.size()); }
 
       }
       return null;
@@ -826,31 +813,27 @@ public class ImagesManager implements InitializingBean {
     }
     final void performCancellingLoader() {
       final String url = currentUrl;
-      if (DEBUG) { Log.d(TAG, "Cancel URL: " + url + "\nLoader: " + currentLoader); }
       final ImageLoader loader = currentLoader;
+      if (DEBUG) { Log.d(TAG, "Cancel URL: " + url + "\nLoader: " + loader); }
       if (loader != null) { loader.removeTarget(this); }
-      //      if (url != null) {
-      //        final ImageLoader loader = currentLoader;
-      //        if (loader != null) { loader.removeTarget(this); }
-      //      }
     }
 
     final void onStart(final ImageLoader loader, final String url) {
-      currentLoader = loader;
+      this.currentLoader = loader;
       if (listener != null) { listener.onLoadStart(this, url); }
     }
     final void onFinish(final String url, final Drawable drawable) {
-      currentLoader = null;
+      this.currentLoader = null;
       if (listener != null) { listener.onLoadFinished(this, url, drawable); }
     }
     final void onError(final String url, final Throwable exception) {
-      currentLoader = null;
+      this.currentLoader = null;
       if (listener != null) { listener.onLoadError(this, url, exception); }
     }
     final void onCancel(final String url) {
-      currentLoader = null;
+      this.currentLoader = null;
       if (listener != null) { listener.onLoadCancel(this, url); }
-      currentUrl = null;
+      this.currentUrl = null;
     }
 
     /* parameters */
@@ -901,7 +884,7 @@ public class ImagesManager implements InitializingBean {
     public void touch() {
       final T view = this.view;
       if (view != null && view instanceof ImagesLoadListenerProvider) {
-        listener = ((ImagesLoadListenerProvider)view).getImagesLoadListener();
+        this.listener = ((ImagesLoadListenerProvider)view).getImagesLoadListener();
       }
     }
     @Override
