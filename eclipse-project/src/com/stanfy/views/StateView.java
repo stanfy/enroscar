@@ -33,7 +33,7 @@ public class StateView extends ViewAnimator {
   private boolean statesSet = true, trimming = false, inFinished = false, outFinished = false;
 
   /** Internal animation listener. */
-  private AnimationListener animationsListener = new AnimationListener() {
+  private final AnimationListener animationsListener = new AnimationListener() {
     @Override
     public void onAnimationStart(final Animation animation) {
       // nothing
@@ -63,7 +63,7 @@ public class StateView extends ViewAnimator {
     super(context, attrs);
     stateHelper = createStateHelper();
   }
-  
+
   protected StateHelper createStateHelper() {
     return new StateHelper();
   }
@@ -168,6 +168,9 @@ public class StateView extends ViewAnimator {
   public void setEmptyState(final Object lastDataObject) {
     setState(StateHelper.STATE_EMPTY, lastDataObject);
   }
+
+  public int getState() { return state; }
+  public boolean isNormalState() { return state == StateHelper.STATE_NORMAL; }
 
   protected void trimViews() {
     if ((inFinished || getInAnimation() == null) && (outFinished || getOutAnimation() == null)) {

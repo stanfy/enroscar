@@ -1,6 +1,8 @@
 package com.stanfy.views;
 
 import android.content.Context;
+import android.support.v4.widget.StaggeredGridView;
+import android.support.v4.widget.StaggeredGridView.LayoutParams;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,12 +29,12 @@ public class StateHelper {
     DEFAULT_STATES[STATE_MESSAGE] = messageCreator;
   }
 
+  /** Special views. */
+  private final StateViewCreator[] viewCreators = constructCreatorsArray();
+
   public static void setDefaultStateViewCreator(final int state, final StateViewCreator creator) {
     DEFAULT_STATES[state] = creator;
   }
-
-  /** Special views. */
-  private StateViewCreator[] viewCreators;
 
   protected StateViewCreator[] constructCreatorsArray() {
     final StateViewCreator[] result = new StateViewCreator[DEFAULT_STATES.length];
@@ -46,39 +48,31 @@ public class StateHelper {
   }
 
   public void setStateViewCreator(final int state, final StateViewCreator creator) {
-    final StateViewCreator[] viewCreators = getViewCreators();
     if (state != STATE_NORMAL && state > 0 && state < viewCreators.length) {
       viewCreators[state] = creator;
     }
   }
-
-  private StateViewCreator[] getViewCreators() {
-    if (viewCreators == null) {
-      viewCreators = constructCreatorsArray();
-    }
-
-    return viewCreators;
+  public StateViewCreator getStateViewCreator(final int state) {
+    return state > 0 && state < viewCreators.length ? viewCreators[state] : null;
   }
 
   public View getCustomStateView(final int state, final Context context, final Object lastDataObject, final ViewGroup parent) {
-    final StateViewCreator[] viewCreators = getViewCreators();
-    final StateViewCreator creator = state > 0 && state < viewCreators.length ? viewCreators[state] : null;
+    final StateViewCreator creator = getStateViewCreator(state);
     if (creator == null) { return null; }
     final View view = creator.getView(context, lastDataObject, parent);
-
     // do some tricks
     if (view.getLayoutParams() != null) {
       configureStateViewHeight(parent, view);
       configureStateViewWidth(parent, view);
     }
-
     return view;
   }
 
-  public boolean hasState(final int state) { return getViewCreators()[state] != null; }
+  public boolean hasState(final int state) { return viewCreators[state] != null; }
 
   protected void configureStateViewHeight(final ViewGroup parent, final View stateView) {
     if (stateView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) { return; }
+    
     int h = ViewGroup.LayoutParams.MATCH_PARENT;
     if (parent instanceof ListView) {
       final ListView listView = (ListView) parent;
@@ -108,23 +102,28 @@ public class StateHelper {
       h = parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
     }
 
-    if (h > 0) {
-      final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
-      lp.height = h;
-      stateView.setLayoutParams(lp);
-    }
+    if (h <= 0) { h = ViewGroup.LayoutParams.MATCH_PARENT; }
+
+    final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
+    lp.height = h;
+    stateView.setLayoutParams(lp);
   }
 
   protected void configureStateViewWidth(final ViewGroup parent, final View stateView) {
-    if (stateView.getLayoutParams().width != ViewGroup.LayoutParams.MATCH_PARENT) { return; }
-    int w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
 
-    if (w > 0) {
-      final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
+    final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
+    if (parent instanceof StaggeredGridView) {
+      final StaggeredGridView.LayoutParams params = (LayoutParams) lp;
+      params.span = StaggeredGridView.LayoutParams.SPAN_MAX;
+    } else {
+      int w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+      if (w <= 0) { w = ViewGroup.LayoutParams.MATCH_PARENT; }
       lp.width = w;
-      stateView.setLayoutParams(lp);
     }
+    
+    stateView.setLayoutParams(lp);
   }
+
 
   /**
    * State view creator.
