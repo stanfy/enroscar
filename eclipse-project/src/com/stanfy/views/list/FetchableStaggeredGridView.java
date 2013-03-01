@@ -11,6 +11,7 @@ import android.widget.ListAdapter;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.views.R;
+import com.stanfy.views.StateHelper;
 
 /**
  * Beta.
@@ -116,9 +117,7 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
   public boolean onTouchEvent(final MotionEvent ev) {
     if (adapter != null && adapter.getWrappedAdapter() instanceof LoaderAdapter<?>) {
       final LoaderAdapter<?> a = (LoaderAdapter<?>) adapter.getWrappedAdapter();
-      if (!a.isInNormalState()) {
-        return false;
-      }
+      if (a.getState() != StateHelper.STATE_NORMAL) { return false; }
     }
     return super.onTouchEvent(ev);
   }
@@ -127,9 +126,7 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
   public boolean onInterceptTouchEvent(final MotionEvent ev) {
     if (adapter != null && adapter.getWrappedAdapter() instanceof LoaderAdapter<?>) {
       final LoaderAdapter<?> a = (LoaderAdapter<?>) adapter.getWrappedAdapter();
-      if (!a.isInNormalState()) {
-        return false;
-      }
+      if (a.getState() != StateHelper.STATE_NORMAL) { return false; }
     }
     return super.onInterceptTouchEvent(ev);
   }

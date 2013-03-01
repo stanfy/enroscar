@@ -1,9 +1,6 @@
 package com.stanfy.views.list;
 
-import static com.stanfy.views.StateHelper.STATE_EMPTY;
-import static com.stanfy.views.StateHelper.STATE_LOADING;
-import static com.stanfy.views.StateHelper.STATE_MESSAGE;
-import static com.stanfy.views.StateHelper.STATE_NORMAL;
+import static com.stanfy.views.StateHelper.*;
 
 import java.util.ArrayList;
 
@@ -76,7 +73,6 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
   protected ListAdapter getCore() { return core; }
   public StateHelper getStateHelper() { return stateHelper; }
   public int getState() { return state; }
-  public boolean isInNormalState() { return state == STATE_NORMAL; }
 
   // =========================== Wrapping ===========================
 
@@ -162,8 +158,8 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
   public boolean isBusy() {
     final boolean loaderBusy = loader instanceof LoadmoreLoader
         ? ((LoadmoreLoader) loader).isBusy()
-            : false;
-        return loaderBusy || !afterAnimationOperations.isEmpty();
+        : false;
+    return loaderBusy || !afterAnimationOperations.isEmpty();
   }
 
   @Override
