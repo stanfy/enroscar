@@ -70,73 +70,10 @@ public class StateHelper {
   public View getCustomStateView(final int state, final Context context, final Object lastDataObject, final ViewGroup parent) {
     final StateViewCreator creator = getStateViewCreator(state);
     if (creator == null) { return null; }
-    final View view = creator.getView(context, lastDataObject, parent);
-
-    // do some tricks
-    if (view.getLayoutParams() != null) {
-      configureStateViewHeight(parent, view);
-      configureStateViewWidth(parent, view);
-    }
-
-    return view;
+    return creator.getView(context, lastDataObject, parent);
   }
 
   public boolean hasState(final int state) { return getStateViewCreator(state) != null; }
-
-  protected void configureStateViewHeight(final ViewGroup parent, final View stateView) {
-    if (stateView.getLayoutParams().height != ViewGroup.LayoutParams.MATCH_PARENT) { return; }
-
-    int h = ViewGroup.LayoutParams.MATCH_PARENT;
-    if (parent instanceof ListView) {
-      final ListView listView = (ListView) parent;
-
-      // check for one child only that wants to be as tall as we are
-      final int childCount = listView.getChildCount();
-
-      final int headersCount = listView.getHeaderViewsCount();
-
-      final int dHeight = listView.getDividerHeight();
-      h = listView.getHeight() - listView.getPaddingTop() - listView.getPaddingBottom();
-
-      for (int i = 0; i < headersCount; i++) {
-        final View header = listView.getChildAt(i);
-        if (header != null) {
-          h -= header.getHeight() + dHeight;
-        }
-      }
-      final int footersCount = listView.getFooterViewsCount();
-      for (int i = 0; i < footersCount; i++) {
-        final View footer = listView.getChildAt(childCount - footersCount - 1);
-        if (footer != null) {
-          h -= footer.getHeight() + dHeight;
-        }
-      }
-    } else {
-      h = parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
-    }
-
-    if (h > 0) {
-      final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
-      lp.height = h;
-      stateView.setLayoutParams(lp);
-    }
-  }
-
-  protected void configureStateViewWidth(final ViewGroup parent, final View stateView) {
-    final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
-    if (parent instanceof StaggeredGridView) {
-      final StaggeredGridView.LayoutParams params = (LayoutParams) lp;
-      params.span = StaggeredGridView.LayoutParams.SPAN_MAX;
-      stateView.setLayoutParams(lp);
-    } else if (lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-      final int w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
-      if (w > 0) {
-        lp.width = w;
-        stateView.setLayoutParams(lp);
-      }
-    }
-  }
-
 
   /**
    * State view creator.
@@ -146,13 +83,23 @@ public class StateHelper {
     /** View instance. */
     private View view;
 
+    /** True if state view wants to match parent width/height. */
+    private boolean matchParentWidth, matchParentHeight;
+
     protected abstract View createView(final Context context, final ViewGroup parent);
     protected abstract void bindView(final Context context, final View view, final Object lastResponseData, final ViewGroup parent);
 
     View getView(final Context context, final Object lastResponseData, final ViewGroup parent) {
       if (view == null) {
         view = createView(context, parent);
+        final ViewGroup.LayoutParams lp = view.getLayoutParams();
+        if (lp != null) {
+          matchParentWidth = lp.width == LayoutParams.MATCH_PARENT;
+          matchParentHeight = lp.height == LayoutParams.MATCH_PARENT;
+        }
       }
+      configureStateViewWidth(parent);
+      configureStateViewHeight(parent);
       bindView(context, view, lastResponseData, parent);
       return view;
     }
@@ -163,6 +110,83 @@ public class StateHelper {
       } catch (final CloneNotSupportedException e) {
         throw new RuntimeException(e);
       }
+    }
+
+    protected void configureStateViewWidth(final ViewGroup parent) {
+      final View stateView = view;
+      if (stateView == null) { return; }
+
+      final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
+      if (lp == null) { return; }
+
+      final boolean widthSet = lp.width != LayoutParams.MATCH_PARENT;
+      /*
+       * Do not change layout params if the state view
+       * has custom width and did not want initially to match parent.
+       */
+      if (widthSet && !matchParentWidth) { return; }
+
+
+      if (parent instanceof StaggeredGridView) {
+        // The only way to stretch a child horizontally in SGV
+        final StaggeredGridView.LayoutParams params = (LayoutParams) lp;
+        params.span = StaggeredGridView.LayoutParams.SPAN_MAX;
+      } else {
+        int w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+        if (w <= 0) { w = ViewGroup.LayoutParams.MATCH_PARENT; }
+        lp.width = w;
+      }
+
+      stateView.setLayoutParams(lp);
+    }
+
+    protected void configureStateViewHeight(final ViewGroup parent) {
+      final View stateView = view;
+      if (stateView == null) { return; }
+
+      final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
+      if (lp == null) { return; }
+
+      final boolean heightSet = lp.height != LayoutParams.MATCH_PARENT;
+      /*
+       * Do not change layout params if the state view
+       * has custom width and did not want initially to match parent.
+       */
+      if (heightSet && !matchParentHeight) { return; }
+
+      int h = 0;
+      if (parent instanceof ListView) {
+        final ListView listView = (ListView) parent;
+
+        // check for one child only that wants to be as tall as we are
+        final int childCount = listView.getChildCount();
+
+        final int headersCount = listView.getHeaderViewsCount();
+
+        final int dHeight = listView.getDividerHeight();
+        h = listView.getHeight() - listView.getPaddingTop() - listView.getPaddingBottom();
+
+        for (int i = 0; i < headersCount; i++) {
+          final View header = listView.getChildAt(i);
+          if (header != null) {
+            h -= header.getHeight() + dHeight;
+          }
+        }
+        final int footersCount = listView.getFooterViewsCount();
+        for (int i = 0; i < footersCount; i++) {
+          final View footer = listView.getChildAt(childCount - footersCount - 1);
+          if (footer != null) {
+            h -= footer.getHeight() + dHeight;
+          }
+        }
+      } else {
+        h = parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
+      }
+
+      if (h <= 0) { h = ViewGroup.LayoutParams.MATCH_PARENT; }
+
+      lp.height = h;
+      stateView.setLayoutParams(lp);
     }
 
   }
