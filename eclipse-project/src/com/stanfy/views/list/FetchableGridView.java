@@ -31,9 +31,9 @@ public class FetchableGridView extends GridView implements OnScrollListener, Fet
 
   /** Saved index. */
   private int savedFirstVisibleItem = 0;
-
-  /** Footer layout ID. */
-  private int footerLayoutId = R.layout.footer_loading;
+  
+  /** Load view layout id. */
+  private int loadViewLayoutId = R.layout.footer_loading;
 
   public FetchableGridView(final Context context) {
     this(context, null);
@@ -60,20 +60,20 @@ public class FetchableGridView extends GridView implements OnScrollListener, Fet
   protected int getLoadGap() { return LOAD_GAP_DEFAULT; }
 
   protected LoadmoreAdapter createLoadmoreAdapter(final FetchableListAdapter core) {
-    LoadmoreAdapter adapter = new LoadmoreAdapter(LayoutInflater.from(getContext()), core);
-    adapter.setFooterLayoutId(footerLayoutId);
+    final LoadmoreAdapter adapter = new LoadmoreAdapter(LayoutInflater.from(getContext()), core);
+    adapter.setLoadViewLayoutId(loadViewLayoutId);
     return adapter;
   }
-
-  public void setFooterLayoutId(final int footerLayoutId) {
-    this.footerLayoutId = footerLayoutId;
+  
+  public void setLoadViewLayoutId(final int loadViewLayoutId) {
+    this.loadViewLayoutId = loadViewLayoutId;
   }
 
   @Override
   public void setAdapter(final ListAdapter listAdapter) {
     if (!(listAdapter instanceof FetchableListAdapter)) { throw new IllegalArgumentException("adapter must implement " + FetchableListAdapter.class); }
     final FetchableListAdapter adapter = (FetchableListAdapter) listAdapter;
-    this.adapter = adapter != null ? new LoadmoreAdapter(LayoutInflater.from(getContext()), adapter) : null;
+    this.adapter = adapter != null ? createLoadmoreAdapter(adapter) : null;
     super.setAdapter(this.adapter);
   }
 
@@ -106,7 +106,7 @@ public class FetchableGridView extends GridView implements OnScrollListener, Fet
   @Override
   public boolean performItemClick(final View view, final int position, final long id) {
     // do not allow click on footer (footer is enabled in order to maintain dividers)
-    if (adapter != null && adapter.isLoadFooterPosition(position)) { return false; }
+    if (adapter != null && adapter.isLoadViewPosition(position)) { return false; }
     return super.performItemClick(view, position, id);
   }
 

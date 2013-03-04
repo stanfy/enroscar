@@ -23,14 +23,16 @@ public class LoadmoreAdapter extends BaseAdapter implements WrapperListAdapter, 
   final FetchableListAdapter core;
 
   /** Footer that indicates the loading process. */
-  private final View loadView;
+  private View loadView;
   /** True if we need to display 'load more' footer. */
   private boolean loadFlag = false;
   /** Load tag. */
   private Object loadTag;
 
-  /** Footer layout ID. */
-  private int footerLayoutId = R.layout.footer_loading;
+  /** Load view layout ID. */
+  private int loadViewLayoutId = R.layout.footer_loading;
+  /** Layout inflater instance. */
+  private final LayoutInflater inflater;
 
   /** Core adapter observer. */
   private final DataSetObserver coreObserver = new DataSetObserver() {
@@ -47,12 +49,17 @@ public class LoadmoreAdapter extends BaseAdapter implements WrapperListAdapter, 
 
   public LoadmoreAdapter(final LayoutInflater inflater, final FetchableListAdapter core) {
     this.core = core;
-    this.loadView = createLoadView(inflater);
     core.registerDataSetObserver(coreObserver);
+    this.inflater = inflater;
   }
 
-  public void setFooterLayoutId(final int footerLayoutId) {
-    this.footerLayoutId = footerLayoutId;
+  public void setLoadViewLayoutId(final int loadViewLayoutId) {
+    this.loadViewLayoutId = loadViewLayoutId;
+  }
+  
+  /** @param loadView Load view. Layout params for the view should be set beforehand. */
+  public void setLoadView(final View loadView) {
+    this.loadView = loadView;
   }
 
   public void setLoadTag(final Object loadTag) {
@@ -69,15 +76,8 @@ public class LoadmoreAdapter extends BaseAdapter implements WrapperListAdapter, 
       notifyDataSetChanged();
     }
   }
-
-  protected View createLoadView(final LayoutInflater inflater) {
-    final View result = inflater.inflate(footerLayoutId, null);
-    final ListView.LayoutParams params = new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, ListView.LayoutParams.WRAP_CONTENT);
-    result.setLayoutParams(params);
-    return result;
-  }
-
-  protected boolean isLoadFooterPosition(final int position) {
+  
+  protected boolean isLoadViewPosition(final int position) {
     return loadFlag && position == core.getCount();
   }
 
@@ -88,7 +88,7 @@ public class LoadmoreAdapter extends BaseAdapter implements WrapperListAdapter, 
 
   @Override
   public boolean isEnabled(final int position) {
-    if (isLoadFooterPosition(position)) { return true; }
+    if (isLoadViewPosition(position)) { return true; }
     final boolean allEnabled = core.areAllItemsEnabled();
     if (allEnabled) { return true; }
     return core.isEnabled(transformPositionForCore(position));
@@ -107,14 +107,14 @@ public class LoadmoreAdapter extends BaseAdapter implements WrapperListAdapter, 
 
   @Override
   public Object getItem(final int position) {
-    return isLoadFooterPosition(position)
+    return isLoadViewPosition(position)
         ? loadTag
             : core.getItem(transformPositionForCore(position));
   }
 
   @Override
   public long getItemId(final int position) {
-    return isLoadFooterPosition(position)
+    return isLoadViewPosition(position)
         ? -1
             : core.getItemId(transformPositionForCore(position));
   }
@@ -127,16 +127,23 @@ public class LoadmoreAdapter extends BaseAdapter implements WrapperListAdapter, 
 
   @Override
   public int getItemViewType(final int position) {
-    return isLoadFooterPosition(position)
+    return isLoadViewPosition(position)
         ? AdapterView.ITEM_VIEW_TYPE_IGNORE
             : core.getItemViewType(transformPositionForCore(position));
   }
 
   @Override
   public View getView(final int position, final View convertView, final ViewGroup parent) {
-    return isLoadFooterPosition(position)
-        ? loadView
+    return isLoadViewPosition(position)
+        ? getLoadView(parent)
             : core.getView(position, convertView, parent);
+  }
+  
+  private View getLoadView(final ViewGroup parent) {
+    if (loadView == null) {
+      loadView = inflater.inflate(loadViewLayoutId, parent, false);
+    }
+    return loadView;
   }
 
   @Override
