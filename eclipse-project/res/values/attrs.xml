@@ -117,5 +117,15 @@
     <!-- Arrow offset for quick actions widget. -->
     <attr name="qaArrowOffset" format="dimension" />
   </declare-styleable>
+  
+  <!-- Grid view attributes. -->
+  <declare-styleable name="GridView">
+    <attr name="notifyCrucialGUIOperations" />
+  </declare-styleable>
+  
+  <!-- Grid view attributes. -->
+  <declare-styleable name="StaggeredGridView_LayoutParams">
+    <attr name="maxSpan" format="boolean" />
+  </declare-styleable>
 
 </resources>
