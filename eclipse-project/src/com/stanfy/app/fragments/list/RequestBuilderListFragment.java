@@ -84,21 +84,21 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   /** @return true if data should be reloaded on locale changes */
   protected boolean isDataLocaleDependent() { return false; }
 
+  /** @return model loader ID */
+  protected int getLoaderId() { return loaderId; }
   /**
-   * Set loader ID that is used for operating with laoder created
+   * Set loader ID that is used for operating with loader created
    * by {@link #onCreateLoader(int, Bundle)}.
    * @param loaderId loader identifier
    */
-  public void setLoaderId(final int loaderId) {
-    this.loaderId = loaderId;
-  }
+  public void setLoaderId(final int loaderId) { this.loaderId = loaderId; }
 
   // =============================== STATES ===============================
   @Override
   public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     crucialGUIOperationManager = BeansManager.get(getActivity()).getCrucialGUIOperationManager();
-    setRetainInstance(true);
+    if (getParentFragment() == null) { setRetainInstance(true); }
   }
 
   @Override
