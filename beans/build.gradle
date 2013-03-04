@@ -4,10 +4,13 @@ apply plugin : 'java-robolectric'
 
 buildscript {
   repositories {
-    mavenCentral()
+//    mavenCentral()
+    maven {
+      url 'https://oss.sonatype.org/content/repositories/releases/'
+    }
   }
   dependencies {
-    classpath group: 'com.stanfy.android', name: 'gradle-plugin-java-robolectric', version: '1.0'
+    classpath group: 'com.stanfy.android', name: 'gradle-plugin-java-robolectric', version : '2.0'
   }
 }
 
@@ -34,7 +37,7 @@ repositories {
 }
 
 dependencies {
-  compile fileTree(dir : 'libs', include : '*.jar')
+  compile 'com.google.android:android:4.1.1.4'
   testCompile group: 'junit', name: 'junit', version: '4.10'
-  testCompile group: 'com.pivotallabs', name: 'robolectric', version: '0.9.8'
+  testCompile group: 'org.robolectric', name: 'robolectric', version: '2.0-alpha-2'
 }

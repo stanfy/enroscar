@@ -7,10 +7,10 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.xtremelabs.robolectric.Robolectric;
 
 /**
  * Tests for {@link BeansManager.Editor}.
