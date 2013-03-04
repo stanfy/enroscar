@@ -45,10 +45,6 @@ public class Application extends com.stanfy.app.Application {
     public MyApiMethods(final ApplicationService service) {
       super(service);
     }
-    @Override
-    protected void checkClientThread() {
-      // nothing
-    }
   }
 
   /** Callback for testing. */
@@ -67,12 +63,6 @@ public class Application extends com.stanfy.app.Application {
     public void reportSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
       data = responseData;
       latch.countDown();
-    }
-    @Override
-    public void reportPending(final int requestId) {
-    }
-    @Override
-    public void reportLastOperation(final int requestId, final ResponseData<?> responseData) {
     }
     @Override
     public void reportError(final RequestDescription requestDescription, final ResponseData<?> responseData) {

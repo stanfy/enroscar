@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
@@ -17,13 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseArray;
@@ -34,7 +28,6 @@ import com.stanfy.app.service.serverapi.RequestProcessorHooks;
 import com.stanfy.serverapi.RequestMethod;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.response.ResponseData;
-import com.stanfy.utils.AppUtils;
 
 /**
  * Implementation for {@link ApiMethods}.
@@ -59,6 +52,9 @@ public class ApiMethods {
   private static final boolean DEBUG = DebugFlags.DEBUG_SERVICES;
 
   // ================================ Executors ================================
+
+  /** Task queue executors map. */
+  private static final HashMap<String, Executor> TASK_QUEUE_EXECUTORS = new HashMap<String, Executor>();
 
   /** Thread pool parameter. */
   private static final int CORE_POOL_SIZE = 5,
@@ -116,75 +112,6 @@ public class ApiMethods {
       }
     }
   }
-
-  /** Task queue executors map. */
-  private static final HashMap<String, Executor> TASK_QUEUE_EXECUTORS = new HashMap<String, Executor>();
-
-  // ================================ Main queue call info data ================================
-
-  // we should consider removing this stuff
-
-  /** Null operation data. */
-  static final APICallInfoData NULL_OPERATION_DATA = new APICallInfoData();
-
-  /**
-   * Information about last operation.
-   * @author Roman Mazur (Stanfy - http://www.stanfy.com)
-   */
-  static class APICallInfoData {
-
-    /** Preference key names. */
-    private static final String ID = "rid",
-                                RD_MESSAGE = "msg", RD_ERROR = "errorCode";
-
-    /** Request ID. */
-    int id = -1;
-    /** Response data. */
-    ResponseData<?> responseData = new ResponseData<Object>();
-
-    public void set(final APICallInfoData data) {
-      this.id = data.id;
-      this.responseData = data.responseData;
-    }
-    public void set(final ResponseData<?> rd) {
-      final ResponseData<?> responseData = this.responseData;
-      responseData.setErrorCode(rd.getErrorCode());
-      responseData.setMessage(rd.getMessage());
-    }
-    public void set(final int requestId) {
-      this.id = requestId;
-    }
-    public boolean hasData() { return id != -1; }
-
-    public void save(final SharedPreferences preferences) {
-      final Editor lastOperationEditor = preferences.edit();
-      lastOperationEditor.putInt(ID, this.id);
-      final ResponseData<?> rd = this.responseData;
-      if (rd != null) {
-        lastOperationEditor
-          .putString(RD_MESSAGE, rd.getMessage())
-          .putInt(RD_ERROR, rd.getErrorCode());
-      }
-      lastOperationEditor.commit();
-    }
-
-    public void load(final SharedPreferences preferences) {
-      final SharedPreferences src = preferences;
-      final APICallInfoData dst = this;
-      dst.set(src.getInt(ID, -1));
-      final ResponseData<?> responseData = new ResponseData<Object>();
-      responseData.setMessage(src.getString(RD_MESSAGE, null));
-      responseData.setErrorCode(src.getInt(RD_ERROR, -1));
-      dst.set(responseData);
-      if (DEBUG) { Log.d(TAG, "Loaded last operation: " + dst.id + " / " + dst.responseData.getErrorCode() + " -> " + dst.hasData()); }
-    }
-
-  }
-
-  // =======================================================================================
-
-  /** Main thread handler. */
-  private static final Handler MAIN_THREAD_HANDLER = new Handler(Looper.getMainLooper());
 
   /**
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
@@ -264,13 +191,11 @@ public class ApiMethods {
     }
     @Override
     public void afterRequestProcessingFinished(final RequestDescription requestDescription, final RequestMethod requestMethod) {
-      MAIN_THREAD_HANDLER.post(new Runnable() {
-        @Override
-        public void run() {
-          trackersMap.remove(requestDescription.getId());
-        }
-      });
-      if (DEBUG) { Log.d(TAG, "Request trackers count: " + trackersMap.size()); }
+      synchronized (trackersMap) {
+        trackersMap.remove(requestDescription.getId());
+        if (DEBUG) { Log.d(TAG, "Request trackers count: " + trackersMap.size()); }
+      }
+      appService.checkForStop();
     }
 
     protected void reportToCallbacks(final RequestDescription description, final ResponseData<?> responseData, final CallbackReporter reporter) {
@@ -308,68 +233,6 @@ public class ApiMethods {
     public void onRequestCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
       reportToCallbacks(requestDescription, responseData, CANCEL_REPORTER);
     }
-  }
-
-  /**
-   * Hooks used by {@link ApiMethodsHandler}.
-   * @author Roman Mazur (Stanfy - http://stanfy.com)
-   */
-  private class DefaultQueueRequestHooks implements RequestProcessorHooks {
-    /** Main hooks. */
-    private final RequestProcessorHooks mainHooks;
-
-    public DefaultQueueRequestHooks(final RequestProcessorHooks mainHooks) {
-      this.mainHooks = mainHooks;
-    }
-
-    @Override
-    public void beforeRequestProcessingStarted(final RequestDescription requestDescription, final RequestMethod requestMethod) {
-      try {
-        initSync.await();
-      } catch (final InterruptedException e) {
-        Log.e(TAG, "Worker was interrupted", e);
-        appService.checkForStop();
-        return;
-      }
-
-      mainHooks.beforeRequestProcessingStarted(requestDescription, requestMethod);
-
-      pending.set(NULL_OPERATION_DATA);
-      pending.set(requestDescription.getId());
-
-    }
-    @Override
-    public void afterRequestProcessingFinished(final RequestDescription requestDescription, final RequestMethod requestMethod) {
-
-      mainHooks.afterRequestProcessingFinished(requestDescription, requestMethod);
-
-      if (DEBUG) { Log.d(TAG, "Dump " + lastOperation.id); }
-      lastOperation.save(lastOperationStore);
-      pending.set(NULL_OPERATION_DATA);
-
-    }
-
-    private void updateLastOperation(final ResponseData<?> rd) {
-      final APICallInfoData lastOperation = ApiMethods.this.lastOperation;
-      lastOperation.set(pending);
-      lastOperation.set(rd);
-    }
-
-    @Override
-    public void onRequestSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-      updateLastOperation(responseData);
-      mainHooks.onRequestSuccess(requestDescription, responseData);
-    }
-    @Override
-    public void onRequestError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-      updateLastOperation(responseData);
-      mainHooks.onRequestError(requestDescription, responseData);
-    }
-    @Override
-    public void onRequestCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-      mainHooks.onRequestCancel(requestDescription, responseData);
-    }
-
   }
 
   /**
@@ -438,7 +301,11 @@ public class ApiMethods {
       if (queueName == null) { queueName = DEFAULT_QUEUE; }
       if (DEBUG) { Log.d(TAG, "Will process request description in queue " + queueName + ", rd=" + requestDescription); }
       Executor exec = getTaskQueueExecutor(queueName);
-      if (DEBUG) { Log.v(TAG, "Executors: " + TASK_QUEUE_EXECUTORS.keySet()); }
+      if (DEBUG) {
+        synchronized (TASK_QUEUE_EXECUTORS) {
+          Log.v(TAG, "Executors: " + TASK_QUEUE_EXECUTORS.keySet());
+        }
+      }
       exec.execute(future);
     }
 
@@ -468,27 +335,19 @@ public class ApiMethods {
 
   }
 
-  /** Initialization sync point. */
-  final CountDownLatch initSync = new CountDownLatch(1);
+  /** Application service. */
+  final ApplicationService appService;
 
   /** Request description processing strategy. */
   final RequestDescriptionProcessor rdProcessor;
-  /** Processor hooks. */
-  private final RequestProcessorHooks defaultQueueProcessorHooks, commonProcessorHooks;
 
-  /** Application service. */
-  final ApplicationService appService;
+  /** Processor hooks. */
+  private final RequestProcessorHooks commonProcessorHooks;
 
   /** API callbacks. */
   private final ArrayList<ApiMethodCallback> apiCallbacks = new ArrayList<ApiMethodCallback>();
   /** Map of active requests by their IDs. */
   private final SparseArray<RequestTracker> trackersMap = new SparseArray<RequestTracker>();
-
-  /** Last operation dump. */
-  private final SharedPreferences lastOperationStore;
-
-  /** Operations info. */
-  final APICallInfoData pending = new APICallInfoData(), lastOperation = new APICallInfoData();
 
   /**
    * Constructs remote API methods implementation.<br/>
@@ -497,45 +356,24 @@ public class ApiMethods {
    */
   protected ApiMethods(final ApplicationService appService) {
     this.appService = appService;
-
-    this.lastOperationStore = appService.getSharedPreferences("last-operation", Context.MODE_PRIVATE);
-    loadLastOperation();
-
     this.commonProcessorHooks = createRequestDescriptionHooks();
-    this.defaultQueueProcessorHooks = new DefaultQueueRequestHooks(this.commonProcessorHooks);
     this.rdProcessor = createRequestDescriptionProcessor(appService.getApplication());
   }
 
-  // Note: must be access from the main thread only
   private static Executor getTaskQueueExecutor(final String name) {
-    Executor exec = TASK_QUEUE_EXECUTORS.get(name);
-    if (exec == null) {
-      exec = new TaskQueueExecutor();
-      TASK_QUEUE_EXECUTORS.put(name, exec);
+    synchronized (TASK_QUEUE_EXECUTORS) {
+      Executor exec = TASK_QUEUE_EXECUTORS.get(name);
+      if (exec == null) {
+        exec = new TaskQueueExecutor();
+        TASK_QUEUE_EXECUTORS.put(name, exec);
+      }
+      return exec;
     }
-    return exec;
   }
 
   @SuppressLint("NewApi")
   private static Executor getAsyncTaskThreadPool() {
     return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? AsyncTask.THREAD_POOL_EXECUTOR : null;
-  }
-
-  /**
-   * This method starts asynchronous read of last operation.
-   * Workers must be synchronized with this reading.
-   */
-  private void loadLastOperation() {
-    AppUtils.getSdkDependentUtils().executeAsyncTaskParallel(
-      new AsyncTask<Void, Void, Void>() {
-        @Override
-        protected Void doInBackground(final Void... params) {
-          lastOperation.load(lastOperationStore);
-          initSync.countDown();
-          return null;
-        }
-      }
-    );
   }
 
   /**
@@ -549,9 +387,11 @@ public class ApiMethods {
    */
   protected RequestProcessorHooks createRequestDescriptionHooks() { return new CommonHooks(); }
 
-
-  // Note: must be accessed from the main thread
-  boolean isWorking() { return trackersMap.size() > 0; }
+  boolean isWorking() {
+    synchronized (trackersMap) {
+      return trackersMap.size() > 0;
+    }
+  }
 
   protected void destroy() {
     apiCallbacks.clear();
@@ -562,58 +402,42 @@ public class ApiMethods {
   protected ApplicationService getAppService() { return appService; }
 
   protected RequestTracker createRequestTracker(final RequestDescription description) {
-    boolean defaultQueue = description.getTaskQueueName() == null || DEFAULT_QUEUE.equals(description.getTaskQueueName());
     return description.isParallelMode()
-      ? new ParallelRequestTracker(description, commonProcessorHooks)                                               // request must be parallel
-      : new TaskQueueRequestTracker(description, defaultQueue ? defaultQueueProcessorHooks : commonProcessorHooks); // request must be enqueued
-  }
-
-  protected void checkClientThread() {
-    if (Looper.myLooper() != Looper.getMainLooper()) {
-      throw new IllegalStateException("Wrong thread " + Thread.currentThread() + ". You must use main thread to call ApiMethods.");
-    }
+      ? new ParallelRequestTracker(description, commonProcessorHooks)   // request must be parallel
+      : new TaskQueueRequestTracker(description, commonProcessorHooks); // request must be enqueued
   }
 
   // -------------------------------------------- Client-side API ------------------------------------------------
 
   public void performRequest(final RequestDescription description) {
-    checkClientThread();
     if (DEBUG) { Log.d(TAG, "Perform " + description + " " + this); }
 
     final RequestTracker tracker = createRequestTracker(description);
-
-    trackersMap.put(description.getId(), tracker);
+    synchronized (trackersMap) {
+      trackersMap.put(tracker.requestDescription.getId(), tracker);
+    }
     tracker.performRequest();
   }
 
   public boolean cancelRequest(final int id) {
-    checkClientThread();
-    final RequestTracker tracker = trackersMap.get(id);
+    final RequestTracker tracker;
+    synchronized (trackersMap) {
+      tracker = trackersMap.get(id);
+    }
     if (tracker != null) {
-      trackersMap.remove(id);
       return tracker.cancelRequest();
     }
     return false;
   }
 
   public void registerCallback(final ApiMethodCallback callback) {
-    checkClientThread();
     if (DEBUG) { Log.d(TAG, "Register API callback " + callback + " to " + this); }
-    final APICallInfoData b = new APICallInfoData();
-    b.set(lastOperation);
-    if (b.hasData()) {
-      if (DEBUG) { Log.d(TAG, "Report last operation " + b.id); }
-      callback.reportLastOperation(b.id, b.responseData);
-    }
-    b.set(pending);
-    if (b.hasData()) { callback.reportPending(b.id); }
     synchronized (apiCallbacks) {
       apiCallbacks.add(callback);
     }
   }
 
   public void removeCallback(final ApiMethodCallback callback) {
-    checkClientThread();
     if (DEBUG) { Log.d(TAG, "Remove API callback " + callback); }
     synchronized (apiCallbacks) {
       apiCallbacks.remove(callback);

@@ -29,12 +29,8 @@ public class LoadmoreAdapterTest extends AbstractEnroscarTest {
   @Before
   public void setup() {
     coreAdapter = new Adapter();
-    loadmoreAdapter = new LoadmoreAdapter(LayoutInflater.from(getApplication()), coreAdapter) {
-      @Override
-      protected View createLoadView(final LayoutInflater inflater) {
-        return new View(getApplication());
-      }
-    };
+    loadmoreAdapter = new LoadmoreAdapter(LayoutInflater.from(getApplication()), coreAdapter);
+    loadmoreAdapter.setLoadView(new View(getApplication()));
   }
 
   @Test

@@ -103,7 +103,7 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
   /**
    * Helper for detecting touch gestures.
    */
-  private GestureDetector mGestureDetector;
+  private final GestureDetector mGestureDetector;
 
   /**
    * The position of the item that received the user's down touch.
@@ -118,13 +118,13 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
   /**
    * Executes the delta scrolls from a fling or scroll movement.
    */
-  private FlingRunnable mFlingRunnable = new FlingRunnable();
+  private final FlingRunnable mFlingRunnable = new FlingRunnable();
 
   /**
    * Sets mSuppressSelectionChanged = false. This is used to set it to false
    * in the future. It will also trigger a selection changed.
    */
-  private Runnable mDisableSuppressSelectionChangedRunnable = new Runnable() {
+  private final Runnable mDisableSuppressSelectionChangedRunnable = new Runnable() {
     @Override
     public void run() {
       mSuppressSelectionChanged = false;
@@ -429,8 +429,8 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
     final int centerDifference = galleryCenter - extremeChildCenter;
 
     return motionToLeft
-    ? Math.max(centerDifference, deltaX)
-        : Math.min(centerDifference, deltaX);
+        ? Math.max(centerDifference, deltaX)
+            : Math.min(centerDifference, deltaX);
   }
 
   /**
@@ -658,7 +658,7 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
     final int childrenLeft = spinnerPadding.left;
     final int childrenWidth = getRight() - getLeft() - spinnerPadding.left - spinnerPadding.right;
     if (DEBUG) { Log.v(VIEW_LOG_TAG, "childrenLeft=" + childrenLeft + ", childrenWidth=" + childrenWidth); }
-    return childrenLeft + (childrenWidth / 2) - (selectedView.getWidth() / 2);
+    return childrenLeft + childrenWidth / 2 - selectedView.getWidth() / 2;
   }
 
   private void fillToGalleryLeft() {
@@ -799,7 +799,7 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
     // Respect layout params that are already in the view. Otherwise
     // make some up...
     Gallery.LayoutParams lp = (Gallery.LayoutParams)
-    child.getLayoutParams();
+        child.getLayoutParams();
     if (lp == null) {
       lp = (Gallery.LayoutParams) generateDefaultLayoutParams();
     }
@@ -854,7 +854,7 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
     case Gravity.CENTER_VERTICAL:
       final int availableSpace = myHeight - mSpinnerPadding.bottom
       - mSpinnerPadding.top - childHeight;
-      childTop = mSpinnerPadding.top + (availableSpace / 2);
+      childTop = mSpinnerPadding.top + availableSpace / 2;
       break;
     case Gravity.BOTTOM:
       childTop = myHeight - mSpinnerPadding.bottom - childHeight;
@@ -901,7 +901,9 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
 
     if (mDownTouchPosition >= 0) {
       // An item tap should make it selected, so scroll to this child.
-      scrollToChild(mDownTouchPosition - mFirstPosition);
+      if (shouldScrollOnTap()) {
+        scrollToChild(mDownTouchPosition - mFirstPosition);
+      }
 
       // Also pass the click so the client knows, if it wants to.
       if (mShouldCallbackOnUnselectedItemClick || mDownTouchPosition == mSelectedPosition) {
@@ -920,6 +922,8 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
 
     return false;
   }
+
+  protected boolean shouldScrollOnTap() { return true; }
 
   private void checkAndSendCancelToChild(final MotionEvent e1) {
     if (mDownTouchPosition >= 0 && clickableItems) {
@@ -1407,7 +1411,7 @@ public class Gallery extends AbsSpinner implements GestureDetector.OnGestureList
     /**
      * Tracks the decay of a fling scroll.
      */
-    private Scroller mScroller;
+    private final Scroller mScroller;
 
     /**
      * X value reported by mScroller on the previous fling.

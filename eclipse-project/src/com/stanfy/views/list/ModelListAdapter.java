@@ -1,6 +1,7 @@
 package com.stanfy.views.list;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import android.content.Context;
@@ -93,6 +94,13 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
     final T item = getItem(position);
     final Object holder = view.getTag();
 
+    renderView(position, type, view, parent, item, holder);
+
+    return view;
+  }
+
+  protected void renderView(final int position, final int type, final View view,
+      final ViewGroup parent, final T item, final Object holder) {
     switch (type) {
     case TYPE_MAIN:
       renderer.render(this, parent, item, view, holder, position);
@@ -100,10 +108,7 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
     default:
       renderer.renderOtherType(this, parent, (FictionObject)item, view, holder, position, type);
     }
-
-    return view;
   }
-
   protected View createView(final int type, final ViewGroup parent, final LayoutInflater layoutInflater) {
     final ElementRenderer<T> renderer = this.renderer;
     View view;
@@ -130,6 +135,20 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
   public void remove(final int position) {
     synchronized (dataLock) {
       elements.remove(position);
+      notifyDataSetChanged();
+    }
+  }
+
+  public void remove(final T e) {
+    synchronized (dataLock) {
+      elements.remove(e);
+      notifyDataSetChanged();
+    }
+  }
+
+  public void removeAll(final Collection<T> e) {
+    synchronized (dataLock) {
+      elements.removeAll(e);
       notifyDataSetChanged();
     }
   }
