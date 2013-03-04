@@ -375,6 +375,7 @@ public class ImagesManager implements InitializingBean {
       final boolean added = loader.addTarget(imageHolder);
       if (!added) { throw new IllegalStateException("Cannot add target to the new loader"); }
       currentLoads.put(key, loader);
+      if (DEBUG) { Log.d(TAG, "Current loaders count: " + currentLoads.size()); }
       final Executor executor = getImageTaskExecutor();
       executor.execute(loader.future);
     } else if (DEBUG) {
@@ -390,6 +391,7 @@ public class ImagesManager implements InitializingBean {
   }
 
   protected Drawable readImage(final String url, final ImageHolder holder) throws IOException {
+    if (holder == null) { return null; }
     InputStream imageStream = newConnection(url).getInputStream();
     final BitmapFactory.Options options = new BitmapFactory.Options();
 
@@ -581,7 +583,16 @@ public class ImagesManager implements InitializingBean {
       imageHolder.onCancel(url);
       synchronized (this) {
         targets.remove(imageHolder);
-        if (targets.isEmpty()) { future.cancel(true); }
+        if (mainTarget == imageHolder) {
+          if (DEBUG) { Log.d(TAG, "Dropping main target to null"); }
+          mainTarget = null;
+        }
+        if (targets.isEmpty()) {
+          if (!future.cancel(true)) {
+            if (DEBUG) { Log.d(TAG, "Can't cancel task so let's try to remove loader manually"); }
+            imagesManager.currentLoads.remove(key, this);
+          }
+        }
       }
     }
 
@@ -596,6 +607,8 @@ public class ImagesManager implements InitializingBean {
 
       final String url = this.url;
       if (DEBUG) { Log.v(TAG, "Post setting drawable for " + url); }
+      if (mainTarget == null && targets != null && targets.size() > 0) { mainTarget = targets.get(0); }
+      if (mainTarget == null) { return; }
       mainTarget.post(new Runnable() {
         @Override
         public void run() {
@@ -629,6 +642,7 @@ public class ImagesManager implements InitializingBean {
     }
 
     private Bitmap prepare(final Bitmap map) {
+      if (mainTarget == null) { return map; }
       int dstW = mainTarget.getRequiredWidth(), dstH = mainTarget.getRequiredHeight();
       if (dstW <= 0 || dstH <= 0 || mainTarget.skipScaleBeforeCache()) {
         if (DEBUG) { Log.d(TAG, "Skip scaling for " + mainTarget + " skip flag: " + mainTarget.skipScaleBeforeCache()); }
@@ -743,8 +757,9 @@ public class ImagesManager implements InitializingBean {
       } finally {
 
         final boolean removed = imagesManager.currentLoads.remove(key, this);
-        if (!removed && DEBUG) {
-          Log.w(TAG, "Incorrect loader in currents for " + key);
+        if (DEBUG) {
+          Log.d(TAG, "Current loaders count: " + imagesManager.currentLoads.size());
+          if (!removed) { Log.w(TAG, "Incorrect loader in currents for " + key); }
         }
 
       }
@@ -798,11 +813,9 @@ public class ImagesManager implements InitializingBean {
     }
     final void performCancellingLoader() {
       final String url = currentUrl;
-      if (DEBUG) { Log.d(TAG, "Cancel " + url); }
-      if (url != null) {
-        final ImageLoader loader = this.currentLoader;
-        if (loader != null) { loader.removeTarget(this); }
-      }
+      final ImageLoader loader = currentLoader;
+      if (DEBUG) { Log.d(TAG, "Cancel URL: " + url + "\nLoader: " + loader); }
+      if (loader != null) { loader.removeTarget(this); }
     }
 
     final void onStart(final ImageLoader loader, final String url) {
