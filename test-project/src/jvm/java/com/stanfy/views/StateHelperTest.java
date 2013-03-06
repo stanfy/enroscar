@@ -54,7 +54,7 @@ public class StateHelperTest extends AbstractEnroscarTest {
     final FrameLayout parent = new FrameLayout(context);
 
     // Configure state helper
-    stateHelper.setStateViewCreator(STATE_TEST, new BaseTestStateViewCreator() {
+    stateHelper.setStateViewCreator(STATE_TEST, new BaseStateViewCreator() {
       @Override
       protected LayoutParams createLayoutParams() {
         return new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -87,7 +87,7 @@ public class StateHelperTest extends AbstractEnroscarTest {
     measureAndLayout(parent, width, height);
 
     // Configure state helper
-    stateHelper.setStateViewCreator(STATE_TEST, new BaseTestStateViewCreator() {
+    stateHelper.setStateViewCreator(STATE_TEST, new BaseStateViewCreator() {
       @Override
       protected LayoutParams createLayoutParams() {
         return new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -120,7 +120,7 @@ public class StateHelperTest extends AbstractEnroscarTest {
     measureAndLayout(parent, width, height);
 
     // Configure state helper
-    stateHelper.setStateViewCreator(STATE_TEST, new BaseTestStateViewCreator() {
+    stateHelper.setStateViewCreator(STATE_TEST, new BaseStateViewCreator() {
       @Override
       protected LayoutParams createLayoutParams() {
         return new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -183,7 +183,7 @@ public class StateHelperTest extends AbstractEnroscarTest {
     measureAndLayout(parent, width, height);
 
     // Configure state helper
-    stateHelper.setStateViewCreator(STATE_TEST, new BaseTestStateViewCreator() {
+    stateHelper.setStateViewCreator(STATE_TEST, new BaseStateViewCreator() {
       @Override
       protected LayoutParams createLayoutParams() {
         return new ViewGroup.LayoutParams(stateViewWidth, stateViewHeight);
@@ -204,7 +204,7 @@ public class StateHelperTest extends AbstractEnroscarTest {
    * Test state view creator.
    * @author Vladislav Lipskiy - Stanfy (http://www.stanfy.com)
    */
-  private abstract class BaseTestStateViewCreator extends StateViewCreator {
+  private abstract class BaseStateViewCreator extends StateViewCreator {
 
     protected abstract ViewGroup.LayoutParams createLayoutParams();
 
