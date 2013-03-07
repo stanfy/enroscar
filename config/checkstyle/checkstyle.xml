@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: Stanfy Android Checks
+    Checkstyle-Configuration: Stanfy Checks
     Description: none
 -->
 <module name="Checker">
@@ -77,7 +77,10 @@
     <module name="InterfaceIsType"/>
     <module name="ArrayTypeStyle"/>
     <module name="FinalParameters"/>
-    <module name="TodoComment"/>
+    <module name="TodoComment">
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+    </module>
     <module name="UpperEll"/>
     <module name="RegexpSinglelineJava">
       <property name="format" value="[^\s]\s+$"/>
@@ -94,15 +97,8 @@
     </module>
     <module name="PackageDeclaration"/>
     <module name="StringLiteralEquality"/>
-    <module name="MissingOverride">
-      <property name="severity" value="ignore"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
-    </module>
     <module name="MissingDeprecated"/>
-    <module name="MissingOverride">
-      <property name="severity" value="ignore"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
-    </module>
+    <module name="MissingOverride"/>
     <module name="NoWhitespaceAfter">
       <property name="tokens" value="ARRAY_INIT,BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS"/>
     </module>
@@ -110,13 +106,18 @@
       <property name="packageAllowed" value="true"/>
     </module>
     <module name="JavadocMethod">
-      <property name="severity" value="ignore"/>
+      <property name="severity" value="warning"/>
+      <property name="scope" value="protected"/>
+      <property name="excludeScope" value="public"/>
+      <property name="allowUndeclaredRTE" value="true"/>
       <property name="suppressLoadErrors" value="true"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="DeclarationOrder">
       <property name="ignoreModifiers" value="true"/>
     </module>
+    <module name="CovariantEquals"/>
+    <module name="InnerTypeLast"/>
   </module>
   <module name="JavadocPackage">
     <property name="severity" value="ignore"/>
@@ -126,5 +127,8 @@
   <module name="NewlineAtEndOfFile"/>
   <module name="Translation"/>
   <module name="FileTabCharacter"/>
+  <module name="SuppressionFilter">
+    <property name="file" value="${basedir}/config/checkstyle/checkstyle-suppress.xml"/>
+  </module>
   <module name="SuppressionCommentFilter"/>
 </module>

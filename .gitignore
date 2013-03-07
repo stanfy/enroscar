@@ -2,6 +2,7 @@
 
 # Local properties
 dev.properties
+local.properties
 
 # Generated
 gen
@@ -10,3 +11,11 @@ tmp
 
 # Eclipse
 .project
+.classpath
+.settings
+.checkstyle
+
+# Gradle
+build
+.gradle
+
