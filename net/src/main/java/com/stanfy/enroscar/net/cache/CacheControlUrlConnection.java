@@ -101,6 +101,9 @@ public class CacheControlUrlConnection extends UrlConnectionWrapper {
    */
   protected class CacheControlInputStream extends FilterInputStream {
 
+    /**
+     * @throws IOException if an I/O error happens
+     */
     public CacheControlInputStream() throws IOException {
       super(CacheControlUrlConnection.super.getInputStream());
     }
@@ -121,6 +124,9 @@ public class CacheControlUrlConnection extends UrlConnectionWrapper {
    */
   protected class CacheControlOutputStream extends FilterOutputStream {
 
+    /**
+     * @throws IOException if an I/O error happens
+     */
     public CacheControlOutputStream() throws IOException {
       super(CacheControlUrlConnection.super.getOutputStream());
     }

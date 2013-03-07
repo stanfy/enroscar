@@ -16,6 +16,28 @@ public abstract class CacheTimeRule {
   public CacheTimeRule(final long time) {
     this.time = time;
   }
+  
+  /**
+   * @param pattern URI pattern
+   * @param ttl time to live
+   * @return cache rule that uses a regular expression for matching
+   */
+  public static CacheTimeRule ttlRuleForUri(final String pattern, final long ttl) {
+    return new PatternBasedCacheTimeRule(pattern, ttl);
+  }
+
+  /**
+   * @param pattern URI pattern
+   * @param until count of millisecond from 00:00 of the current day to determine an hour when cache expires
+   * @return cache rule that uses a regular expression for matching
+   */
+  public static CacheTimeRule untilRuleForUri(final String pattern, final long until) {
+    return new PatternBasedCacheTimeRule(pattern, until) {
+      @Override
+      public boolean isActual(final long createTime) { return isUntilActual(createTime, time); }
+    };
+  }
+
   public boolean isActual(final long createTime) { return time > System.currentTimeMillis() - createTime; }
 
   public abstract boolean matches(CacheEntry cacheEntry);
@@ -57,27 +79,6 @@ public abstract class CacheTimeRule {
     long margin = current / day * day + untilTime;
     if (createTime > margin) { margin += day; }
     return current < margin;
-  }
-
-  /**
-   * @param pattern URI pattern
-   * @param ttl time to live
-   * @return cache rule that uses a regular expression for matching
-   */
-  public static CacheTimeRule ttlRuleForUri(final String pattern, final long ttl) {
-    return new PatternBasedCacheTimeRule(pattern, ttl);
-  }
-
-  /**
-   * @param pattern URI pattern
-   * @param until count of millisecond from 00:00 of the current day to determine an hour when cache expires
-   * @return cache rule that uses a regular expression for matching
-   */
-  public static CacheTimeRule untilRuleForUri(final String pattern, final long until) {
-    return new PatternBasedCacheTimeRule(pattern, until) {
-      @Override
-      public boolean isActual(final long createTime) { return isUntilActual(createTime, time); }
-    };
   }
 
 }
