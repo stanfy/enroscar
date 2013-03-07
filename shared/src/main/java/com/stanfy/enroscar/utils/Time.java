@@ -6,8 +6,6 @@ package com.stanfy.enroscar.utils;
  */
 public final class Time {
 
-  private Time() { /* hide */ }
-
   /** Milliseconds in 1 second. */
   public static final long SECONDS = 1000;
   /** Milliseconds in 1 minute. */
@@ -16,6 +14,8 @@ public final class Time {
   public static final long HOURS = 60 * MINUTES;
   /** Milliseconds in 1 day. */
   public static final long DAYS = 24 * HOURS;
+
+  private Time() { /* hide */ }
 
   public static long asSeconds(final long millis) {
     return millis / SECONDS;

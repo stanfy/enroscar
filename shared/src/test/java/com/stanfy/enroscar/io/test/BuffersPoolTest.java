@@ -1,4 +1,4 @@
-package com.stanfy.io;
+package com.stanfy.enroscar.io.test;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -9,12 +9,13 @@ import org.junit.runner.RunWith;
 
 import android.util.Log;
 
-import com.stanfy.test.EnroscarTestRunner;
+import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.shared.test.Runner;
 
 /**
  * Tests for {@link BuffersPool}. Absolutely useless.
  */
-@RunWith(EnroscarTestRunner.class)
+@RunWith(Runner.class)
 public class BuffersPoolTest {
 
   /** Buffers pool instance. */
@@ -22,26 +23,6 @@ public class BuffersPoolTest {
 
   /** Random. */
   private final Random r = new Random();
-
-  /** User hread. */
-  private class UserThread extends Thread {
-    @Override
-    public void run() {
-      final int count = 100;
-      final int maxSize = 32000;
-      byte[] buffer = null;
-      for (int i = 0; i < count; i++) {
-        final boolean get = r.nextBoolean();
-        final int size = r.nextInt(maxSize);
-        if (buffer == null || get) {
-          buffer = buffersPool.get(size);
-        } else {
-          buffersPool.release(buffer);
-          buffer = null;
-        }
-      }
-    }
-  }
 
   @Before
   public void createPool() {
@@ -62,6 +43,26 @@ public class BuffersPoolTest {
     }
     for (final UserThread t : threads) {
       t.join();
+    }
+  }
+
+  /** User hread. */
+  private class UserThread extends Thread {
+    @Override
+    public void run() {
+      final int count = 100;
+      final int maxSize = 32000;
+      byte[] buffer = null;
+      for (int i = 0; i < count; i++) {
+        final boolean get = r.nextBoolean();
+        final int size = r.nextInt(maxSize);
+        if (buffer == null || get) {
+          buffer = buffersPool.get(size);
+        } else {
+          buffersPool.release(buffer);
+          buffer = null;
+        }
+      }
     }
   }
 

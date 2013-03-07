@@ -1,19 +1,20 @@
-package com.stanfy.io;
+package com.stanfy.enroscar.io.test;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 import java.util.Random;
 
 import org.junit.Test;
 
-import com.stanfy.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.io.Base64;
 
 /**
  * Tests for {@link Base64}.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public class Base64Test extends AbstractEnroscarTest {
+public class Base64Test {
 
   /** Sample. */
   private static final byte[] SAMPLE_BYTES = new byte[] {0x66, 0x6f, 0x6f},

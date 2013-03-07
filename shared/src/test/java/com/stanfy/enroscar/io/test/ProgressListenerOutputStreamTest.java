@@ -1,8 +1,9 @@
-package com.stanfy.io;
+package com.stanfy.enroscar.io.test;
 
-import static com.stanfy.io.ProgressListenerInputStreamTest.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+
+import static com.stanfy.enroscar.io.test.ProgressListenerInputStreamTest.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,7 +13,9 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.stanfy.io.ProgressListenerOutputStream.ProgressListener;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.io.ProgressListenerOutputStream;
+import com.stanfy.enroscar.io.ProgressListenerOutputStream.ProgressListener;
 
 /**
  * Tests for {@link ProgressListenerOutputStream}.
