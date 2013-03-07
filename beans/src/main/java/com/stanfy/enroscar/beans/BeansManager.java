@@ -31,6 +31,9 @@ public class BeansManager {
   /** Singleton instance. */
   private static BeansManager instance;
 
+  /** Beans manager factory. */
+  private static Factory factory;
+  
   /** Application instance. */
   private final Application application;
 
@@ -46,6 +49,10 @@ public class BeansManager {
   /** Postponed edit actions. */
   private LinkedHashMap<String, PutBean> postponedActions;
 
+  /**
+   * Main constructor. Stores reference to an application object and created a {@link BeansContainer}.
+   * @param application Android application instance
+   */
   protected BeansManager(final Application application) {
     this.application = application;
     this.container = createContainer(application);
@@ -53,17 +60,36 @@ public class BeansManager {
 
   public static synchronized BeansManager get(final Context context) {
     if (instance == null) {
-      if (context == null) { return null; }
-      final Context appContext = context.getApplicationContext();
-      if (appContext != null && appContext instanceof Application) {
-        instance = new BeansManager((Application) appContext);
-      } else if (DEBUG) {
-        Log.v(TAG, "Context " + context + " provides wrong application context " + appContext);
+      if (context == null) {
+        throw new IllegalArgumentException("Cannot create a beans manager without Android context. "
+            + "'context' parameter in BeansManager.get(context) is null.");
       }
+      final Context appContext = context.getApplicationContext();
+      
+      if (appContext != null && appContext instanceof Application) {
+        Application app = (Application) appContext;
+        instance = factory != null ? factory.createBeansManager(app) : new BeansManager(app);
+      } else {
+        throw new IllegalArgumentException("Context " + context + " does not provide reference to the application");
+      }
+      
     }
     return instance;
   }
 
+  public static synchronized void setFactory(final Factory factory) {
+    if (factory == null) {
+      throw new IllegalArgumentException("Factory cannot be null");
+    }
+    if (BeansManager.factory != null) {
+      throw new IllegalStateException("Beans manager factory is already set");
+    }
+    if (BeansManager.instance != null) {
+      throw new IllegalStateException("Beans manager has already bean created");
+    }
+    BeansManager.factory = factory;
+  }
+  
   /**
    * Call this method from {@link Application#onLowMemory()} to integrate enroscar on pre-ICS versions.
    * @param context application context
@@ -109,29 +135,6 @@ public class BeansManager {
 
   /** @return beans editor instance */
   public Editor edit() { return new Editor(); }
-
-//  /** @return images manager instance */
-//  public ImagesManager getImagesManager() { return container.getBean(ImagesManager.BEAN_NAME, ImagesManager.class); }
-//  /** @return main buffers pool instance */
-//  public BuffersPool getMainBuffersPool() { return container.getBean(BuffersPool.BEAN_NAME, BuffersPool.class); }
-//  /** @return image memory cache instance */
-//  public ImageMemoryCache getImageMemoryCache() { return container.getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class); }
-//  /** @return response cache instance */
-//  public ResponseCache getResponseCache(final String name) { return container.getBean(name, ResponseCache.class); }
-//  /** @return crucial GUI operation manager */
-//  public CrucialGUIOperationManager getCrucialGUIOperationManager() { return container.getBean(CrucialGUIOperationManager.BEAN_NAME, CrucialGUIOperationManager.class); }
-//  /** @return activity behavior factory */
-//  public ActivityBehaviorFactory getActivityBehaviorFactory() { return container.getBean(ActivityBehaviorFactory.BEAN_NAME, ActivityBehaviorFactory.class); }
-//  /** @return statistics manager */
-//  public StatsManager getStatsManager() { return container.getBean(StatsManager.BEAN_NAME, StatsManager.class); }
-//  /** @return SDK dependent utilities factory */
-//  public SDKDependentUtilsFactory getSdkDependentUtilsFactory() { return container.getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class); }
-//  /** @return remote server API access configuration */
-//  public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return container.getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
-//  /** @return content handler instance */
-//  public ContentHandler getContentHandler(final String name) { return container.getBean(name, ContentHandler.class); }
-//  /** @return application database manager instance */
-//  public AppDatabaseManager getAppDatabaseManager() { return container.getBean(AppDatabaseManager.class); }
 
   /**
    * Beans editor.
@@ -185,92 +188,6 @@ public class BeansManager {
       });
       return this;
     }
-
-//    public Editor required() {
-//      put(SDKDependentUtilsFactory.class);
-//      put(BuffersPool.class);
-//      put(EmptyStatsManager.class);
-//      return this;
-//    }
-//
-//    public Editor images(final EnroscarConnectionsEngine.Config config) {
-//      put(ImageFileCache.class);
-//      put(SupportLruImageMemoryCache.class);
-//      put(ImagesManager.class);
-//
-//      editorActions.put("images-connections-config", new PutBean() {
-//        @Override
-//        public Object put() {
-//          // install connections engine
-//          config.install(application);
-//          return null;
-//        }
-//      });
-//      return this;
-//    }
-//
-//    public Editor images() { return images(EnroscarConnectionsEngine.config()); }
-//
-//    public Editor activitiesBehavior() {
-//      put(ActivityBehaviorFactory.class);
-//      put(CrucialGUIOperationManager.class);
-//      return this;
-//    }
-//
-//    public Editor remoteServerApi(final EnroscarConnectionsEngine.Config config, final String... formats) {
-//      put(RemoteServerApiConfiguration.class);
-//      if (formats.length > 0) {
-//
-//        Class<?> mainClass = null;
-//        for (final String format : formats) {
-//          Class<?> handlerClass = null;
-//
-//          if (SimpleRequestBuilder.JSON.equals(format)) {
-//            handlerClass = GsonContentHandler.class;
-//          } else if (SimpleRequestBuilder.XML.equals(format)) {
-//            handlerClass = XmlGsonContentHandler.class;
-//          } else if (SimpleRequestBuilder.STRING.equals(format)) {
-//            handlerClass = StringContentHandler.class;
-//          }
-//
-//          if (handlerClass == null) {
-//            throw new RuntimeException("Unknown format " + format);
-//          }
-//
-//          if (mainClass == null) { mainClass = handlerClass; }
-//          put(handlerClass);
-//        }
-//
-//        final String mainContentHandlerName = AppUtils.getBeanInfo(mainClass).value();
-//        editorActions.put("remoteServerApi-config", new PutBean() {
-//          @Override
-//          public Object put() {
-//            // set default content handler
-//            getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class)
-//                .setDefaultContentHandlerName(mainContentHandlerName);
-//
-//            // install connections engine
-//            config.install(application);
-//
-//            return null;
-//          }
-//        });
-//
-//      }
-//      return this;
-//    }
-//
-//    public Editor remoteServerApi(final String... formats) {
-//      return remoteServerApi(EnroscarConnectionsEngine.config(), formats);
-//    }
-//
-//    public Editor defaults() {
-//      required();
-//      images();
-//      activitiesBehavior();
-//      remoteServerApi();
-//      return this;
-//    }
 
     private void performActions(final Map<String, PutBean> editorActions) {
       final long start = System.currentTimeMillis();
@@ -331,4 +248,11 @@ public class BeansManager {
     Object put();
   }
 
+  /**
+   * Factory that can create a {@link BeansManager}.
+   */
+  public interface Factory {
+    BeansManager createBeansManager(Application app);
+  }
+  
 }

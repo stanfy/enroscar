@@ -1,0 +1,5 @@
+archivesBaseName = 'enroscar-assist'
+
+dependencies {
+  compile project(':beans')
+}

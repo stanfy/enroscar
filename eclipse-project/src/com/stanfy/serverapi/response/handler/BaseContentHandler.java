@@ -14,6 +14,7 @@ import android.util.Log;
 import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.InitializingBean;
+import com.stanfy.enroscar.utils.ModelTypeToken;
 import com.stanfy.io.BuffersPool;
 import com.stanfy.io.IoUtils;
 import com.stanfy.io.PoolableBufferedInputStream;
@@ -21,7 +22,6 @@ import com.stanfy.net.ContentControlUrlConnection;
 import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.response.Model;
-import com.stanfy.serverapi.response.ModelTypeToken;
 
 /**
  * Base content handler. Takes care about buffers and gzip.

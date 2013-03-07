@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.net.URLConnection;
 
 import com.stanfy.enroscar.beans.EnroscarBean;
+import com.stanfy.enroscar.utils.ModelTypeToken;
 import com.stanfy.io.IoUtils;
-import com.stanfy.serverapi.response.ModelTypeToken;
 
 
 /**

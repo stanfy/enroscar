@@ -21,7 +21,7 @@ public class SherlockFragment extends BaseFragment implements OnCreateOptionsMen
   }
 
   @Override
-  public void onAttach(Activity activity) {
+  public void onAttach(final Activity activity) {
     if (!(activity instanceof SherlockFragmentActivity)) {
       throw new IllegalStateException(getClass().getSimpleName() + " must be attached to a SherlockFragmentActivity.");
     }
@@ -37,32 +37,32 @@ public class SherlockFragment extends BaseFragment implements OnCreateOptionsMen
   }
 
   @Override
-  public final void onCreateOptionsMenu(android.view.Menu menu, android.view.MenuInflater inflater) {
+  public void onCreateOptionsMenu(final android.view.Menu menu, final android.view.MenuInflater inflater) {
     onCreateOptionsMenu(new MenuWrapper(menu), mActivity.getSupportMenuInflater());
   }
 
   @Override
-  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+  public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
     //Nothing to see here.
   }
 
   @Override
-  public final void onPrepareOptionsMenu(android.view.Menu menu) {
+  public final void onPrepareOptionsMenu(final android.view.Menu menu) {
     onPrepareOptionsMenu(new MenuWrapper(menu));
   }
 
   @Override
-  public void onPrepareOptionsMenu(Menu menu) {
+  public void onPrepareOptionsMenu(final Menu menu) {
     //Nothing to see here.
   }
 
   @Override
-  public final boolean onOptionsItemSelected(android.view.MenuItem item) {
+  public final boolean onOptionsItemSelected(final android.view.MenuItem item) {
     return onOptionsItemSelected(new MenuItemWrapper(item));
   }
 
   @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
+  public boolean onOptionsItemSelected(final MenuItem item) {
     //Nothing to see here.
     return false;
   }

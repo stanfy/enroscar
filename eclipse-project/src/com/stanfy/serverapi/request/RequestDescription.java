@@ -15,6 +15,7 @@ import android.util.SparseArray;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.utils.ModelTypeToken;
 import com.stanfy.io.IoUtils;
 import com.stanfy.net.UrlConnectionBuilder;
 import com.stanfy.serverapi.request.binary.BinaryData;
@@ -25,7 +26,6 @@ import com.stanfy.serverapi.request.net.SimpleGetConverter;
 import com.stanfy.serverapi.request.net.SimplePostConverter;
 import com.stanfy.serverapi.request.net.UploadPostConverter;
 import com.stanfy.serverapi.response.Model;
-import com.stanfy.serverapi.response.ModelTypeToken;
 import com.stanfy.utils.AppUtils;
 
 /**
