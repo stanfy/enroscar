@@ -3,3 +3,10 @@ archivesBaseName = 'enroscar-assist'
 dependencies {
   compile project(':beans')
 }
+
+modifyPom {
+  project {
+    name 'Enroscar Beans'
+    description 'Beans manager wihout dependency injection'
+  }
+}
