@@ -10,7 +10,12 @@ import com.stanfy.enroscar.beans.BeansManager;
  */
 public class DefaultBeansManager extends BeansManager {
 
-  protected DefaultBeansManager(Application application) {
+  /**
+   * Main constructor.
+   * @param application Android application instance
+   * @see BeansManager
+   */
+  protected DefaultBeansManager(final Application application) {
     super(application);
   }
 
@@ -23,7 +28,7 @@ public class DefaultBeansManager extends BeansManager {
   public static DefaultBeansManager use(final Context context) {
     setFactory(new Factory() {
       @Override
-      public BeansManager createBeansManager(Application app) {
+      public BeansManager createBeansManager(final Application app) {
         return new DefaultBeansManager(app);
       }
     });

@@ -18,15 +18,6 @@ import com.stanfy.enroscar.beans.EnroscarBean;
 @RunWith(Runner.class)
 public class BeanManagerEditorTest {
 
-  /** Example bean. */
-  @EnroscarBean("mybean")
-  public static class BeanA {
-  }
-  
-  /** Will rewrite BeanA. */
-  public static class BeanB extends BeanA {
-  }
-  
   /** Beans manager instance. */
   private BeansManager beansManager;
 
@@ -42,6 +33,15 @@ public class BeanManagerEditorTest {
   @Test
   public void beanWithSameNamesShouldBeSabstitued() {
     assertThat(beansManager.getContainer().getBean(BeanA.class), is(instanceOf(BeanB.class)));
+  }
+  
+  /** Example bean. */
+  @EnroscarBean("mybean")
+  public static class BeanA {
+  }
+  
+  /** Will rewrite BeanA. */
+  public static class BeanB extends BeanA {
   }
   
 }

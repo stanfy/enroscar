@@ -128,7 +128,7 @@
   <module name="Translation"/>
   <module name="FileTabCharacter"/>
   <module name="SuppressionFilter">
-    <property name="file" value="${basedir}/config/checkstyle/checkstyle-suppress.xml"/>
+    <property name="file" value="${basedir}/../config/checkstyle/checkstyle-suppress.xml"/>
   </module>
   <module name="SuppressionCommentFilter"/>
 </module>

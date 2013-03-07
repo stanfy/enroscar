@@ -49,6 +49,10 @@ public class BeansManager {
   /** Postponed edit actions. */
   private LinkedHashMap<String, PutBean> postponedActions;
 
+  /**
+   * Main constructor. Stores reference to an application object and created a {@link BeansContainer}.
+   * @param application Android application instance
+   */
   protected BeansManager(final Application application) {
     this.application = application;
     this.container = createContainer(application);
@@ -56,9 +60,9 @@ public class BeansManager {
 
   public static synchronized BeansManager get(final Context context) {
     if (instance == null) {
-      if (context == null) { 
+      if (context == null) {
         throw new IllegalArgumentException("Cannot create a beans manager without Android context. "
-            + "'context' parameter in BeansManager.get(context) is null."); 
+            + "'context' parameter in BeansManager.get(context) is null.");
       }
       final Context appContext = context.getApplicationContext();
       
@@ -73,7 +77,7 @@ public class BeansManager {
     return instance;
   }
 
-  public static synchronized void setFactory(Factory factory) {
+  public static synchronized void setFactory(final Factory factory) {
     if (factory == null) {
       throw new IllegalArgumentException("Factory cannot be null");
     }
