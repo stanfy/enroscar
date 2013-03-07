@@ -1,0 +1,8 @@
+archivesBaseName='enroscar-net'
+
+dependencies {
+  
+  compile project(':beans'), project(':shared')
+  compile 'com.jakewharton:disklrucache:1.3.1'
+  
+}

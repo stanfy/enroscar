@@ -8,7 +8,7 @@ import android.content.Context;
 import android.support.v4.content.Loader;
 
 import com.stanfy.app.loader.LoadMoreListLoader;
-import com.stanfy.serverapi.response.ModelTypeToken;
+import com.stanfy.enroscar.utils.ModelTypeToken;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.utils.RequestExecutor;
 

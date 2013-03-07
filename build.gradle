@@ -50,11 +50,3 @@ subprojects {
   }
   
 }
-
-project(':assist') {
-  
-  dependencies {
-    compile project(':beans')
-  }
-  
-}

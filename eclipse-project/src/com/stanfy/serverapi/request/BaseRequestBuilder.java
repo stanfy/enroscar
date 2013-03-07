@@ -22,12 +22,12 @@ import android.util.Log;
 
 import com.stanfy.app.loader.RequestBuilderLoader;
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.utils.ModelTypeToken;
 import com.stanfy.serverapi.RemoteServerApiConfiguration;
 import com.stanfy.serverapi.request.binary.AssetFdBinaryData;
 import com.stanfy.serverapi.request.binary.BitmapBinaryData;
 import com.stanfy.serverapi.request.binary.ContentUriBinaryData;
 import com.stanfy.serverapi.request.binary.EmptyBinaryData;
-import com.stanfy.serverapi.response.ModelTypeToken;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.utils.RequestExecutor;
 

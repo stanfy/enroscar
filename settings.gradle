@@ -1,1 +1,1 @@
-include 'beans', 'assist'
+include 'beans', 'shared', 'net', 'assist'

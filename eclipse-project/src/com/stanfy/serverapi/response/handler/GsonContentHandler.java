@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.serverapi.response.ModelTypeToken;
+import com.stanfy.enroscar.utils.ModelTypeToken;
 
 /**
  * Implementation of {@link java.net.ContentHandler} that uses
