@@ -25,6 +25,7 @@ subprojects {
   
   checkstyle {
     configFile = checkstyleConfig
+    configProperties['basedir'] = project.projectDir
   }
   
   jar {
