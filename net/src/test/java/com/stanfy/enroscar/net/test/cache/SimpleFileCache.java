@@ -1,8 +1,11 @@
-package com.stanfy.net.cache;
+package com.stanfy.enroscar.net.test.cache;
 
 import java.io.File;
 
-import com.xtremelabs.robolectric.Robolectric;
+import org.robolectric.Robolectric;
+
+import com.stanfy.enroscar.net.cache.BaseFileResponseCache;
+import com.stanfy.enroscar.net.cache.CacheEntry;
 
 /**
  * Cache for testing.

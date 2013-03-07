@@ -1,13 +1,13 @@
-package com.stanfy.net.cache;
+package com.stanfy.enroscar.net.test.cache;
 
 import java.io.IOException;
 import java.net.ResponseCache;
 
 import org.junit.Before;
 
-import com.stanfy.app.beans.BeansManager;
-import com.stanfy.app.beans.BeansManager.Editor;
-import com.stanfy.test.AbstractMockServerTest;
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 
 /**
  * Abstract one cache test.
@@ -29,7 +29,7 @@ public abstract class AbstractOneCacheTest extends AbstractMockServerTest {
 
   @Before
   public void setupCache() throws IOException {
-    cache = (SimpleFileCache)BeansManager.get(null).getResponseCache("testCache");
+    cache = BeansManager.get(null).getContainer().getBean("testCache", SimpleFileCache.class);
     ResponseCache.setDefault(cache);
   }
 

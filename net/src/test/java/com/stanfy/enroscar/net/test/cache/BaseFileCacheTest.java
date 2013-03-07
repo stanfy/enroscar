@@ -1,4 +1,4 @@
-package com.stanfy.net.cache;
+package com.stanfy.enroscar.net.test.cache;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -10,7 +10,7 @@ import java.net.URLConnection;
 import org.junit.Test;
 
 import com.google.mockwebserver.MockResponse;
-import com.stanfy.io.DiskLruCache;
+import com.jakewharton.DiskLruCache;
 
 /**
  * Tests for {@link com.stanfy.net.cache.BaseFileResponseCache}.

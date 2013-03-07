@@ -8,6 +8,8 @@ import android.support.v4.content.Loader.OnLoadCompleteListener;
 import com.stanfy.app.beans.BeansManager.Editor;
 import com.stanfy.app.loader.LoaderAccess;
 import com.stanfy.app.loader.RequestBuilderLoader;
+import com.stanfy.enroscar.net.test.AbstractMockServerTest;
+import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.test.Application.ApplicationService;
 import com.xtremelabs.robolectric.Robolectric;
