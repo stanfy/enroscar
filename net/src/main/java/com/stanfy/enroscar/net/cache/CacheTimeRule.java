@@ -17,6 +17,14 @@ public abstract class CacheTimeRule {
     this.time = time;
   }
   
+  public static boolean isUntilActual(final long createTime, final long untilTime) {
+    final long day = Time.DAYS;
+    final long current = System.currentTimeMillis();
+    long margin = current / day * day + untilTime;
+    if (createTime > margin) { margin += day; }
+    return current < margin;
+  }
+
   /**
    * @param pattern URI pattern
    * @param ttl time to live
@@ -42,6 +50,9 @@ public abstract class CacheTimeRule {
 
   public abstract boolean matches(CacheEntry cacheEntry);
 
+  /**
+   * @return string that describes a matcher; it can be a regexp string for pattern matcher
+   */
   protected abstract String matcherToString();
 
   public long getTime() { return time; }
@@ -71,14 +82,6 @@ public abstract class CacheTimeRule {
       return regex.pattern();
     }
 
-  }
-
-  public static boolean isUntilActual(final long createTime, final long untilTime) {
-    final long day = Time.DAYS;
-    final long current = System.currentTimeMillis();
-    long margin = current / day * day + untilTime;
-    if (createTime > margin) { margin += day; }
-    return current < margin;
   }
 
 }

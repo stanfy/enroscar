@@ -18,6 +18,7 @@ import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
 import com.stanfy.enroscar.net.cache.ResponseCacheSwitcher;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
@@ -36,7 +37,9 @@ public class CacheSwitcherTest extends AbstractMockServerTest {
   @Override
   protected void configureBeansManager(final Editor editor) {
     super.configureBeansManager(editor);
-    editor.put("testCache1", new SimpleFileCache("testCache1"))
+    editor
+          .put(BuffersPool.class)
+          .put("testCache1", new SimpleFileCache("testCache1"))
           .put("testCache2", new SimpleFileCache("testCache2"));
   }
 

@@ -66,6 +66,9 @@ public class ResponseCacheSwitcher extends ResponseCache {
     return hub.getLastSavedUrlConnection();
   }
 
+  /**
+   * @return last used {@link URLConnection}
+   */
   protected URLConnection getLastSavedUrlConnection() {
     final LinkedList<URLConnection> stack = currentUrlConnection.get();
     if (stack == null || stack.isEmpty()) {
@@ -77,6 +80,10 @@ public class ResponseCacheSwitcher extends ResponseCache {
     return stack.peek();
   }
 
+  /**
+   * @param uri URL for the current {@link URLConnection}
+   * @return last used {@link URLConnection} if its URL is equal to the provided one
+   */
   protected URLConnection resolveCurrentUrlConnection(final URI uri) {
     final URLConnection candidate = getLastSavedUrlConnection();
     if (candidate == null) { return null; }
@@ -88,6 +95,10 @@ public class ResponseCacheSwitcher extends ResponseCache {
     }
   }
 
+  /**
+   * @param connection connection with cache bean info
+   * @return response cache instance that should serve the specified connection
+   */
   protected ResponseCache getResponseCacheBean(final CacheControlUrlConnection connection) {
     final String name = connection.getResponseCacheName();
     // We assume that beans manager has been already created

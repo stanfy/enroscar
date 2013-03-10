@@ -52,17 +52,18 @@ public class EnroscarConnectionsEngine implements URLStreamHandlerFactory, Conte
    * Installs the instance of this factory.
    * @param context context instance
    */
-  static void install(final Context context, final Config config) {
+  static void install(final Context context, final Config config, final boolean strictMode) {
     if (!installFlag) {
       // workarounds
       disableConnectionReuseIfNecessary();
       // install handlers
       installStreamHandlers(context, config);
       // enable strict mode
-      if (DebugFlags.STRICT_MODE) {
-        // TODO enable strict mode
-        //AppUtils.getSdkDependentUtils().enableStrictMode();
-      }
+    }
+
+    if (strictMode) {
+      // TODO enable strict mode
+      //AppUtils.getSdkDependentUtils().enableStrictMode();
     }
 
     // install cache
@@ -150,7 +151,7 @@ public class EnroscarConnectionsEngine implements URLStreamHandlerFactory, Conte
      * @param context context instance
      */
     public void install(final Context context) {
-      EnroscarConnectionsEngine.install(context, this);
+      EnroscarConnectionsEngine.install(context, this, DebugFlags.STRICT_MODE);
     }
 
   }
