@@ -11,9 +11,9 @@ import org.junit.Test;
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.app.beans.BeansManager.Editor;
+import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.serverapi.request.OperationType;
-import com.stanfy.test.AbstractMockServerTest;
 import com.xtremelabs.robolectric.Robolectric;
 
 /**

@@ -1,6 +1,10 @@
-package com.stanfy.net.cache;
+package com.stanfy.enroscar.net.test.cache;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
 import java.net.ResponseCache;
@@ -8,15 +12,16 @@ import java.net.URLConnection;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.robolectric.Robolectric;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
-import com.stanfy.app.beans.BeansManager;
-import com.stanfy.app.beans.BeansManager.Editor;
-import com.stanfy.net.UrlConnectionBuilder;
-import com.stanfy.test.AbstractMockServerTest;
-import com.stanfy.test.EnroscarConfiguration;
-import com.xtremelabs.robolectric.Robolectric;
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.net.UrlConnectionBuilder;
+import com.stanfy.enroscar.net.cache.ResponseCacheSwitcher;
+import com.stanfy.enroscar.net.test.AbstractMockServerTest;
+import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
 
 /**
  * Tests for {@link com.stanfy.net.cache.ResponseCacheSwitcher}.
@@ -38,8 +43,8 @@ public class CacheSwitcherTest extends AbstractMockServerTest {
   @Before
   public void setupCache() throws IOException {
     final BeansManager beansManager = BeansManager.get(Robolectric.application);
-    cache1 = (SimpleFileCache)beansManager.getResponseCache("testCache1");
-    cache2 = (SimpleFileCache)beansManager.getResponseCache("testCache2");
+    cache1 = (SimpleFileCache)beansManager.getContainer().getBean("testCache1", SimpleFileCache.class);
+    cache2 = (SimpleFileCache)beansManager.getContainer().getBean("testCache2", SimpleFileCache.class);
   }
 
   @Test

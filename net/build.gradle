@@ -2,7 +2,9 @@ archivesBaseName='enroscar-net'
 
 dependencies {
   
-  compile project(':beans'), project(':shared')
+  compile project(':beans'), project(path : ':shared', configuration : 'testArchives')
   compile 'com.jakewharton:disklrucache:1.3.1'
-  
+
+  testCompile 'com.google.mockwebserver:mockwebserver:20130201'
+    
 }

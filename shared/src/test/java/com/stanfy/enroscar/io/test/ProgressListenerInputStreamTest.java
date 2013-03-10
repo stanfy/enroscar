@@ -1,6 +1,9 @@
-package com.stanfy.io;
+package com.stanfy.enroscar.io.test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
@@ -9,7 +12,9 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.stanfy.io.ProgressListenerInputStream.ProgressListener;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.io.ProgressListenerInputStream;
+import com.stanfy.enroscar.io.ProgressListenerInputStream.ProgressListener;
 
 /**
  * Tests for {@link ProgressListenerInputStream}.
@@ -20,7 +25,7 @@ public class ProgressListenerInputStreamTest {
   static final int LENGTH_FACTOR = 10;
 
   /** Length. */
-  static final int LENGTH = IoUtils.BUF_SIZE * LENGTH_FACTOR;
+  static final int LENGTH = 8192 * LENGTH_FACTOR;
 
   /** Used throttle. */
   static final float THROTTLE = 0.07f;
