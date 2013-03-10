@@ -1,4 +1,4 @@
-package com.stanfy.stats;
+package com.stanfy.enroscar.stats;
 
 import java.util.Map;
 

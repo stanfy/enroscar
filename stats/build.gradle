@@ -1,0 +1,9 @@
+archivesBaseName='enroscar-stats'
+
+dependencies {
+  
+  compile project(':beans'), project(':shared')
+  
+  compile fileTree(dir : 'libs', include : '*.jar')
+    
+}

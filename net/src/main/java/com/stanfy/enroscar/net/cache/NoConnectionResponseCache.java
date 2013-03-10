@@ -33,11 +33,18 @@ public abstract class NoConnectionResponseCache extends CacheWrapper implements 
   /** Core cache bean name. */
   private final String coreCacheBeanName;
 
+  /**
+   * @param context application context
+   * @param coreCacheBeanName core cache bean name
+   */
   protected NoConnectionResponseCache(final Context context, final String coreCacheBeanName) {
     this.connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
     this.coreCacheBeanName = coreCacheBeanName;
   }
 
+  /**
+   * @return true if {@code get} methods should return something
+   */
   protected boolean shouldUseCache() {
     final NetworkInfo netwotkInfo = connectivityManager.getActiveNetworkInfo();
     return netwotkInfo == null || !netwotkInfo.isConnected();

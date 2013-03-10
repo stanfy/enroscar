@@ -1,4 +1,4 @@
-package com.stanfy.stats;
+package com.stanfy.enroscar.stats;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -9,10 +9,9 @@ import java.util.regex.Pattern;
 
 import android.app.Activity;
 
-import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.beans.Bean;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.utils.AppUtils;
+import com.stanfy.enroscar.utils.AppUtils;
 
 /**
  * Statistics manager, instantiated by application object.
@@ -86,7 +85,7 @@ public abstract class StatsManager implements Bean {
     event(tag, AppUtils.<String, String>tuples(tuples));
   }
 
-  static String trimStackTrace(final String st) {
+  public static String trimStackTrace(final String st) {
     Matcher m = PATTERN_ST_AT.matcher(st);
     String result = m.replaceAll(",");
     m = PATTERN_ST_EX_CLASS.matcher(result);

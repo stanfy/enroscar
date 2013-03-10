@@ -12,8 +12,10 @@ import java.net.URLConnection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.jakewharton.DiskLruCache;
@@ -55,20 +57,40 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   /** Buffers pool. */
   private BuffersPool buffersPool;
 
+  /** Sync point for cache installation. */
+  private final CountDownLatch initSync = new CountDownLatch(1);
+  
   /** Statistics. */
   private final AtomicInteger writeSuccessCount = new AtomicInteger(0),
                               writeAbortCount = new AtomicInteger(0),
                               hitCount = new AtomicInteger(0);
 
-  protected void install(final File directory, final int version, final long maxSize, final boolean asyncInit) throws IOException {
+  /**
+   * Setup cache. This operation causes disk reads.
+   * @param version cache version
+   * @throws IOException if error happens
+   */
+  void install(final int version) throws IOException {
     if (buffersPool == null) {
       throw new IllegalStateException("Buffers pool is not resolved");
     }
+    
+    File directory = getWorkingDirectory();
     directory.mkdirs();
-    // TODO implement
-    //diskCache = DiskLruCache.open(directory, buffersPool, version, ENTRIES_COUNT, maxSize, asyncInit);
+    diskCache = DiskLruCache.open(directory, version, ENTRIES_COUNT, getMaxSize());
+    onCacheInstalled();
+    
+    initSync.countDown();
   }
 
+  /**
+   * Called when cache is initialized before any reads or writes to this cache. 
+   * Called from a working thread. 
+   */
+  protected void onCacheInstalled() {
+    // nothing
+  }
+  
   public void delete() throws IOException {
     if (DEBUG) { Log.d(TAG, "Delete cache workingDirectory=" + diskCache.getDirectory()); }
     diskCache.delete();
@@ -98,6 +120,11 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     return snapshot;
   }
 
+  /**
+   * Read cache for the specified cache entry.
+   * @param requestInfo request info (cache key)
+   * @return cache response instance
+   */
   protected CacheResponse get(final CacheEntry requestInfo) {
     if (!checkDiskCache()) { return null; }
     final CacheEntry entry = newCacheEntry();
@@ -129,8 +156,17 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     return get(requestInfo);
   }
 
+  /**
+   * Override this method in order to provide custom {@link CacheEntry} implementation.
+   * But use {@link #newCacheEntry()} method for creating ones.  
+   * @return new cache entry instance
+   */
   protected abstract CacheEntry createCacheEntry();
 
+  /**
+   * Create and setup new cache entry.
+   * @return new cache entry instance
+   */
   protected final CacheEntry newCacheEntry() {
     final CacheEntry result = createCacheEntry();
     result.setListener(this);
@@ -192,6 +228,12 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   }
 
   private boolean checkDiskCache() {
+    try {
+      initSync.await();
+    } catch (InterruptedException e) {
+      Log.i(TAG, "Init sync waiting was interrupted for cache " + this);
+    }
+    
     if (diskCache == null || diskCache.isClosed()) {
       Log.e(TAG, "File cache is being used but not properly installed, diskCache = " + diskCache);
       return false;
@@ -232,11 +274,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
 
   @Override
   public String getLocalPath(final String url) {
-    final CacheEntry requestInfo = createGetEntry(url);
-    if (requestInfo == null) { return null; }
-    // TODO implement
-    // return diskCache.getLocalPath(requestInfo.getCacheKey(), ENTRY_BODY);
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -263,14 +301,22 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     if (buffersPool == null) {
       throw new IllegalStateException("Buffers pool must be initialized before the response cache");
     }
-    try {
-      if (DEBUG) {
-        Log.i(TAG, "Install new file cache workingDirectory=" + getWorkingDirectory() + ", version=" + VERSION + ", maxSize=" + getMaxSize());
+    
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(final Void... params) {
+        try {
+          if (DEBUG) {
+            Log.i(TAG, "Install new file cache workingDirectory=" + getWorkingDirectory() + ", version=" + VERSION + ", maxSize=" + getMaxSize());
+          }
+          install(VERSION);
+        } catch (final IOException e) {
+          Log.e(TAG, "Cannot install file cache", e);
+        }
+        return null;
       }
-      install(getWorkingDirectory(), VERSION, getMaxSize(), true);
-    } catch (final IOException e) {
-      Log.e(TAG, "Cannot install file cache", e);
     }
+    .execute();
   }
 
 
@@ -286,4 +332,9 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     }
   }
 
+  @Override
+  public String toString() {
+    return getClass().getName() + "@" + hashCode() + "[dir=" + getWorkingDirectory() + ", maxSize=" + getMaxSize() + "]";
+  }
+  
 }

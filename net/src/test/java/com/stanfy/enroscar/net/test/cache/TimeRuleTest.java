@@ -8,16 +8,19 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.stanfy.enroscar.net.cache.CacheEntry;
 import com.stanfy.enroscar.net.cache.CacheTimeRule;
 import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.shared.test.Runner;
 import com.stanfy.enroscar.utils.Time;
 
 /**
  * Tests for {@link CacheTimeRule}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@RunWith(Runner.class)
 public class TimeRuleTest extends AbstractEnroscarTest {
 
   /** Test URL. */

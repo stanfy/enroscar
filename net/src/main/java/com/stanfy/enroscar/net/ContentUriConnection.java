@@ -74,6 +74,10 @@ public class ContentUriConnection extends URLConnection {
     }
   }
 
+  /**
+   * Ensure that {@link #connect()} method has been called.
+   * @throws IOException if error happens
+   */
   protected void ensureConnected() throws IOException {
     if (!connected) { connect(); }
   }

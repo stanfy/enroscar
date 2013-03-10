@@ -18,9 +18,17 @@ public abstract class BaseSizeRestrictedCache extends ResponseCache {
   /** Working directory. */
   private File workingDirectory;
 
+  /**
+   * Set cache working directory.
+   * @param workingDirectory cache working directory
+   */
   protected void setWorkingDirectory(final File workingDirectory) {
     this.workingDirectory = workingDirectory;
   }
+  /**
+   * Set cache size limit.
+   * @param maxSize cache maximum size
+   */
   protected void setMaxSize(final long maxSize) {
     this.maxSize = maxSize;
   }

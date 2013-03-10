@@ -139,7 +139,13 @@ public class CacheEntry {
   public String getRequestMethod() { return requestMethod; }
   public String getEncoding() { return encoding; }
 
+  /**
+   * @param uri URI for this cache entry
+   */
   protected void setUri(final String uri) { this.uri = uri; }
+  /**
+   * @param requestMethod request method for this cache entry
+   */
   protected void setRequestMethod(final String requestMethod) { this.requestMethod = requestMethod; }
 
   public String getCacheKey() { return AppUtils.getMd5(uri); }
@@ -164,6 +170,11 @@ public class CacheEntry {
     }
   }
 
+  /**
+   * Read some special metadata about this cache entry.
+   * @param in cache entry input stream
+   * @throws IOException if error happens
+   */
   protected void readMetaData(final InputStream in) throws IOException {
     // nothing
   }
@@ -179,11 +190,21 @@ public class CacheEntry {
     writer.close();
   }
 
+  /**
+   * Write some special metadata for this entry.
+   * @param writer writer for this cache entry
+   * @throws IOException if error happens
+   */
   protected void writeMetaData(final Writer writer) throws IOException {
     // nothing
   }
 
-  protected final int readInt(final InputStream in) throws IOException {
+  /**
+   * @param in input stream
+   * @return next line from the stream parsed as an integer
+   * @throws IOException if error i/O happens or line has bad format (int cannot be parsed)
+   */
+  protected static final int readInt(final InputStream in) throws IOException {
     final String intString = IoUtils.readAsciiLine(in);
     try {
       return Integer.parseInt(intString);
@@ -191,6 +212,11 @@ public class CacheEntry {
       throw new IOException("expected an int but was \"" + intString + "\"");
     }
   }
+  /**
+   * @param in input stream
+   * @return next line from the stream parsed as a long integer
+   * @throws IOException if error i/O happens or line has bad format (long cannot be parsed)
+   */
   protected final long readLong(final InputStream in) throws IOException {
     final String longString = IoUtils.readAsciiLine(in);
     try {
@@ -200,17 +226,40 @@ public class CacheEntry {
     }
   }
 
-  protected final void writeInt(final Writer writer, final int value) throws IOException {
+  /**
+   * Write next line as an int.
+   * @param writer output writer
+   * @param value integer value
+   * @throws IOException if error happens
+   */
+  protected static final void writeInt(final Writer writer, final int value) throws IOException {
     writer.write(new StringBuilder().append(value).append('\n').toString());
   }
-  protected final void writeLong(final Writer writer, final long value) throws IOException {
+  /**
+   * Write next line as a long.
+   * @param writer output writer
+   * @param value integer value
+   * @throws IOException if error happens
+   */
+  protected static final void writeLong(final Writer writer, final long value) throws IOException {
     writer.write(new StringBuilder().append(value).append('\n').toString());
   }
 
-  protected final String readString(final InputStream in) throws IOException {
+  /**
+   * @param in input stream
+   * @return next line
+   * @throws IOException if error happens
+   */
+  protected static final String readString(final InputStream in) throws IOException {
     return IoUtils.readAsciiLine(in);
   }
 
+  /**
+   * Write next line to the output.
+   * @param writer output writer
+   * @param line line to write (if null just a new empty line is inserted)
+   * @throws IOException if error happens
+   */
   protected final void writeString(final Writer writer, final String line) throws IOException {
     if (line != null) {
       writer.write(line + '\n');
@@ -247,6 +296,9 @@ public class CacheEntry {
     /** Input stream. */
     private final InputStream in;
 
+    /**
+     * @param in cache entry data input stream
+     */
     public CacheEntryResponse(final InputStream in) {
       this.in = in;
     }
@@ -295,6 +347,11 @@ public class CacheEntry {
     /** Close flag. */
     private boolean done;
 
+    /**
+     * @param cacheOut cache entry data output stream
+     * @param cacheEditor cache entry editor
+     * @param listener entry listener
+     */
     public CacheEntryRequest(final OutputStream cacheOut, final Editor cacheEditor, final CacheEntryListener listener) {
       this.cacheEditor = cacheEditor;
       this.cacheOut = cacheOut;
@@ -344,6 +401,11 @@ public class CacheEntry {
   @TargetApi(VERSION_CODES.FROYO)
   protected class OldApiCacheEntryRequest extends CacheEntryRequest {
 
+    /**
+     * @param cacheOut cache entry data output stream
+     * @param cacheEditor cache entry editor
+     * @param listener entry listener
+     */
     public OldApiCacheEntryRequest(final OutputStream cacheOut, final Editor cacheEditor, final CacheEntryListener listener) {
       super(cacheOut, cacheEditor, listener);
     }

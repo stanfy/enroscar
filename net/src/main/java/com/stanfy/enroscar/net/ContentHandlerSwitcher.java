@@ -13,6 +13,12 @@ import com.stanfy.enroscar.beans.BeansManager;
  */
 public class ContentHandlerSwitcher extends ContentHandler {
 
+  /**
+   * Default implementation for {@link #getContent(URLConnection)}.
+   * @param uConn connection instance
+   * @return input stream provided by the connection
+   * @throws IOException if error happens
+   */
   protected Object getContentDefault(final URLConnection uConn) throws IOException {
     return uConn.getInputStream();
   }

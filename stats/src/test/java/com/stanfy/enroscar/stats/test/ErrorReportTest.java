@@ -1,6 +1,9 @@
-package com.stanfy.stats;
+package com.stanfy.enroscar.stats.test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 import java.util.Map;
@@ -10,13 +13,13 @@ import org.junit.runner.RunWith;
 
 import android.app.Activity;
 
-import com.stanfy.test.EnroscarTestRunner;
+import com.stanfy.enroscar.stats.StatsManager;
 
 /**
  * Tests for error reports messages.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-@RunWith(EnroscarTestRunner.class)
+@RunWith(Runner.class)
 public class ErrorReportTest {
 
   /** Example stack trace. */

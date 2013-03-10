@@ -1,4 +1,4 @@
-package com.stanfy.location;
+package com.stanfy.enroscar.location;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -12,8 +12,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.stanfy.DebugFlags;
-
 /**
  * Allows easily start and stop locations listenting.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
@@ -25,7 +23,7 @@ public class LocationBinder {
   private static final String TAG = "LocBinder";
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  private static final boolean DEBUG = true;
 
   /** Time delta threshold. */
   private static final int TIME_THRESHOLD = 1000 * 60 * 3; // 3 minutes
