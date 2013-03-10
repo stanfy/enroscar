@@ -1,4 +1,4 @@
-package com.stanfy.net.cache;
+package com.stanfy.enroscar.net.test.cache;
 
 import static org.hamcrest.Matchers.equalTo;
 
@@ -9,8 +9,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.stanfy.test.AbstractEnroscarTest;
-import com.stanfy.utils.Time;
+import com.stanfy.enroscar.net.cache.CacheEntry;
+import com.stanfy.enroscar.net.cache.CacheTimeRule;
+import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.utils.Time;
 
 /**
  * Tests for {@link CacheTimeRule}.

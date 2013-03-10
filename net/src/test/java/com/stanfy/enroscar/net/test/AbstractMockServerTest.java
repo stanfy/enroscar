@@ -16,6 +16,7 @@ import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeanUtils;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
+import com.stanfy.enroscar.net.EnroscarConnectionsEngineMode;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine.Config;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;

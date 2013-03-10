@@ -1,6 +1,8 @@
-package com.stanfy.net;
+package com.stanfy.enroscar.net.test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,8 +12,8 @@ import java.util.zip.GZIPOutputStream;
 import org.junit.Test;
 
 import com.google.mockwebserver.MockResponse;
-import com.stanfy.io.IoUtils;
-import com.stanfy.net.cache.AbstractOneCacheTest;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.net.test.cache.AbstractOneCacheTest;
 
 /**
  * Test for gzip response.

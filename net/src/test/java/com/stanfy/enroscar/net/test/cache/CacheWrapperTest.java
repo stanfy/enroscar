@@ -1,22 +1,25 @@
-package com.stanfy.net.cache;
+package com.stanfy.enroscar.net.test.cache;
 
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ResponseCache;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.robolectric.Robolectric;
 
 import com.google.mockwebserver.MockResponse;
-import com.stanfy.app.beans.BeansContainer;
-import com.stanfy.app.beans.BeansManager;
-import com.stanfy.app.beans.BeansManager.Editor;
-import com.stanfy.app.beans.InitializingBean;
-import com.stanfy.io.IoUtils;
-import com.stanfy.net.UrlConnectionBuilder;
-import com.stanfy.test.EnroscarConfiguration;
-import com.xtremelabs.robolectric.Robolectric;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.beans.InitializingBean;
+import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.net.UrlConnectionBuilder;
+import com.stanfy.enroscar.net.cache.CacheWrapper;
+import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
 
 /**
  * Test for {@link CacheWrapper}.
@@ -24,26 +27,16 @@ import com.xtremelabs.robolectric.Robolectric;
 @EnroscarConfiguration(connectionEngineRequired = true)
 public class CacheWrapperTest extends AbstractOneCacheTest {
 
-  /** Test wrapper. */
-  public static class SimpleWrapper extends CacheWrapper implements InitializingBean {
-
-    @Override
-    public void onInitializationFinished(final BeansContainer beansContainer) {
-      setCore(BeansManager.get(Robolectric.application).getResponseCache(CACHE_NAME));
-    }
-
-  }
-
   @Override
   @Before
   public void setupCache() throws IOException {
-    cache = (SimpleFileCache) BeansManager.get(Robolectric.application).getResponseCache(CACHE_NAME);
+    cache = (SimpleFileCache) BeansManager.get(Robolectric.application).getContainer().getBean(CACHE_NAME, ResponseCache.class);
   }
 
   @Override
   protected void configureBeansManager(final Editor editor) {
     super.configureBeansManager(editor);
-    editor.remoteServerApi().put("cacheWrapper", new SimpleWrapper());
+    editor.put("cacheWrapper", new SimpleWrapper()).put(BuffersPool.class);
   }
 
   @Test
@@ -57,7 +50,7 @@ public class CacheWrapperTest extends AbstractOneCacheTest {
         .create()
         .getInputStream();
 
-    IoUtils.consumeStream(stream, BeansManager.get(getApplication()).getMainBuffersPool());
+    IoUtils.consumeStream(stream, BeansManager.get(getApplication()).getContainer().getBean(BuffersPool.class));
 
     // cache entry has been written to the CORE cache
     assertThat(cache.getWriteSuccessCount(), equalTo(1));
@@ -75,6 +68,16 @@ public class CacheWrapperTest extends AbstractOneCacheTest {
 
     assertThat(cache.getWriteSuccessCount(), equalTo(1));
     assertThat(cache.getHitCount(), equalTo(1));
+
+  }
+
+  /** Test wrapper. */
+  public static class SimpleWrapper extends CacheWrapper implements InitializingBean {
+
+    @Override
+    public void onInitializationFinished(final BeansContainer beansContainer) {
+      setCore(BeansManager.get(Robolectric.application).getContainer().getBean(CACHE_NAME, ResponseCache.class));
+    }
 
   }
 

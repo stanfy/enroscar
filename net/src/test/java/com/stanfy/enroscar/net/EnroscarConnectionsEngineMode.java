@@ -1,7 +1,7 @@
-package com.stanfy.net;
+package com.stanfy.enroscar.net;
 
 /**
- * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * Utility for setting up test mode for connections engine.
  */
 public final class EnroscarConnectionsEngineMode {
 
