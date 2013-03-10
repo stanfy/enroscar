@@ -7,6 +7,7 @@ import org.junit.Before;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 
 /**
@@ -24,7 +25,9 @@ public abstract class AbstractOneCacheTest extends AbstractMockServerTest {
   @Override
   protected void configureBeansManager(final Editor editor) {
     super.configureBeansManager(editor);
-    editor.put(CACHE_NAME, new SimpleFileCache("test-base-cache"));
+    editor
+      .put(BuffersPool.class)
+      .put(CACHE_NAME, new SimpleFileCache("test-base-cache"));
   }
 
   @Before

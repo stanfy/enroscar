@@ -39,6 +39,7 @@ subprojects {
   test {
     scanForTestClasses = false
     include "**/*Test.class"
+    exclude "**/Abstract*.class"
   }
   
   task testsJar(type : Jar) {

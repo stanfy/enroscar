@@ -127,7 +127,7 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     final HttpURLConnection http = (HttpURLConnection)realConnection;
     final String response = IoUtils.streamToString(resolver.getStream(connection));
     assertThat(response, equalTo(expectedResponse));
-    assertThat(http.getResponseCode(), anyOf(equalTo(HttpURLConnection.HTTP_OK), equalTo(-1)));
+    assertThat(http.getResponseCode(), equalTo(HttpURLConnection.HTTP_OK));
 
     // real request has been performed or not
     if (!cached) {

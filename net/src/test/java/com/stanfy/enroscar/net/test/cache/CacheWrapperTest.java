@@ -36,7 +36,7 @@ public class CacheWrapperTest extends AbstractOneCacheTest {
   @Override
   protected void configureBeansManager(final Editor editor) {
     super.configureBeansManager(editor);
-    editor.put("cacheWrapper", new SimpleWrapper()).put(BuffersPool.class);
+    editor.put("cacheWrapper", new SimpleWrapper());
   }
 
   @Test
