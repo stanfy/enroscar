@@ -1,4 +1,4 @@
-package com.stanfy.location;
+package com.stanfy.enroscar.location;
 
 import android.location.Location;
 
