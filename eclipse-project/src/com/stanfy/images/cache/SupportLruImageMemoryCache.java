@@ -9,8 +9,8 @@ import android.util.Log;
 import com.stanfy.enroscar.beans.Bean;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
+import com.stanfy.ernoscar.sdkdep.SDKDependentUtils;
 import com.stanfy.utils.AppUtils;
-import com.stanfy.utils.sdk.SDKDependentUtils;
 
 /**
  * Memory cache based on {@link LruCache}.

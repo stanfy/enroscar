@@ -41,13 +41,13 @@ public class GUIUtils {
 
   /**
    * Create a very simple notification, <b>should be used for debugging only</b>.
-   * Use {@link com.stanfy.utils.sdk.SDKDependentUtils#createNotificationBuilder(Context)} for building notification.
+   * Use {@link com.stanfy.ernoscar.sdkdep.SDKDependentUtils#createNotificationBuilder(Context)} for building notification.
    * @param ctx context instance
    * @param message message to display
    * @param contentIntent content intent
    * @return notification instance
-   * @see com.stanfy.utils.sdk.SDKDependentUtils#createNotificationBuilder(Context)
-   * @see com.stanfy.utils.notifications.NotificationBuilder
+   * @see com.stanfy.ernoscar.sdkdep.SDKDependentUtils#createNotificationBuilder(Context)
+   * @see com.stanfy.ernoscar.sdkdep.notifications.NotificationBuilder
    */
   public static Notification createNotification(final Context ctx, final CharSequence message, final PendingIntent contentIntent) {
     final ApplicationInfo appInfo = ctx.getApplicationInfo();

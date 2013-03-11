@@ -12,8 +12,8 @@ import android.widget.Adapter;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 
-import com.stanfy.content.FictionObject;
-import com.stanfy.content.UniqueObject;
+import com.stanfy.enroscar.content.FictionObject;
+import com.stanfy.enroscar.content.UniqueObject;
 
 /**
  * @param <T> model type

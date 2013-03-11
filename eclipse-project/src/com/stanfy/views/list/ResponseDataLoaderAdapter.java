@@ -5,7 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 
-import com.stanfy.content.UniqueObject;
+import com.stanfy.enroscar.content.UniqueObject;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.views.StateHelper;
 
