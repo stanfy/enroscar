@@ -85,7 +85,7 @@ configure(subprojects.findAll() { !(it.name in androidLibs) }) {
 
 configure(subprojects.findAll() { it.name in androidLibs }) {
   
-  apply plugin : 'android'
+  apply plugin : 'android-library'
 
   android {
     compileSdkVersion 17
@@ -98,7 +98,7 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
       packageName getPackageName(project)
     }
   }
-  
+
 }
 
 // ==================================== COMMON ====================================
@@ -108,11 +108,13 @@ def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
   
 subprojects {
 
-  version = projectVersion
-
   apply plugin : 'checkstyle'
   apply plugin : 'eclipse'
-
+  apply plugin : 'maven'
+  
+  version = projectVersion
+  group = 'com.stanfy.enroscar'
+  
   checkstyle {
     configFile = checkstyleConfig
     configProperties['basedir'] = project.projectDir
