@@ -1,0 +1,7 @@
+archivesBaseName='enroscar-content'
+
+dependencies {
+
+  compile project(':beans')
+
+}
