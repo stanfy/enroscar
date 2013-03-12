@@ -50,7 +50,7 @@ public class LoadableComppoundButton extends CompoundButton implements RemoteIma
 
     setSourceDensity(sourceDensity);
     if (d != null) { setButtonDrawable(d); }
-    imagesManager = BeansManager.get(context).getImagesManager();
+    imagesManager = BeansManager.get(context).getContainer().getBean(ImagesManager.class);
   }
 
   /** @param sourceDensity the sourceDensity to set */

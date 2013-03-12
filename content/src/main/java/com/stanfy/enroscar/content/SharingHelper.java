@@ -17,8 +17,6 @@ import android.provider.MediaStore.MediaColumns;
 import android.support.v4.app.ShareCompat;
 import android.text.TextUtils;
 
-import com.stanfy.utils.AppUtils;
-
 /**
  * Sharing helper class. Be sure to call its methods from the main thread.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
@@ -122,8 +120,9 @@ public final class SharingHelper {
       return;
     }
     asyncTask = new ResolveContentUriTask();
-    
-    AppUtils.getSdkDependentUtils().executeAsyncTaskParallel(asyncTask, data);
+  
+    // TODO implement
+//    AppUtils.getSdkDependentUtils().executeAsyncTaskParallel(asyncTask, data);
   }
 
   private void deliverError() {

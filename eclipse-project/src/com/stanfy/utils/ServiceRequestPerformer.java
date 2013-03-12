@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.stanfy.app.service.ApplicationService;
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.serverapi.RemoteServerApiConfiguration;
 import com.stanfy.serverapi.request.RequestBuilder;
 import com.stanfy.serverapi.request.RequestDescription;
 
@@ -31,7 +32,7 @@ public class ServiceRequestPerformer implements RequestExecutor  {
   }
 
   protected Intent constructIntent(final RequestDescription description) {
-    Class<?> serviceClass = BeansManager.get(context).getRemoteServerApiConfiguration().getApplicationServiceClass();
+    Class<?> serviceClass = BeansManager.get(context).getContainer().getBean(RemoteServerApiConfiguration.class).getApplicationServiceClass();
 
     // XXX we wrap our parcelable into Bundle, see http://code.google.com/p/android/issues/detail?id=6822
     Bundle descriptionBundle = new Bundle(1);

@@ -6,8 +6,8 @@ import java.net.URLConnection;
 
 import android.os.Build;
 
-import com.stanfy.net.UrlConnectionWrapper;
-import com.stanfy.net.cache.CacheControlUrlConnection;
+import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.net.cache.CacheControlUrlConnection;
 import com.stanfy.serverapi.ErrorCodes;
 import com.stanfy.serverapi.RequestMethod.RequestMethodException;
 import com.stanfy.serverapi.request.RequestDescription;

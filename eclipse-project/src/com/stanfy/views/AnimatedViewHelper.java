@@ -26,7 +26,7 @@ public final class AnimatedViewHelper {
 
   public AnimatedViewHelper(final View owner) {
     this.owner = owner;
-    this.manager = BeansManager.get(owner.getContext()).getCrucialGUIOperationManager();
+    this.manager = BeansManager.get(owner.getContext()).getContainer().getBean(CrucialGUIOperationManager.class);
   }
 
   public void notifyCrucialGuiStart() {

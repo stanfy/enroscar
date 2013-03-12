@@ -17,7 +17,7 @@ public class ActivityBehaviorFactory implements Bean {
   public static final String BEAN_NAME = "ActivityBehaviorFactory";
 
   public static final BaseActivityBehavior createBehavior(final Activity activity) {
-    return BeansManager.get(activity).getActivityBehaviorFactory().createActivityBehavior(activity);
+    return BeansManager.get(activity).getContainer().getBean(ActivityBehaviorFactory.class).createActivityBehavior(activity);
   }
 
   public BaseActivityBehavior createActivityBehavior(final Activity activity) {

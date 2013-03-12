@@ -15,9 +15,10 @@ import android.util.SparseArray;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.net.UrlConnectionBuilder;
+import com.stanfy.enroscar.utils.AppUtils;
 import com.stanfy.enroscar.utils.ModelTypeToken;
-import com.stanfy.io.IoUtils;
-import com.stanfy.net.UrlConnectionBuilder;
 import com.stanfy.serverapi.request.binary.BinaryData;
 import com.stanfy.serverapi.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.serverapi.request.net.BaseRequestDescriptionConverter.ConverterFactory;
@@ -26,7 +27,6 @@ import com.stanfy.serverapi.request.net.SimpleGetConverter;
 import com.stanfy.serverapi.request.net.SimplePostConverter;
 import com.stanfy.serverapi.request.net.UploadPostConverter;
 import com.stanfy.serverapi.response.Model;
-import com.stanfy.utils.AppUtils;
 
 /**
  * Request method description. This object is passed to the service describing the request.

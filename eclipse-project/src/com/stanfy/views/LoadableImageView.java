@@ -78,7 +78,7 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     setImageType(type);
     setUseTransitionMode(useTransition);
 
-    this.imagesManager = BeansManager.get(context).getImagesManager();
+    this.imagesManager = BeansManager.get(context).getContainer().getBean(ImagesManager.class);
   }
 
   /** @param mode mode specification (see {@link #USE_TRANSITION_NO}, {@link #USE_TRANSITION_YES}, {@link #USE_TRANSITION_CROSSFADE}) */

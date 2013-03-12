@@ -31,7 +31,8 @@ public class RequestDescriptionProcessor {
   private final RemoteServerApiConfiguration config;
 
   public RequestDescriptionProcessor(final Application application) {
-    this.config = BeansManager.get(application).getRemoteServerApiConfiguration();
+    this.config = BeansManager.get(application)
+        .getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class);
   }
 
   /** @return configuration object */

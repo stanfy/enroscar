@@ -51,13 +51,15 @@ public class GUIUtils {
    */
   public static Notification createNotification(final Context ctx, final CharSequence message, final PendingIntent contentIntent) {
     final ApplicationInfo appInfo = ctx.getApplicationInfo();
-    return AppUtils.getSdkDependentUtils().createNotificationBuilder(ctx)
-        .setSmallIcon(appInfo.icon)
-        .setTicker(message)
-        .setContentTitle(ctx.getPackageManager().getApplicationLabel(appInfo))
-        .setContentText(message)
-        .setContentIntent(contentIntent)
-        .build();
+    // TODO implement
+    return null;
+//    return AppUtils.getSdkDependentUtils().createNotificationBuilder(ctx)
+//        .setSmallIcon(appInfo.icon)
+//        .setTicker(message)
+//        .setContentTitle(ctx.getPackageManager().getApplicationLabel(appInfo))
+//        .setContentText(message)
+//        .setContentIntent(contentIntent)
+//        .build();
   }
 
   /**

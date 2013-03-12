@@ -12,7 +12,6 @@ import android.widget.Adapter;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 
-import com.stanfy.enroscar.content.FictionObject;
 import com.stanfy.enroscar.content.UniqueObject;
 
 /**

@@ -11,13 +11,11 @@ import android.view.MenuItem;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.stats.StatsManager;
-import com.stanfy.utils.AppUtils;
-import com.stanfy.utils.LocationMethodsSupport;
+import com.stanfy.enroscar.stats.StatsManager;
+import com.stanfy.enroscar.utils.AppUtils;
 
 /**
  * Common behavior for all the activities.
- * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public class BaseActivityBehavior {
 
@@ -28,12 +26,6 @@ public class BaseActivityBehavior {
 
   /** Activity reference. */
   private final WeakReference<Activity> activityRef;
-
-  /** Location support. */
-  private LocationMethodsSupport locationSupport;
-
-  /** Flag that indicates an attempt to bind API. */
-  private boolean locationBindAttemptDone = false;
 
   /** First start flag. */
   private boolean firstStart = true;
@@ -46,8 +38,8 @@ public class BaseActivityBehavior {
   public BaseActivityBehavior(final Activity activity) {
     activityRef = new WeakReference<Activity>(activity);
     final BeansManager beansManager = BeansManager.get(activity);
-    statsManager = beansManager.getStatsManager();
-    crucialGUIOperationManager = beansManager.getCrucialGUIOperationManager();
+    statsManager = beansManager.getContainer().getBean(StatsManager.class);
+    crucialGUIOperationManager = beansManager.getContainer().getBean(CrucialGUIOperationManager.class);
   }
 
   /**
@@ -83,9 +75,6 @@ public class BaseActivityBehavior {
    */
   public void onStart() {
     if (DEBUG) { Log.v(TAG, "start " + activityRef.get()); }
-
-    // location
-    bindLocation();
 
     // statistics
     final Activity a = getActivity();
@@ -133,8 +122,6 @@ public class BaseActivityBehavior {
    */
   public void onStop() {
     if (DEBUG) { Log.v(TAG, "stop " + activityRef.get()); }
-    // location
-    unbindLocation();
 
     // statistics
     final Activity a = getActivity();
@@ -150,32 +137,10 @@ public class BaseActivityBehavior {
     if (DEBUG) { Log.v(TAG, "destroy " + activityRef.get()); }
   }
 
-  /** @return the locationSupport */
-  public LocationMethodsSupport getLocationSupport() { return locationSupport; }
-
   /**
    * @see Activity#onKeyDown(int, KeyEvent)
    */
   public boolean onKeyDown(final int keyCode, final KeyEvent event) { return false; }
-
-  protected void bindLocation() {
-    if (locationSupport != null) { locationSupport.bind(); }
-    locationBindAttemptDone = true;
-  }
-  protected void unbindLocation() {
-    if (locationSupport != null) { locationSupport.unbind(); }
-    locationBindAttemptDone = false;
-  }
-
-  /**
-   * Setup location support.
-   */
-  public void setupLocationSupport() {
-    if (locationSupport == null) {
-      locationSupport = new LocationMethodsSupport(getActivity());
-      if (locationBindAttemptDone) { bindLocation(); }
-    }
-  }
 
   public boolean ensureRoot() {
     final Activity a = activityRef.get();

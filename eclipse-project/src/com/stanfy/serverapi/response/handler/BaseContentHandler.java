@@ -14,12 +14,12 @@ import android.util.Log;
 import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.InitializingBean;
+import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.io.PoolableBufferedInputStream;
+import com.stanfy.enroscar.net.ContentControlUrlConnection;
+import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.utils.ModelTypeToken;
-import com.stanfy.io.BuffersPool;
-import com.stanfy.io.IoUtils;
-import com.stanfy.io.PoolableBufferedInputStream;
-import com.stanfy.net.ContentControlUrlConnection;
-import com.stanfy.net.UrlConnectionWrapper;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.response.Model;
 

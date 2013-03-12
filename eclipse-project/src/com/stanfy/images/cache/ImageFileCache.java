@@ -13,11 +13,11 @@ import android.os.Environment;
 
 import com.stanfy.enroscar.beans.Bean;
 import com.stanfy.enroscar.beans.EnroscarBean;
+import com.stanfy.enroscar.net.cache.BaseFileResponseCache;
+import com.stanfy.enroscar.net.cache.CacheEntry;
+import com.stanfy.enroscar.net.cache.CacheTimeRule;
+import com.stanfy.enroscar.utils.AppUtils;
 import com.stanfy.images.ImagesManager;
-import com.stanfy.net.cache.BaseFileResponseCache;
-import com.stanfy.net.cache.CacheEntry;
-import com.stanfy.net.cache.CacheTimeRule;
-import com.stanfy.utils.AppUtils;
 
 /**
  * File-based cache used by images manager.
@@ -31,9 +31,11 @@ public class ImageFileCache extends BaseFileResponseCache implements Bean {
 
   public ImageFileCache(final Context context) {
     final String eState = Environment.getExternalStorageState();
-    final File baseDir = Environment.MEDIA_MOUNTED.equals(eState)
-        ? AppUtils.getSdkDependentUtils().getExternalCacheDir(context)
-        : context.getCacheDir();
+    // TODO implement
+//    final File baseDir = Environment.MEDIA_MOUNTED.equals(eState)
+//        ? AppUtils.getSdkDependentUtils().getExternalCacheDir(context)
+//        : context.getCacheDir();
+    File baseDir = context.getCacheDir();
     setWorkingDirectory(new File(baseDir, "images"));
     setMaxSize(MAX_SIZE);
   }

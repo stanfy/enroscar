@@ -6,15 +6,11 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.stanfy.utils.LocationMethodsSupport;
-
 /**
  * List activity with common behavior.
  * @see BaseActivityBehavior
- * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-@SuppressWarnings("deprecation")
-public abstract class BaseListActivity extends ListActivity implements LocationSupportProvider {
+public abstract class BaseListActivity extends ListActivity {
 
   /** Behavior. */
   private BaseActivityBehavior behavior;
@@ -35,15 +31,6 @@ public abstract class BaseListActivity extends ListActivity implements LocationS
    * @return false id this activity was incorrectly started from launcher
    */
   protected boolean ensureRoot() { return behavior.ensureRoot(); }
-
-  /**
-   * @deprecated waiting for new implementation
-   */
-  @Override
-  @Deprecated
-  public void setupLocationSupport() { behavior.setupLocationSupport(); }
-  @Override
-  public LocationMethodsSupport getLocationSupport() { return behavior.getLocationSupport(); }
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
