@@ -7,15 +7,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.stanfy.utils.ApiMethodsSupport;
-import com.stanfy.utils.LocationMethodsSupport;
 
 /**
  * Tab activity with common behavior.
  * @see BaseActivityBehavior
- * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+ * @deprecated see {@link TabActivity}
  */
-@SuppressWarnings("deprecation")
-public abstract class BaseTabActivity extends TabActivity implements LocationSupportProvider {
+@Deprecated
+public abstract class BaseTabActivity extends TabActivity {
 
   /** Behavior. */
   private BaseActivityBehavior behavior;
@@ -42,15 +41,6 @@ public abstract class BaseTabActivity extends TabActivity implements LocationSup
    * @return false id this activity was incorrectly started from launcher
    */
   protected boolean ensureRoot() { return behavior.ensureRoot(); }
-
-  /**
-   * @deprecated waiting for new implementation
-   */
-  @Override
-  @Deprecated
-  public void setupLocationSupport() { behavior.setupLocationSupport(); }
-  @Override
-  public LocationMethodsSupport getLocationSupport() { return behavior.getLocationSupport(); }
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {

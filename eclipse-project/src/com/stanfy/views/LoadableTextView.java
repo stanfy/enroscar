@@ -70,7 +70,7 @@ public class LoadableTextView extends TextView implements RemoteImageDensityProv
       setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], drawables[2], drawables[3]);
     }
 
-    this.imagesManager = BeansManager.get(context).getImagesManager();
+    this.imagesManager = BeansManager.get(context).getContainer().getBean(ImagesManager.class);
   }
 
   /** @param sourceDensity the sourceDensity to set */

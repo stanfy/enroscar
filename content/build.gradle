@@ -1,0 +1,9 @@
+archivesBaseName='enroscar-content'
+
+dependencies {
+
+  compile project(':beans')
+
+  compile fileTree(dir : 'libs', include : '*.jar')
+  
+}

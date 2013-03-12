@@ -8,7 +8,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.serverapi.request.RequestDescription;
 
 /**

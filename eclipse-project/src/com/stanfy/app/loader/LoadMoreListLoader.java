@@ -4,7 +4,7 @@ import java.util.List;
 
 import android.util.Log;
 
-import com.stanfy.content.OffsetInfoProvider;
+import com.stanfy.enroscar.content.OffsetInfoProvider;
 import com.stanfy.serverapi.request.ListRequestBuilder;
 import com.stanfy.serverapi.response.ResponseData;
 

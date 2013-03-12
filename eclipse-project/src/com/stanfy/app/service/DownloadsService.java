@@ -24,11 +24,11 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.io.BuffersPool;
-import com.stanfy.io.IoUtils;
-import com.stanfy.io.PoolableBufferedInputStream;
-import com.stanfy.net.UrlConnectionBuilder;
-import com.stanfy.utils.AppUtils;
+import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.io.PoolableBufferedInputStream;
+import com.stanfy.enroscar.net.UrlConnectionBuilder;
+import com.stanfy.enroscar.utils.AppUtils;
 
 /**
  * Service that can be used instead of {@link android.app.DownloadManager} on older devices.
@@ -237,18 +237,19 @@ public class DownloadsService extends Service {
       final float p = progress == null ? 0 : progress;
       final int max = 1000;
 
-      final Notification n = AppUtils.getSdkDependentUtils().createNotificationBuilder(DownloadsService.this)
-          .setWhen(notificationTime)
-          .setSmallIcon(android.R.drawable.stat_sys_download)
-          .setTicker(request.title)
-          .setContentTitle(request.title)
-          .setContentText(request.description)
-          .setContentIntent(PendingIntent.getBroadcast(DownloadsService.this, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT))
-          .setOngoing(true)
-          .setProgress(max, (int)(p * max), progress == null)
-          .build();
-
-      getNotificationManager().notify(request.notificationId, n);
+      // TODO implement
+//      final Notification n = AppUtils.getSdkDependentUtils().createNotificationBuilder(DownloadsService.this)
+//          .setWhen(notificationTime)
+//          .setSmallIcon(android.R.drawable.stat_sys_download)
+//          .setTicker(request.title)
+//          .setContentTitle(request.title)
+//          .setContentText(request.description)
+//          .setContentIntent(PendingIntent.getBroadcast(DownloadsService.this, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+//          .setOngoing(true)
+//          .setProgress(max, (int)(p * max), progress == null)
+//          .build();
+//
+//      getNotificationManager().notify(request.notificationId, n);
 
       publishProgress(p);
     }

@@ -11,9 +11,9 @@ import org.apache.http.util.EncodingUtils;
 import android.content.Context;
 
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.io.BuffersPool;
-import com.stanfy.io.IoUtils;
-import com.stanfy.io.PoolableBufferedOutputStream;
+import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.io.PoolableBufferedOutputStream;
 import com.stanfy.serverapi.request.Parameter;
 import com.stanfy.serverapi.request.ParameterValue;
 import com.stanfy.serverapi.request.RequestDescription;
@@ -78,7 +78,7 @@ public class UploadPostConverter extends PostConverter {
 
   @Override
   public void sendRequest(final URLConnection connection) throws IOException {
-    final BuffersPool buffersPool = BeansManager.get(context).getMainBuffersPool();
+    final BuffersPool buffersPool = BeansManager.get(context).getContainer().getBean(BuffersPool.class);
     final PoolableBufferedOutputStream out = new PoolableBufferedOutputStream(connection.getOutputStream(), buffersPool);
 
     try {

@@ -7,15 +7,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.stanfy.utils.ApiMethodsSupport;
-import com.stanfy.utils.LocationMethodsSupport;
 
 /**
  * Preference activity with common behavior.
  * @see BaseActivityBehavior
- * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-@SuppressWarnings("deprecation")
-public abstract class BasePreferenceActivity extends PreferenceActivity implements LocationSupportProvider {
+public abstract class BasePreferenceActivity extends PreferenceActivity {
 
   /** Behavior. */
   private BaseActivityBehavior behavior;
@@ -42,15 +39,6 @@ public abstract class BasePreferenceActivity extends PreferenceActivity implemen
    * @return false id this activity was incorrectly started from launcher
    */
   protected boolean ensureRoot() { return behavior.ensureRoot(); }
-
-  /**
-   * @deprecated waiting for new implementation
-   */
-  @Override
-  @Deprecated
-  public void setupLocationSupport() { behavior.setupLocationSupport(); }
-  @Override
-  public LocationMethodsSupport getLocationSupport() { return behavior.getLocationSupport(); }
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {

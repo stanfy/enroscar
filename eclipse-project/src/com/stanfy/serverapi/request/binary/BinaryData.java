@@ -10,8 +10,8 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.io.BuffersPool;
-import com.stanfy.io.IoUtils;
+import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.serverapi.request.RequestDescription;
 import com.stanfy.serverapi.request.net.multipart.Part;
 
@@ -105,7 +105,7 @@ public abstract class BinaryData<T extends Parcelable> implements Parcelable {
   }
 
   protected static void writeInputStreamToOutput(final Context context, final InputStream source, final OutputStream output) throws IOException {
-    BuffersPool pool = BeansManager.get(context).getMainBuffersPool();
+    BuffersPool pool = BeansManager.get(context).getContainer().getBean(BuffersPool.class);
     IoUtils.transfer(source, output, pool);
   }
 

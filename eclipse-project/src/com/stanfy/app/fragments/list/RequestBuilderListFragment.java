@@ -15,8 +15,8 @@ import android.view.ViewGroup;
 import com.stanfy.DebugFlags;
 import com.stanfy.app.BaseFragment;
 import com.stanfy.app.CrucialGUIOperationManager;
-import com.stanfy.content.UniqueObject;
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.content.UniqueObject;
 import com.stanfy.serverapi.request.RequestBuilder;
 import com.stanfy.serverapi.response.ResponseData;
 import com.stanfy.views.list.FetchableListView;
@@ -97,7 +97,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   @Override
   public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    crucialGUIOperationManager = BeansManager.get(getActivity()).getCrucialGUIOperationManager();
+    crucialGUIOperationManager = BeansManager.get(getActivity()).getContainer().getBean(CrucialGUIOperationManager.class);
     if (getParentFragment() == null) { setRetainInstance(true); }
   }
 

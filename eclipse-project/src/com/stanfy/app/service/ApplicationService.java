@@ -3,7 +3,6 @@ package com.stanfy.app.service;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import android.app.Application;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -14,8 +13,8 @@ import android.os.Message;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.enroscar.utils.Time;
 import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.utils.Time;
 
 /**
  * Base application service which provides API and location methods interfaces.
@@ -49,17 +48,12 @@ public class ApplicationService extends Service {
 
   /** API methods. */
   private ApiMethods apiMethods;
-  /** Location methods. */
-  private LocationMethodsImpl locationMethodsImpl;
 
   /** Usage flags. */
   private AtomicBoolean apiMethodsUse = new AtomicBoolean(false), locationMethodsUse = new AtomicBoolean(false);
 
   /** @return API methods implementation */
   protected ApiMethods createApiMethods() { return new ApiMethods(this); }
-
-  /** @return location methods implementation */
-  protected LocationMethodsImpl createLocationMethods() { return new LocationMethodsImpl(this); }
 
   @Override
   public void onCreate() {
@@ -102,24 +96,8 @@ public class ApplicationService extends Service {
     if (apiMethods != null) {
       apiMethods.destroy();
     }
-    if (locationMethodsImpl != null) {
-      locationMethodsImpl.destroy();
-    }
     if (DEBUG) { Log.d(TAG, "Service destroyed"); }
     super.onDestroy();
-  }
-
-  @SuppressWarnings("deprecation")
-  private void checkForLocationMethodsSupport(final boolean force) {
-    if (locationMethodsImpl != null) { return; }
-    boolean locationSupport = false;
-    final Application app = getApplication();
-    if (app instanceof com.stanfy.app.Application) {
-      locationSupport = ((com.stanfy.app.Application) app).addLocationSupportToService();
-    }
-    if (force || locationSupport) {
-      locationMethodsImpl = createLocationMethods();
-    }
   }
 
   @Override
@@ -131,13 +109,7 @@ public class ApplicationService extends Service {
     if (action.equals(ApiMethods.class.getName())) {
       apiMethodsUse.set(true);
       ensureApiMethods();
-      checkForLocationMethodsSupport(false);
       return new ApiMethodsBinder(apiMethods);
-    }
-    if (action.equals(LocationMethods.class.getName())) {
-      checkForLocationMethodsSupport(true);
-      locationMethodsUse.set(true);
-      return locationMethodsImpl.asBinder();
     }
 
     return null;
@@ -150,8 +122,6 @@ public class ApplicationService extends Service {
     if (DEBUG) { Log.d(TAG, "Rebinding to " + action); }
     if (action.equals(ApiMethods.class.getName())) {
       apiMethodsUse.set(true);
-    } else if (action.equals(LocationMethods.class.getName())) {
-      locationMethodsUse.set(true);
     }
   }
 
@@ -162,9 +132,6 @@ public class ApplicationService extends Service {
     if (DEBUG) { Log.d(TAG, "Unbind from " + action); }
     if (apiMethods != null && action.equals(ApiMethods.class.getName())) {
       apiMethodsUse.set(false);
-      checkForStop();
-    } else if (locationMethodsImpl != null && action.equals(LocationMethods.class.getName())) {
-      locationMethodsUse.set(false);
       checkForStop();
     }
     return true;

@@ -6,14 +6,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.stanfy.utils.LocationMethodsSupport;
-
 /**
  * Fragment activity with common behavior.
- * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-@SuppressWarnings("deprecation")
-public abstract class BaseFragmentActivity extends FragmentActivity implements LocationSupportProvider {
+public abstract class BaseFragmentActivity extends FragmentActivity {
 
   /** Behavior. */
   private BaseActivityBehavior behavior;
@@ -34,15 +30,6 @@ public abstract class BaseFragmentActivity extends FragmentActivity implements L
    * @return false id this activity was incorrectly started from launcher
    */
   protected boolean ensureRoot() { return behavior.ensureRoot(); }
-
-  /**
-   * @deprecated waiting for new implementation
-   */
-  @Override
-  @Deprecated
-  public void setupLocationSupport() { behavior.setupLocationSupport(); }
-  @Override
-  public LocationMethodsSupport getLocationSupport() { return behavior.getLocationSupport(); }
 
   /**
    * Perform here all the operations required before creating API methods support.

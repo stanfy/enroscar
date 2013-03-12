@@ -40,7 +40,7 @@ public class CrucialGUIOperationManager implements Bean {
 
   public CrucialGUIOperationManager(final Context context) {
     this.mainThread = Thread.currentThread();
-    this.imagesManager = BeansManager.get(context).getImagesManager();
+    this.imagesManager = BeansManager.get(context).getContainer().getBean(ImagesManager.class);
     if (imagesManager == null) {
       Log.i(TAG, "CrucialGUIOperationManager created BUT images manager is null. "
           + "If it's not an expected behavior, please make sure you declare images manager before this entity.");

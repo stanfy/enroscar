@@ -34,7 +34,7 @@ public abstract class ApplicationServiceSupport<T> implements ServiceConnection 
 
   public ApplicationServiceSupport(final Context a) {
     this.contextRef = new WeakReference<Context>(a);
-    this.configuration = BeansManager.get(a).getRemoteServerApiConfiguration();
+    this.configuration = BeansManager.get(a).getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class);
   }
 
   protected abstract Class<T> getInterfaceClass();

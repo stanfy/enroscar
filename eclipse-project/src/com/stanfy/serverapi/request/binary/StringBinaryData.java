@@ -10,7 +10,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.stanfy.io.IoUtils;
+import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.serverapi.request.net.multipart.Part;
 
 

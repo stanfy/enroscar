@@ -1,15 +1,23 @@
 package com.stanfy.enroscar.assist;
 
+import java.net.ContentHandler;
+import java.net.ResponseCache;
+
 import android.app.Application;
 import android.content.Context;
 
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.stats.StatsManager;
 
 /**
  * Default beans manager. Gives access to all standard beans provided by Enroscar library.
  */
 public class DefaultBeansManager extends BeansManager {
 
+  /** Flag that indicates that manager factory has been set. */
+  private static boolean configured = false;
+  
   /**
    * Main constructor.
    * @param application Android application instance
@@ -25,42 +33,39 @@ public class DefaultBeansManager extends BeansManager {
    * @param context application context
    * @return newly create beans manager instance
    */
-  public static DefaultBeansManager use(final Context context) {
-    setFactory(new Factory() {
-      @Override
-      public BeansManager createBeansManager(final Application app) {
-        return new DefaultBeansManager(app);
-      }
-    });
-    return get(context);
-  }
-  
   public static DefaultBeansManager get(final Context context) {
+    if (!configured) {
+      setFactory(new Factory() {
+        @Override
+        public BeansManager createBeansManager(final Application app) {
+          return new DefaultBeansManager(app);
+        }
+      });
+      configured = true;
+    }
     return (DefaultBeansManager) BeansManager.get(context);
   }
   
 //  /** @return images manager instance */
-//  public ImagesManager getImagesManager() { return container.getBean(ImagesManager.BEAN_NAME, ImagesManager.class); }
-//  /** @return main buffers pool instance */
-//  public BuffersPool getMainBuffersPool() { return container.getBean(BuffersPool.BEAN_NAME, BuffersPool.class); }
+//  public ImagesManager getImagesManager() { return getContainer().getBean(ImagesManager.BEAN_NAME, ImagesManager.class); }
+  /** @return main buffers pool instance */
+  public BuffersPool getMainBuffersPool() { return getContainer().getBean(BuffersPool.BEAN_NAME, BuffersPool.class); }
 //  /** @return image memory cache instance */
-//  public ImageMemoryCache getImageMemoryCache() { return container.getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class); }
-//  /** @return response cache instance */
-//  public ResponseCache getResponseCache(final String name) { return container.getBean(name, ResponseCache.class); }
+//  public ImageMemoryCache getImageMemoryCache() { return getContainer().getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class); }
+  /** @return response cache instance */
+  public ResponseCache getResponseCache(final String name) { return getContainer().getBean(name, ResponseCache.class); }
 //  /** @return crucial GUI operation manager */
-//  public CrucialGUIOperationManager getCrucialGUIOperationManager() { return container.getBean(CrucialGUIOperationManager.BEAN_NAME, CrucialGUIOperationManager.class); }
+//  public CrucialGUIOperationManager getCrucialGUIOperationManager() { return getContainer().getBean(CrucialGUIOperationManager.BEAN_NAME, CrucialGUIOperationManager.class); }
 //  /** @return activity behavior factory */
-//  public ActivityBehaviorFactory getActivityBehaviorFactory() { return container.getBean(ActivityBehaviorFactory.BEAN_NAME, ActivityBehaviorFactory.class); }
-//  /** @return statistics manager */
-//  public StatsManager getStatsManager() { return container.getBean(StatsManager.BEAN_NAME, StatsManager.class); }
+//  public ActivityBehaviorFactory getActivityBehaviorFactory() { return getContainer().getBean(ActivityBehaviorFactory.BEAN_NAME, ActivityBehaviorFactory.class); }
+  /** @return statistics manager */
+  public StatsManager getStatsManager() { return getContainer().getBean(StatsManager.BEAN_NAME, StatsManager.class); }
 //  /** @return SDK dependent utilities factory */
-//  public SDKDependentUtilsFactory getSdkDependentUtilsFactory() { return container.getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class); }
+//  public SDKDependentUtilsFactory getSdkDependentUtilsFactory() { return getContainer().getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class); }
 //  /** @return remote server API access configuration */
-//  public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return container.getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
-//  /** @return content handler instance */
-//  public ContentHandler getContentHandler(final String name) { return container.getBean(name, ContentHandler.class); }
-//  /** @return application database manager instance */
-//  public AppDatabaseManager getAppDatabaseManager() { return container.getBean(AppDatabaseManager.class); }
+//  public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
+  /** @return content handler instance */
+  public ContentHandler getContentHandler(final String name) { return getContainer().getBean(name, ContentHandler.class); }
 
   @Override
   public Editor edit() { return new Editor(); }
@@ -70,14 +75,13 @@ public class DefaultBeansManager extends BeansManager {
    * Allows to easily add standard beans provided by Enroscar libraries.
    */
   public class Editor extends BeansManager.Editor {
-    
-//    public Editor required() {
+
+    {
 //      put(SDKDependentUtilsFactory.class);
-//      put(BuffersPool.class);
+      put(BuffersPool.class);
 //      put(EmptyStatsManager.class);
-//      return this;
-//    }
-//
+    }
+    
 //    public Editor images(final EnroscarConnectionsEngine.Config config) {
 //      put(ImageFileCache.class);
 //      put(SupportLruImageMemoryCache.class);
