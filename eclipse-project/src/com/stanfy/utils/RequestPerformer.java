@@ -11,7 +11,8 @@ import com.stanfy.DebugFlags;
 import com.stanfy.app.service.ApiMethodCallback;
 import com.stanfy.app.service.ApiMethods;
 import com.stanfy.app.service.ApplicationService.ApiMethodsBinder;
-import com.stanfy.serverapi.request.RequestDescription;
+import com.stanfy.enroscar.rest.RequestExecutor;
+import com.stanfy.enroscar.rest.request.RequestDescription;
 
 /**
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)

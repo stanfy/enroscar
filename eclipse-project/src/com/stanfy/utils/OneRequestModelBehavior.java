@@ -5,8 +5,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
-import com.stanfy.serverapi.request.RequestBuilder;
-import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.enroscar.rest.request.RequestBuilder;
+import com.stanfy.enroscar.rest.response.ResponseData;
 
 /**
  * Methods of activities and fragments that are oriented to operating with one request/model.

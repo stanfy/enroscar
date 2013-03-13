@@ -39,6 +39,9 @@ public class DirectRequestExecutor implements RequestExecutor {
   /** @return configuration object */
   public RemoteServerApiConfiguration getConfig() { return config; }
 
+  /** @return hooks object */
+  public DirectRequestExecutorHooks getHooks() { return hooks; }
+  
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private static ResponseData<?> analyze(final Context context, final ContentAnalyzer analyzer, final ResponseData<?> responseData,
       final RequestDescription description) throws RequestMethodException {

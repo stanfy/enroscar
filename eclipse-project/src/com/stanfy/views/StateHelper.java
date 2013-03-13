@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.enroscar.rest.response.ResponseData;
 
 /**
  * Helper class for handling states.

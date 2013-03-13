@@ -8,8 +8,9 @@ import android.content.ServiceConnection;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.app.service.ApplicationService;
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.serverapi.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 
 /**
  * Base class for helpers that can bind to application service.
@@ -46,7 +47,8 @@ public abstract class ApplicationServiceSupport<T> implements ServiceConnection 
     if (serviceObject != null) { return; }
     final Context context = contextRef.get();
     if (context == null) { return; }
-    final Intent intent = new Intent(context, configuration.getApplicationServiceClass());
+    // TODO make it configurable
+    final Intent intent = new Intent(context, ApplicationService.class);
     intent.setAction(getInterfaceClass().getName());
     if (DEBUG_CALLS) {
       Log.v(TAG, "Attempt to bind to service " + this + "/" + context, new RuntimeException());

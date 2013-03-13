@@ -5,8 +5,8 @@ import java.util.List;
 import android.util.Log;
 
 import com.stanfy.enroscar.content.OffsetInfoProvider;
-import com.stanfy.serverapi.request.ListRequestBuilder;
-import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.enroscar.rest.request.ListRequestBuilder;
+import com.stanfy.enroscar.rest.response.ResponseData;
 
 /**
  * Request builder loader that can load more data.

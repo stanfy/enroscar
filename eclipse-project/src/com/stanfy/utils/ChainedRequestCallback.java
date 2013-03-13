@@ -2,8 +2,8 @@ package com.stanfy.utils;
 
 import java.util.ArrayList;
 
-import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.rest.response.ResponseData;
 import com.stanfy.utils.ApiMethodsSupport.ApiSupportRequestCallback;
 
 /**
