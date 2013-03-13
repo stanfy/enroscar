@@ -146,6 +146,13 @@ public class BeansManager {
     /** Editor actions. */
     private final LinkedHashMap<String, PutBean> editorActions = new LinkedHashMap<String, PutBean>();
 
+    /**
+     * @return actions map to commit
+     */
+    protected final LinkedHashMap<String, PutBean> getEditorActions() {
+      return editorActions;
+    }
+    
     private void checkIntrfacesOnCreate(final Object bean) {
       if (bean instanceof ManagerAwareBean) {
         ((ManagerAwareBean) bean).setBeansManager(BeansManager.this);
@@ -244,7 +251,7 @@ public class BeansManager {
   }
 
   /** Put bean operation. */
-  private interface PutBean {
+  protected interface PutBean {
     Object put();
   }
 

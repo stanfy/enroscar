@@ -40,11 +40,6 @@ public class BeansEditorTest extends AbstractEnroscarTest {
     assertThat(BeansManager.get(Robolectric.application).getImageMemoryCache(), is(instanceOf(MyImagesCache.class)));
   }
 
-  @Test
-  public void remoteServerConfigurationShouldInstallConnectionsEngine() {
-    assertThat(EnroscarConnectionsEngine.isInstalled(), is(true));
-  }
-
   public void secondConnectionsInstallShouldNotFail() {
     EnroscarConnectionsEngine.config().install(getApplication());
     assertThat(EnroscarConnectionsEngine.isInstalled(), is(true));
