@@ -1,4 +1,6 @@
-package com.stanfy.enroscar.rest.request;
+package com.stanfy.enroscar.rest;
+
+import com.stanfy.enroscar.rest.request.RequestDescription;
 
 
 /**

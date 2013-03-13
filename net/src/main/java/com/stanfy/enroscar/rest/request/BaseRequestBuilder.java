@@ -22,6 +22,7 @@ import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.rest.RequestExecutor;
 import com.stanfy.enroscar.rest.request.binary.AssetFdBinaryData;
 import com.stanfy.enroscar.rest.request.binary.BitmapBinaryData;
 import com.stanfy.enroscar.rest.request.binary.ContentUriBinaryData;

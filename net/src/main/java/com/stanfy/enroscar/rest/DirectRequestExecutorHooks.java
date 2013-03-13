@@ -1,14 +1,13 @@
-package com.stanfy.app.service.serverapi;
+package com.stanfy.enroscar.rest;
 
-import com.stanfy.serverapi.RequestMethod;
-import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.rest.response.ResponseData;
 
 /**
- * Request description processing hooks.
+ * Hooks for {@link DirectRequestExecutor}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public interface RequestProcessorHooks {
+public interface DirectRequestExecutorHooks {
   /**
    * Called before the {@link RequestMethod} methods are invoked.
    * @param requestDescription request description to be processed
