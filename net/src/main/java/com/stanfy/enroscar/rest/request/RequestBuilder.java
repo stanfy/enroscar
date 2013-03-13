@@ -29,8 +29,9 @@ public interface RequestBuilder<MT> {
 
   /**
    * @param executor request performer instance
+   * @param this instance for chaining
    */
-  void setExecutor(final RequestExecutor executor);
+  RequestBuilder<MT> setExecutor(final RequestExecutor executor);
 
   /**
    * @return type token of the expected model

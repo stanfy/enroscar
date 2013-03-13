@@ -105,12 +105,10 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
     result.modelType = ModelTypeToken.fromModelType(type);
   }
 
-  /**
-   * @param executor executor instance
-   */
   @Override
-  public void setExecutor(final RequestExecutor executor) {
+  public BaseRequestBuilder<MT> setExecutor(final RequestExecutor executor) {
     this.executor = executor;
+    return this;
   }
 
   /**

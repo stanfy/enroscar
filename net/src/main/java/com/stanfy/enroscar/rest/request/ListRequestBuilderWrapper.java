@@ -89,7 +89,10 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
   public int execute() { return core.execute(); }
 
   @Override
-  public void setExecutor(final RequestExecutor executor) { core.setExecutor(executor); }
+  public ListRequestBuilderWrapper<LT, MT> setExecutor(final RequestExecutor executor) {
+    core.setExecutor(executor);
+    return this;
+  }
 
   @Override
   public String getOffset() { return offsetValue != null ? offsetValue.getValue() : "0"; }

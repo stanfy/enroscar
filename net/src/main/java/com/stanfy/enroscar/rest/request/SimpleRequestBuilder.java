@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 import android.content.Context;
 
+import com.stanfy.enroscar.rest.RequestExecutor;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
@@ -67,16 +68,22 @@ public abstract class SimpleRequestBuilder<MT> extends BaseRequestBuilder<MT> {
     return this;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public SimpleRequestBuilder<MT> setParallel(final boolean value) {
-    return (SimpleRequestBuilder<MT>)super.setParallel(value);
+    super.setParallel(value);
+    return this;
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
+  public SimpleRequestBuilder<MT> setExecutor(final RequestExecutor executor) {
+    super.setExecutor(executor);
+    return this;
+  }
+  
   @Override
   public SimpleRequestBuilder<MT> setTaskQueueName(final String taskQueue) {
-    return (SimpleRequestBuilder<MT>)super.setTaskQueueName(taskQueue);
+    super.setTaskQueueName(taskQueue);
+    return this;
   }
 
   /**
