@@ -30,6 +30,7 @@ public abstract class StrategiesContentProvider extends ContentProvider {
   @Override
   public boolean onCreate() {
     strategyMatcher = new StrategyMatcher(new UriMatcher(UriMatcher.NO_MATCH));
+    onStrategyMatcherCreate(strategyMatcher);
     return strategyMatcher.isConfigured();
   }
 
@@ -45,9 +46,9 @@ public abstract class StrategiesContentProvider extends ContentProvider {
    *     });
    *   </pre>
    * </p>
-   * @param uriMatcher URI matcher instance
+   * @param matcher URI matcher instance
    */
-  protected abstract void onStrategyMatcherCreate(final StrategyMatcher uriMatcher);
+  protected abstract void onStrategyMatcherCreate(final StrategyMatcher matcher);
 
   /**
    * @return context application context
