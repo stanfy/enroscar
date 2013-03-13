@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 import android.content.Context;
 
+import com.stanfy.enroscar.beans.BeanUtils;
 import com.stanfy.enroscar.rest.RequestExecutor;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
@@ -144,6 +145,10 @@ public abstract class SimpleRequestBuilder<MT> extends BaseRequestBuilder<MT> {
   public SimpleRequestBuilder<MT> setContentAnalyzer(final String contentAnalyzer) {
     defineContentAnalyzer(contentAnalyzer);
     return this;
+  }
+
+  public SimpleRequestBuilder<MT> setContentAnalyzer(final Class<?> clazz) {
+    return setContentAnalyzer(BeanUtils.getBeanInfo(clazz).value());
   }
 
 }

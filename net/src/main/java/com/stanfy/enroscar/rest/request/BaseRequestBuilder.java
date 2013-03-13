@@ -140,13 +140,6 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   }
 
   /**
-   * @param name content analyzer name
-   */
-  protected void setContentAnalyzerName(final String name) {
-    result.contentAnalyzer = name;
-  }
-
-  /**
    * Setup binary content from the local file. Parameter name will be equal to {@link RequestDescription#BINARY_NAME_DEFAULT}.
    * @param data content URI
    * @param contentType content MIME-type
