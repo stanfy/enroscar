@@ -16,6 +16,9 @@ import com.stanfy.enroscar.rest.response.ResponseModelConverter;
  */
 public class DirectRequestExecutor implements RequestExecutor {
 
+  /** Null hooks object. */
+  private static final DirectRequestExecutorHooks NULL_HOOKS = new EmptyHooks();
+  
   /** Logging tag. */
   private static final String TAG = "Request";
   
@@ -29,11 +32,15 @@ public class DirectRequestExecutor implements RequestExecutor {
   /** Hooks. */
   private final DirectRequestExecutorHooks hooks;
   
+  public DirectRequestExecutor(final Context context) {
+    this(context, null);
+  }
+  
   public DirectRequestExecutor(final Context context, final DirectRequestExecutorHooks hooks) {
     this.context = context.getApplicationContext();
     this.config = BeansManager.get(context)
           .getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class);
-    this.hooks = hooks;
+    this.hooks = hooks != null ? hooks : NULL_HOOKS;
   }
 
   /** @return configuration object */
@@ -126,6 +133,34 @@ public class DirectRequestExecutor implements RequestExecutor {
     }
     
     return description.getId();
+  }
+
+  /** Empty hooks class. */
+  public static class EmptyHooks implements DirectRequestExecutorHooks {
+    @Override
+    public void onRequestSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+      // nothing
+    }
+
+    @Override
+    public void onRequestError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+      // nothing
+    }
+
+    @Override
+    public void onRequestCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+      // nothing
+    }
+
+    @Override
+    public void beforeRequestProcessingStarted(final RequestDescription requestDescription, final RequestMethod requestMethod) {
+      // nothing
+    }
+
+    @Override
+    public void afterRequestProcessingFinished(final RequestDescription requestDescription, final RequestMethod requestMethod) {
+      // nothing
+    }
   }
 
 }
