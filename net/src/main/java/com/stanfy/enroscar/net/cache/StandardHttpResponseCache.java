@@ -78,10 +78,6 @@ public class StandardHttpResponseCache extends BaseSizeRestrictedCache implement
     return false;
   }
 
-  /**
-   * @deprecated see {@link EnhancedResponseCache#getLocalPath(String)}
-   */
-  @Deprecated
   @Override
   public String getLocalPath(final String url) {
     return null;

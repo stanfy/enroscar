@@ -242,8 +242,9 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   }
 
   private CacheEntry createGetEntry(final String url) {
-    final CacheEntry cacheEntry = newCacheEntry();
     try {
+      if (url == null) { throw new URISyntaxException("<null uri>", "URI is null"); }
+      final CacheEntry cacheEntry = newCacheEntry();
       cacheEntry.set(new URI(url), "GET", Collections.<String, List<String>>emptyMap());
       return cacheEntry;
     } catch (final URISyntaxException e) {
@@ -274,7 +275,20 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
 
   @Override
   public String getLocalPath(final String url) {
-    throw new UnsupportedOperationException();
+    final CacheEntry requestInfo = createGetEntry(url);
+    if (requestInfo == null) { return null; }
+    
+    final CacheEntry entry = newCacheEntry();
+    final Snapshot snapshot = readCacheInfo(requestInfo, entry);
+    if (snapshot == null) { return null; }
+    IoUtils.closeQuietly(snapshot);
+
+    if (entry.matches(requestInfo)) {
+      // Note: keep in sync with DiskLruCache.Entry implementation
+      File f = new File(getWorkingDirectory(), entry.getCacheKey() + "." + ENTRY_BODY);
+      return f.getAbsolutePath();
+    }
+    return null;
   }
 
   @Override

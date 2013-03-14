@@ -65,11 +65,7 @@ public abstract class CacheWrapper extends ResponseCache implements EnhancedResp
     return false;
   }
 
-  /**
-   * @deprecated see {@link EnhancedResponseCache#getLocalPath(String)}
-   */
   @Override
-  @Deprecated
   public String getLocalPath(final String url) {
     if (core instanceof EnhancedResponseCache) {
       return ((EnhancedResponseCache) core).getLocalPath(url);
