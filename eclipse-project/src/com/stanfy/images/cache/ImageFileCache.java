@@ -12,11 +12,13 @@ import android.content.Context;
 import android.os.Environment;
 
 import com.stanfy.enroscar.beans.Bean;
+import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.enroscar.net.cache.BaseFileResponseCache;
 import com.stanfy.enroscar.net.cache.CacheEntry;
 import com.stanfy.enroscar.net.cache.CacheTimeRule;
-import com.stanfy.enroscar.utils.AppUtils;
+import com.stanfy.ernoscar.sdkdep.SDKDependentUtilsFactory;
+import com.stanfy.ernoscar.sdkdep.SdkDependentUtils;
 import com.stanfy.images.ImagesManager;
 
 /**
@@ -29,17 +31,26 @@ public class ImageFileCache extends BaseFileResponseCache implements Bean {
   /** Bigger images cache (10M). */
   public static final long MAX_SIZE = 10 * 1024 * 1024;
 
+  /** Application context. */
+  private final Context context;
+  
   public ImageFileCache(final Context context) {
+    this.context = context;
+  }
+  
+  @Override
+  public void onInitializationFinished(final BeansContainer beansContainer) {
     final String eState = Environment.getExternalStorageState();
-    // TODO implement
-//    final File baseDir = Environment.MEDIA_MOUNTED.equals(eState)
-//        ? AppUtils.getSdkDependentUtils().getExternalCacheDir(context)
-//        : context.getCacheDir();
-    File baseDir = context.getCacheDir();
+    // TODO remove creation
+    SdkDependentUtils sdkUtils = beansContainer.getBean(SDKDependentUtilsFactory.class).createSdkDependentUtils();
+    final File baseDir = Environment.MEDIA_MOUNTED.equals(eState)
+        ? sdkUtils.getExternalCacheDir(context)
+        : context.getCacheDir();
     setWorkingDirectory(new File(baseDir, "images"));
     setMaxSize(MAX_SIZE);
+    super.onInitializationFinished(beansContainer);
   }
-
+  
   @Override
   protected CacheEntry createCacheEntry() { return new ImageCacheEntry(); }
 

@@ -325,7 +325,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
           }
           install(VERSION);
         } catch (final IOException e) {
-          Log.e(TAG, "Cannot install file cache", e);
+          throw new RuntimeException("Cannot install file cache " + BaseFileResponseCache.this + ". It must be configuration error.", e);
         }
         return null;
       }
