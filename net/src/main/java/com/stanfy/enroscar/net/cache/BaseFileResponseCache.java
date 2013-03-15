@@ -81,8 +81,6 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     }
     diskCache = DiskLruCache.open(directory, version, ENTRIES_COUNT, getMaxSize());
     onCacheInstalled();
-    
-    initSync.countDown();
   }
 
   /**
@@ -327,7 +325,10 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
           }
           install(VERSION);
         } catch (final IOException e) {
-          throw new RuntimeException("Cannot install file cache " + BaseFileResponseCache.this + ". It must be configuration error.", e);
+          // We do not throw fatal exception: it's a cache app should be able to work without it
+          Log.e(TAG, "Cannot install file cache " + BaseFileResponseCache.this + ". It must be configuration error.", e);
+        } finally {
+          initSync.countDown();
         }
         return null;
       }
