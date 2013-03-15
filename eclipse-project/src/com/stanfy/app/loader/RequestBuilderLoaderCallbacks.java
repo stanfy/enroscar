@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
-import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.enroscar.rest.response.ResponseData;
 
 /**
  * Callbacks for {@link RequestBuilderLoader}.

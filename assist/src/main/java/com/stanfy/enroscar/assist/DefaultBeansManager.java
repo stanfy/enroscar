@@ -6,8 +6,15 @@ import java.net.ResponseCache;
 import android.app.Application;
 import android.content.Context;
 
+import com.stanfy.enroscar.beans.BeanUtils;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
+import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
+import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 import com.stanfy.enroscar.stats.StatsManager;
 
 /**
@@ -62,8 +69,8 @@ public class DefaultBeansManager extends BeansManager {
   public StatsManager getStatsManager() { return getContainer().getBean(StatsManager.BEAN_NAME, StatsManager.class); }
 //  /** @return SDK dependent utilities factory */
 //  public SDKDependentUtilsFactory getSdkDependentUtilsFactory() { return getContainer().getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class); }
-//  /** @return remote server API access configuration */
-//  public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
+  /** @return remote server API access configuration */
+  public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
   /** @return content handler instance */
   public ContentHandler getContentHandler(final String name) { return getContainer().getBean(name, ContentHandler.class); }
 
@@ -106,53 +113,53 @@ public class DefaultBeansManager extends BeansManager {
 //      return this;
 //    }
 //
-//    public Editor remoteServerApi(final EnroscarConnectionsEngine.Config config, final String... formats) {
-//      put(RemoteServerApiConfiguration.class);
-//      if (formats.length > 0) {
-//
-//        Class<?> mainClass = null;
-//        for (final String format : formats) {
-//          Class<?> handlerClass = null;
-//
-//          if (SimpleRequestBuilder.JSON.equals(format)) {
-//            handlerClass = GsonContentHandler.class;
-//          } else if (SimpleRequestBuilder.XML.equals(format)) {
-//            handlerClass = XmlGsonContentHandler.class;
-//          } else if (SimpleRequestBuilder.STRING.equals(format)) {
-//            handlerClass = StringContentHandler.class;
-//          }
-//
-//          if (handlerClass == null) {
-//            throw new RuntimeException("Unknown format " + format);
-//          }
-//
-//          if (mainClass == null) { mainClass = handlerClass; }
-//          put(handlerClass);
-//        }
-//
-//        final String mainContentHandlerName = AppUtils.getBeanInfo(mainClass).value();
-//        editorActions.put("remoteServerApi-config", new PutBean() {
-//          @Override
-//          public Object put() {
-//            // set default content handler
-//            getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class)
-//            .setDefaultContentHandlerName(mainContentHandlerName);
-//
-//            // install connections engine
-//            config.install(application);
-//
-//            return null;
-//          }
-//        });
-//
-//      }
-//      return this;
-//    }
-//
-//    public Editor remoteServerApi(final String... formats) {
-//      return remoteServerApi(EnroscarConnectionsEngine.config(), formats);
-//    }
-//
+    public Editor remoteServerApi(final EnroscarConnectionsEngine.Config config, final String... formats) {
+      put(RemoteServerApiConfiguration.class);
+      if (formats.length > 0) {
+
+        Class<?> mainClass = null;
+        for (final String format : formats) {
+          Class<?> handlerClass = null;
+
+          if (SimpleRequestBuilder.JSON.equals(format)) {
+            handlerClass = GsonContentHandler.class;
+          } else if (SimpleRequestBuilder.XML.equals(format)) {
+            handlerClass = XmlGsonContentHandler.class;
+          } else if (SimpleRequestBuilder.STRING.equals(format)) {
+            handlerClass = StringContentHandler.class;
+          }
+
+          if (handlerClass == null) {
+            throw new RuntimeException("Unknown format " + format);
+          }
+
+          if (mainClass == null) { mainClass = handlerClass; }
+          put(handlerClass);
+        }
+
+        final String mainContentHandlerName = BeanUtils.getBeanInfo(mainClass).value();
+        getEditorActions().put("remoteServerApi-config", new PutBean() {
+          @Override
+          public Object put() {
+            // set default content handler
+            getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class)
+            .setDefaultContentHandlerName(mainContentHandlerName);
+
+            // install connections engine
+            config.install(getApplication());
+
+            return null;
+          }
+        });
+
+      }
+      return this;
+    }
+
+    public Editor remoteServerApi(final String... formats) {
+      return remoteServerApi(EnroscarConnectionsEngine.config(), formats);
+    }
+
 //    public Editor defaults() {
 //      required();
 //      images();

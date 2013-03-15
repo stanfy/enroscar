@@ -10,9 +10,9 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.serverapi.request.RequestBuilder;
-import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.enroscar.rest.request.RequestBuilder;
+import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.rest.response.ResponseData;
 import com.stanfy.utils.ApiMethodsSupport;
 import com.stanfy.utils.ApiMethodsSupport.ApiSupportRequestCallback;
 

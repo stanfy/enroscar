@@ -2,6 +2,7 @@ package com.stanfy.enroscar.content;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -29,6 +30,7 @@ public abstract class StrategiesContentProvider extends ContentProvider {
   @Override
   public boolean onCreate() {
     strategyMatcher = new StrategyMatcher(new UriMatcher(UriMatcher.NO_MATCH));
+    onStrategyMatcherCreate(strategyMatcher);
     return strategyMatcher.isConfigured();
   }
 
@@ -44,43 +46,44 @@ public abstract class StrategiesContentProvider extends ContentProvider {
    *     });
    *   </pre>
    * </p>
-   * @param uriMatcher URI matcher instance
+   * @param matcher URI matcher instance
    */
-  protected abstract void onStrategyMatcherCreate(final StrategyMatcher uriMatcher);
+  protected abstract void onStrategyMatcherCreate(final StrategyMatcher matcher);
 
   /**
+   * @return context application context
    * @return database manager instance
    */
-  protected abstract SQLiteOpenHelper getDatabaseManager();
+  protected abstract SQLiteOpenHelper getDatabaseManager(final Context context);
   
   @Override
   public Cursor query(final Uri uri, final String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
     final Strategy strategy = strategyMatcher.choose(uri);
-    return strategy != null ? strategy.query(getDatabaseManager(), uri, projection, selection, selectionArgs, sortOrder) : null;
+    return strategy != null ? strategy.query(getDatabaseManager(getContext()), uri, projection, selection, selectionArgs, sortOrder) : null;
   }
 
   @Override
   public String getType(final Uri uri) {
     final Strategy strategy = strategyMatcher.choose(uri);
-    return strategy != null ? strategy.getType(getDatabaseManager(), uri) : null;
+    return strategy != null ? strategy.getType(getDatabaseManager(getContext()), uri) : null;
   }
 
   @Override
   public Uri insert(final Uri uri, final ContentValues values) {
     final Strategy strategy = strategyMatcher.choose(uri);
-    return strategy != null ? strategy.insert(getDatabaseManager(), uri, values) : null;
+    return strategy != null ? strategy.insert(getDatabaseManager(getContext()), uri, values) : null;
   }
 
   @Override
   public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
     final Strategy strategy = strategyMatcher.choose(uri);
-    return strategy != null ? strategy.delete(getDatabaseManager(), uri, selection, selectionArgs) : 0;
+    return strategy != null ? strategy.delete(getDatabaseManager(getContext()), uri, selection, selectionArgs) : 0;
   }
 
   @Override
   public int update(final Uri uri, final ContentValues values, final String selection, final String[] selectionArgs) {
     final Strategy strategy = strategyMatcher.choose(uri);
-    return strategy != null ? strategy.update(getDatabaseManager(), uri, values, selection, selectionArgs) : 0;
+    return strategy != null ? strategy.update(getDatabaseManager(getContext()), uri, values, selection, selectionArgs) : 0;
   }
 
   /**

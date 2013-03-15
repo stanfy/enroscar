@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.RemoteException;
@@ -23,11 +22,11 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.stanfy.DebugFlags;
-import com.stanfy.app.service.serverapi.RequestDescriptionProcessor;
-import com.stanfy.app.service.serverapi.RequestProcessorHooks;
-import com.stanfy.serverapi.RequestMethod;
-import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.enroscar.rest.DirectRequestExecutor;
+import com.stanfy.enroscar.rest.DirectRequestExecutorHooks;
+import com.stanfy.enroscar.rest.RequestMethod;
+import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.rest.response.ResponseData;
 
 /**
  * Implementation for {@link ApiMethods}.
@@ -156,9 +155,9 @@ public class ApiMethods {
     /** RD to process. */
     final RequestDescription target;
     /** Processing hooks. */
-    final RequestProcessorHooks hooks;
+    final DirectRequestExecutorHooks hooks;
 
-    public RequestDescriptionTask(final RequestDescription target, final RequestProcessorHooks hooks) {
+    public RequestDescriptionTask(final RequestDescription target, final DirectRequestExecutorHooks hooks) {
       this.hooks = hooks;
       this.target = target;
     }
@@ -166,7 +165,7 @@ public class ApiMethods {
     @Override
     public Void call() throws Exception {
       invoked.set(true);
-      rdProcessor.process(appService, target, hooks);
+      new DirectRequestExecutor(appService, hooks).performRequest(target);
       return null;
     }
 
@@ -184,7 +183,7 @@ public class ApiMethods {
    * Common hooks implementation. Performs request callbacks reporting.
    * @author Roman Mazur (Stanfy - http://stanfy.com)
    */
-  protected class CommonHooks implements RequestProcessorHooks {
+  protected class CommonHooks implements DirectRequestExecutorHooks {
     @Override
     public void beforeRequestProcessingStarted(final RequestDescription requestDescription, final RequestMethod requestMethod) {
       // nothing
@@ -269,7 +268,7 @@ public class ApiMethods {
     /** Future task. */
     final FutureTask<Void> future;
 
-    public TaskQueueRequestTracker(final RequestDescription rd, final RequestProcessorHooks hooks) {
+    public TaskQueueRequestTracker(final RequestDescription rd, final DirectRequestExecutorHooks hooks) {
       super(rd);
       final RequestDescriptionTask worker = new RequestDescriptionTask(rd, hooks);
       future = new FutureTask<Void>(worker) {
@@ -323,7 +322,7 @@ public class ApiMethods {
    */
   protected class ParallelRequestTracker extends TaskQueueRequestTracker {
 
-    public ParallelRequestTracker(final RequestDescription rd, final RequestProcessorHooks hooks) {
+    public ParallelRequestTracker(final RequestDescription rd, final DirectRequestExecutorHooks hooks) {
       super(rd, hooks);
     }
 
@@ -338,11 +337,8 @@ public class ApiMethods {
   /** Application service. */
   final ApplicationService appService;
 
-  /** Request description processing strategy. */
-  final RequestDescriptionProcessor rdProcessor;
-
   /** Processor hooks. */
-  private final RequestProcessorHooks commonProcessorHooks;
+  private final DirectRequestExecutorHooks commonProcessorHooks;
 
   /** API callbacks. */
   private final ArrayList<ApiMethodCallback> apiCallbacks = new ArrayList<ApiMethodCallback>();
@@ -357,7 +353,6 @@ public class ApiMethods {
   protected ApiMethods(final ApplicationService appService) {
     this.appService = appService;
     this.commonProcessorHooks = createRequestDescriptionHooks();
-    this.rdProcessor = createRequestDescriptionProcessor(appService.getApplication());
   }
 
   private static Executor getTaskQueueExecutor(final String name) {
@@ -377,15 +372,9 @@ public class ApiMethods {
   }
 
   /**
-   * Constructor a request description processing strategy.
-   * @param app application instance
-   * @return processor instance
-   */
-  protected RequestDescriptionProcessor createRequestDescriptionProcessor(final Application app) { return new RequestDescriptionProcessor(app); }
-  /**
    * @return request description processing hooks
    */
-  protected RequestProcessorHooks createRequestDescriptionHooks() { return new CommonHooks(); }
+  protected DirectRequestExecutorHooks createRequestDescriptionHooks() { return new CommonHooks(); }
 
   boolean isWorking() {
     synchronized (trackersMap) {

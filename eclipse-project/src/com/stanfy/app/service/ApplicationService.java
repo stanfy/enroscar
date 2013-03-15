@@ -13,8 +13,8 @@ import android.os.Message;
 import android.util.Log;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.utils.Time;
-import com.stanfy.serverapi.request.RequestDescription;
 
 /**
  * Base application service which provides API and location methods interfaces.

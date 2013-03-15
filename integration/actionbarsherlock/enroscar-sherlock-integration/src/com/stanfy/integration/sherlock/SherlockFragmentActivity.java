@@ -8,14 +8,11 @@ import com.actionbarsherlock.view.MenuItem;
 import com.stanfy.app.ActivityBehaviorFactory;
 import com.stanfy.app.BaseActivityBehavior;
 import com.stanfy.app.BaseFragmentActivity;
-import com.stanfy.app.LocationSupportProvider;
-import com.stanfy.utils.LocationMethodsSupport;
 
 /**
  * Sherlock activity that extends {@link BaseFragmentActivity}.
  */
-@SuppressWarnings("deprecation")
-public class SherlockFragmentActivity extends com.actionbarsherlock.app.SherlockFragmentActivity implements LocationSupportProvider {
+public class SherlockFragmentActivity extends com.actionbarsherlock.app.SherlockFragmentActivity {
 
   /** Behavior. */
   private SherlockActivityBehavior behavior;
@@ -36,15 +33,6 @@ public class SherlockFragmentActivity extends com.actionbarsherlock.app.Sherlock
    * @return false id this activity was incorrectly started from launcher
    */
   protected boolean ensureRoot() { return behavior.ensureRoot(); }
-
-  /**
-   * @deprecated waiting for new implementation
-   */
-  @Override
-  @Deprecated
-  public void setupLocationSupport() { behavior.setupLocationSupport(); }
-  @Override
-  public LocationMethodsSupport getLocationSupport() { return behavior.getLocationSupport(); }
 
   /**
    * Perform here all the operations required before creating API methods support.

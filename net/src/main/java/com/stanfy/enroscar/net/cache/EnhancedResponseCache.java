@@ -31,9 +31,7 @@ public interface EnhancedResponseCache {
   /**
    * @param url content URL
    * @return path to the local file with cached content or null of this content is not cached
-   * @deprecated after switch to jakewarthon.DiskLruCache
    */
-  @Deprecated
   String getLocalPath(final String url);
 
 }
