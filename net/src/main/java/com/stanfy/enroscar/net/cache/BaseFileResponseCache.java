@@ -283,18 +283,8 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   public String getLocalPath(final String url) {
     final CacheEntry requestInfo = createGetEntry(url);
     if (requestInfo == null) { return null; }
-    
-    final CacheEntry entry = newCacheEntry();
-    final Snapshot snapshot = readCacheInfo(requestInfo, entry);
-    if (snapshot == null) { return null; }
-    IoUtils.closeQuietly(snapshot);
-
-    if (entry.matches(requestInfo)) {
-      // Note: keep in sync with DiskLruCache.Entry implementation
-      File f = new File(getWorkingDirectory(), entry.getCacheKey() + "." + ENTRY_BODY);
-      return f.getAbsolutePath();
-    }
-    return null;
+    File f = new File(getWorkingDirectory(), requestInfo.getCacheKey() + "." + ENTRY_BODY);
+    return f.getAbsolutePath();
   }
 
   @Override
