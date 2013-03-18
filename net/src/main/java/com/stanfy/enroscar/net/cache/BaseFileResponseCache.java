@@ -76,8 +76,14 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     }
     
     File directory = getWorkingDirectory();
-    if (!directory.mkdirs()) {
-      throw new IOException("Working directory " + directory + " cannot be created");
+    if (!directory.exists()) {
+      if (!directory.mkdirs()) {
+        throw new IOException("Working directory " + directory + " cannot be created");
+      }
+    } else {
+      if (!directory.isDirectory()) {
+        throw new IOException(directory + " is not a directory");
+      }
     }
     diskCache = DiskLruCache.open(directory, version, ENTRIES_COUNT, getMaxSize());
     onCacheInstalled();
