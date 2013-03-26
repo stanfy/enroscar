@@ -136,6 +136,14 @@ public class ImagesManager implements InitializingBean {
    * @param newThread true if separate thread is required
    */
   public void ensureImages(final List<String> images, final boolean newThread) {
+    ensureImages(images, newThread ? getImageTaskExecutor() : null);
+  }
+
+  /**
+   * @param images list of URLs to load
+   * @param executor executor to run the task (if null task is solved in the current thread)
+   */
+  protected void ensureImages(final List<String> images, final Executor executor) {
     final EnhancedResponseCache enhancedResponseCache = imagesResponseCache instanceof EnhancedResponseCache
         ? (EnhancedResponseCache)imagesResponseCache : null;
     final Runnable task = new Runnable() {
@@ -155,13 +163,13 @@ public class ImagesManager implements InitializingBean {
         }
       }
     };
-    if (newThread) {
-      getImageTaskExecutor().execute(task);
-    } else {
+    if (executor == null) {
       task.run();
+    } else {
+      executor.execute(task);
     }
   }
-
+  
   /**
    * Clear the cached entities.
    * @param context context instance
