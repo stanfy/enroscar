@@ -75,6 +75,12 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
       throw new IllegalStateException("Buffers pool is not resolved");
     }
     
+    diskCache = DiskLruCache.open(ensureWorkingDirectory(), version, ENTRIES_COUNT, getMaxSize());
+    onCacheInstalled();
+  }
+
+  // this method is synchronized in order to avoid concurrent calls to mkdir
+  private synchronized File ensureWorkingDirectory() throws IOException {
     File directory = getWorkingDirectory();
     if (!directory.exists()) {
       if (!directory.mkdirs()) {
@@ -85,10 +91,9 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
         throw new IOException(directory + " is not a directory");
       }
     }
-    diskCache = DiskLruCache.open(directory, version, ENTRIES_COUNT, getMaxSize());
-    onCacheInstalled();
+    return directory;
   }
-
+  
   /**
    * Called when cache is initialized before any reads or writes to this cache. 
    * Called from a working thread. 
@@ -261,6 +266,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
 
   @Override
   public boolean deleteGetEntry(final String url) throws IOException {
+    if (!checkDiskCache()) { return false; }
     final CacheEntry cacheEntry = createGetEntry(url);
     if (cacheEntry == null) { return false; }
     return diskCache.remove(cacheEntry.getCacheKey());
