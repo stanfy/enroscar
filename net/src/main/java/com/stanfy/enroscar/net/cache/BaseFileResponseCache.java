@@ -70,7 +70,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
    * @param version cache version
    * @throws IOException if error happens
    */
-  void install(final int version) throws IOException {
+  protected void install(final int version) throws IOException {
     if (buffersPool == null) {
       throw new IllegalStateException("Buffers pool is not resolved");
     }
