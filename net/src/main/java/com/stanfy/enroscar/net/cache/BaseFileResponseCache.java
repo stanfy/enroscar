@@ -70,19 +70,30 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
    * @param version cache version
    * @throws IOException if error happens
    */
-  void install(final int version) throws IOException {
+  protected void install(final int version) throws IOException {
     if (buffersPool == null) {
       throw new IllegalStateException("Buffers pool is not resolved");
     }
     
-    File directory = getWorkingDirectory();
-    if (!directory.mkdirs()) {
-      throw new IOException("Working directory " + directory + " cannot be created");
-    }
-    diskCache = DiskLruCache.open(directory, version, ENTRIES_COUNT, getMaxSize());
+    diskCache = DiskLruCache.open(ensureWorkingDirectory(), version, ENTRIES_COUNT, getMaxSize());
     onCacheInstalled();
   }
 
+  // this method is synchronized in order to avoid concurrent calls to mkdir
+  private synchronized File ensureWorkingDirectory() throws IOException {
+    File directory = getWorkingDirectory();
+    if (!directory.exists()) {
+      if (!directory.mkdirs()) {
+        throw new IOException("Working directory " + directory + " cannot be created");
+      }
+    } else {
+      if (!directory.isDirectory()) {
+        throw new IOException(directory + " is not a directory");
+      }
+    }
+    return directory;
+  }
+  
   /**
    * Called when cache is initialized before any reads or writes to this cache. 
    * Called from a working thread. 
@@ -255,6 +266,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
 
   @Override
   public boolean deleteGetEntry(final String url) throws IOException {
+    if (!checkDiskCache()) { return false; }
     final CacheEntry cacheEntry = createGetEntry(url);
     if (cacheEntry == null) { return false; }
     return diskCache.remove(cacheEntry.getCacheKey());
@@ -277,18 +289,8 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
   public String getLocalPath(final String url) {
     final CacheEntry requestInfo = createGetEntry(url);
     if (requestInfo == null) { return null; }
-    
-    final CacheEntry entry = newCacheEntry();
-    final Snapshot snapshot = readCacheInfo(requestInfo, entry);
-    if (snapshot == null) { return null; }
-    IoUtils.closeQuietly(snapshot);
-
-    if (entry.matches(requestInfo)) {
-      // Note: keep in sync with DiskLruCache.Entry implementation
-      File f = new File(getWorkingDirectory(), entry.getCacheKey() + "." + ENTRY_BODY);
-      return f.getAbsolutePath();
-    }
-    return null;
+    File f = new File(getWorkingDirectory(), requestInfo.getCacheKey() + "." + ENTRY_BODY);
+    return f.getAbsolutePath();
   }
 
   @Override

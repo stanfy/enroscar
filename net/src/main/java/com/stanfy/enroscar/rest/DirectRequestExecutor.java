@@ -101,6 +101,9 @@ public class DirectRequestExecutor implements RequestExecutor {
       passedToAnalyzer = true;
       if (analyzer != null) {
         response = analyze(context, analyzer, response, description);
+        if (response == null) {
+          throw new IllegalStateException("Analyzer " + analyzer + " returned null response");
+        }
       }
 
       // report results

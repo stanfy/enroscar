@@ -20,7 +20,7 @@ public class SDKDependentUtilsFactory implements Bean {
   private static final String TAG = BEAN_NAME;
 
   public SdkDependentUtils createSdkDependentUtils() {
-    final String classsName = null;
+    final String classsName = getUtilsClassName();
     SdkDependentUtils sdkDependentUtils = null;
     try {
       sdkDependentUtils = (SdkDependentUtils)Class.forName(classsName).newInstance();

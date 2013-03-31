@@ -5,13 +5,13 @@ import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.WrapperListAdapter;
 
 import com.stanfy.views.R;
-import com.stanfy.views.gallery.AdapterView;
 
 /**
  * Adapter that shows load more footer.
