@@ -1,4 +1,4 @@
-package com.stanfy.ernoscar.sdkdep;
+package com.stanfy.enroscar.sdkdep;
 
 import java.io.File;
 
@@ -13,8 +13,8 @@ import android.os.Environment;
 import android.view.View;
 import android.webkit.WebView;
 
-import com.stanfy.ernoscar.sdkdep.notifications.BaseNotificationBuilder;
-import com.stanfy.ernoscar.sdkdep.notifications.NotificationBuilder;
+import com.stanfy.enroscar.sdkdep.notifications.BaseNotificationBuilder;
+import com.stanfy.enroscar.sdkdep.notifications.NotificationBuilder;
 
 /**
  * Implementation for old versions.

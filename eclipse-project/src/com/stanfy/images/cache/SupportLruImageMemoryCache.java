@@ -10,8 +10,8 @@ import com.stanfy.enroscar.beans.Bean;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.ernoscar.sdkdep.SDKDependentUtilsFactory;
-import com.stanfy.ernoscar.sdkdep.SdkDependentUtils;
+import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
+import com.stanfy.enroscar.sdkdep.SdkDependentUtils;
 
 /**
  * Memory cache based on {@link LruCache}.

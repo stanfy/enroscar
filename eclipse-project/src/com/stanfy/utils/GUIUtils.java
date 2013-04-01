@@ -47,7 +47,7 @@ public class GUIUtils {
    * @param contentIntent content intent
    * @return notification instance
    * @see com.stanfy.ernoscar.sdkdep.SDKDependentUtils#createNotificationBuilder(Context)
-   * @see com.stanfy.ernoscar.sdkdep.notifications.NotificationBuilder
+   * @see com.stanfy.enroscar.sdkdep.notifications.NotificationBuilder
    */
   public static Notification createNotification(final Context ctx, final CharSequence message, final PendingIntent contentIntent) {
     final ApplicationInfo appInfo = ctx.getApplicationInfo();

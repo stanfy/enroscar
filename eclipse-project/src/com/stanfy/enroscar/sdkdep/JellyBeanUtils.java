@@ -1,4 +1,4 @@
-package com.stanfy.ernoscar.sdkdep;
+package com.stanfy.enroscar.sdkdep;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 
-import com.stanfy.ernoscar.sdkdep.notifications.JellyBeanNotificationBuilder;
-import com.stanfy.ernoscar.sdkdep.notifications.NotificationBuilder;
+import com.stanfy.enroscar.sdkdep.notifications.JellyBeanNotificationBuilder;
+import com.stanfy.enroscar.sdkdep.notifications.NotificationBuilder;
 
 /**
  * Jelly bean utilities (API level 16).

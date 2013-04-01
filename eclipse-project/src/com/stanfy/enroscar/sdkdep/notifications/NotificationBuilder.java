@@ -1,4 +1,4 @@
-package com.stanfy.ernoscar.sdkdep.notifications;
+package com.stanfy.enroscar.sdkdep.notifications;
 
 import android.app.Notification;
 import android.app.PendingIntent;
