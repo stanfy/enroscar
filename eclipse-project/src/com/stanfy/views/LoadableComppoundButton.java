@@ -10,6 +10,7 @@ import android.widget.CompoundButton;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.images.ImagesManager;
+import com.stanfy.images.RemoteImageDensityProvider;
 
 /**
  * Compound button that can have a drawable to be drawn and scaled on the center.

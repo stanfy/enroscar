@@ -41,6 +41,7 @@
     </declare-styleable>
     <declare-styleable name="LoadableImageView">
         <attr name="skipScaleBeforeCache" format="boolean" />
+        <attr name="allowSmallImagesInCache" format="boolean" />
         <attr name="skipLoadingImage" format="boolean" />
         <attr name="loadingImage" format="reference" />
         <attr name="imageType" format="integer" />

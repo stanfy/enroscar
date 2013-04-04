@@ -1,6 +1,5 @@
-package com.stanfy.views;
+package com.stanfy.images;
 
-import com.stanfy.images.ImagesLoadListener;
 
 /**
  * Interface for views that can provide images load listener.
