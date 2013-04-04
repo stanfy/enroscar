@@ -18,18 +18,18 @@ public interface ImageMemoryCache extends FlushableBean {
    * @param image image instance
    * @param imageUrl image URL
    */
-  void putElement(final String url, final Bitmap image);
+  void putElement(String url, Bitmap image);
 
   /**
    * @param url URL
    * @return image bitmap
    */
-  Bitmap getElement(final String url);
+  Bitmap getElement(String url);
 
-  boolean contains(final String url);
+  boolean contains(String url);
 
-  void remove(final String url, final boolean recycle);
+  Bitmap remove(String url);
 
-  void clear(final boolean recycle);
+  void clear();
 
 }

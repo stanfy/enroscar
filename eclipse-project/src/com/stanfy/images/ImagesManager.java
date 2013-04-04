@@ -173,7 +173,7 @@ public class ImagesManager implements InitializingBean {
    */
   @SuppressWarnings("unused")
   public boolean clearCache(final String url) {
-    memCache.remove(url, false);
+    memCache.remove(url);
     if (imagesResponseCache instanceof EnhancedResponseCache) {
       try {
         return ((EnhancedResponseCache) imagesResponseCache).deleteGetEntry(url);
