@@ -1,4 +1,4 @@
-package com.stanfy.ernoscar.sdkdep;
+package com.stanfy.enroscar.sdkdep;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.webkit.WebView;
 
-import com.stanfy.ernoscar.sdkdep.notifications.IcsNotificationBuilder;
-import com.stanfy.ernoscar.sdkdep.notifications.NotificationBuilder;
+import com.stanfy.enroscar.sdkdep.notifications.IcsNotificationBuilder;
+import com.stanfy.enroscar.sdkdep.notifications.NotificationBuilder;
 
 /**
  * Honeycomb utilities (API level 11).

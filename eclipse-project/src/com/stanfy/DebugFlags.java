@@ -37,19 +37,4 @@ public final class DebugFlags {
   /** Debug service flag. */
   public static final boolean DEBUG_SERVICES = false; // @debug.services@
 
-  /** Debug parser flag. */
-  public static final boolean DEBUG_PARSER = false; // @debug.parser@
-
-  /** Debug location flag. */
-  public static final boolean DEBUG_LOCATION = false; // @debug.location@
-
-  /** Debug C2DM. */
-  public static final boolean DEBUG_C2DM = false; // @debug.c2dm@
-
-  /** Debug stats. */
-  public static final boolean DEBUG_STATS = false; // @debug.stats@
-
-  /** Debug beans container. */
-  public static final boolean DEBUG_BEANS = false; // @debug.beans@
-
 }

@@ -88,7 +88,12 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
       }
     } else {
       if (!directory.isDirectory()) {
-        throw new IOException(directory + " is not a directory");
+        if (!directory.delete()) {
+          throw new IOException(directory + " is not a directory and cannot be deleted");
+        }
+        if (!directory.mkdirs()) {
+          throw new IOException("Working directory " + directory + " cannot be recreated");
+        }
       }
     }
     return directory;

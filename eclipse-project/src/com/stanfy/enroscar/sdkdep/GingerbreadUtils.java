@@ -1,4 +1,4 @@
-package com.stanfy.ernoscar.sdkdep;
+package com.stanfy.enroscar.sdkdep;
 
 import java.io.File;
 
@@ -11,8 +11,8 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 
-import com.stanfy.ernoscar.sdkdep.notifications.GingerbreadNotificationBuilder;
-import com.stanfy.ernoscar.sdkdep.notifications.NotificationBuilder;
+import com.stanfy.enroscar.sdkdep.notifications.GingerbreadNotificationBuilder;
+import com.stanfy.enroscar.sdkdep.notifications.NotificationBuilder;
 
 /**
  * Gingerbread utilities (API level 9).

@@ -10,8 +10,8 @@ import com.stanfy.enroscar.beans.Bean;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.ernoscar.sdkdep.SDKDependentUtilsFactory;
-import com.stanfy.ernoscar.sdkdep.SdkDependentUtils;
+import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
+import com.stanfy.enroscar.sdkdep.SdkDependentUtils;
 
 /**
  * Memory cache based on {@link LruCache}.
@@ -19,9 +19,6 @@ import com.stanfy.ernoscar.sdkdep.SdkDependentUtils;
  */
 @EnroscarBean(value = ImageMemoryCache.BEAN_NAME, contextDependent = true)
 public class SupportLruImageMemoryCache implements ImageMemoryCache, Bean {
-
-  /** Recycle on remove flag. */
-  private boolean recycleOnRemove = false;
 
   /** LRU cache instance. */
   private final LruCache<String, Bitmap> cache;
@@ -44,10 +41,6 @@ public class SupportLruImageMemoryCache implements ImageMemoryCache, Bean {
       protected int sizeOf(final String key, final Bitmap value) {
         return sdkUtils.getBitmapSize(value);
       };
-      @Override
-      protected void entryRemoved(final boolean evicted, final String key, final Bitmap oldValue, final Bitmap newValue) {
-        if (recycleOnRemove) { oldValue.recycle(); }
-      }
     };
   }
 
@@ -65,24 +58,18 @@ public class SupportLruImageMemoryCache implements ImageMemoryCache, Bean {
   }
 
   @Override
-  public void remove(final String url, final boolean recycle) {
-    final Bitmap bitmap = cache.remove(url);
-    if (recycle && bitmap != null) { bitmap.recycle(); }
+  public Bitmap remove(final String url) {
+    return cache.remove(url);
   }
 
   @Override
-  public void clear(final boolean recycle) {
-    synchronized (this) {
-      recycleOnRemove = true;
-      cache.evictAll();
-      recycleOnRemove = false;
-    }
+  public void clear() {
+    cache.evictAll();
   }
 
   @Override
   public void flushResources(final BeansContainer beansContainer) {
-    // do no recycle bitmaps since some of them can be in use
-    clear(false);
+    clear();
     Log.i(BEAN_NAME, "Images memory cache flushed");
   }
 

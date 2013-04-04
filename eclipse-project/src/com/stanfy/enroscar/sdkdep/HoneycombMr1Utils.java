@@ -1,4 +1,4 @@
-package com.stanfy.ernoscar.sdkdep;
+package com.stanfy.enroscar.sdkdep;
 
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;

@@ -10,10 +10,10 @@ public final class DebugFlags {
 
   // TODO: make it configuration based
   /** Debug REST operations. */
-  public static final boolean DEBUG_REST = true; // @debug.rest@
+  public static final boolean DEBUG_REST = false; // @debug.rest@
   
   /** Flag whether to print response to Android log. */
-  public static final boolean DEBUG_REST_RESPONSE = true; // @debug.rest.response@
+  public static final boolean DEBUG_REST_RESPONSE = false; // @debug.rest.response@
   
   private DebugFlags() { }
   

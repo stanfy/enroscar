@@ -2,7 +2,6 @@ package com.stanfy.images;
 
 import android.graphics.drawable.Drawable;
 
-import com.stanfy.images.ImagesManager.ImageHolder;
 
 /**
  * Image load listener.
@@ -10,12 +9,12 @@ import com.stanfy.images.ImagesManager.ImageHolder;
  */
 public interface ImagesLoadListener {
 
-  void onLoadStart(final ImageHolder holder, final String url);
+  void onLoadStart(final ImageConsumer holder, final String url);
 
-  void onLoadFinished(final ImageHolder holder, final String url, final Drawable drawable);
+  void onLoadFinished(final ImageConsumer holder, final String url, final Drawable drawable);
 
-  void onLoadError(final ImageHolder holder, final String url, final Throwable exception);
+  void onLoadError(final ImageConsumer holder, final String url, final Throwable exception);
 
-  void onLoadCancel(final ImageHolder holder, final String url);
+  void onLoadCancel(final ImageConsumer holder, final String url);
 
 }

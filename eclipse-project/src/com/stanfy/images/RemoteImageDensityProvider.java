@@ -1,4 +1,4 @@
-package com.stanfy.views;
+package com.stanfy.images;
 
 /**
  * Interface for views that can provide information about remote image density.

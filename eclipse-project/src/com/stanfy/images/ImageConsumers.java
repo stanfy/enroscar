@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
-import com.stanfy.images.ImagesManager.ViewImageHolder;
 import com.stanfy.views.LoadableImageView;
 import com.stanfy.views.LoadableTextView;
 
@@ -15,19 +14,19 @@ import com.stanfy.views.LoadableTextView;
  * Image holders.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public final class ImageHolders {
+public final class ImageConsumers {
 
-  private ImageHolders() { /* hidden */ }
+  private ImageConsumers() { /* hidden */ }
 
   /**
    * @param view view instance
    * @return appropriate image holder instance
    */
-  public static ViewImageHolder<?> createImageHolder(final View view) {
-    if (view instanceof LoadableImageView) { return new LoadableImageViewHolder((LoadableImageView)view); }
-    if (view instanceof ImageView) { return new ImageViewHolder((ImageView)view); }
-    if (view instanceof CompoundButton) { return new CompoundButtonHolder((CompoundButton)view); }
-    if (view instanceof TextView) { return new TextViewHolder((TextView)view); }
+  public static ViewImageConsumer<?> createImageConsumer(final View view) {
+    if (view instanceof LoadableImageView) { return new LoadableImageViewConsumer((LoadableImageView)view); }
+    if (view instanceof ImageView) { return new ImageViewConsumer((ImageView)view); }
+    if (view instanceof CompoundButton) { return new CompoundButtonConsumer((CompoundButton)view); }
+    if (view instanceof TextView) { return new TextViewConsumer((TextView)view); }
     return null;
   }
 
@@ -35,8 +34,8 @@ public final class ImageHolders {
    * Image holder for {@link ImageView}.
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
-  static class ImageViewHolder extends ViewImageHolder<ImageView> {
-    public ImageViewHolder(final ImageView view) { super(view); }
+  static class ImageViewConsumer extends ViewImageConsumer<ImageView> {
+    public ImageViewConsumer(final ImageView view) { super(view); }
     @Override
     public void setImage(final Drawable d, final boolean animate) { view.setImageDrawable(d); }
   }
@@ -45,8 +44,10 @@ public final class ImageHolders {
    * Image holder for {@link ImageView}.
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
-  static class LoadableImageViewHolder extends ImageViewHolder {
-    public LoadableImageViewHolder(final LoadableImageView view) { super(view); }
+  static class LoadableImageViewConsumer extends ImageViewConsumer {
+    public LoadableImageViewConsumer(final LoadableImageView view) { super(view); }
+    @Override
+    public boolean allowSmallImagesFromCache() { return ((LoadableImageView)this.view).isAllowSmallImagesInCache(); }
     @Override
     public boolean skipScaleBeforeCache() { return ((LoadableImageView)view).isSkipScaleBeforeCache(); }
     @Override
@@ -78,18 +79,18 @@ public final class ImageHolders {
    * Image holder for {@link CompoundButton}.
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
-  static class CompoundButtonHolder extends ViewImageHolder<CompoundButton> {
-    public CompoundButtonHolder(final CompoundButton view) { super(view); }
+  static class CompoundButtonConsumer extends ViewImageConsumer<CompoundButton> {
+    public CompoundButtonConsumer(final CompoundButton view) { super(view); }
     @Override
     public void setImage(final Drawable d, final boolean animate) { view.setButtonDrawable(d); }
   }
 
   /**
-   * Image holder for {@link TextView}.
+   * Image consumer for {@link TextView}. Sets loaded image as a left drawable.
    * @author Olexandr Tereshchuk - Stanfy (http://www.stanfy.com)
    */
-  static class TextViewHolder extends ViewImageHolder<TextView> {
-    public TextViewHolder(final TextView view) { super(view); }
+  static class TextViewConsumer extends ViewImageConsumer<TextView> {
+    public TextViewConsumer(final TextView view) { super(view); }
     @Override
     public void setImage(final Drawable d, final boolean animate) {
       if (view instanceof LoadableTextView) {

@@ -13,7 +13,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
 import java.util.regex.Pattern;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -21,11 +20,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.beans.BeansContainer;
@@ -38,8 +35,6 @@ import com.stanfy.enroscar.io.PoolableBufferedInputStream;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
 import com.stanfy.enroscar.net.cache.EnhancedResponseCache;
 import com.stanfy.images.cache.ImageMemoryCache;
-import com.stanfy.views.ImagesLoadListenerProvider;
-import com.stanfy.views.RemoteImageDensityProvider;
 
 /**
  * A manager that encapsulates the images downloading and caching logic.
@@ -67,7 +62,7 @@ public class ImagesManager implements InitializingBean {
   private static final boolean DEBUG_IO = DebugFlags.DEBUG_IO;
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_IMAGES;
+  static final boolean DEBUG = DebugFlags.DEBUG_IMAGES;
 
   /** Resources. */
   private final Resources resources;
@@ -125,7 +120,7 @@ public class ImagesManager implements InitializingBean {
   public Bitmap.Config getImagesFormat() { return imagesFormat; }
 
   /**
-   * Configure default density of images. Every {@link ImageHolder} can return its own density.
+   * Configure default density of images. Every {@link ImageConsumer} can return its own density.
    * @param sourceDensity the sourceDensity to set
    */
   public void setDefaultSourceDensity(final int sourceDensity) { this.defaultSourceDensity = sourceDensity; }
@@ -178,7 +173,7 @@ public class ImagesManager implements InitializingBean {
    */
   @SuppressWarnings("unused")
   public boolean clearCache(final String url) {
-    memCache.remove(url, false);
+    memCache.remove(url);
     if (imagesResponseCache instanceof EnhancedResponseCache) {
       try {
         return ((EnhancedResponseCache) imagesResponseCache).deleteGetEntry(url);
@@ -202,13 +197,13 @@ public class ImagesManager implements InitializingBean {
    */
   public void populateImage(final View view, final String url) {
     final Object tag = view.getTag();
-    ImageHolder imageHolder = null;
+    ImageConsumer imageHolder = null;
     if (tag == null) {
       imageHolder = createImageHolder(view);
       view.setTag(imageHolder);
     } else {
-      if (!(tag instanceof ImageHolder)) { throw new IllegalStateException("View already has a tag " + tag); }
-      imageHolder = (ImageHolder)tag;
+      if (!(tag instanceof ImageConsumer)) { throw new IllegalStateException("View already has a tag " + tag); }
+      imageHolder = (ImageConsumer)tag;
     }
     populateImage(imageHolder, url);
   }
@@ -219,15 +214,15 @@ public class ImagesManager implements InitializingBean {
    */
   public void cancelImageLoading(final View view) {
     final Object tag = view.getTag();
-    if (tag != null && tag instanceof ImageHolder) {
-      cancelImageLoading((ImageHolder)tag);
+    if (tag != null && tag instanceof ImageConsumer) {
+      cancelImageLoading((ImageConsumer)tag);
     }
   }
   /**
    * Cancel image loading for a holder.
    * @param holder image holder instance
    */
-  public void cancelImageLoading(final ImageHolder holder) {
+  public void cancelImageLoading(final ImageConsumer holder) {
     holder.performCancellingLoader();
   }
 
@@ -236,7 +231,7 @@ public class ImagesManager implements InitializingBean {
    * @param view view instance
    * @return image holder instance
    */
-  protected ImageHolder createImageHolder(final View view) { return ImageHolders.createImageHolder(view); }
+  protected ImageConsumer createImageHolder(final View view) { return ImageConsumers.createImageConsumer(view); }
 
   /**
    * @param url image URL
@@ -251,15 +246,15 @@ public class ImagesManager implements InitializingBean {
    */
   public Drawable getMemCached(final String url, final View view) {
     final Object tag = view.getTag();
-    if (tag == null || !(tag instanceof ImageHolder)) { return null; }
-    final Drawable res = getFromMemCache(url, (ImageHolder)tag);
+    if (tag == null || !(tag instanceof ImageConsumer)) { return null; }
+    final Drawable res = getFromMemCache(url, (ImageConsumer)tag);
     if (res == null) { return null; }
-    return decorateDrawable((ImageHolder)tag, res);
+    return decorateDrawable((ImageConsumer)tag, res);
   }
 
-  public void populateImage(final ImageHolder imageHolder, final String url) {
+  public void populateImage(final ImageConsumer imageHolder, final String url) {
     if (imageHolder.isMatchingParentButNotMeasured()) {
-      imageHolder.postpone(new Runnable() {
+      imageHolder.post(new Runnable() {
         @Override
         public void run() { populateImageNow(imageHolder, url); }
       });
@@ -268,7 +263,7 @@ public class ImagesManager implements InitializingBean {
     }
   }
 
-  public void populateImageNow(final ImageHolder imageHolder, final String url) {
+  public void populateImageNow(final ImageConsumer imageHolder, final String url) {
     if (DEBUG) { Log.d(TAG, "Process url " + url); }
     if (TextUtils.isEmpty(url)) {
       setLoadingImage(imageHolder);
@@ -300,7 +295,7 @@ public class ImagesManager implements InitializingBean {
    * @param context context
    * @return a drawable to display while the image is loading
    */
-  protected Drawable getLoadingDrawable(final ImageHolder holder) {
+  protected Drawable getLoadingDrawable(final ImageConsumer holder) {
     final Drawable d = holder.getLoadingImage();
     final int color = 0xffeeeeee;
     return d != null ? d : new ColorDrawable(color);
@@ -311,7 +306,7 @@ public class ImagesManager implements InitializingBean {
    * @param drawable resulting drawable
    * @return decorated drawable
    */
-  protected Drawable decorateDrawable(final ImageHolder holder, final Drawable drawable) { return drawable; }
+  protected Drawable decorateDrawable(final ImageConsumer holder, final Drawable drawable) { return drawable; }
 
   /**
    * It must be executed in the main thread.
@@ -320,7 +315,7 @@ public class ImagesManager implements InitializingBean {
    * @param preloader preloading image flag
    * @param animate whether to animate image change
    */
-  protected final void setImage(final ImageHolder imageHolder, final Drawable drawable, final boolean preloader, final boolean animate) {
+  protected final void setImage(final ImageConsumer imageHolder, final Drawable drawable, final boolean preloader, final boolean animate) {
     final Drawable d = decorateDrawable(imageHolder, drawable);
     if (preloader) {
       imageHolder.setLoadingImage(d);
@@ -333,7 +328,7 @@ public class ImagesManager implements InitializingBean {
    * Set preloader.
    * @param holder image holder instance
    */
-  private void setLoadingImage(final ImageHolder holder) {
+  private void setLoadingImage(final ImageConsumer holder) {
     if (!holder.skipLoadingImage()) {
       final Drawable d = !holder.isDynamicSize() ? getLoadingDrawable(holder) : null;
       setImage(holder, d, true, false/* ignored */);
@@ -344,7 +339,7 @@ public class ImagesManager implements InitializingBean {
    * @param url image URL
    * @return cached drawable
    */
-  protected Drawable getFromMemCache(final String url, final ImageHolder holder) {
+  protected Drawable getFromMemCache(final String url, final ImageConsumer holder) {
     synchronized (holder) {
       if (holder.currentUrl != null && !holder.currentUrl.equals(url)) { return null; }
     }
@@ -356,6 +351,7 @@ public class ImagesManager implements InitializingBean {
     final BitmapDrawable result = new BitmapDrawable(holder.context.getResources(), map);
     final int gap = 5;
     final boolean suits = holder.isDynamicSize()
+        || holder.allowSmallImagesFromCache()
         || holder.skipScaleBeforeCache()
         || Math.abs(holder.getRequiredWidth() - result.getIntrinsicWidth()) < gap
         || Math.abs(holder.getRequiredHeight() - result.getIntrinsicHeight()) < gap;
@@ -369,7 +365,7 @@ public class ImagesManager implements InitializingBean {
    * @param downloader downloader instance
    * @return loader task instance
    */
-  protected void startImageLoaderTask(final ImageHolder imageHolder) {
+  protected void startImageLoaderTask(final ImageConsumer imageHolder) {
     final String key = imageHolder.getLoaderKey();
     if (DEBUG) { Log.d(TAG, "Key " + key); }
     ImageLoader loader = currentLoads.get(key);
@@ -398,7 +394,7 @@ public class ImagesManager implements InitializingBean {
     }
   }
 
-  protected Drawable readImage(final String url, final ImageHolder holder) throws IOException {
+  protected Drawable readImage(final String url, final ImageConsumer holder) throws IOException {
     if (holder == null) { return null; }
     InputStream imageStream = newConnection(url).getInputStream();
     final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -547,9 +543,9 @@ public class ImagesManager implements InitializingBean {
     final FutureTask<Void> future;
 
     /** Targets. */
-    private final ArrayList<ImageHolder> targets = new ArrayList<ImageHolder>();
+    private final ArrayList<ImageConsumer> targets = new ArrayList<ImageConsumer>();
     /** Main GUI view. */
-    private ImageHolder mainTarget;
+    private ImageConsumer mainTarget;
     /** Result drawable. */
     private Drawable resultDrawable;
     /** Resolved result flag. */
@@ -563,7 +559,7 @@ public class ImagesManager implements InitializingBean {
     }
 
     /** Called from UI thread. */
-    public boolean addTarget(final ImageHolder imageHolder) {
+    public boolean addTarget(final ImageConsumer imageHolder) {
       if (future.isCancelled()) { return false; } // we should start a new task
       if (!future.isDone()) {
         // normal case
@@ -587,7 +583,7 @@ public class ImagesManager implements InitializingBean {
       return true;
     }
 
-    public void removeTarget(final ImageHolder imageHolder) {
+    public void removeTarget(final ImageConsumer imageHolder) {
       imageHolder.onCancel(url);
       synchronized (this) {
         targets.remove(imageHolder);
@@ -622,11 +618,11 @@ public class ImagesManager implements InitializingBean {
         public void run() {
           if (DEBUG) { Log.v(TAG, "Set drawable for " + url); }
 
-          final ArrayList<ImageHolder> targets = ImageLoader.this.targets;
+          final ArrayList<ImageConsumer> targets = ImageLoader.this.targets;
           final int count = targets.size();
           if (count > 0) {
             for (int i = 0; i < count; i++) {
-              final ImageHolder imageHolder = targets.get(i);
+              final ImageConsumer imageHolder = targets.get(i);
               if (DEBUG) { Log.d(TAG, "Try to set " + imageHolder + " - " + url); }
               setImageToHolder(imageHolder, d);
             }
@@ -638,7 +634,7 @@ public class ImagesManager implements InitializingBean {
       });
     }
 
-    private void setImageToHolder(final ImageHolder imageHolder, final Drawable d) {
+    private void setImageToHolder(final ImageConsumer imageHolder, final Drawable d) {
       synchronized (imageHolder) {
         final String currentUrl = imageHolder.currentUrl;
         if (currentUrl != null && currentUrl.equals(url)) {
@@ -689,7 +685,7 @@ public class ImagesManager implements InitializingBean {
 
     private void start() {
       synchronized (this) {
-        final ArrayList<ImageHolder> targets = this.targets;
+        final ArrayList<ImageConsumer> targets = this.targets;
         final int count = targets.size();
         final String url = this.url;
         for (int i = 0; i < count; i++) {
@@ -700,7 +696,7 @@ public class ImagesManager implements InitializingBean {
     }
 
     private void finish() {
-      final ArrayList<ImageHolder> targets = this.targets;
+      final ArrayList<ImageConsumer> targets = this.targets;
       final int count = targets.size();
       final Drawable d = this.resultDrawable;
       for (int i = 0; i < count; i++) {
@@ -709,7 +705,7 @@ public class ImagesManager implements InitializingBean {
     }
 
     private void cancel() {
-      final ArrayList<ImageHolder> targets = this.targets;
+      final ArrayList<ImageConsumer> targets = this.targets;
       final int count = targets.size();
       final String url = this.url;
       for (int i = 0; i < count; i++) {
@@ -718,7 +714,7 @@ public class ImagesManager implements InitializingBean {
     }
 
     private void error(final Throwable e) {
-      final ArrayList<ImageHolder> targets = this.targets;
+      final ArrayList<ImageConsumer> targets = this.targets;
       final int count = targets.size();
       final String url = this.url;
       for (int i = 0; i < count; i++) {
@@ -774,175 +770,6 @@ public class ImagesManager implements InitializingBean {
       return null;
     }
 
-  }
-
-  /**
-   * Image holder view.
-   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
-   * @param <T> view type
-   */
-  public abstract static class ImageHolder {
-    /** Context instance. */
-    Context context;
-    /** Current image URL. Set this field from the GUI thread only! */
-    String currentUrl;
-    /** Listener. */
-    ImagesLoadListener listener;
-    /** Current loader. */
-    ImageLoader currentLoader;
-    /** Loader key. */
-    private String loaderKey;
-
-    /** @param context context instance */
-    public ImageHolder(final Context context) {
-      this.context = context;
-      reset();
-    }
-
-    /* access */
-    /** @param listener the listener to set */
-    public final void setListener(final ImagesLoadListener listener) { this.listener = listener; }
-    /** @return the context */
-    public Context getContext() { return context; }
-
-    /* actions */
-    /** Reset holder state. Must be called from the main thread. */
-    void reset() {
-      currentUrl = null;
-      loaderKey = null;
-    }
-    public void touch() { }
-    public abstract void setImage(final Drawable d, final boolean animate);
-    public void setLoadingImage(final Drawable d) { setImage(d, false); }
-    public abstract void post(final Runnable r);
-    public void postpone(final Runnable r) { post(r); }
-    public void destroy() {
-      context = null;
-    }
-    final void performCancellingLoader() {
-      final String url = currentUrl;
-      final ImageLoader loader = currentLoader;
-      if (DEBUG) { Log.d(TAG, "Cancel URL: " + url + "\nLoader: " + loader); }
-      if (loader != null) { loader.removeTarget(this); }
-    }
-
-    final void onStart(final ImageLoader loader, final String url) {
-      this.currentLoader = loader;
-      if (listener != null) { listener.onLoadStart(this, url); }
-    }
-    final void onFinish(final String url, final Drawable drawable) {
-      this.currentLoader = null;
-      if (listener != null) { listener.onLoadFinished(this, url, drawable); }
-    }
-    final void onError(final String url, final Throwable exception) {
-      this.currentLoader = null;
-      if (listener != null) { listener.onLoadError(this, url, exception); }
-    }
-    final void onCancel(final String url) {
-      this.currentLoader = null;
-      if (listener != null) { listener.onLoadCancel(this, url); }
-      this.currentUrl = null;
-    }
-
-    /* parameters */
-    public abstract int getRequiredWidth();
-    public abstract int getRequiredHeight();
-    public boolean isDynamicSize() { return getRequiredWidth() <= 0 || getRequiredHeight() <= 0; }
-    public boolean isMatchingParentButNotMeasured() { return false; }
-    public Drawable getLoadingImage() { return null; }
-    public int getImageType() { return 0; }
-    public int getSourceDensity() { return -1; }
-    String getLoaderKey() {
-      if (loaderKey == null) {
-        loaderKey = currentUrl + "!" + getRequiredWidth() + "x" + getRequiredHeight();
-      }
-      return loaderKey;
-    }
-
-    /* options */
-    public boolean skipScaleBeforeCache() { return false; }
-    public boolean skipLoadingImage() { return false; }
-    public boolean useSampling() { return false; }
-  }
-
-  /**
-   * Image holder views.
-   * @author Roman Mazur (Stanfy - http://www.stanfy.com)
-   * @param <T> view type
-   */
-  public abstract static class ViewImageHolder<T extends View> extends ImageHolder {
-    /** View instance. */
-    T view;
-    /** Handler instance. */
-    private Handler handler;
-
-    public ViewImageHolder(final T view) {
-      super(view.getContext());
-      this.view = view;
-      touch();
-    }
-    @Override
-    public int getSourceDensity() {
-      if (view instanceof RemoteImageDensityProvider) {
-        return ((RemoteImageDensityProvider)view).getSourceDensity();
-      }
-      return super.getSourceDensity();
-    }
-    @Override
-    public void touch() {
-      final T view = this.view;
-      if (view != null && view instanceof ImagesLoadListenerProvider) {
-        this.listener = ((ImagesLoadListenerProvider)view).getImagesLoadListener();
-      }
-    }
-    @Override
-    public void post(final Runnable r) {
-      if (context instanceof Activity) {
-        ((Activity)context).runOnUiThread(r);
-      } else {
-        if (DEBUG) { Log.d(TAG, "Context is not an activity, cannot use runOnUiThread"); }
-        view.post(r);
-      }
-    }
-    @Override
-    public void postpone(final Runnable r) {
-      post(new Runnable() {
-        @Override
-        public void run() {
-          if (handler == null) { handler = new Handler(); }
-          handler.post(r);
-        }
-      });
-    }
-    @Override
-    public int getRequiredHeight() {
-      final View view = this.view;
-      final LayoutParams params = view.getLayoutParams();
-      if (params == null || params.height == LayoutParams.WRAP_CONTENT) { return -1; }
-      final int h = view.getHeight();
-      return h > 0 ? h : params.height;
-    }
-    @Override
-    public int getRequiredWidth() {
-      final View view = this.view;
-      final LayoutParams params = view.getLayoutParams();
-      if (params == null || params.width == LayoutParams.WRAP_CONTENT) { return -1; }
-      final int w = view.getWidth();
-      return w > 0 ? w : params.width;
-    }
-    @Override
-    public boolean isMatchingParentButNotMeasured() {
-      final View view = this.view;
-      final LayoutParams params = view.getLayoutParams();
-      if (params == null) { return false; }
-      return params.width == LayoutParams.MATCH_PARENT && view.getWidth() == 0
-          || params.height == LayoutParams.MATCH_PARENT && view.getHeight() == 0;
-    }
-    @Override
-    public void destroy() {
-      super.destroy();
-      view = null;
-    }
   }
 
 }

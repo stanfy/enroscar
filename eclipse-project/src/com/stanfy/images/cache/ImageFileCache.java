@@ -17,8 +17,8 @@ import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.enroscar.net.cache.BaseFileResponseCache;
 import com.stanfy.enroscar.net.cache.CacheEntry;
 import com.stanfy.enroscar.net.cache.CacheTimeRule;
-import com.stanfy.ernoscar.sdkdep.SDKDependentUtilsFactory;
-import com.stanfy.ernoscar.sdkdep.SdkDependentUtils;
+import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
+import com.stanfy.enroscar.sdkdep.SdkDependentUtils;
 import com.stanfy.images.ImagesManager;
 
 /**

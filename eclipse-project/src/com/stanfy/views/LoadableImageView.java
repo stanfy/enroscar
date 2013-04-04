@@ -8,8 +8,10 @@ import android.util.AttributeSet;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.images.ImagesLoadListener;
+import com.stanfy.images.ImagesLoadListenerProvider;
 import com.stanfy.images.ImagesManager;
-import com.stanfy.images.ImagesManager.ImageHolder;
+import com.stanfy.images.RemoteImageDensityProvider;
+import com.stanfy.images.ViewImageConsumer;
 
 /**
  * Image view that can load a remote image.
@@ -20,6 +22,8 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   /** Use transition. */
   public static final int USE_TRANSITION_NO = 0, USE_TRANSITION_YES = 1, USE_TRANSITION_CROSSFADE = 2;
 
+  /** Allow small images in cache option. */
+  private boolean allowSmallImagesInCache;
   /** Skip scaling before caching flag. */
   private boolean skipScaleBeforeCache;
   /** Skip loading indicator flag.  */
@@ -63,12 +67,14 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LoadableImageView);
     final boolean skipCache = a.getBoolean(R.styleable.LoadableImageView_skipScaleBeforeCache, false);
     final boolean skipLoadIndicator = a.getBoolean(R.styleable.LoadableImageView_skipLoadingImage, false);
+    final boolean allowSmallCachedImages = a.getBoolean(R.styleable.LoadableImageView_allowSmallImagesInCache, false);
     final Drawable loadingImage = a.getDrawable(R.styleable.LoadableImageView_loadingImage);
     final int type = a.getInt(R.styleable.LoadableImageView_imageType, 0);
     final int sourceDensity = a.getInt(R.styleable.LoadableImageView_sourceDensity, -1);
     final int useTransition = a.getInt(R.styleable.LoadableImageView_useTransition, USE_TRANSITION_NO);
     a.recycle();
 
+    setAllowSmallImagesInCache(allowSmallCachedImages);
     setSourceDensity(sourceDensity);
     setSkipScaleBeforeCache(skipCache);
     setSkipLoadingImage(skipLoadIndicator);
@@ -110,11 +116,18 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   /** @return the useSampling */
   public boolean isUseSampling() { return useSampling; }
 
+  public void setAllowSmallImagesInCache(final boolean allowSmallImagesInCache) {
+    this.allowSmallImagesInCache = allowSmallImagesInCache;
+  }
+  public boolean isAllowSmallImagesInCache() {
+    return allowSmallImagesInCache;
+  }
+  
   /** @param listener load listener */
   public void setImagesLoadListener(final ImagesLoadListener listener) {
     this.listener = listener;
     final Object tag = getTag();
-    if (tag != null && tag instanceof ImageHolder) { ((ImageHolder) tag).touch(); }
+    if (tag != null && tag instanceof ViewImageConsumer) { ((ViewImageConsumer<?>) tag).notifyAboutViewChanges(); }
   }
   @Override
   public ImagesLoadListener getImagesLoadListener() { return listener; }
