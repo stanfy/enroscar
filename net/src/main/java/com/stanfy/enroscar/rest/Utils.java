@@ -12,6 +12,9 @@ public final class Utils {
   /** Debug networks-related classes. */
   public static final boolean DEBUG_IO = false; // @debug.io@
 
+  /** Debug loaders. */
+  public static final boolean DEBUG_LOADERS = false; // @debug.loaders@
+
   private Utils() { }
   
   public static RemoteServerApiConfiguration getConfig(final Context context) {

@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.content;
+package com.stanfy.enroscar.content.loader;
 
 import java.util.ArrayList;
 import java.util.HashMap;

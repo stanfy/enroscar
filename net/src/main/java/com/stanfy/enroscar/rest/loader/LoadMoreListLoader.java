@@ -1,12 +1,13 @@
-package com.stanfy.app.loader;
+package com.stanfy.enroscar.rest.loader;
 
 import java.util.List;
 
 import android.util.Log;
 
 import com.stanfy.enroscar.content.OffsetInfoProvider;
+import com.stanfy.enroscar.content.loader.LoadmoreLoader;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.request.ListRequestBuilder;
-import com.stanfy.enroscar.rest.response.ResponseData;
 
 /**
  * Request builder loader that can load more data.

@@ -2,7 +2,7 @@ archivesBaseName='enroscar-net'
 
 dependencies {
   
-  compile project(':beans'), project(path : ':shared', configuration : 'testArchives')
+  compile project(':beans'), project(':content'), project(path : ':shared', configuration : 'testArchives')
   compile 'com.jakewharton:disklrucache:1.3.1'
   compile 'com.google.code.gson:gson:2.2.2'
   compile 'com.stanfy:gson-xml-java:0.1.4'

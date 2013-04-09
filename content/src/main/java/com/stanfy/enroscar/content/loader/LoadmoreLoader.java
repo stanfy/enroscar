@@ -1,4 +1,4 @@
-package com.stanfy.app.loader;
+package com.stanfy.enroscar.content.loader;
 
 /**
  * Interface for loaders that can load more data.
