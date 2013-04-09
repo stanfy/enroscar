@@ -23,9 +23,9 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   private BeansManager beansManager;
 
   /** Request method. */
-  private RequestMethod requestMethod;
+  private RequestMethod defaultRequestMethod;
   /** Response model converter. */
-  private ResponseModelConverter responseModelConverter;
+  private ResponseModelConverter defaultResponseModelConverter;
 
   /** Default content handler name. */
   private String defaultContentHandlerName;
@@ -39,16 +39,16 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   /** Debug REST response. */
   private boolean debugRestResponse;
 
-  public void setRequestMethod(final RequestMethod requestMethod) {
-    this.requestMethod = requestMethod;
+  public void setDefaultRequestMethod(final RequestMethod requestMethod) {
+    this.defaultRequestMethod = requestMethod;
   }
-  public void setResponseModelConverter(final ResponseModelConverter responseModelConverter) {
-    this.responseModelConverter = responseModelConverter;
+  public void setDefaultResponseModelConverter(final ResponseModelConverter responseModelConverter) {
+    this.defaultResponseModelConverter = responseModelConverter;
   }
 
 
-  public RequestMethod getRequestMethod(final RequestDescription requestDescription) { return requestMethod; }
-  public ResponseModelConverter getResponseModelConverter(final RequestDescription requestDescription) { return responseModelConverter; }
+  public RequestMethod getRequestMethod(final RequestDescription requestDescription) { return defaultRequestMethod; }
+  public ResponseModelConverter getResponseModelConverter(final RequestDescription requestDescription) { return defaultResponseModelConverter; }
 
   public String getDefaultContentHandlerName() { return defaultContentHandlerName; }
   public void setDefaultContentHandlerName(final String defaultContentHandlerName) {
@@ -83,11 +83,11 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
 
   @Override
   public void onInitializationFinished(final BeansContainer beansContainer) {
-    if (this.requestMethod == null) {
-      this.requestMethod = new RequestMethod();
+    if (this.defaultRequestMethod == null) {
+      this.defaultRequestMethod = new RequestMethod();
     }
-    if (this.responseModelConverter == null) {
-      this.responseModelConverter = new DefaultResponseModelConverter();
+    if (this.defaultResponseModelConverter == null) {
+      this.defaultResponseModelConverter = new DefaultResponseModelConverter();
     }
   }
 
