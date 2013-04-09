@@ -33,9 +33,6 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   /** Default cache bean name. */
   private String defaultCacheBeanName;
 
-  /** Default error message. */
-  private String defaultErrorMessage;
-  
   public void setRequestMethod(final RequestMethod requestMethod) {
     this.requestMethod = requestMethod;
   }
@@ -59,13 +56,6 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
     this.defaultCacheBeanName = defaultCacheBeanName;
   }
 
-  public void setDefaultErrorMessage(final String defaultErrorMessage) {
-    this.defaultErrorMessage = defaultErrorMessage;
-  }
-  public String getDefaultErrorMessage() {
-    return defaultErrorMessage;
-  }
-  
   /**
    * Throw {@link IllegalArgumentException} if the specified bean does not exist in the beans container.
    * @param name bean name
