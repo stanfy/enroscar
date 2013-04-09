@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansContainer;
@@ -18,7 +19,7 @@ import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.io.PoolableBufferedInputStream;
 import com.stanfy.enroscar.net.ContentControlUrlConnection;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.rest.DebugFlags;
+import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.response.Model;
 import com.stanfy.enroscar.utils.ModelTypeToken;
@@ -31,8 +32,6 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
 
   /** Logging tag. */
   private static final String TAG = RequestDescription.TAG;
-  /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_REST_RESPONSE;
 
   /** Default date format. */
   public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
@@ -43,6 +42,13 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
   /** Content characters set. */
   private Charset charset = IoUtils.UTF_8;
 
+  /** Context instance. */
+  private final Context context;
+  
+  public BaseContentHandler(final Context context) {
+    this.context = context;
+  }
+  
   @Override
   public final Object getContent(final URLConnection uConn) throws IOException {
     final ContentControlUrlConnection connection = UrlConnectionWrapper.getWrapper(uConn, ContentControlUrlConnection.class);
@@ -55,7 +61,9 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
     try {
       responseStream = connection.getInputStream();
     } catch (final IOException responseStreamException) {
-      if (DEBUG) { Log.v(TAG, "Cannot get input stream, message: " + responseStreamException.getMessage() + ", try to use error stream"); }
+      if (Utils.isDebugRest(context)) {
+        Log.v(TAG, "Cannot get input stream, message: " + responseStreamException.getMessage() + ", try to use error stream");
+      }
 
       final URLConnection orig = UrlConnectionWrapper.unwrap(connection);
       if (orig instanceof HttpURLConnection) {
@@ -75,7 +83,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
         new PoolableBufferedInputStream(responseStream, buffersPool)
     );
 
-    if (RequestDescription.DEBUG && DEBUG) {
+    if (Utils.isDebugRestResponse(context)) {
       final String responseString = IoUtils.streamToString(source); // source is now closed, don't worry
       Log.d(TAG, responseString);
       source = new ByteArrayInputStream(responseString.getBytes(IoUtils.UTF_8_NAME));

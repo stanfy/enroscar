@@ -16,7 +16,6 @@ import android.util.SparseArray;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
-import com.stanfy.enroscar.rest.DebugFlags;
 import com.stanfy.enroscar.rest.request.binary.BinaryData;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter.ConverterFactory;
@@ -45,9 +44,6 @@ public class RequestDescription implements Parcelable {
 
   /** Charset. */
   public  static final String CHARSET = "UTF-8";
-
-  /** Debug flag. */
-  public static final boolean DEBUG = DebugFlags.DEBUG_REST;
 
   /** Creator. */
   public static final Creator<RequestDescription> CREATOR = new Creator<RequestDescription>() {
@@ -258,7 +254,7 @@ public class RequestDescription implements Parcelable {
   public ModelTypeToken getModelType() { return modelType; }
 
   private void checkBeanExists(final String name) {
-    if (DEBUG && name != null && !BeansManager.get(null).getContainer().containsBean(name)) {
+    if (name != null && !BeansManager.get(null).getContainer().containsBean(name)) {
       throw new IllegalArgumentException("Bean " + name + " is not registered");
     }
   }

@@ -22,9 +22,6 @@ public class DirectRequestExecutor implements RequestExecutor {
   /** Logging tag. */
   private static final String TAG = "Request";
   
-  /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_REST;
-
   /** Application context. */
   private final Context context;
   /** Configuration. */
@@ -71,7 +68,7 @@ public class DirectRequestExecutor implements RequestExecutor {
       }
     }
 
-    if (DEBUG) { Log.d(TAG, "Process request id " + description.getId()); }
+    if (Utils.isDebugRest(context)) { Log.d(TAG, "Process request id " + description.getId()); }
 
     hooks.beforeRequestProcessingStarted(description, requestMethod);
 

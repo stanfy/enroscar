@@ -8,7 +8,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.rest.DebugFlags;
+import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.OperationType;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 
@@ -20,9 +20,6 @@ public abstract class BaseRequestDescriptionConverter {
 
   /** Logging tag. */
   protected static final String TAG = RequestDescription.TAG;
-
-  /** Debug flag. */
-  protected static final boolean DEBUG = DebugFlags.DEBUG_REST;
 
   /** Request description. */
   final RequestDescription requestDescription;
@@ -50,7 +47,7 @@ public abstract class BaseRequestDescriptionConverter {
   }
 
   public void connect(final URLConnection connection) throws IOException {
-    if (DEBUG) {
+    if (Utils.isDebugRest(context)) {
       final String idPrefix = "(" + requestDescription.getId() + ") ";
       Log.d(TAG, idPrefix + "Connect to " + connection.getURL() + " <" + opertionTypeToString(requestDescription.getOperationType()) + ">");
       Log.d(TAG, idPrefix + "Headers: " + connection.getRequestProperties());

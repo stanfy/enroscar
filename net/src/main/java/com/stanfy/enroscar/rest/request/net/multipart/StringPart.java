@@ -7,7 +7,7 @@ import org.apache.http.util.EncodingUtils;
 
 import android.util.Log;
 
-import com.stanfy.enroscar.rest.DebugFlags;
+import com.stanfy.enroscar.rest.Utils;
 
 /**
  * Simple string parameter for a multipart post.
@@ -24,7 +24,7 @@ public class StringPart extends PartBase {
   /** Logging tag. */
   private static final String TAG = "StringPart";
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_IO;
+  private static final boolean DEBUG = Utils.DEBUG_IO;
 
   /** Default content encoding of string parameters. */
   public static final String DEFAULT_CONTENT_TYPE = "text/plain";

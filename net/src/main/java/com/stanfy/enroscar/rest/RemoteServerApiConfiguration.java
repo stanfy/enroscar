@@ -33,6 +33,12 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   /** Default cache bean name. */
   private String defaultCacheBeanName;
 
+  /** Debug REST calls. */
+  private boolean debugRest;
+  
+  /** Debug REST response. */
+  private boolean debugRestResponse;
+
   public void setRequestMethod(final RequestMethod requestMethod) {
     this.requestMethod = requestMethod;
   }
@@ -56,6 +62,12 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
     this.defaultCacheBeanName = defaultCacheBeanName;
   }
 
+  public void setDebugRest(final boolean debugRest) { this.debugRest = debugRest; }
+  public boolean isDebugRestResponse() { return debugRestResponse; }
+  
+  public void setDebugRestResponse(final boolean debugRestResponse) { this.debugRestResponse = debugRestResponse; }
+  public boolean isDebugRest() { return debugRest; }
+  
   /**
    * Throw {@link IllegalArgumentException} if the specified bean does not exist in the beans container.
    * @param name bean name

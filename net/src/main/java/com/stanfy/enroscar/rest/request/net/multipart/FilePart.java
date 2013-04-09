@@ -10,7 +10,7 @@ import org.apache.http.util.EncodingUtils;
 
 import android.util.Log;
 
-import com.stanfy.enroscar.rest.DebugFlags;
+import com.stanfy.enroscar.rest.Utils;
 
 /**
  * This class implements a part of a Multipart post object that
@@ -32,7 +32,7 @@ public class FilePart extends PartBase {
   /** Logging tag. */
   private static final String TAG = "FilePart";
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_IO;
+  private static final boolean DEBUG = Utils.DEBUG_IO;
 
   /** Default content encoding of file attachments. */
   public static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";

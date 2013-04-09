@@ -29,7 +29,7 @@ public class RemoteServerApiConfigurationTest {
     BeansManager manager = BeansManager.get(Robolectric.application);
     manager.edit()
       .put("defaultCacheBeanName", new DummyResponseCache())
-      .put("defaultContentHandlerName", new StringContentHandler())
+      .put("defaultContentHandlerName", new StringContentHandler(Robolectric.application))
       .put(RemoteServerApiConfiguration.class)
       .commit();
     
