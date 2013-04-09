@@ -8,6 +8,7 @@ dependencies {
   compile 'com.stanfy:gson-xml-java:0.1.4'
   
 
-  testCompile 'com.google.mockwebserver:mockwebserver:20130201'
+  testCompile 'com.google.mockwebserver:mockwebserver:20130403'
+  testCompile 'org.easytesting:fest-assert-core:2.0M10'
     
 }

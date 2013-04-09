@@ -1,25 +1,29 @@
-package com.stanfy.serverapi;
+package com.stanfy.enroscar.rest.test;
 
-import static org.hamcrest.Matchers.*;
+import static org.fest.assertions.api.Assertions.*;
 
 import java.net.HttpURLConnection;
 import java.net.ResponseCache;
 import java.net.URLConnection;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
-import com.stanfy.app.beans.BeansManager.Editor;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
-import com.stanfy.net.UrlConnectionWrapper;
-import com.stanfy.serverapi.request.OperationType;
-import com.xtremelabs.robolectric.Robolectric;
+import com.stanfy.enroscar.net.test.Runner;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.rest.request.OperationType;
 
 /**
  * Tests for {@link com.stanfy.serverapi.request.RequestDescription}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@RunWith(Runner.class)
 public class RequestDescriptionTest extends AbstractMockServerTest {
 
 //  @Test
@@ -33,14 +37,13 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
   @Override
   protected void configureBeansManager(final Editor editor) {
     super.configureBeansManager(editor);
-    editor.remoteServerApi();
+    editor.put(RemoteServerApiConfiguration.class);
   }
 
   @Test
   public void shouldAutomaticallySetModelClass() {
-    assertThat(
-        (new MyRequestBuilder<String>(getApplication()) { }).getResult().getModelType().getRawClass().getName(),
-        equalTo(String.class.getName()));
+    assertThat((new MyRequestBuilder<String>(getApplication()) { }).getResult().getModelType().getRawClass().getName())
+      .isEqualTo(String.class.getName());
   }
 
   @Test
@@ -52,14 +55,14 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
           .setUrl(getWebServer().getUrl("/r1").toString())
     );
 
-    assertThat(ResponseCache.getDefault(), is(nullValue()));
+    assertThat(ResponseCache.getDefault()).isNull();
 
     final String response = read(connection);
     getWebServer().takeRequest();
 
     final HttpURLConnection http = (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
-    assertThat(http.getResponseCode(), equalTo(HttpURLConnection.HTTP_OK));
-    assertThat(response, equalTo("test response"));
+    assertThat(http.getResponseCode()).isEqualTo(HttpURLConnection.HTTP_OK);
+    assertThat(response).isEqualTo("test response");
   }
 
   @Test
@@ -77,13 +80,10 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     final RecordedRequest request = getWebServer().takeRequest();
 
     // url
-    assertThat(request.getPath(), equalTo("/r1?p1=v1&p2=v2"));
+    assertThat(request.getPath()).isEqualTo("/r1?p1=v1&p2=v2");
     // headers: language, gzip
     final String lang = Robolectric.application.getResources().getConfiguration().locale.getLanguage();
-    assertThat(request.getHeaders(), hasItems(
-        "Accept-Language: " + lang,
-        "Accept-Encoding: gzip"
-    ));
+    assertThat(request.getHeaders()).contains("Accept-Language: " + lang, "Accept-Encoding: gzip");
   }
 
   @Test
@@ -96,15 +96,15 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
           .setOperationType(OperationType.SIMPLE_POST)
     );
 
-    assertThat(ResponseCache.getDefault(), is(nullValue()));
+    assertThat(ResponseCache.getDefault()).isNull();
 
     final String response = read(connection);
     final RecordedRequest request = getWebServer().takeRequest();
-    assertThat(request.getMethod(), equalTo("POST"));
+    assertThat(request.getMethod()).isEqualTo("POST");
 
     final HttpURLConnection http = (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
-    assertThat(http.getResponseCode(), equalTo(HttpURLConnection.HTTP_OK));
-    assertThat(response, equalTo("POST response"));
+    assertThat(http.getResponseCode()).isEqualTo(HttpURLConnection.HTTP_OK);
+    assertThat(response).isEqualTo("POST response");
   }
 
 }
