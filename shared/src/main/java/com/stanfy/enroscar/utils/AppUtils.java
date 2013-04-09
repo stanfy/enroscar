@@ -145,6 +145,7 @@ public class AppUtils {
     Log.d(tag, "data=" + intent.getData());
     Log.d(tag, "type=" + intent.getType());
     Log.d(tag, "categories=" + intent.getCategories());
+    Log.d(tag, "flags=" + Integer.toHexString(intent.getFlags()));
     // Log.d(tag, "sourceBounds=" + intent.getSourceBounds());
     Log.d(tag, "extras:");
     final Bundle extras = intent.getExtras();

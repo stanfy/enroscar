@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.rest.response;
+package com.stanfy.enroscar.content.loader;
 
 
 

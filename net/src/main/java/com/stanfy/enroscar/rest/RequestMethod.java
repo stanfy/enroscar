@@ -19,8 +19,6 @@ public class RequestMethod {
 
   /** Logging tag. */
   private static final String TAG = "ReqMethod";
-  /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_REST;
 
   /**
    * @param systemContext system context
@@ -56,7 +54,7 @@ public class RequestMethod {
       if (connection != null) {
         disconnect(connection);
       }
-      if (DEBUG) {
+      if (Utils.isDebugRest(systemContext)) {
         Log.d(TAG, "Request time: " + (System.currentTimeMillis() - startTime) + " ms");
       }
     }
@@ -70,7 +68,6 @@ public class RequestMethod {
     final URLConnection http = UrlConnectionWrapper.unwrap(connection);
     if (http instanceof HttpURLConnection) {
       ((HttpURLConnection) http).disconnect();
-      if (DEBUG) { Log.v(TAG, "Disconnected"); }
     }
   }
 

@@ -12,6 +12,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import android.content.Context;
+
 import com.google.gson.GsonBuilder;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
@@ -25,7 +27,7 @@ import com.stanfy.gsonxml.XmlParserCreator;
  * Content handler that uses {@link GsonXml}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@EnroscarBean(XmlGsonContentHandler.BEAN_NAME)
+@EnroscarBean(value = XmlGsonContentHandler.BEAN_NAME, contextDependent = true)
 public class XmlGsonContentHandler extends BaseContentHandler {
 
   /** Response handler. */
@@ -46,6 +48,10 @@ public class XmlGsonContentHandler extends BaseContentHandler {
   /** GsonXml instance. */
   private GsonXml gsonXml;
 
+  public XmlGsonContentHandler(final Context context) {
+    super(context);
+  }
+  
   /**
    * @return {@link GsonXml} instance for parsing XML
    */

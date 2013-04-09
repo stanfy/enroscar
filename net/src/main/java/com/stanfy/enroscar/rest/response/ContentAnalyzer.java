@@ -2,6 +2,7 @@ package com.stanfy.enroscar.rest.response;
 
 import android.content.Context;
 
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.RequestMethod.RequestMethodException;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 

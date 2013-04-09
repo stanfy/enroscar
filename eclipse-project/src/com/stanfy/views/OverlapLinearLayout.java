@@ -5,8 +5,7 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 /**
- * Layout with overlapping.
- * @author Roman Mazur (Stanfy - http://www.stanfy.com)
+ * Linear layout that enables overlapping first children over last ones using negative margins.
  */
 public class OverlapLinearLayout extends LinearLayout {
 

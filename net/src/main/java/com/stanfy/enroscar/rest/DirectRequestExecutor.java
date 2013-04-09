@@ -4,11 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.RequestMethod.RequestMethodException;
 import com.stanfy.enroscar.rest.RequestMethod.RequestResult;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.response.ContentAnalyzer;
-import com.stanfy.enroscar.rest.response.ResponseData;
 import com.stanfy.enroscar.rest.response.ResponseModelConverter;
 
 /**
@@ -22,9 +22,6 @@ public class DirectRequestExecutor implements RequestExecutor {
   /** Logging tag. */
   private static final String TAG = "Request";
   
-  /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_REST;
-
   /** Application context. */
   private final Context context;
   /** Configuration. */
@@ -71,7 +68,7 @@ public class DirectRequestExecutor implements RequestExecutor {
       }
     }
 
-    if (DEBUG) { Log.d(TAG, "Process request id " + description.getId()); }
+    if (Utils.isDebugRest(context)) { Log.d(TAG, "Process request id " + description.getId()); }
 
     hooks.beforeRequestProcessingStarted(description, requestMethod);
 

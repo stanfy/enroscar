@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.net.test.cache;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,6 +1,8 @@
 package com.stanfy.enroscar.net.test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,13 +14,18 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
+import android.content.Context;
+
 import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeanUtils;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
-import com.stanfy.enroscar.net.EnroscarConnectionsEngineMode;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine.Config;
+import com.stanfy.enroscar.net.EnroscarConnectionsEngineMode;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.rest.request.RequestBuilder;
+import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
 import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
 
@@ -67,14 +74,24 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
 //      throw new RuntimeException(e);
 //    }
 //  }
-//
-//  protected static URLConnection makeConnection(final RequestBuilder<?> rb) throws Exception {
-//    return ((MyRequestBuilder<?>)rb).getResult().makeConnection(Robolectric.application);
-//  }
-//
-//  protected static String read(final URLConnection connection) throws IOException {
-//    return IoUtils.streamToString(connection.getInputStream());
-//  }
+
+  /**
+   * @param rb request builder instance
+   * @return {@link URLConnection} instance
+   * @throws Exception if error happens
+   */
+  protected static URLConnection makeConnection(final RequestBuilder<?> rb) throws Exception {
+    return ((MyRequestBuilder<?>)rb).getResult().makeConnection(Robolectric.application);
+  }
+
+  /**
+   * @param connection {@link URLConnection} instance
+   * @return response as string
+   * @throws IOException if error happens
+   */
+  protected static String read(final URLConnection connection) throws IOException {
+    return IoUtils.streamToString(connection.getInputStream());
+  }
 
   @Override
   protected void whenBeansConfigured() {
@@ -151,26 +168,18 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     InputStream getStream(final URLConnection connection) throws IOException;
   }
 
-//  /**
-//   * Test request builder.
-//   */
-//  public static class MyRequestBuilder<MT> extends SimpleRequestBuilder<MT> {
-//
-//    /** Started loader option. */
-//    private boolean startedLoader = false;
-//
-//    public MyRequestBuilder(final Context context) {
-//      super(context);
-//    }
-//
-//    @Override
-//    public RequestDescription getResult() { return super.getResult(); }
-//
-//    public MyRequestBuilder<MT> setStartedLoader(final boolean startedLoader) {
-//      this.startedLoader = startedLoader;
-//      return this;
-//    }
-//
+  /**
+   * Test request builder.
+   */
+  public static class MyRequestBuilder<MT> extends SimpleRequestBuilder<MT> {
+
+    public MyRequestBuilder(final Context context) {
+      super(context);
+    }
+
+    @Override
+    public RequestDescription getResult() { return super.getResult(); }
+
 //    @Override
 //    public RequestBuilderLoader<MT> getLoader() {
 //      return (RequestBuilderLoader<MT>) (startedLoader ? new StartedLoader<MT>(this) : super.getLoader());
@@ -182,9 +191,9 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
 //      final MyRequestBuilderListWrapper<LT, T> wrapper = new MyRequestBuilderListWrapper<LT, T>(this);
 //      return wrapper;
 //    }
-//
-//  }
-//
+
+  }
+
 //  /** Test request builder wrapper. */
 //  public static final class MyRequestBuilderListWrapper<LT extends List<MT>, MT> extends ListRequestBuilderWrapper<LT, MT> {
 //

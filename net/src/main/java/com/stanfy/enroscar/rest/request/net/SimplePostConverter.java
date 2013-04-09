@@ -10,6 +10,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import android.content.Context;
 import android.util.Log;
 
+import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.Parameter;
 import com.stanfy.enroscar.rest.request.ParameterValue;
 import com.stanfy.enroscar.rest.request.RequestDescription;
@@ -46,7 +47,7 @@ public class SimplePostConverter extends PostConverter {
     stream.write(content);
     stream.flush();
 
-    if (DEBUG) { Log.d(TAG, "(" + requestDescription.getId() + ")" + ": " + parameters.toString()); }
+    if (Utils.isDebugRest(context)) { Log.d(TAG, "(" + requestDescription.getId() + ")" + ": " + parameters.toString()); }
   }
 
 }

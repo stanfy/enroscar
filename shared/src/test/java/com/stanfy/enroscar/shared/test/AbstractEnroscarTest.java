@@ -1,8 +1,6 @@
 package com.stanfy.enroscar.shared.test;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLog;
@@ -16,13 +14,6 @@ import com.stanfy.enroscar.beans.BeansManager;
  * Base test class.
  */
 public class AbstractEnroscarTest {
-
-  public static <T> void assertThat(final T actual, final Matcher<T> matcher) {
-    Assert.assertThat(actual, matcher);
-  }
-  public static <T> void assertThat(final String reason, final T actual, final Matcher<T> matcher) {
-    Assert.assertThat(reason, actual, matcher);
-  }
 
   /** Beans manager. */
   private BeansManager beansManager;

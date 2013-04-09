@@ -16,7 +16,7 @@ import android.widget.WrapperListAdapter;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.app.CrucialGUIOperationManager.CrucialGUIOperationListener;
-import com.stanfy.app.loader.LoadmoreLoader;
+import com.stanfy.enroscar.content.LoadmoreLoader;
 import com.stanfy.views.StateHelper;
 
 /**

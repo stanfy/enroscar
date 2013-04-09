@@ -1,29 +1,35 @@
-package com.stanfy.serverapi;
+package com.stanfy.enroscar.rest.test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
-import com.stanfy.app.beans.BeansManager.Editor;
-import com.stanfy.serverapi.request.BaseRequestBuilder;
-import com.stanfy.serverapi.request.Parameter;
-import com.stanfy.serverapi.request.ParameterValue;
-import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.test.AbstractEnroscarTest;
-import com.xtremelabs.robolectric.Robolectric;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.net.test.Runner;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.rest.request.BaseRequestBuilder;
+import com.stanfy.enroscar.rest.request.Parameter;
+import com.stanfy.enroscar.rest.request.ParameterValue;
+import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
 
 /**
  * Tests for {@link BaseRequestBuilder}.
  */
-
+@RunWith(Runner.class)
 public class BaseRequestBuilderTest extends AbstractEnroscarTest {
 
   @Override
   protected void configureBeansManager(final Editor editor) {
-    editor.required().remoteServerApi();
+    editor.put(RemoteServerApiConfiguration.class);
   }
 
   @Test

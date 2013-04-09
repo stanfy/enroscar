@@ -1,27 +1,32 @@
-package com.stanfy.serverapi;
+package com.stanfy.enroscar.rest.test;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
-import com.stanfy.app.beans.BeansManager.Editor;
-import com.stanfy.serverapi.request.RequestBuilder;
-import com.stanfy.serverapi.request.SimpleRequestBuilder;
-import com.stanfy.test.AbstractEnroscarTest;
-import com.xtremelabs.robolectric.Robolectric;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.net.test.Runner;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.rest.request.RequestBuilder;
+import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
 
 /**
  * Test for list wrapper.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@RunWith(Runner.class)
 public class ListRequestBuilderWrapperTest extends AbstractEnroscarTest {
 
   @Override
   protected void configureBeansManager(final Editor editor) {
-    editor.required().remoteServerApi();
+    editor.put(RemoteServerApiConfiguration.class);
   }
 
   @Test

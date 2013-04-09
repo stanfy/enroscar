@@ -30,16 +30,19 @@ public final class AnimatedViewHelper {
   }
 
   public void notifyCrucialGuiStart() {
+    if (manager == null) { return; }
     owner.removeCallbacks(crucialGuiOperationFinishedWorker);
     manager.dispatchCrucialGUIOperationStart();
   }
 
   public void notifyCrucialGuiFinish() {
+    if (manager == null) { return; }
     final int delay = 500;
     owner.postDelayed(crucialGuiOperationFinishedWorker, delay);
   }
 
   public void onDetach() {
+    if (manager == null) { return; }
     owner.removeCallbacks(crucialGuiOperationFinishedWorker);
     manager.dispatchCrucialGUIOperationFinish();
   }

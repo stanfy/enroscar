@@ -8,7 +8,7 @@ import org.apache.http.util.EncodingUtils;
 
 import android.util.Log;
 
-import com.stanfy.enroscar.rest.DebugFlags;
+import com.stanfy.enroscar.rest.Utils;
 
 /**
  * Abstract class for one Part of a multipart post object.
@@ -26,7 +26,7 @@ public abstract class Part {
   /** Logging tag. */
   private static final String TAG = "Part";
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_IO;
+  private static final boolean DEBUG = Utils.DEBUG_IO;
 
   /**
    * The boundary.

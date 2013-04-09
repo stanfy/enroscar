@@ -31,7 +31,6 @@ public abstract class SimpleRequestBuilder<MT> extends BaseRequestBuilder<MT> {
 
   public SimpleRequestBuilder(final Context context) {
     super(context);
-    setRequestContentHandler(GsonContentHandler.BEAN_NAME);
   }
 
   /**

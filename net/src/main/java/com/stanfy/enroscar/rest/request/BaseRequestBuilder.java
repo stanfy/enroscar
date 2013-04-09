@@ -21,13 +21,14 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.RequestExecutor;
+import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
 import com.stanfy.enroscar.rest.request.binary.AssetFdBinaryData;
 import com.stanfy.enroscar.rest.request.binary.BitmapBinaryData;
 import com.stanfy.enroscar.rest.request.binary.ContentUriBinaryData;
 import com.stanfy.enroscar.rest.request.binary.EmptyBinaryData;
-import com.stanfy.enroscar.rest.response.ResponseData;
 import com.stanfy.enroscar.utils.ModelTypeToken;
 
 /**
@@ -371,9 +372,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
    */
   @Override
   public Loader<ResponseData<MT>> getLoader() {
-    // TODO implement
-    return null;
-//    return new RequestBuilderLoader<MT>(this);
+    return new RequestBuilderLoader<MT>(this);
   }
 
   /**
