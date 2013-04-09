@@ -1,6 +1,9 @@
 package com.stanfy.views.list;
 
-import static com.stanfy.views.StateHelper.*;
+import static com.stanfy.views.StateHelper.STATE_EMPTY;
+import static com.stanfy.views.StateHelper.STATE_LOADING;
+import static com.stanfy.views.StateHelper.STATE_MESSAGE;
+import static com.stanfy.views.StateHelper.STATE_NORMAL;
 
 import java.util.ArrayList;
 
@@ -16,7 +19,7 @@ import android.widget.WrapperListAdapter;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.app.CrucialGUIOperationManager.CrucialGUIOperationListener;
-import com.stanfy.enroscar.content.LoadmoreLoader;
+import com.stanfy.enroscar.content.loader.LoadmoreLoader;
 import com.stanfy.views.StateHelper;
 
 /**

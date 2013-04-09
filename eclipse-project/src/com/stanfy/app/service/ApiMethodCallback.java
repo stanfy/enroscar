@@ -1,7 +1,7 @@
 package com.stanfy.app.service;
 
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.request.RequestDescription;
-import com.stanfy.enroscar.rest.response.ResponseData;
 
 /**
  * Callback for {@link ApiMethods}.

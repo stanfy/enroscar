@@ -22,11 +22,11 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.stanfy.DebugFlags;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.DirectRequestExecutor;
 import com.stanfy.enroscar.rest.DirectRequestExecutorHooks;
 import com.stanfy.enroscar.rest.RequestMethod;
 import com.stanfy.enroscar.rest.request.RequestDescription;
-import com.stanfy.enroscar.rest.response.ResponseData;
 
 /**
  * Implementation for {@link ApiMethods}.
