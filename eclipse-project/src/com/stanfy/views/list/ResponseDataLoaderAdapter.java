@@ -6,7 +6,7 @@ import java.util.List;
 import android.content.Context;
 
 import com.stanfy.enroscar.content.UniqueObject;
-import com.stanfy.enroscar.rest.response.ResponseData;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.views.StateHelper;
 
 /**
