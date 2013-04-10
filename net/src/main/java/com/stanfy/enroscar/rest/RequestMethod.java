@@ -5,6 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
 import android.content.Context;
+import android.net.TrafficStats;
+import android.os.Build;
 import android.util.Log;
 
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
@@ -28,6 +30,11 @@ public class RequestMethod {
    */
   public RequestResult perform(final Context systemContext, final RequestDescription description) throws RequestMethodException {
     final long startTime = System.currentTimeMillis();
+    
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      TrafficStats.setThreadStatsTag(description.getStatsTag());
+    }
+    
     URLConnection connection = null;
     try {
 
@@ -50,6 +57,11 @@ public class RequestMethod {
     } catch (final RuntimeException e) {
       throw new RequestMethodException(e);
     } finally {
+      
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        TrafficStats.clearThreadStatsTag();
+      }
+      
       // do as mom said
       if (connection != null) {
         disconnect(connection);

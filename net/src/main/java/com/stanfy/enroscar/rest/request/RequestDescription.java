@@ -104,6 +104,9 @@ public class RequestDescription implements Parcelable {
   /** Task queue name. */
   String taskQueueName;
 
+  /** Statistics tag. */
+  int statsTag;
+  
   /**
    * Create with predefined ID.
    * @param id request ID
@@ -152,6 +155,8 @@ public class RequestDescription implements Parcelable {
         this.binaryData.add((BinaryData<?>) b);
       }
     }
+    
+    this.statsTag = source.readInt();
   }
 
   public static void registerConverterFactory(final int opertationType, final ConverterFactory factory) {
@@ -200,6 +205,8 @@ public class RequestDescription implements Parcelable {
     } else {
       dest.writeParcelableArray(null, flags);
     }
+    
+    dest.writeInt(statsTag);
   }
 
   @Override
@@ -346,6 +353,21 @@ public class RequestDescription implements Parcelable {
     return this.metaParameters == null ? false : this.metaParameters.containsKey(name);
   }
 
+  /**
+   * Set a tag that will be used as a parameter for {@link android.net.TrafficStats}.
+   * @param statsTag tag value
+   */
+  public void setStatsTag(final int statsTag) {
+    this.statsTag = statsTag;
+  }
+  
+  /**
+   * @return network traffic statistics tag
+   */
+  public int getStatsTag() {
+    return statsTag;
+  }
+  
   // ============================ HTTP REQUESTS ============================
 
   /**
