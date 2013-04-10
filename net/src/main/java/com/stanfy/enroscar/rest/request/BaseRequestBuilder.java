@@ -24,6 +24,7 @@ import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.RequestExecutor;
+import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
 import com.stanfy.enroscar.rest.request.binary.AssetFdBinaryData;
 import com.stanfy.enroscar.rest.request.binary.BitmapBinaryData;
@@ -140,6 +141,17 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
     result.contentHandler = name;
   }
 
+  /**
+   * Set network stats tag. Converts string tag to integer one.
+   * @param tag string tag
+   */
+  protected void setConvertedTrafficStatsTag(final String tag) {
+    result.statsTag = Utils.getTrafficStatsTag(tag);
+    if (config.isDebugRest()) {
+      Log.d(TAG, "TrafficStats tag <" + tag + ">=" + result.statsTag);
+    }
+  }
+  
   /**
    * Setup binary content from the local file. Parameter name will be equal to {@link RequestDescription#BINARY_NAME_DEFAULT}.
    * @param data content URI

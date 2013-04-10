@@ -31,4 +31,8 @@ public final class Utils {
     return config != null && config.isDebugRestResponse();
   }
 
+  public static int getTrafficStatsTag(final String stringTag) {
+    return Math.abs(stringTag.hashCode());
+  }
+  
 }
