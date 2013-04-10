@@ -148,7 +148,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   protected void setConvertedTrafficStatsTag(final String tag) {
     result.statsTag = Utils.getTrafficStatsTag(tag);
     if (config.isDebugRest()) {
-      Log.d(TAG, "TrafficStats tag <" + tag + ">=" + result.statsTag);
+      Log.d(TAG, "TrafficStats tag <" + tag + ">=" + Integer.toHexString(result.statsTag));
     }
   }
   
