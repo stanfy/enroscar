@@ -29,4 +29,4 @@ Strings can also be used for tagging.
 ```
 
 In this case value passed to [TrafficStats.setThreadStatsTag](http://developer.android.com/reference/android/net/TrafficStats) is calculated from string hash code.
-If `RemoteServerApiConfig.setDebug` is set to `true`, you'll see correspondance between strings and ints in LogCat under "RequestBuilder" tag.
+If `RemoteServerApiConfig.setDebugRest` is set to `true`, you'll see correspondance between strings and ints in LogCat under "RequestBuilder" tag.
