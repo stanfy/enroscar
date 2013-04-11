@@ -1,18 +1,13 @@
-package com.stanfy.utils;
-
-import java.lang.ref.WeakReference;
+package com.stanfy.enroscar.rest.executor;
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.Message;
+import android.os.Looper;
 import android.util.Log;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.app.service.ApiMethodCallback;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.ErrorCodes;
 import com.stanfy.enroscar.rest.request.RequestDescription;
-import com.stanfy.views.R;
 
 /**
  * A class that takes responsibility of binding to application service and invoking remote API related methods.
@@ -23,20 +18,17 @@ public class ApiMethodsSupport extends RequestPerformer {
   /** Logging tag. */
   private static final String TAG = "ApiSupport";
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_API;
-
-  /** Support handler messages. */
-  static final int MSG_SERVER_ERROR_TOAST = 1, MSG_CONNECTION_ERROR_INFO = 2, MSG_SHOW_TOAST = 5;
+  private static final boolean DEBUG = DebugFlags.DEBUG;
 
   /** Handler. */
-  SupportHandler handler;
+  Handler handler;
 
   public ApiMethodsSupport(final Context context, final ApiMethodCallback callback) {
     super(context, callback);
     if (callback instanceof ApiSupportRequestCallback) {
       ((ApiSupportRequestCallback) callback).setSupport(this);
     }
-    handler = new SupportHandler(this);
+    handler = new Handler(Looper.getMainLooper());
   }
 
   @Override
@@ -44,54 +36,8 @@ public class ApiMethodsSupport extends RequestPerformer {
     serviceObject.performRequest(description);
   }
 
-  void displayConnectionErrorInformation() {
-    final Context context = contextRef.get();
-    if (context == null) { return; }
-    GUIUtils.shortToast(context, R.string.error_connection);
-  }
-
-  void showToast(final String message) {
-    final Context context = contextRef.get();
-    if (context == null) { return; }
-    GUIUtils.shortToast(context, message);
-  }
-
   /** @return GUI handler instance */
   public Handler getHandler() { return handler; }
-
-  /**
-   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
-   */
-  static class SupportHandler extends Handler {
-
-    /** Support reference. */
-    private final WeakReference<ApiMethodsSupport> supportRef;
-
-    public SupportHandler(final ApiMethodsSupport support) {
-      this.supportRef = new WeakReference<ApiMethodsSupport>(support);
-    }
-
-    @Override
-    public void handleMessage(final Message msg) {
-      final ApiMethodsSupport support = supportRef.get();
-      if (support == null) { return; } // we are destroyed
-
-      switch (msg.what) {
-
-      case MSG_SHOW_TOAST:
-      case MSG_SERVER_ERROR_TOAST:
-        support.showToast((String)msg.obj);
-        break;
-
-      case MSG_CONNECTION_ERROR_INFO:
-        support.displayConnectionErrorInformation();
-        break;
-
-      default:
-      }
-    }
-
-  }
 
   /**
    * Provides default behavior.
@@ -117,7 +63,6 @@ public class ApiMethodsSupport extends RequestPerformer {
      */
     protected void processConnectionError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
       Log.e(TAG, responseData.getMessage());
-      support.handler.obtainMessage(MSG_CONNECTION_ERROR_INFO, responseData.getMessage()).sendToTarget();
     }
 
     /**
@@ -127,7 +72,6 @@ public class ApiMethodsSupport extends RequestPerformer {
      */
     protected void processServerError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
       Log.e(TAG, "Got an error in server response: " + responseData.getErrorCode() + " / [" + responseData.getMessage() + "]");
-      support.handler.obtainMessage(MSG_SERVER_ERROR_TOAST, responseData.getMessage()).sendToTarget();
     }
 
     /**

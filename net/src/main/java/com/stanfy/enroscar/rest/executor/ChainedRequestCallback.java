@@ -1,10 +1,10 @@
-package com.stanfy.utils;
+package com.stanfy.enroscar.rest.executor;
 
 import java.util.ArrayList;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.rest.executor.ApiMethodsSupport.ApiSupportRequestCallback;
 import com.stanfy.enroscar.rest.request.RequestDescription;
-import com.stanfy.utils.ApiMethodsSupport.ApiSupportRequestCallback;
 
 /**
  * Chain of callbacks.

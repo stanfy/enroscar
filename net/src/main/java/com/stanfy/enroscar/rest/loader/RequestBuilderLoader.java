@@ -11,6 +11,8 @@ import android.util.Log;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.Utils;
+import com.stanfy.enroscar.rest.executor.ApiMethodsSupport;
+import com.stanfy.enroscar.rest.executor.ApiMethodsSupport.ApiSupportRequestCallback;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 
@@ -63,8 +65,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
     super(requestBuilder.getContext());
     this.requestBuilder = requestBuilder;
     this.apiSupport = new ApiMethodsExecutor();
-    // TODO implement
-//    requestBuilder.setExecutor(this.apiSupport);
+    requestBuilder.setExecutor(this.apiSupport);
   }
 
   public RequestBuilder<MT> getRequestBuilder() { return requestBuilder; }
@@ -106,8 +107,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
    */
   public void cancelLoad() {
     if (requestId != -1) {
-      // TODO: implement
-      final boolean willCancel = true; //apiSupport.cancelRequest(requestId);
+      final boolean willCancel = apiSupport.cancelRequest(requestId);
       if (willCancel) {
         // we will wait for #onCancel for further actions
         cancelingRequestId = requestId;
@@ -123,8 +123,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
 
   private void removeWaitingRequest() {
     requestWaiting = false;
-    // TODO: implement
-    //apiSupport.getHandler().removeCallbacks(performRequestRunnable);
+    apiSupport.getHandler().removeCallbacks(performRequestRunnable);
   }
 
   private void resetStateAfterComplete() {
@@ -151,8 +150,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
             Log.v(TAG, "Waiting until " + timeMargin + " to execute");
           }
           requestWaiting = true;
-          // TODO implement
-          //apiSupport.getHandler().postAtTime(performRequestRunnable, timeMargin);
+          apiSupport.getHandler().postAtTime(performRequestRunnable, timeMargin);
           return;
         }
       }
@@ -294,8 +292,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
     writer.write(" cancelingRequestId=" + cancelingRequestId);
     writer.write(" requestWaiting=" + requestWaiting);
     writer.write(" updateRequested=" + updateRequested);
-    // TODO implement
-    //writer.write(" binded=" + apiSupport.isRegistered());
+    writer.write(" binded=" + apiSupport.isRegistered());
     writer.println();
     if (updateThrottle != 0) {
       writer.print(prefix);
@@ -356,55 +353,57 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
    * Special executor for this loader.
    * @author Roman Mazur (Stanfy - http://stanfy.com)
    */
-  // TODO implement
-  protected class ApiMethodsExecutor { // extends ApiMethodsSupport {
+  protected class ApiMethodsExecutor extends ApiMethodsSupport {
 
+    /**
+     * Create executor instance.
+     */
     public ApiMethodsExecutor() {
-//      super(getContext(), new ApiSupportRequestCallback() {
-//        @Override
-//        public boolean filterOperation(final int requestId, final RequestDescription requestDescription) {
-//          return RequestBuilderLoader.this.filterOperation(requestId, requestDescription);
-//        }
-//
-//        // prevent any default processing
-//        @Override
-//        protected void processServerError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-//          // nothing
-//        }
-//        @Override
-//        protected void processConnectionError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-//          // nothing
-//        }
-//
-//        // deliver results
-//        @Override
-//        protected void processSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-//          apiSupport.getHandler().post(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), false));
-//        }
-//        @Override
-//        protected void onError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-//          apiSupport.getHandler().post(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), false));
-//        }
-//        @Override
-//        protected void onCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-//          apiSupport.getHandler().post(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), true));
-//        }
-//      });
+      super(getContext(), new ApiSupportRequestCallback() {
+        @Override
+        public boolean filterOperation(final int requestId, final RequestDescription requestDescription) {
+          return RequestBuilderLoader.this.filterOperation(requestId, requestDescription);
+        }
+
+        // prevent any default processing
+        @Override
+        protected void processServerError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+          // nothing
+        }
+        @Override
+        protected void processConnectionError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+          // nothing
+        }
+
+        // deliver results
+        @Override
+        protected void processSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+          apiSupport.getHandler().post(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), false));
+        }
+        @Override
+        protected void onError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+          apiSupport.getHandler().post(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), false));
+        }
+        @Override
+        protected void onCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
+          apiSupport.getHandler().post(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), true));
+        }
+      });
     }
 
-//    @Override
-//    public int performRequest(final RequestDescription description) {
-//      bindAndListen();
-//      return super.performRequest(description);
-//    }
+    @Override
+    public int performRequest(final RequestDescription description) {
+      bindAndListen();
+      return super.performRequest(description);
+    }
 
     void bindAndListen() {
-//      bind();
-//      registerCallback();
+      bind();
+      registerCallback();
     }
     void unbindAndStopListening() {
-//      removeCallback();
-//      unbind();
+      removeCallback();
+      unbind();
     }
 
   }

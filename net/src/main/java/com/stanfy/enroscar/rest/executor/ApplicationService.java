@@ -1,4 +1,4 @@
-package com.stanfy.app.service;
+package com.stanfy.enroscar.rest.executor;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
-import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.utils.Time;
 
@@ -20,12 +19,13 @@ import com.stanfy.enroscar.utils.Time;
  * Base application service which provides API and location methods interfaces.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
+// TODO move this service to a separate 'tasks' project
 public class ApplicationService extends Service {
 
   /** Logging tag. */
   protected static final String TAG = "AppService";
   /** Debug flag. */
-  protected static final boolean DEBUG = DebugFlags.DEBUG_SERVICES;
+  protected static final boolean DEBUG = DebugFlags.DEBUG;
 
   /** Check for stop message. */
   private static final int MSG_CHECK_FOR_STOP = 1;

@@ -1,4 +1,4 @@
-package com.stanfy.utils;
+package com.stanfy.enroscar.rest.executor;
 
 import java.lang.ref.WeakReference;
 
@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.util.Log;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.app.service.ApplicationService;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 
@@ -22,7 +20,7 @@ public abstract class ApplicationServiceSupport<T> implements ServiceConnection 
   /** Logging tag. */
   private static final String TAG = "ServiceSupport";
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_SERVICES, DEBUG_CALLS = false;
+  private static final boolean DEBUG = DebugFlags.DEBUG, DEBUG_CALLS = false;
 
   /** Context instance. */
   final WeakReference<Context> contextRef;
