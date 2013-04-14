@@ -6,8 +6,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.stanfy.utils.ApiMethodsSupport;
-
 /**
  * Tab activity with common behavior.
  * @see BaseActivityBehavior
@@ -21,12 +19,6 @@ public abstract class BaseTabActivity extends TabActivity {
 
   /** @return the behavior */
   protected BaseActivityBehavior getBehavior() { return behavior; }
-
-  /**
-   * This method is called from {@link #onCreate(Bundle)}.
-   * @return server API methods support
-   */
-  protected ApiMethodsSupport createApiMethodsSupport() { return null; }
 
   /**
    * Ensure that this activity is a root task when started from launcher.

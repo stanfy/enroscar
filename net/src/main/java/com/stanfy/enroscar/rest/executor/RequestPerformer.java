@@ -1,4 +1,4 @@
-package com.stanfy.utils;
+package com.stanfy.enroscar.rest.executor;
 
 import java.util.ArrayList;
 
@@ -7,11 +7,8 @@ import android.content.Context;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.app.service.ApiMethodCallback;
-import com.stanfy.app.service.ApiMethods;
-import com.stanfy.app.service.ApplicationService.ApiMethodsBinder;
 import com.stanfy.enroscar.rest.RequestExecutor;
+import com.stanfy.enroscar.rest.executor.ApplicationService.ApiMethodsBinder;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 
 /**
@@ -22,7 +19,7 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
   /** Logging tag. */
   private static final String TAG = "RequestPerformer";
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_API;
+  private static final boolean DEBUG = DebugFlags.DEBUG;
 
   /** Callback registered flag. */
   boolean registered = false;

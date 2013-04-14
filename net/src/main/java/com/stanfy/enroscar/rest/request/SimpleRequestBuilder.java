@@ -150,4 +150,14 @@ public abstract class SimpleRequestBuilder<MT> extends BaseRequestBuilder<MT> {
     return setContentAnalyzer(BeanUtils.getBeanInfo(clazz).value());
   }
 
+  public SimpleRequestBuilder<MT> setTafficStatsTag(final int tag) {
+    getResult().statsTag = tag;
+    return this;
+  }
+  
+  public SimpleRequestBuilder<MT> setTrafficStatsTag(final String tag) {
+    setConvertedTrafficStatsTag(tag);
+    return this;
+  }
+  
 }

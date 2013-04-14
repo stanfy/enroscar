@@ -1,4 +1,4 @@
-package com.stanfy.app.service;
+package com.stanfy.enroscar.rest.executor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,6 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.DirectRequestExecutor;
 import com.stanfy.enroscar.rest.DirectRequestExecutorHooks;
@@ -36,8 +35,8 @@ import com.stanfy.enroscar.rest.request.RequestDescription;
  *     <li>enqueue it so that incoming requests are processed one by one in a separate thread in FIFO order</li>
  *     <li>run it in parallel with other requests</li>
  *   </ol>
+ *   There can be unbounded number of queues.
  * </p>
- * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class ApiMethods {
 
@@ -48,7 +47,7 @@ public class ApiMethods {
   static final String TAG = "ApiMethods";
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_SERVICES;
+  private static final boolean DEBUG = DebugFlags.DEBUG;
 
   // ================================ Executors ================================
 

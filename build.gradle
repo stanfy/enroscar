@@ -85,19 +85,19 @@ configure(subprojects.findAll() { !(it.name in androidLibs) }) {
 
 configure(subprojects.findAll() { it.name in androidLibs }) {
   
-  apply plugin : 'android-library'
-
-  android {
-    compileSdkVersion 17
-    
-    defaultConfig {
-      versionCode 9
-      versionName projectVersion
-      minSdkVersion 8
-      targetSdkVersion 17
-      packageName getPackageName(project)
-    }
-  }
+//  apply plugin : 'android-library'
+//
+//  android {
+//    compileSdkVersion 17
+//    
+//    defaultConfig {
+//      versionCode 9
+//      versionName projectVersion
+//      minSdkVersion 8
+//      targetSdkVersion 17
+//      packageName getPackageName(project)
+//    }
+//  }
 
 }
 
