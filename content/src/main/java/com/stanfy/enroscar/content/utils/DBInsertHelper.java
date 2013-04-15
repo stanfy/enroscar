@@ -1,4 +1,4 @@
-package com.stanfy.utils;
+package com.stanfy.enroscar.content.utils;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -12,18 +12,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
-import com.stanfy.DebugFlags;
-
 /**
  * This class allows users to do multiple inserts into a table but
  * compile the SQL insert statement only once, which may increase
  * performance.
- * @author Roman Mazur (Stanfy - http://www.stanfy.com) - taken from Android sources, modified to specify conflict policy.
  */
 public final class DBInsertHelper {
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_DB_UTILS;
+  private static final boolean DEBUG = false;
   /** Logging tag. */
   private static final String TAG = "InsertHelper";
 
