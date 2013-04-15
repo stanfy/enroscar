@@ -17,7 +17,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.stanfy.images.decorator.ImageDecorator;
 import com.stanfy.images.decorator.MaskImageDecorator;

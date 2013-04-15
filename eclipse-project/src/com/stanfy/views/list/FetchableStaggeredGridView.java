@@ -33,7 +33,7 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
   private int savedFirstVisibleItem = 0;
 
   /** Load view layout ID. */
-  private int loadViewLayoutId = R.layout.loadview_grid;
+  private int loadViewLayoutId = R.layout.footer_loading;
 
   public FetchableStaggeredGridView(final Context context) {
     super(context);

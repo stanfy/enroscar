@@ -1,20 +1,22 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" 
-    style="@style/MainContainer"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/state_progress"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:gravity="center"
-    >
-  
-  <ProgressBar
-      style="@style/ProgressSmallDark"
-      android:id="@+id/progress_bar"
-      />
-  <TextView
-      style="@style/WrapContent"
-      android:id="@+id/progress_text"
-      android:layout_marginTop="5dp"
-      android:text="@string/progress_loading"
-      />
-      
+    android:orientation="vertical" >
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="@android:style/Widget.ProgressBar.Small.Inverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/progress_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/progress_loading" />
+
 </LinearLayout>
