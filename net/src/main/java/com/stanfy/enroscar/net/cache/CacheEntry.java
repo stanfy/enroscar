@@ -151,9 +151,17 @@ public class CacheEntry {
   public String getCacheKey() { return AppUtils.getMd5(uri); }
 
   public boolean canBeCached() {
-    return !TextUtils.isEmpty(uri) && !TextUtils.isEmpty(requestMethod) && uri.startsWith("http");
+    return !TextUtils.isEmpty(uri) && !TextUtils.isEmpty(requestMethod) && uri.startsWith("http") && isRequestMethodCacheable();
   }
 
+  /**
+   * Override this method if you want other methods than GET to be cached.
+   * @return true if method of the request binded to this entry allows to cache response 
+   */
+  protected boolean isRequestMethodCacheable() {
+    return "GET".equalsIgnoreCase(requestMethod);
+  }
+  
   public final void readFrom(final InputStream in) throws IOException {
     try {
       uri = readString(in);

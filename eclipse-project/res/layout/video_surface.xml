@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/MainContainer"
-    >
-  
-  <VideoView
-      style="@style/MainContainer"
-      android:id="@+id/video" 
-      android:layout_gravity="center"
-      />
-  
-  <ProgressBar
-      style="@android:style/Widget.ProgressBar"
-      android:layout_width="wrap_content" 
-      android:layout_height="wrap_content" 
-      android:id="@+id/progress"
-      android:layout_gravity="center" 
-      />
-  
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <VideoView
+        android:id="@+id/video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="@android:style/Widget.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
 </FrameLayout>
