@@ -10,7 +10,7 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.stanfy.views.R;
+import com.stanfy.enroscar.sdkdep.R;
 
 /**
  * Builder for older versions.
