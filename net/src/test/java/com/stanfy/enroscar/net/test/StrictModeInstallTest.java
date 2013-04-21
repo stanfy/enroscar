@@ -19,6 +19,7 @@ public class StrictModeInstallTest {
   @Test
   public void strictModeShouldBeInstalled() {
     EnroscarConnectionsEngineMode.installWithStrictMode();
+    System.out.println("Current policy: " + StrictMode.getThreadPolicy());
     assertFalse(StrictMode.getThreadPolicy() == ThreadPolicy.LAX);
   }
   
