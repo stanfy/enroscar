@@ -14,6 +14,10 @@ def projectVersion = "0.9-SNAPSHOT"
 
 def androidLibs = ['sdk-dep']
 
+task wrapper(type: Wrapper) {
+  gradleVersion = '1.4'
+}
+
 // Java Projects
 
 configure(subprojects.findAll() { !(it.name in androidLibs) }) {
