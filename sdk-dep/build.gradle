@@ -6,11 +6,11 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.4-SNAPSHOT'
+    classpath 'com.android.tools.build:gradle:0.3'
   }
 }
 
-apply plugin : 'android'
+apply plugin : 'android-library'
 
 android {
   compileSdkVersion 17
@@ -18,6 +18,24 @@ android {
 
 dependencies {
 
-//  compile project(path : ':beans', transitive : false)
+  compile project(path : ':beans', transitive : false)
 
+}
+
+configurations {
+  compile {
+    extendsFrom archives
+  }
+}
+
+task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
+  from 'build/bundles/release/classes.jar'
+  into "build/libs"
+  rename { "${project.archivesBaseName}-${project.version}.jar" }
+}
+
+artifacts {
+  compile(file("build/libs/${project.archivesBaseName}-${project.version}.jar")) {
+    builtBy classesJar
+  }
 }
