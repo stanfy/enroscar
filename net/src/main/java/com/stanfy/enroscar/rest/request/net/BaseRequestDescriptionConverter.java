@@ -5,11 +5,14 @@ import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.OperationType;
+import com.stanfy.enroscar.rest.request.Parameter;
+import com.stanfy.enroscar.rest.request.ParameterValue;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 
 /**
@@ -55,6 +58,20 @@ public abstract class BaseRequestDescriptionConverter {
     connection.connect();
   }
 
+  /**
+   * Composes URI builder using {@link RequestDescription#getUrl()} and {@link RequestDescription#getSimpleParameters()}.
+   * @return request URI builder
+   */
+  protected Uri.Builder buildUri() {
+    final Uri.Builder builder = Uri.parse(requestDescription.getUrl()).buildUpon();
+    for (final Parameter p : requestDescription.getSimpleParameters().getChildren()) {
+      if (p instanceof ParameterValue) {
+        builder.appendQueryParameter(p.getName(), ((ParameterValue) p).getValue());
+      }
+    }
+    return builder;
+  }
+  
   /**
    * @param connection potentially wrapped connection
    * @return unwrapped {@link HttpURLConnection} instance

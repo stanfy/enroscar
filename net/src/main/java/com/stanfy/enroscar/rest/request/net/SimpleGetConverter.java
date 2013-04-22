@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.net.URLConnection;
 
 import android.content.Context;
-import android.net.Uri;
 
-import com.stanfy.enroscar.rest.request.Parameter;
-import com.stanfy.enroscar.rest.request.ParameterValue;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 
 /**
@@ -29,15 +26,8 @@ public class SimpleGetConverter extends BaseRequestDescriptionConverter {
 
   @Override
   public URLConnection prepareConnectionInstance() throws IOException {
-    final Uri.Builder builder = Uri.parse(requestDescription.getUrl()).buildUpon();
-    for (final Parameter p : requestDescription.getSimpleParameters().getChildren()) {
-      if (p instanceof ParameterValue) {
-        builder.appendQueryParameter(p.getName(), ((ParameterValue) p).getValue());
-      }
-    }
-
     final URLConnection connection = requestDescription.prepareConnectionBuilder(context)
-      .setUrl(builder.build())
+      .setUrl(buildUri().build())
       .create();
 
     return connection;

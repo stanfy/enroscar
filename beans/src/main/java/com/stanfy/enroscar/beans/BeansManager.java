@@ -133,6 +133,11 @@ public class BeansManager {
   public Application getApplication() { return application; }
   public BeansContainer getContainer() { return container; }
 
+  /** Destroy the beans manager. */
+  public final void destroy() {
+    instance = null;
+  }
+  
   /** @return beans editor instance */
   public Editor edit() { return new Editor(); }
 

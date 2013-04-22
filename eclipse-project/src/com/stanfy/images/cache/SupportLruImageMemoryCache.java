@@ -8,9 +8,8 @@ import android.util.Log;
 
 import com.stanfy.enroscar.beans.Bean;
 import com.stanfy.enroscar.beans.BeansContainer;
-import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
+import com.stanfy.enroscar.sdkdep.SdkDepUtils;
 import com.stanfy.enroscar.sdkdep.SdkDependentUtils;
 
 /**
@@ -27,8 +26,7 @@ public class SupportLruImageMemoryCache implements ImageMemoryCache, Bean {
   final SdkDependentUtils sdkUtils;
 
   public SupportLruImageMemoryCache(final Context context) {
-    // TODO change it: remove construction
-    this.sdkUtils = BeansManager.get(context).getContainer().getBean(SDKDependentUtilsFactory.class).createSdkDependentUtils();
+    this.sdkUtils = SdkDepUtils.get(context);
     int memClass = ((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
     if (memClass == 0) { // can be in tests
       memClass = 3;

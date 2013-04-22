@@ -1,6 +1,6 @@
 package com.stanfy.enroscar.rest.test;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.net.HttpURLConnection;
 import java.net.ResponseCache;
@@ -107,4 +107,15 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     assertThat(response).isEqualTo("POST response");
   }
 
+  @Test
+  public void withUploadOperationTypeSimpleParametersShouldBeIncludedInTargetUrl() throws Exception {
+    final URLConnection connection = makeConnection(
+        new MyRequestBuilder<String>(Robolectric.application) { }
+        .addParam("a", "b")
+        .addParam("c", "d")
+        .setUrl("http://example.com")
+    );
+    assertThat(connection.getURL().toString()).isEqualTo("http://example.com?a=b&c=d");
+  }
+  
 }
