@@ -117,4 +117,9 @@ public abstract class PartBase extends Part {
     this.transferEncoding = transferEncoding;
   }
 
+  @Override
+  public String toString() {
+    return name + " / " + contentType + ";" + charSet + " / " + transferEncoding;
+  }
+  
 }

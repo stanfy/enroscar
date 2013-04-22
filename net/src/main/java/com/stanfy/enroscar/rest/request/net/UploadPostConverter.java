@@ -3,17 +3,20 @@ package com.stanfy.enroscar.rest.request.net;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import org.apache.http.util.EncodingUtils;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.io.PoolableBufferedOutputStream;
+import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.Parameter;
 import com.stanfy.enroscar.rest.request.ParameterValue;
 import com.stanfy.enroscar.rest.request.RequestDescription;
@@ -50,6 +53,11 @@ public class UploadPostConverter extends PostConverter {
     this.boundary = generateMultipartBoundary();
   }
 
+  @Override
+  protected String getRequestUrl() {
+    return requestDescription.getUrl();
+  }
+  
   /**
    * Generates a random multipart boundary string.
    */
@@ -81,6 +89,10 @@ public class UploadPostConverter extends PostConverter {
     final BuffersPool buffersPool = BeansManager.get(context).getContainer().getBean(BuffersPool.class);
     final PoolableBufferedOutputStream out = new PoolableBufferedOutputStream(connection.getOutputStream(), buffersPool);
 
+    if (Utils.isDebugRest(context)) {
+      Log.d(TAG, "(" + requestDescription.getId() + ") Parts: " + Arrays.toString(parts));
+    }
+    
     try {
       Part.sendParts(out, parts, boundary);
     } finally {

@@ -12,6 +12,7 @@ import android.os.Parcelable;
 
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.rest.request.net.multipart.Part;
+import com.stanfy.enroscar.rest.request.net.multipart.StringPart;
 
 
 /**
@@ -51,7 +52,9 @@ public class StringBinaryData extends BinaryData<Parcelable> {
 
   @Override
   public Part createHttpPart(final Context context) throws IOException {
-    return null;
+    StringPart sp = new StringPart("", str, IoUtils.UTF_8_NAME);
+    sp.setContentType(getContentType());
+    return sp;
   }
 
   @Override
