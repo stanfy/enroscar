@@ -18,6 +18,7 @@ import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.net.test.Runner;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.OperationType;
+import com.stanfy.enroscar.rest.request.RequestDescription;
 
 /**
  * Tests for {@link com.stanfy.serverapi.request.RequestDescription}.
@@ -107,4 +108,15 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     assertThat(response).isEqualTo("POST response");
   }
 
+  @Test
+  public void withUploadOperationTypeSimpleParametersShouldBeIncludedInTargetUrl() throws Exception {
+    final URLConnection connection = makeConnection(
+        new MyRequestBuilder<String>(Robolectric.application) { }
+        .addParam("a", "b")
+        .addParam("c", "d")
+        .setUrl("http://example.com")
+    );
+    assertThat(connection.getURL().toString()).isEqualTo("http://example.com?a=b&c=d");
+  }
+  
 }
