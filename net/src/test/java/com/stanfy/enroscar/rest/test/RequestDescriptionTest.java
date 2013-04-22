@@ -1,6 +1,6 @@
 package com.stanfy.enroscar.rest.test;
 
-import static org.fest.assertions.api.Assertions.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.net.HttpURLConnection;
 import java.net.ResponseCache;
@@ -18,7 +18,6 @@ import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.net.test.Runner;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.OperationType;
-import com.stanfy.enroscar.rest.request.RequestDescription;
 
 /**
  * Tests for {@link com.stanfy.serverapi.request.RequestDescription}.
