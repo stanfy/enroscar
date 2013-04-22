@@ -16,8 +16,13 @@ public final class SdkDepUtils {
   
   public static SdkDependentUtils get(final Context context) {
     if (instance == null) {
-      instance = BeansManager.get(context).getContainer()
-          .getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class).createSdkDependentUtils();
+      SDKDependentUtilsFactory factory = BeansManager.get(context).getContainer()
+          .getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class);
+      if (factory == null) {
+        throw new IllegalStateException("SDKDependentUtilsFactory is not defined. "
+            + "Either try DefaultBeansManager from Enroscar Assist or set your put(SDKDependentUtilsFactory.class) call to be the first in beans definitions");
+      }
+      instance = factory.createSdkDependentUtils();
     }
     return instance;
   }

@@ -15,6 +15,7 @@ import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
+import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
 import com.stanfy.enroscar.stats.StatsManager;
 
 /**
@@ -67,8 +68,8 @@ public class DefaultBeansManager extends BeansManager {
 //  public ActivityBehaviorFactory getActivityBehaviorFactory() { return getContainer().getBean(ActivityBehaviorFactory.BEAN_NAME, ActivityBehaviorFactory.class); }
   /** @return statistics manager */
   public StatsManager getStatsManager() { return getContainer().getBean(StatsManager.BEAN_NAME, StatsManager.class); }
-//  /** @return SDK dependent utilities factory */
-//  public SDKDependentUtilsFactory getSdkDependentUtilsFactory() { return getContainer().getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class); }
+  /** @return SDK dependent utilities factory */
+  public SDKDependentUtilsFactory getSdkDependentUtilsFactory() { return getContainer().getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class); }
   /** @return remote server API access configuration */
   public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
   /** @return content handler instance */
@@ -84,7 +85,7 @@ public class DefaultBeansManager extends BeansManager {
   public class Editor extends BeansManager.Editor {
 
     {
-//      put(SDKDependentUtilsFactory.class);
+      put(SDKDependentUtilsFactory.class);
       put(BuffersPool.class);
 //      put(EmptyStatsManager.class);
     }
