@@ -48,8 +48,6 @@ public final class ModelTypeToken implements Parcelable {
   private ModelTypeToken(final Type type) {
     this.type = type;
     this.rawClass = $Gson$Types.getRawType(this.type);
-
-    assert this.type instanceof Serializable;
   }
 
   public static ModelTypeToken fromRequestBuilderClass(final Class<?> clazz) {
