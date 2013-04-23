@@ -16,7 +16,6 @@ import android.content.Context;
 import android.os.Build;
 
 import com.stanfy.enroscar.net.cache.ResponseCacheSwitcher;
-import com.stanfy.enroscar.sdkdep.SdkDepUtils;
 
 /**
  * Creates custom stream handlers. Holds a reference to application context.
@@ -53,16 +52,12 @@ public class EnroscarConnectionsEngine implements URLStreamHandlerFactory, Conte
    * Installs the instance of this factory.
    * @param context context instance
    */
-  static void install(final Context context, final Config config, final boolean strictMode) {
+  static void install(final Context context, final Config config) {
     if (!installFlag) {
       // workarounds
       disableConnectionReuseIfNecessary();
       // install handlers
       installStreamHandlers(context, config);
-    }
-
-    if (strictMode) {
-      SdkDepUtils.get(context).enableStrictMode();
     }
 
     // install cache
@@ -150,7 +145,7 @@ public class EnroscarConnectionsEngine implements URLStreamHandlerFactory, Conte
      * @param context context instance
      */
     public void install(final Context context) {
-      EnroscarConnectionsEngine.install(context, this, DebugFlags.STRICT_MODE);
+      EnroscarConnectionsEngine.install(context, this);
     }
 
   }

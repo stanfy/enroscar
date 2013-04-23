@@ -1,6 +1,5 @@
 package com.stanfy.enroscar.net;
 
-import org.robolectric.Robolectric;
 
 /**
  * Utility for setting up test mode for connections engine.
@@ -13,8 +12,4 @@ public final class EnroscarConnectionsEngineMode {
     EnroscarConnectionsEngine.treatFileScheme = false;
   }
 
-  public static void installWithStrictMode() {
-    EnroscarConnectionsEngine.install(Robolectric.application, EnroscarConnectionsEngine.config(), true);
-  }
-  
 }
