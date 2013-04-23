@@ -1,1 +1,1 @@
-include 'beans', 'shared', 'net', 'assist', 'stats', 'content', 'sdk-dep'
+include 'beans', 'shared', 'net', 'assist', 'stats', 'content', 'images', 'sdk-dep', 'ui'

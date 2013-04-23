@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+  <string name="sql_ddl_create_index" tools:ignore="MissingTranslation">
+  <![CDATA[
+    CREATE INDEX IF NOT EXISTS %1$s ON %2$s (
+      %3$s
+    );
+  ]]>
+  </string>
+
+</resources>

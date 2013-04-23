@@ -1,16 +1,9 @@
 archivesBaseName = 'enroscar-assist'
 
 dependencies {
+  compile project(path : ':sdk-dep', configuration : 'jarPackage')
   compile project(':beans')
   compile project(':shared')
   compile project(':net')
   compile project(':stats')
-  compile project(':sdk-dep')
-}
-
-modifyPom {
-  project {
-    name 'Enroscar Beans'
-    description 'Beans manager wihout dependency injection'
-  }
 }

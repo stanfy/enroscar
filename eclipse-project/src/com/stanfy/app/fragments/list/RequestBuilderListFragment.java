@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.stanfy.DebugFlags;
 import com.stanfy.app.BaseFragment;
-import com.stanfy.app.CrucialGUIOperationManager;
+import com.stanfy.enroscar.activities.CrucialGUIOperationManager;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.content.UniqueObject;
 import com.stanfy.enroscar.content.loader.ResponseData;

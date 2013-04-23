@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- 
+  
+    Describe themes directly in your main project.
+    Example (== this is a comment :) ==)
+    
+    ===== Base theme (use "@android:style/Theme" for the dark one) =====
+    <style name="Theme" parent="@android:style/Theme.Light"/> 
+    
+    ===== Base activity theme =====
+    - no title (using action bar)
+    - soft keyborad configuration
+    - loading placeholder image
+    - quick actions styles
+    <style name="Theme.Activity">
+      <item name="android:windowNoTitle">true</item> 
+      <item name="android:windowSoftInputMode">stateHidden|adjustPan</item>
+      <item name="your.package:loadingImage">@drawable/bg_default_loading_image</item>
+    </style>
+  
+  -->
+  
+</resources>

@@ -1,0 +1,12 @@
+<resources>
+  
+  <!-- Low density: 120. -->
+  <item type="integer" name="density_ldpi">120</item>
+  <!-- Midium density: 160. -->
+  <item type="integer" name="density_mdpi">160</item>
+  <!-- High density: 240. -->
+  <item type="integer" name="density_hdpi">240</item>
+  <!-- Extra high density: 320. -->
+  <item type="integer" name="density_xhdpi">320</item>
+      
+</resources>

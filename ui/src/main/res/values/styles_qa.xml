@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <!-- Quick actions. -->
+  <style name="QA" />
+
+  <!-- QA Grey main container. -->
+  <style name="QA.MainContainer">
+    <item name="android:background">#f2f2f2</item>
+  </style>
+
+  <!-- QA dark scroll. -->
+  <style name="QA.Scroll">
+    <item name="android:background">#595959</item>
+    <item name="android:padding">5dp</item>
+  </style>
+
+  <!-- QA top frame -->  
+  <style name="QA.TopFrame">
+    <item name="android:minHeight">5dp</item>
+  </style>
+  <!-- QA bottom frame -->  
+  <style name="QA.BottomFrame">
+    <item name="android:minHeight">5dp</item>
+  </style>
+
+  <!-- QA animations -->
+  <style name="QA.Animation" />
+
+  <!-- from bottom -->
+  <style name="QA.Animation.Above" /> 
+  <style name="QA.Animation.Above.FromLeft">
+    <item name="@android:windowEnterAnimation">@anim/appear_bottomleft_topright</item>
+    <item name="@android:windowExitAnimation">@anim/disappear_topright_bottomleft</item>
+  </style>
+  <style name="QA.Animation.Above.FromRight">
+    <item name="@android:windowEnterAnimation">@anim/appear_bottomright_topleft</item>
+    <item name="@android:windowExitAnimation">@anim/disappear_topleft_bottomright</item>
+  </style>
+  <style name="QA.Animation.Above.Center">
+    <item name="@android:windowEnterAnimation">@anim/appear_bottom_top</item>
+    <item name="@android:windowExitAnimation">@anim/disappear_top_bottom</item>
+  </style>
+
+  <!-- from top -->
+  <style name="QA.Animation.Below" /> 
+  <style name="QA.Animation.Below.FromLeft">
+    <item name="@android:windowEnterAnimation">@anim/appear_topleft_bottomright</item>
+    <item name="@android:windowExitAnimation">@anim/disappear_bottomright_topleft</item>
+  </style>
+  <style name="QA.Animation.Below.FromRight">
+    <item name="@android:windowEnterAnimation">@anim/appear_topright_bottomleft</item>
+    <item name="@android:windowExitAnimation">@anim/disappear_bottomleft_topright</item>
+  </style>
+  <style name="QA.Animation.Below.Center">
+    <item name="@android:windowEnterAnimation">@anim/appear_top_bottom</item>
+    <item name="@android:windowExitAnimation">@anim/disappear_bottom_top</item>
+  </style>
+
+</resources>

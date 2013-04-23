@@ -1,0 +1,7 @@
+archivesBaseName = 'enroscar-ui'
+
+dependencies {
+  compile project(':beans')
+  compile project(':stats')
+  compile project(':images')
+}

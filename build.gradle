@@ -12,7 +12,7 @@ buildscript {
 def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '')}" }
 def projectVersion = "0.9-SNAPSHOT"
 
-def androidLibs = ['sdk-dep']
+def androidLibs = ['sdk-dep', 'ui']
 
 task wrapper(type: Wrapper) {
   gradleVersion = '1.4'
@@ -89,20 +89,40 @@ configure(subprojects.findAll() { !(it.name in androidLibs) }) {
 
 configure(subprojects.findAll() { it.name in androidLibs }) {
   
-//  apply plugin : 'android-library'
-//
-//  android {
-//    compileSdkVersion 17
-//    
-//    defaultConfig {
-//      versionCode 9
-//      versionName projectVersion
-//      minSdkVersion 8
-//      targetSdkVersion 17
-//      packageName getPackageName(project)
-//    }
-//  }
+  apply plugin : 'android-library'
 
+  android {
+    compileSdkVersion 17
+    
+    defaultConfig {
+      versionCode 9
+      versionName projectVersion
+      minSdkVersion 8
+      targetSdkVersion 17
+      packageName getPackageName(project)
+    }
+  }
+
+  configurations {
+    jarPackage {
+      extendsFrom compile
+    }
+  }
+  
+  task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
+    from 'build/bundles/release/classes.jar'
+    into "build/libs"
+    rename { "${project.archivesBaseName}-${project.version}.jar" }
+  }
+  
+  artifacts {
+    jarPackage(file("build/libs/${project.archivesBaseName}-${project.version}.jar")) {
+      builtBy classesJar
+    }
+  }
+
+  assemble.dependsOn classesJar
+  
 }
 
 // ==================================== COMMON ====================================

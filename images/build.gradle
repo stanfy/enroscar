@@ -1,0 +1,8 @@
+archivesBaseName = 'enroscar-images'
+
+dependencies {
+  compile project(':shared')
+  compile project(':beans')
+  compile project(':net')
+  compile project(path : ':sdk-dep', configuration : 'jarPackage')
+}
