@@ -19,10 +19,10 @@ import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.io.PoolableBufferedInputStream;
 import com.stanfy.enroscar.net.ContentControlUrlConnection;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.rest.ModelTypeToken;
 import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.response.Model;
-import com.stanfy.enroscar.utils.ModelTypeToken;
 
 /**
  * Base content handler. Takes care about buffers and gzip.

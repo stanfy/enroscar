@@ -3,6 +3,7 @@ package com.stanfy.enroscar.stats;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,7 +12,6 @@ import android.app.Activity;
 
 import com.stanfy.enroscar.beans.Bean;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.utils.AppUtils;
 
 /**
  * Statistics manager, instantiated by application object.
@@ -82,7 +82,7 @@ public abstract class StatsManager implements Bean {
   }
 
   public void event(final String tag, final String[][] tuples) {
-    event(tag, AppUtils.<String, String>tuples(tuples));
+    event(tag, StatsManager.<String, String>tuples(tuples));
   }
 
   public static String trimStackTrace(final String st) {
@@ -104,6 +104,13 @@ public abstract class StatsManager implements Bean {
     e.printStackTrace(new PrintWriter(sw));
     final String resultStr = trimStackTrace(sw.toString());
     return resultStr.length() > maxTotalLength ? resultStr.substring(0, maxTotalLength) : resultStr;
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <K, V> Map<K, V> tuples(final Object[][] tuples) {
+    final Map<K, V> result = new HashMap<K, V>(tuples.length);
+    for (final Object[] tuple : tuples) { result.put((K)tuple[0], (V)tuple[1]); }
+    return result;
   }
 
 }

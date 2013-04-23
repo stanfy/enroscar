@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.utils;
+package com.stanfy.enroscar.rest;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.ContentHandler;
 import java.net.URLConnection;
 
-import com.stanfy.enroscar.utils.ModelTypeToken;
+import com.stanfy.enroscar.rest.ModelTypeToken;
 
 
 /**
