@@ -1,6 +1,0 @@
-<project name="enroscar" basedir="." default="help">
-	<condition property="build.main" value="${basedir}/../cintegration" else="${basedir}/../../cintegration">
-		<available file="${basedir}/../cintegration/main-build.ant" type="file" />
-	</condition>
-	<import file="${build.main}/main-build.ant"/>
-</project>
