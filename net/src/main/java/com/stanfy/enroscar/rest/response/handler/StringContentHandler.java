@@ -8,7 +8,7 @@ import android.content.Context;
 
 import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.utils.ModelTypeToken;
+import com.stanfy.enroscar.rest.ModelTypeToken;
 
 
 /**

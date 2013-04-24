@@ -12,7 +12,7 @@ import javax.net.ssl.SSLSocketFactory;
 import android.net.Uri;
 
 import com.stanfy.enroscar.net.cache.CacheControlUrlConnection;
-import com.stanfy.enroscar.utils.ModelTypeToken;
+import com.stanfy.enroscar.rest.ModelTypeToken;
 import com.stanfy.enroscar.utils.Time;
 
 /**

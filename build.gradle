@@ -9,10 +9,14 @@ buildscript {
   }
 }
 
-def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '')}" }
+def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').replaceAll(/enroscar/, '')}" }
 def projectVersion = "0.9-SNAPSHOT"
 
-def androidLibs = ['sdk-dep']
+def androidLibs = ['enroscar-sdk-dep', 'enroscar-ui']
+
+def androidMavenDep = [
+  group : 'com.google.android', name : 'android', version : '4.1.1.4'
+]
 
 task wrapper(type: Wrapper) {
   gradleVersion = '1.4'
@@ -32,7 +36,7 @@ configure(subprojects.findAll() { !(it.name in androidLibs) }) {
   }
   
   dependencies {
-    compile group : 'com.google.android', name : 'android', version : '4.1.1.4'
+    compile androidMavenDep
     testCompile group: 'junit', name: 'junit', version: '4.10'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
     testCompile group: 'org.robolectric', name: 'robolectric', version: '2.0-alpha-2'
@@ -89,20 +93,43 @@ configure(subprojects.findAll() { !(it.name in androidLibs) }) {
 
 configure(subprojects.findAll() { it.name in androidLibs }) {
   
-//  apply plugin : 'android-library'
-//
-//  android {
-//    compileSdkVersion 17
-//    
-//    defaultConfig {
-//      versionCode 9
-//      versionName projectVersion
-//      minSdkVersion 8
-//      targetSdkVersion 17
-//      packageName getPackageName(project)
-//    }
-//  }
+  apply plugin : 'android-library'
 
+  android {
+    compileSdkVersion 17
+    
+    defaultConfig {
+      versionCode 9
+      versionName projectVersion
+      minSdkVersion 8
+      targetSdkVersion 17
+      packageName getPackageName(project)
+    }
+  }
+
+  configurations {
+    jarPackage { /* jar package for references from other Java projects */ }
+    ideHack { /* IDE integration hack */ }
+  }
+  
+  task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
+    from 'build/bundles/release/classes.jar'
+    into "build/libs"
+    rename { "${project.name}-unspecified.jar" }
+  }
+  
+  artifacts {
+    jarPackage(file("build/libs/${project.name}-unspecified.jar")) {
+      builtBy classesJar
+    }
+  }
+
+  assemble.dependsOn classesJar
+
+  dependencies {
+    ideHack androidMavenDep
+  }
+    
 }
 
 // ==================================== COMMON ====================================
@@ -126,6 +153,12 @@ subprojects {
   
   repositories {
     mavenCentral()
+  }
+  
+  if (project.name in androidLibs) {
+    eclipse {
+      classpath.plusConfigurations += configurations.ideHack
+    }
   }
   
 }

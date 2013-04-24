@@ -9,6 +9,10 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.SparseArray;
@@ -16,6 +20,7 @@ import android.util.SparseArray;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
+import com.stanfy.enroscar.rest.ModelTypeToken;
 import com.stanfy.enroscar.rest.request.binary.BinaryData;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter.ConverterFactory;
@@ -24,8 +29,6 @@ import com.stanfy.enroscar.rest.request.net.SimpleGetConverter;
 import com.stanfy.enroscar.rest.request.net.SimplePostConverter;
 import com.stanfy.enroscar.rest.request.net.UploadPostConverter;
 import com.stanfy.enroscar.rest.response.Model;
-import com.stanfy.enroscar.utils.AppUtils;
-import com.stanfy.enroscar.utils.ModelTypeToken;
 
 /**
  * Request method description. This object is passed to the service describing the request.
@@ -371,6 +374,30 @@ public class RequestDescription implements Parcelable {
   // ============================ HTTP REQUESTS ============================
 
   /**
+   * @param context context instance
+   * @return user agent string
+   */
+  public static String buildUserAgent(final Context context) {
+    if (context == null) { return null; }
+    try {
+      final PackageManager manager = context.getPackageManager();
+      final StringBuilder agentString = new StringBuilder();
+      agentString.append("Android client (").append(Build.VERSION.RELEASE).append(" / api ").append(Build.VERSION.SDK_INT).append("), ");
+      if (manager != null) {
+        final PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+        agentString.append(info.packageName).append("/").append(info.versionName)
+            .append(" (").append(info.versionCode).append("), ").append(IoUtils.ENCODING_GZIP);
+      } else {
+        // test environment only
+        agentString.append(" test");
+      }
+      return agentString.toString();
+    } catch (final NameNotFoundException e) {
+      return null;
+    }
+  }
+
+  /**
    * A good place to set custom request headers.
    * @param context system context
    * @param urlConnection URL connection instance
@@ -383,7 +410,7 @@ public class RequestDescription implements Parcelable {
       urlConnection.addRequestProperty("Accept-Language", contentLanguage);
     }
     urlConnection.addRequestProperty("Accept-Encoding", IoUtils.ENCODING_GZIP);
-    urlConnection.addRequestProperty("User-Agent", AppUtils.buildUserAgent(context));
+    urlConnection.addRequestProperty("User-Agent", buildUserAgent(context));
   }
 
   /**

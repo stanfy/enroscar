@@ -6,9 +6,9 @@ import android.content.Context;
 import android.support.v4.content.Loader;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.rest.ModelTypeToken;
 import com.stanfy.enroscar.rest.RequestExecutor;
 import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
-import com.stanfy.enroscar.utils.ModelTypeToken;
 
 /**
  * Base request builder to get a list of entities.

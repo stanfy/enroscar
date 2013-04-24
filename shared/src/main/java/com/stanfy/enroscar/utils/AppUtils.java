@@ -1,26 +1,16 @@
 package com.stanfy.enroscar.utils;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
-import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -41,36 +31,6 @@ public class AppUtils {
 
   /** Hidden constructor. */
   protected AppUtils() { /* nothing to do */ }
-
-  /** Random generator. */
-  private static Random random = new Random();
-
-  public static String createTableSQL(final String table, final String primaryColumn, final String[] columns, final Map<String, String> types) {
-    final StringBuilder result = new StringBuilder().append("CREATE TABLE IF NOT EXISTS ").append(table).append(" (")
-        .append(primaryColumn).append(" INTEGER PRIMARY KEY AUTOINCREMENT");
-    for (final String col : columns) {
-      if (primaryColumn.equals(col)) { continue; }
-      result.append(", ").append(col).append(' ');
-      final String type = types.get(col);
-      result.append(type == null ? DB_TEXT : type);
-    }
-    result.append(')');
-    return result.toString();
-  }
-
-  public static Uri getUri(final String authority, final String path) {
-    return Uri.parse("content://" + authority + "/" + path);
-  }
-
-  /**
-   * @param ctx context
-   * @return notification manager
-   */
-  public static NotificationManager getNotficationManager(final Context ctx) {
-    return (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-  }
-
-  public static int rand() { return random.nextInt(); }
 
   public static String convertToHex(final byte[] data) {
     final StringBuilder buf = new StringBuilder();
@@ -156,113 +116,5 @@ public class AppUtils {
       }
     }
   }
-
-  public static String buildFilePathById(final long id, final String name) {
-    final StringBuilder sb = new StringBuilder();
-    final int divider = 100;
-    long rest = id;
-    do {
-      final int value = (int)(rest % divider);
-      rest /= divider;
-      sb.append(value).append('/');
-    } while (rest != 0);
-    sb.append(name);
-    return sb.toString();
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <K, V> Map<K, V> tuples(final Object[][] tuples) {
-    final Map<K, V> result = new HashMap<K, V>(tuples.length);
-    for (final Object[] tuple : tuples) { result.put((K)tuple[0], (V)tuple[1]); }
-    return result;
-  }
-
-  /**
-   * @param directory directory
-   * @return directory size
-   */
-  public static long sizeOfDirectory(final File directory) {
-    if (directory == null || !directory.exists()) { return 0; }
-    if (!directory.isDirectory()) { return directory.length(); }
-    final File[] files = directory.listFiles();
-    int result = 0;
-    for (final File f : files) {
-      if (f.isDirectory()) {
-        result += sizeOfDirectory(f);
-      } else {
-        result += f.length();
-      }
-    }
-    return result;
-  }
-
-  /**
-   * @param a activity instance
-   * @return whether the activity was started from launcher
-   */
-  public static boolean isStartedFromLauncher(final Activity a) {
-    final Intent intent = a.getIntent();
-    final String intentAction = intent.getAction();
-    return intent.hasCategory(Intent.CATEGORY_LAUNCHER)
-        && intentAction != null && intentAction.equals(Intent.ACTION_MAIN);
-  }
-
-//  public static Class<?> getGenericParameterClass(final Class<?> clazz) {
-//    final Type superclass = clazz.getGenericSuperclass();
-//    if (superclass instanceof Class) {
-//      throw new RuntimeException("Missing type parameter.");
-//    }
-//    final ParameterizedType parameterized = (ParameterizedType) superclass;
-//    final Type type = $Gson$Types.canonicalize(parameterized.getActualTypeArguments()[0]);
-//    return $Gson$Types.getRawType(type);
-//  }
-
-  /**
-   * @param context context instance
-   * @return user agent string
-   */
-  public static String buildUserAgent(final Context context) {
-    if (context == null) { return null; }
-    try {
-      final PackageManager manager = context.getPackageManager();
-      final StringBuilder agentString = new StringBuilder();
-      agentString.append("Android client (").append(Build.VERSION.RELEASE).append(" / api ").append(Build.VERSION.SDK_INT).append("), ");
-      if (manager != null) {
-        final PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
-        agentString.append(info.packageName).append("/").append(info.versionName)
-            .append(" (").append(info.versionCode).append("), ").append(IoUtils.ENCODING_GZIP);
-      } else {
-        // test environment only
-        agentString.append(" test");
-      }
-      return agentString.toString();
-    } catch (final NameNotFoundException e) {
-      return null;
-    }
-  }
-
-//  /* ================= SDK depended utils ================= */
-//  /** Utils instance. */
-//  private static SDKDependentUtils sdkDependentUtils;
-//
-//  /**
-//   * Call to {@link SDKDependentUtils#applySharedPreferences(android.content.SharedPreferences.Editor)}.
-//   * @param editor shared preferences editor instance
-//   */
-//  public static void applySharedPreferences(final Editor editor) {
-//    getSdkDependentUtils().applySharedPreferences(editor);
-//  }
-//
-//  /** @return SDK depended utils */
-//  public static SDKDependentUtils getSdkDependentUtils() {
-//    if (sdkDependentUtils == null) {
-//      final BeansManager beansManager = BeansManager.get(null);
-//      if (beansManager == null) {
-//        throw new IllegalStateException("Beans manager must be created before calling getSdkDependentUtils");
-//      }
-//      sdkDependentUtils = beansManager.getSdkDependentUtilsFactory().createSdkDependentUtils();
-//    }
-//    return sdkDependentUtils;
-//  }
 
 }

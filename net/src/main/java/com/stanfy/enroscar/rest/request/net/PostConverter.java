@@ -22,10 +22,17 @@ public abstract class PostConverter extends BaseRequestDescriptionConverter {
     this.contentType = contentType;
   }
 
+  /**
+   * @return URL used as a parameter for {@link com.stanfy.enroscar.net.UrlConnectionBuilder#setUrl(String)}
+   */
+  protected String getRequestUrl() {
+    return buildUri().build().toString();
+  }
+  
   @Override
   public URLConnection prepareConnectionInstance() throws IOException {
     final URLConnection connection = requestDescription.prepareConnectionBuilder(context)
-        .setUrl(buildUri().build())
+        .setUrl(getRequestUrl())
         .create();
 
     URLConnection core = UrlConnectionWrapper.unwrap(connection);

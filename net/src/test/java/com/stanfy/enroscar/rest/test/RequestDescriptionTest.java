@@ -108,9 +108,10 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
   }
 
   @Test
-  public void withUploadOperationTypeSimpleParametersShouldBeIncludedInTargetUrl() throws Exception {
+  public void withPayloadOperationTypeSimpleParametersShouldBeIncludedInTargetUrl() throws Exception {
     final URLConnection connection = makeConnection(
         new MyRequestBuilder<String>(Robolectric.application) { }
+        .setOperationType(OperationType.PAYLOAD_POST)
         .addParam("a", "b")
         .addParam("c", "d")
         .setUrl("http://example.com")

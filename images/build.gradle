@@ -1,0 +1,6 @@
+dependencies {
+  compile project(':enroscar-shared')
+  compile project(':enroscar-beans')
+  compile project(':enroscar-net')
+  compile project(path : ':enroscar-sdk-dep', configuration : 'jarPackage')
+}

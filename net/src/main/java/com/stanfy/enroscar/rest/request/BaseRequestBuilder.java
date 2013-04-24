@@ -22,6 +22,7 @@ import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.rest.ModelTypeToken;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.RequestExecutor;
 import com.stanfy.enroscar.rest.Utils;
@@ -30,7 +31,6 @@ import com.stanfy.enroscar.rest.request.binary.AssetFdBinaryData;
 import com.stanfy.enroscar.rest.request.binary.BitmapBinaryData;
 import com.stanfy.enroscar.rest.request.binary.ContentUriBinaryData;
 import com.stanfy.enroscar.rest.request.binary.EmptyBinaryData;
-import com.stanfy.enroscar.utils.ModelTypeToken;
 
 /**
  * Base class for request builders.

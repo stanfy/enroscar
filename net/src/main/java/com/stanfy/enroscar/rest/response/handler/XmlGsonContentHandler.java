@@ -17,7 +17,7 @@ import android.content.Context;
 import com.google.gson.GsonBuilder;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.utils.ModelTypeToken;
+import com.stanfy.enroscar.rest.ModelTypeToken;
 import com.stanfy.gsonxml.GsonXml;
 import com.stanfy.gsonxml.GsonXmlBuilder;
 import com.stanfy.gsonxml.XmlParserCreator;
