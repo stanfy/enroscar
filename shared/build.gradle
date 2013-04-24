@@ -1,7 +1,5 @@
-archivesBaseName='enroscar-shared'
-
 dependencies {
-  compile project(':beans')
+  compile project(':enroscar-beans')
   
   compile 'com.google.code.gson:gson:2.2.2'
 }
