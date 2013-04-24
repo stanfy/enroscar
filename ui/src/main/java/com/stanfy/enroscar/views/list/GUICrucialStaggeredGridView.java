@@ -1,7 +1,7 @@
 package com.stanfy.enroscar.views.list;
 
 import com.stanfy.enroscar.views.AnimatedViewHelper;
-import com.stanfy.enroscar.views.R;
+import com.stanfy.enroscar.ui.R;
 
 import android.content.Context;
 import android.content.res.TypedArray;

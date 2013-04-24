@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.stanfy.enroscar.ui.R;
+
 /**
  * Scroll view that can save its position.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)

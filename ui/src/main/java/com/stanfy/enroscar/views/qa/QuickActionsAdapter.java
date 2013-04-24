@@ -2,7 +2,7 @@ package com.stanfy.enroscar.views.qa;
 
 import android.view.View;
 
-import com.stanfy.enroscar.views.R;
+import com.stanfy.enroscar.ui.R;
 
 /**
  * Adapter for quick actions.

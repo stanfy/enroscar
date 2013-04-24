@@ -18,8 +18,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.enroscar.views.R;
+import com.stanfy.enroscar.ui.R;
 import com.stanfy.enroscar.views.qa.QuickActionsAdapter.ActionTag;
 
 /**
@@ -32,7 +31,7 @@ import com.stanfy.enroscar.views.qa.QuickActionsAdapter.ActionTag;
 public abstract class QuickActionsWidget extends PopupWindow {
 
   /** Debug flag. */
-  protected static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  protected static final boolean DEBUG = false;
   /** Logging tag. */
   protected static final String TAG = "QA";
 

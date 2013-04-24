@@ -8,8 +8,10 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.images.ImagesManager;
-import com.stanfy.images.RemoteImageDensityProvider;
+import com.stanfy.enroscar.images.ImagesManager;
+import com.stanfy.enroscar.images.RemoteImageDensityProvider;
+
+import com.stanfy.enroscar.ui.R;
 
 /**
  * Text view that can load a remote images and use it as comppound drawables.

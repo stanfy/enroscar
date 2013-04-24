@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
 
+import com.stanfy.enroscar.ui.R;
+
 /**
  * Helper class for handling states.
  * @author Roman Mazur (Stanfy - http://stanfy.com)

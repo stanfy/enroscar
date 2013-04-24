@@ -9,8 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.widget.ListAdapter;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.enroscar.views.R;
+import com.stanfy.enroscar.ui.R;
 import com.stanfy.enroscar.views.StateHelper;
 
 /**
@@ -24,7 +23,7 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
   public static final int LOAD_GAP_DEFAULT = 15;
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  private static final boolean DEBUG = false;
 
   /** Adapter. */
   private LoadmoreAdapter adapter;

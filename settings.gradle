@@ -1,4 +1,4 @@
-['beans', 'shared', 'net', 'assist', 'stats', 'content', 'images', 'sdk-dep'/*, 'ui'*/].each {
+['beans', 'shared', 'net', 'assist', 'stats', 'content', 'images', 'sdk-dep', 'ui'].each {
   include it
   project(":$it").name = "enroscar-$it"
 }

@@ -17,8 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.WrapperListAdapter;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.app.CrucialGUIOperationManager.CrucialGUIOperationListener;
+import com.stanfy.enroscar.activities.CrucialGUIOperationManager.CrucialGUIOperationListener;
 import com.stanfy.enroscar.content.loader.LoadmoreLoader;
 import com.stanfy.enroscar.views.StateHelper;
 
@@ -33,7 +32,7 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
   private static final String TAG = "LoaderAdapter";
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  private static final boolean DEBUG = false;
 
   /** Context. */
   private final Context context;

@@ -9,8 +9,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListAdapter;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.enroscar.views.R;
+import com.stanfy.enroscar.ui.R;
 
 /**
  * List view that can call to load more records on scrolling.
@@ -22,7 +21,7 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
   public static final int LOAD_GAP_DEFAULT = 5;
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  private static final boolean DEBUG = false;
 
   /** Adapter. */
   private LoadmoreAdapter adapter;

@@ -9,8 +9,6 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ViewAnimator;
 
-import com.stanfy.DebugFlags;
-
 /**
  * Displays different views according to the current state.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
@@ -18,7 +16,7 @@ import com.stanfy.DebugFlags;
 public class StateView extends ViewAnimator {
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  private static final boolean DEBUG = false;
 
   /** State helper. */
   private final StateHelper stateHelper;

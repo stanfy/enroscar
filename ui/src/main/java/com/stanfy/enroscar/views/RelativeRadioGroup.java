@@ -9,6 +9,8 @@ import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 
+import com.stanfy.enroscar.ui.R;
+
 /**
  * <p>
  * This class is used to create a multiple-exclusion scope for a set of radio

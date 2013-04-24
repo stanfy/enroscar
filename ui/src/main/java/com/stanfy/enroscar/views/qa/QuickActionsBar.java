@@ -8,7 +8,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.HorizontalScrollView;
 
-import com.stanfy.enroscar.views.R;
+import com.stanfy.enroscar.ui.R;
 
 /**
  * {@link QuickActionWidget} that displays actions on a row.

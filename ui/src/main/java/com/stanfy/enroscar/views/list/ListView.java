@@ -10,9 +10,8 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
 
-import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.views.AnimatedViewHelper;
-import com.stanfy.enroscar.views.R;
+import com.stanfy.enroscar.ui.R;
 
 /**
  * List view that can support saving the scroll position.
@@ -21,7 +20,7 @@ import com.stanfy.enroscar.views.R;
 public class ListView extends android.widget.ListView {
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  private static final boolean DEBUG = false;
 
   /** Not set position. */
   private static final int NOT_SET = -10;

@@ -41,8 +41,7 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.views.R;
+import com.stanfy.enroscar.ui.R;
 
 /**
  * ListView and GridView just not complex enough? Try StaggeredGridView!
@@ -63,7 +62,7 @@ public class StaggeredGridView extends ViewGroup {
   /** Log tag. */
   private static final String TAG = "StaggeredGridView";
   /** Debug flag. */
-  protected static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  protected static final boolean DEBUG = false;
 
   /*
    * There are a few things you should know if you're going to make modifications

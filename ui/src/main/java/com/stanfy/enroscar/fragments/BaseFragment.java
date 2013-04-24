@@ -1,4 +1,6 @@
-package com.stanfy.enroscar.activities;
+package com.stanfy.enroscar.fragments;
+
+import com.stanfy.enroscar.activities.BaseActivityBehavior;
 
 import android.app.Activity;
 import android.support.v4.app.Fragment;

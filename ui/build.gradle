@@ -1,5 +1,8 @@
 dependencies {
-  compile project(':beans')
-  compile project(':stats')
-  compile project(':images')
+  compile fileTree(dir : "$rootDir/libs", include : '*.jar')
+  
+  compile project(path : ':enroscar-beans', transitive : false)
+  compile project(path : ':enroscar-stats', transitive : false)
+  compile project(path : ':enroscar-images', transitive : false)
+  compile project(path : ':enroscar-content', transitive : false)
 }

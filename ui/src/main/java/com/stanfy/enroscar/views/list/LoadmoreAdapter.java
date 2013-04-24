@@ -11,7 +11,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.WrapperListAdapter;
 
-import com.stanfy.enroscar.views.R;
+import com.stanfy.enroscar.ui.R;
 
 /**
  * Adapter that shows load more footer.

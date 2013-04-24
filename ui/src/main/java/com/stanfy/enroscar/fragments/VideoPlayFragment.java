@@ -1,6 +1,5 @@
 package com.stanfy.enroscar.fragments;
 
-import com.stanfy.enroscar.activities.BaseFragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;

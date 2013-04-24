@@ -10,8 +10,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.enroscar.views.R;
+import com.stanfy.enroscar.ui.R;
 
 /**
  * Implementation of {@link FetchableAbsListView} which uses {@link GridView} as main view.
@@ -24,7 +23,7 @@ public class FetchableGridView extends GridView implements OnScrollListener, Fet
   public static final int LOAD_GAP_DEFAULT = 15;
 
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  private static final boolean DEBUG = false;
 
   /** Adapter. */
   private LoadmoreAdapter adapter;

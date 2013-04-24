@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.activities;
+package com.stanfy.enroscar.fragments;
 
 import android.app.Activity;
 import android.support.v4.app.DialogFragment;
