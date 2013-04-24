@@ -1,4 +1,6 @@
-package com.stanfy.utils;
+package com.stanfy.enroscar.views;
+
+import com.stanfy.enroscar.sdkdep.SdkDepUtils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,13 +18,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.stanfy.DebugFlags;
-import com.stanfy.views.utils.Animations;
 
 /**
  * A set of GUI utilities.
@@ -34,7 +32,7 @@ public class GUIUtils {
   protected static final String TAG = "GUI";
 
   /** Debug flag. */
-  protected static final boolean DEBUG = DebugFlags.DEBUG_UTILS;
+  protected static final boolean DEBUG = false;
 
   /** Hidden constructor. Allows subclassing. */
   protected GUIUtils() { /* hide */ }
@@ -51,15 +49,13 @@ public class GUIUtils {
    */
   public static Notification createNotification(final Context ctx, final CharSequence message, final PendingIntent contentIntent) {
     final ApplicationInfo appInfo = ctx.getApplicationInfo();
-    // TODO implement
-    return null;
-//    return AppUtils.getSdkDependentUtils().createNotificationBuilder(ctx)
-//        .setSmallIcon(appInfo.icon)
-//        .setTicker(message)
-//        .setContentTitle(ctx.getPackageManager().getApplicationLabel(appInfo))
-//        .setContentText(message)
-//        .setContentIntent(contentIntent)
-//        .build();
+    return SdkDepUtils.get(ctx).createNotificationBuilder(ctx)
+        .setSmallIcon(appInfo.icon)
+        .setTicker(message)
+        .setContentTitle(ctx.getPackageManager().getApplicationLabel(appInfo))
+        .setContentText(message)
+        .setContentIntent(contentIntent)
+        .build();
   }
 
   /**
@@ -158,21 +154,6 @@ public class GUIUtils {
   }
   public static void longToast(final Context context, final CharSequence message) {
     Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-  }
-
-  public static void showMovingView(final View view) {
-    view.setVisibility(View.VISIBLE);
-    view.startAnimation(Animations.goDownAnimation());
-  }
-  public static void hideMovingView(final View view) {
-    final Animation a = Animations.goUpAnimation();
-    a.setAnimationListener(new Animations.AnimationListner() {
-      @Override
-      public void onAnimationEnd(final Animation animation) {
-        view.setVisibility(View.GONE);
-      }
-    });
-    view.startAnimation(a);
   }
 
   public static CharSequence getApplicationLabel(final Context context) {

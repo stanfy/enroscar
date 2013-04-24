@@ -5,4 +5,6 @@ dependencies {
   compile project(path : ':enroscar-stats', transitive : false)
   compile project(path : ':enroscar-images', transitive : false)
   compile project(path : ':enroscar-content', transitive : false)
+  compile project(path : ':enroscar-net', transitive : false)
+  compile project(path : ':enroscar-sdk-dep', transitive : false)
 }

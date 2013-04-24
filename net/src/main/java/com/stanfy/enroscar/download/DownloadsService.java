@@ -1,4 +1,4 @@
-package com.stanfy.app.service;
+package com.stanfy.enroscar.download;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,7 +23,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.stanfy.DebugFlags;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.io.PoolableBufferedInputStream;
@@ -39,7 +38,7 @@ public class DownloadsService extends Service {
   /** Logging tag. */
   protected static final String TAG = "DownloadsService";
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_SERVICES;
+  private static final boolean DEBUG = false;
 
   /** Enqueue action. */
   public static final String ACTION_ENQUEUE = "com.stanfy.download.action.ENQUEUE";

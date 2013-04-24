@@ -1,4 +1,4 @@
-package com.stanfy.app.fragments.list;
+package com.stanfy.enroscar.fragments;
 
 import java.util.List;
 import java.util.Locale;
@@ -12,18 +12,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.stanfy.DebugFlags;
-import com.stanfy.app.BaseFragment;
 import com.stanfy.enroscar.activities.CrucialGUIOperationManager;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.content.UniqueObject;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
-import com.stanfy.views.list.FetchableListView;
-import com.stanfy.views.list.FetchableView;
-import com.stanfy.views.list.ModelListAdapter;
-import com.stanfy.views.list.ModelListAdapter.ElementRenderer;
-import com.stanfy.views.list.ResponseDataLoaderAdapter;
+import com.stanfy.enroscar.views.list.FetchableListView;
+import com.stanfy.enroscar.views.list.FetchableView;
+import com.stanfy.enroscar.views.list.ModelListAdapter;
+import com.stanfy.enroscar.views.list.ModelListAdapter.ElementRenderer;
+import com.stanfy.enroscar.views.list.ResponseDataLoaderAdapter;
 
 /**
  * Base fragment that displays fetchable lists. This fragment retains its state.
@@ -36,7 +34,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   /** Logging tag. */
   protected static final String TAG = "RBListFragment";
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_GUI;
+  private static final boolean DEBUG = false;
 
   /** List loader ID. */
   protected static final int LIST_LOADER_DEFAULT_ID = 1;
@@ -98,7 +96,6 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     crucialGUIOperationManager = BeansManager.get(getActivity()).getContainer().getBean(CrucialGUIOperationManager.class);
-    if (getParentFragment() == null) { setRetainInstance(true); }
   }
 
   @Override
