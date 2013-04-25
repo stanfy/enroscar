@@ -1,6 +1,6 @@
-package com.stanfy.app.loader;
+package com.stanfy.enroscar.rest.loader.test;
 
-import static org.hamcrest.Matchers.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,20 +13,21 @@ import android.support.v4.content.Loader;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
-import com.stanfy.app.beans.BeansManager;
-import com.stanfy.app.loader.LoadMoreListLoader.ValueIncrementor;
-import com.stanfy.serverapi.RequestMethod.RequestMethodException;
-import com.stanfy.serverapi.request.ListRequestBuilderWrapper;
-import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.response.ContentAnalyzer;
-import com.stanfy.serverapi.response.ResponseData;
-import com.stanfy.test.AbstractApplicationServiceTest;
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.rest.RequestMethod.RequestMethodException;
+import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
+import com.stanfy.enroscar.rest.loader.LoadMoreListLoader.ValueIncrementor;
+import com.stanfy.enroscar.rest.request.ListRequestBuilderWrapper;
+import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.rest.response.ContentAnalyzer;
+import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
 /**
  * Tests for {@link LoadMoreListLoader}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
+public class LoadMoreListLoaderTest extends AbstractLoaderTest {
 
   /** Analyzer. */
   private static final ContentAnalyzer<String, List<String>> STRING_LIST_ANALYZER = new ContentAnalyzer<String, List<String>>() {
@@ -44,12 +45,18 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
 
   @Override
   protected void configureBeansManager(final BeansManager.Editor editor) {
-    editor.required().remoteServerApi("string").put("sa", STRING_LIST_ANALYZER);
+    super.configureBeansManager(editor);
+    editor.put(StringContentHandler.class).put("sa", STRING_LIST_ANALYZER);
   }
 
+  @Override
+  protected void whenBeansConfigured() {
+    super.whenBeansConfigured();
+    initContentHandler(StringContentHandler.BEAN_NAME);
+  }
+  
   private ListRequestBuilderWrapper<List<String>, String> createListRb() throws IOException {
     return new MyRequestBuilder<List<String>>(getApplication()) { }
-      .setStartedLoader(true)
       .setUrl(getWebServer().getUrl("/").toString())
       .setFormat("string")
       .setContentAnalyzer("sa")
@@ -60,7 +67,7 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
     waitAndAssertForLoader(loader, new Asserter<ResponseData<List<String>>>() {
       @Override
       public void makeAssertions(final ResponseData<List<String>> data) throws Exception {
-        assertThat(data.getModel().get(0), equalTo(response));
+        assertThat(data.getModel().get(0)).isEqualTo(response);
 
         asserter.makeAssertions(data.getModel());
 
@@ -74,15 +81,14 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
 
     final Loader<ResponseData<List<String>>> loader = createListRb().getLoader();
 
-    directLoaderCall(loader).startLoading();
-
+    loader.startLoading();
     makeAsyncAssert(loader, "L1", new Asserter<List<String>>() {
       @Override
       public void makeAssertions(final List<String> data) throws Exception {
         final RecordedRequest request = getWebServer().takeRequest();
         final String path = request.getPath();
-        assertThat(path, not(containsString("o=")));
-        assertThat(path, not(containsString("l=")));
+        assertThat(path).doesNotContain("o=");
+        assertThat(path).doesNotContain("l=");
       }
     });
   }
@@ -93,15 +99,14 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
 
     final Loader<ResponseData<List<String>>> loader = createListRb().setLimit(2).setOffset(1).getLoader();
 
-    directLoaderCall(loader).startLoading();
-
+    loader.startLoading();
     makeAsyncAssert(loader, "LCustom", new Asserter<List<String>>() {
       @Override
       public void makeAssertions(final List<String> data) throws Exception {
         final RecordedRequest request = getWebServer().takeRequest();
         final String path = request.getPath();
-        assertThat(path, containsString("o=1"));
-        assertThat(path, containsString("l=2"));
+        assertThat(path).contains("o=1");
+        assertThat(path).contains("l=2");
       }
     });
   }
@@ -114,15 +119,14 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
 
     final Loader<ResponseData<List<String>>> loader = createListRb().setLimit(limit).setOffset(offset).getLoader();
 
-    ((LoadmoreLoader)directLoaderCall(loader)).forceLoadMore();
-
+    loader.startLoading();
     makeAsyncAssert(loader, "LNext", new Asserter<List<String>>() {
       @Override
       public void makeAssertions(final List<String> data) throws Exception {
         final RecordedRequest request = getWebServer().takeRequest();
         final String path = request.getPath();
-        assertThat(path, containsString("o=" + (offset + 1)));
-        assertThat(path, containsString("l=" + limit));
+        assertThat(path).contains("o=" + (offset + 1));
+        assertThat(path).contains("l=" + limit);
       }
     });
   }
@@ -136,14 +140,14 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
     final ValueIncrementor oInc = new ValueIncrementor() {
       @Override
       public String nextValue(final String currentValue, final int lastLoadedCount, final int currentCount) {
-        assertThat(currentValue, equalTo(offset));
+        assertThat(currentValue).isEqualTo(offset);
         return nextOffset;
       }
     };
     final ValueIncrementor lInc = new ValueIncrementor() {
       @Override
       public String nextValue(final String currentValue, final int lastLoadedCount, final int currentCount) {
-        assertThat(currentValue, equalTo(limit));
+        assertThat(currentValue).isEqualTo(limit);
         return nextLimit;
       }
     };
@@ -153,15 +157,15 @@ public class LoadMoreListLoaderTest extends AbstractApplicationServiceTest {
         ((LoadMoreListLoader<String, List<String>>)createListRb().setLimit(limit).setOffset(offset).getLoader())
         .setLimitIncrementor(lInc).setOffsetIncrementor(oInc);
 
-    directLoaderCall(loader).forceLoadMore();
+    loader.forceLoadMore();
 
     makeAsyncAssert(loader, "LNextCustom", new Asserter<List<String>>() {
       @Override
       public void makeAssertions(final List<String> data) throws Exception {
         final RecordedRequest request = getWebServer().takeRequest();
         final String path = request.getPath();
-        assertThat(path, containsString("o=" + nextOffset));
-        assertThat(path, containsString("l=" + nextLimit));
+        assertThat(path).contains("o=" + nextOffset);
+        assertThat(path).contains("l=" + nextLimit);
       }
     });
   }

@@ -1,9 +1,10 @@
-package com.stanfy.app.loader;
+package com.stanfy.enroscar.rest.loader.test;
 
 import org.junit.Before;
 
 import com.google.mockwebserver.MockResponse;
-import com.stanfy.app.beans.BeansManager.Editor;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 
 /**
  * XML format support test.
@@ -18,9 +19,16 @@ public class XmlRequestTest extends JsonRequestTest {
 
   @Override
   protected void configureBeansManager(final Editor editor) {
-    editor.required().remoteServerApi("xml");
+    super.configureBeansManager(editor);
+    editor.put(XmlGsonContentHandler.class);
   }
 
+  @Override
+  protected void whenBeansConfigured() {
+    super.whenBeansConfigured();
+    initContentHandler(XmlGsonContentHandler.BEAN_NAME);
+  }
+  
   @Override
   protected void enqueueResponse(final MyModel model) {
     getWebServer().enqueue(new MockResponse().setBody(

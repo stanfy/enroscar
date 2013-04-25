@@ -2,10 +2,11 @@ package com.stanfy.enroscar.net.test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
@@ -44,6 +45,9 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     }
   };
 
+  /** Error. */
+  private Throwable error;
+
   /** Configuration. */
   private EnroscarConfiguration config;
 
@@ -54,26 +58,6 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
   private int requestsCounter = 0;
 
   public MockWebServer getWebServer() { return webServer; }
-
-//  protected static <T extends Loader<?>> T directLoaderCall(final T loader) {
-//    return Robolectric.directlyOnFullStack(FullStackDirectCallPolicy.build(initLoader(loader)).include(Arrays.asList("android.support.v4")));
-//  }
-//
-//  protected static <T extends Loader<?>> T initLoader(final T loader) {
-//    try {
-//      final Field contextField = Loader.class.getDeclaredField("mContext");
-//      contextField.setAccessible(true);
-//      contextField.set(loader, Robolectric.application);
-//
-//      if (loader instanceof RequestBuilderLoader<?>) {
-//        RbLoaderAccess.initLoader((RequestBuilderLoader<?>)loader);
-//      }
-//
-//      return loader;
-//    } catch (final Exception e) {
-//      throw new RuntimeException(e);
-//    }
-//  }
 
   /**
    * @param rb request builder instance
@@ -163,9 +147,48 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     doAssertResponse(connection, expectedResponse, cached, STRAIGHT_RESOLVER);
   }
 
+  public <T> void waitAndAssert(final Waiter<T> waiter, final Asserter<T> asserter) throws Throwable {
+    final Thread checker = new Thread() {
+      @Override
+      public void run() {
+        final T data = waiter.waitForData();
+        try {
+          asserter.makeAssertions(data);
+        } catch (final Exception e) {
+          error = e;
+        }
+      }
+    };
+    checker.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(final Thread thread, final Throwable ex) {
+        ex.printStackTrace();
+        error = ex;
+        throw new AssertionError("Exception occured: " + ex.getMessage());
+      }
+    });
+    checker.start();
+
+    try {
+      checker.join();
+    } catch (final InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    if (error != null) { throw error; }
+  }
+
   /** Stream resolver. */
   private interface StreamResolver {
     InputStream getStream(final URLConnection connection) throws IOException;
+  }
+
+  /** Can wait. */
+  public interface Waiter<T> {
+    T waitForData();
+  }
+  /** Can make assertions. */
+  public interface Asserter<T> {
+    void makeAssertions(final T data) throws Exception;
   }
 
   /**

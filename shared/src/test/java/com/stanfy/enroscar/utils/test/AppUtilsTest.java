@@ -1,16 +1,19 @@
-package com.stanfy.utils;
+package com.stanfy.enroscar.utils.test;
 
 import static junit.framework.Assert.assertEquals;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import com.stanfy.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.shared.test.Runner;
+import com.stanfy.enroscar.utils.AppUtils;
 
 /**
  * Tests for {@link AppUtils}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public class AppUtilsTest extends AbstractEnroscarTest {
+@RunWith(Runner.class)
+public class AppUtilsTest {
 
   @Test
   public void md5Test() throws Exception {

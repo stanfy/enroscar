@@ -1,6 +1,6 @@
-package com.stanfy.app.loader;
+package com.stanfy.enroscar.rest.loader.test;
 
-import static org.hamcrest.Matchers.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -8,22 +8,21 @@ import android.content.Context;
 import android.support.v4.content.Loader;
 
 import com.google.mockwebserver.MockResponse;
-import com.stanfy.app.beans.BeansManager.Editor;
-import com.stanfy.serverapi.request.RequestDescription;
-import com.stanfy.serverapi.response.ContentAnalyzer;
-import com.stanfy.serverapi.response.ResponseData;
-import com.stanfy.serverapi.response.handler.StringContentHandler;
-import com.stanfy.test.AbstractApplicationServiceTest;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.rest.response.ContentAnalyzer;
+import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
 /**
- * Tests for {@link RequestBuilderLoader}.
+ * Tests for {@link com.stanfy.enroscar.rest.loader.RequestBuilderLoader}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public class RequestBuilderLoaderTest extends AbstractApplicationServiceTest {
+public class RequestBuilderLoaderTest extends AbstractLoaderTest {
 
   @Override
   protected void configureBeansManager(final Editor editor) {
-    editor.required().remoteServerApi();
+    super.configureBeansManager(editor);
     editor.put(StringContentHandler.class);
     editor.put("analyzer", new Analyzer());
   }
@@ -34,18 +33,17 @@ public class RequestBuilderLoaderTest extends AbstractApplicationServiceTest {
     getWebServer().enqueue(new MockResponse().setBody(text));
 
     final Loader<ResponseData<String>> loader = new MyRequestBuilder<String>(getApplication()) { }
-      .setStartedLoader(true)
       .setUrl(getWebServer().getUrl("/").toString())
       .setFormat(StringContentHandler.BEAN_NAME)
       .getLoader();
 
-    directLoaderCall(loader).startLoading();
+    loader.startLoading();
 
     waitAndAssertForLoader(loader, new Asserter<ResponseData<String>>() {
       @Override
       public void makeAssertions(final ResponseData<String> data) throws Exception {
-        assertThat(data, is(notNullValue()));
-        assertThat(data.getModel(), equalTo(text));
+        assertThat(data).isNotNull();
+        assertThat(data.getModel()).isEqualTo(text);
       }
     });
   }
@@ -55,20 +53,20 @@ public class RequestBuilderLoaderTest extends AbstractApplicationServiceTest {
     final String meta = "meta";
     getWebServer().enqueue(new MockResponse().setBody("doLoadShouldDeliverResults"));
 
+    @SuppressWarnings("deprecation")
     final Loader<ResponseData<String>> loader = new MyRequestBuilder<String>(getApplication()) { }
-        .setStartedLoader(true)
         .setUrl(getWebServer().getUrl("/").toString())
         .setFormat(StringContentHandler.BEAN_NAME)
         .setMetaInfo(meta, meta)
         .setContentAnalyzer("analyzer")
         .getLoader();
 
-    directLoaderCall(loader).startLoading();
+    loader.startLoading();
 
     waitAndAssertForLoader(loader, new Asserter<ResponseData<String>>() {
       @Override
       public void makeAssertions(final ResponseData<String> data) throws Exception {
-        assertThat(data.getModel(), equalTo(meta));
+        assertThat(data.getModel()).isEqualTo(meta);
       }
     });
   }
@@ -78,6 +76,7 @@ public class RequestBuilderLoaderTest extends AbstractApplicationServiceTest {
    */
   public static class Analyzer implements ContentAnalyzer<String, String> {
 
+    @SuppressWarnings("deprecation")
     @Override
     public ResponseData<String> analyze(final Context context,
         final RequestDescription description, final ResponseData<String> responseData) {

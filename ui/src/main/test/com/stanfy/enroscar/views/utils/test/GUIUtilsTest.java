@@ -1,16 +1,17 @@
-package com.stanfy.utils;
+package com.stanfy.enroscar.views.utils.test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.xtremelabs.robolectric.Robolectric;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
+import com.stanfy.enroscar.views.GUIUtils;
 
 /**
  * Tests for {@link GUIUtils}.

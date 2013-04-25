@@ -47,46 +47,6 @@ public class Application extends com.stanfy.app.Application {
     }
   }
 
-  /** Callback for testing. */
-  public class WaitApiCallback implements ApiMethodCallback {
-
-    /** Latch. */
-    private final CountDownLatch latch = new CountDownLatch(1);
-
-    /** Data. */
-    private ResponseData<?> data;
-
-    /** Canceled. */
-    private boolean canceled = false;
-
-    @Override
-    public void reportSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-      data = responseData;
-      latch.countDown();
-    }
-    @Override
-    public void reportError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-      data = responseData;
-      latch.countDown();
-    }
-    @Override
-    public void reportCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-      canceled = true;
-      data = responseData;
-      latch.countDown();
-    }
-
-    public boolean isCanceled() { return canceled; }
-
-    public ResponseData<?> waitData() {
-      try {
-        latch.await();
-      } catch (final InterruptedException e) {
-        throw new RuntimeException("Wait is interrupted!");
-      }
-      return data;
-    }
-  }
 
   /** Service state. */
   private static final int ZYGOTE = 0, CREATED = 1;

@@ -1,4 +1,5 @@
-package com.stanfy.app.loader;
+package com.stanfy.enroscar.rest.loader;
+
 
 /**
  * Provides access to some methods.

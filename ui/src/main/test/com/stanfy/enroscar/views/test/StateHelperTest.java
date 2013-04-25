@@ -1,4 +1,4 @@
-package com.stanfy.views;
+package com.stanfy.enroscar.views.test;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.equalTo;

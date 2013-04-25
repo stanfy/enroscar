@@ -1,4 +1,4 @@
-package com.stanfy.views.list;
+package com.stanfy.enroscar.views.list.test;
 
 import static org.hamcrest.Matchers.is;
 

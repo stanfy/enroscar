@@ -1,6 +1,7 @@
-package com.stanfy.views.list;
+package com.stanfy.enroscar.views.list.test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +14,8 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.stanfy.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.views.list.CursorLoaderAdapter;
 
 
 /**
