@@ -91,10 +91,17 @@ public class ApiMethodsSupport extends RequestPerformer {
       }
     }
 
+    /**
+     * Error happened.
+     * @param requestDescription request description instance
+     * @param responseData obtained response data
+     */
     protected void onError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
     }
 
     /**
+     * @param requestDescription request description instance
+     * @param responseData obtained response data (rather likely it is null)
      * @see ApiMethodCallback#onCancel(RequestDescription)
      */
     protected void onCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {

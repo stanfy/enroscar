@@ -27,7 +27,7 @@ import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.io.PoolableBufferedInputStream;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
-import com.stanfy.enroscar.utils.AppUtils;
+import com.stanfy.enroscar.sdkdep.SdkDepUtils;
 
 /**
  * Service that can be used instead of {@link android.app.DownloadManager} on older devices.
@@ -122,6 +122,9 @@ public class DownloadsService extends Service {
     super.onDestroy();
   }
 
+  /**
+   * @param request request to add to the download queue
+   */
   protected void enqueue(final Request request) {
     final DownloadTask task = createDownloadTask();
     tasks.add(task);
@@ -129,6 +132,10 @@ public class DownloadsService extends Service {
     task.execute(request);
   }
 
+  /**
+   * @param task download task instance
+   * @param request download request instance
+   */
   protected void onTaskFinish(final DownloadTask task, final Request request) {
     notificationManager.cancel(request.notificationId);
     tasks.remove(task);
@@ -168,6 +175,7 @@ public class DownloadsService extends Service {
 
     public Request() { }
 
+    /** @param in parcel instance */
     protected Request(final Parcel in) {
       ClassLoader cl = getClass().getClassLoader();
       this.id = in.readLong();
@@ -232,23 +240,25 @@ public class DownloadsService extends Service {
     /** @return the request */
     public Request getRequest() { return request; }
 
+    /**
+     * @param progress current progress (value in [0;1] interval, may be null)
+     */
     protected void updateDownloadProgress(final Float progress) {
       final float p = progress == null ? 0 : progress;
       final int max = 1000;
 
-      // TODO implement
-//      final Notification n = AppUtils.getSdkDependentUtils().createNotificationBuilder(DownloadsService.this)
-//          .setWhen(notificationTime)
-//          .setSmallIcon(android.R.drawable.stat_sys_download)
-//          .setTicker(request.title)
-//          .setContentTitle(request.title)
-//          .setContentText(request.description)
-//          .setContentIntent(PendingIntent.getBroadcast(DownloadsService.this, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT))
-//          .setOngoing(true)
-//          .setProgress(max, (int)(p * max), progress == null)
-//          .build();
-//
-//      getNotificationManager().notify(request.notificationId, n);
+      final Notification n = SdkDepUtils.get(DownloadsService.this).createNotificationBuilder(DownloadsService.this)
+          .setWhen(notificationTime)
+          .setSmallIcon(android.R.drawable.stat_sys_download)
+          .setTicker(request.title)
+          .setContentTitle(request.title)
+          .setContentText(request.description)
+          .setContentIntent(PendingIntent.getBroadcast(DownloadsService.this, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+          .setOngoing(true)
+          .setProgress(max, (int)(p * max), progress == null)
+          .build();
+
+      getNotificationManager().notify(request.notificationId, n);
 
       publishProgress(p);
     }

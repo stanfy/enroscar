@@ -72,6 +72,10 @@ public abstract class RequestPerformer extends ApplicationServiceSupport<ApiMeth
     }
   }
 
+  /**
+   * Send request to the service.
+   * @param description request description instance
+   */
   protected void doRequest(final RequestDescription description) {
     if (DEBUG) { Log.d(TAG, "Perform " + description.getId()); }
     serviceObject.performRequest(description);

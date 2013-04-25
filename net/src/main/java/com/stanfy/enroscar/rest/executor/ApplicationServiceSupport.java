@@ -36,6 +36,7 @@ public abstract class ApplicationServiceSupport<T> implements ServiceConnection 
     this.configuration = BeansManager.get(a).getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class);
   }
 
+  /** @return interface to bind to */
   protected abstract Class<T> getInterfaceClass();
 
   /**

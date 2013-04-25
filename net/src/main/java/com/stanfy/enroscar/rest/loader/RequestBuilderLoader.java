@@ -174,6 +174,10 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
     }
   }
 
+  /**
+   * @param request request instance
+   * @param data loaded data
+   */
   protected void dispatchLoadedData(final RequestDescription request, final ResponseData<MT> data) {
     if (requestId != request.getId() || isAbandoned()) {
       dispatchCanceledData(data);
@@ -200,6 +204,9 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
     checkForUpdateRequest();
   }
 
+  /**
+   * @param data loaded data (rather likely it's null)
+   */
   protected void dispatchCanceledData(final ResponseData<MT> data) {
     resetStateAfterComplete();
     onCanceled(data);
@@ -227,6 +234,13 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
     if (DEBUG) { Log.v(TAG, "onReleaseData, " + this); }
   }
 
+  /**
+   * Data loading has been successful, we are going to accept data. 
+   * Here we can implement some accumulation logic.
+   * @param previousData old data
+   * @param responseData new data
+   * @return data to accept
+   */
   protected ResponseData<MT> onAcceptData(final ResponseData<MT> previousData, final ResponseData<MT> responseData) {
     return responseData;
   }

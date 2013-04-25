@@ -5,11 +5,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Locale;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 
 import com.stanfy.enroscar.rest.request.net.multipart.FilePart;
 import com.stanfy.enroscar.rest.request.net.multipart.PartSource;
+import com.stanfy.enroscar.sdkdep.SdkDepUtils;
 
 /**
  * {@link PartSource} based on {@link Bitmap} content.
@@ -29,8 +31,8 @@ public class BitmapPart extends FilePart {
   /** Compress quality. */
   private int compressQuality = COMPRESS_QUALITY_DEFAULT;
 
-  public BitmapPart(final String name, final String fileName, final Bitmap bitmap) {
-    super(name, new BitmapSource(fileName, /*AppUtils.getSdkDependentUtils().getBitmapSize(bitmap) TODO */ 0), "image/jpeg", null);
+  public BitmapPart(final Context context, final String name, final String fileName, final Bitmap bitmap) {
+    super(name, new BitmapSource(fileName, SdkDepUtils.get(context).getBitmapSize(bitmap)), "image/jpeg", null);
     this.bitmap = bitmap;
   }
 

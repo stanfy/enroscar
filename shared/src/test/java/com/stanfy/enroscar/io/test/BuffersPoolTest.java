@@ -7,8 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import android.util.Log;
-
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.shared.test.Runner;
 
@@ -33,7 +31,6 @@ public class BuffersPoolTest {
   // XXX Is it a good way???
   @Test
   public void threadsTest() throws Exception {
-    Log.i(getClass().getSimpleName(), "XXX Don't mind following 'Be careful'...");
     final int count = 10;
     final ArrayList<UserThread> threads = new ArrayList<UserThread>(count);
     for (int i = 0; i < count; i++) {
