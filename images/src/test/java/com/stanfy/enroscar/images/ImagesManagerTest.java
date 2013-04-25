@@ -1,45 +1,20 @@
-package com.stanfy.images;
+package com.stanfy.enroscar.images;
 
-import static org.hamcrest.Matchers.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.Arrays;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import android.content.Context;
-
-import com.stanfy.app.beans.BeansManager.Editor;
-import com.stanfy.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.images.test.Runner;
 
 /**
  * Tests for {@link ImagesManager}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
- *
  */
-public class ImagesManagerTest extends AbstractEnroscarTest {
-
-  /** Images manager for tests. */
-  public static class MyImagesManager extends ImagesManager {
-
-    public MyImagesManager(final Context context) {
-      super(context);
-    }
-
-  }
-
-  /** Images manager. */
-  private MyImagesManager imagesManager;
-
-  @Override
-  protected void configureBeansManager(final Editor editor) {
-    editor.defaults().put(MyImagesManager.class);
-  }
-
-  @Before
-  public void setupImagesManager() {
-    imagesManager = (MyImagesManager) getBeansManager().getImagesManager();
-  }
+@RunWith(Runner.class)
+public class ImagesManagerTest {
 
   @Test
   public void calculateSampleFactorShouldReturnNearestPowerOf2() {
@@ -70,26 +45,24 @@ public class ImagesManagerTest extends AbstractEnroscarTest {
     testFactor(testTable, false);
   }
 
-  @SuppressWarnings("unchecked")
   private void testFactor(final Object[][] testTable, final boolean nearestPowerOf2) {
     for (final Object[] row : testTable) {
       final int width = (Integer) row[0], height = (Integer) row[1];
       final int imageWidth = (Integer) row[2], imageHeight = (Integer) row[3];
       final boolean useHeight = (Boolean) row[row.length - 1];
 
-      final int factor = imagesManager.calculateSampleFactor(imageWidth, imageHeight, width, height);
+      final int factor = ImagesManager.calculateSampleFactor(imageWidth, imageHeight, width, height);
       final int f = useHeight ? imageHeight / height : imageWidth / width;
 
       if (nearestPowerOf2) {
 
-        assertThat("Not power of 2 for " + Arrays.toString(row), factor, allOf(
-            equalTo(ImagesManager.nearestPowerOf2(f)),
-            greaterThan(f - ImagesManager.MAX_POWER_OF_2_DISTANCE)
-        ));
+        assertThat(factor).as("Not power of 2 for " + Arrays.toString(row))
+            .isEqualTo(ImagesManager.nearestPowerOf2(f))
+            .isGreaterThan(f - ImagesManager.MAX_POWER_OF_2_DISTANCE);
 
       } else {
 
-        assertThat("Not exact factor " + Arrays.toString(row), factor, equalTo(f));
+        assertThat(factor).as("Not exact factor " + Arrays.toString(row)).isEqualTo(f);
 
       }
     }
@@ -122,7 +95,7 @@ public class ImagesManagerTest extends AbstractEnroscarTest {
     for (int i = 0; i < n; i++) {
       final int x = testTable[2 * i];
       final int y = testTable[2 * i + 1];
-      assertThat(ImagesManager.nearestPowerOf2(x), equalTo(y));
+      assertThat(ImagesManager.nearestPowerOf2(x)).isEqualTo(y);
     }
   }
 

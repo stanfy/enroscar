@@ -457,7 +457,7 @@ public class ImagesManager implements InitializingBean {
   /**
    * Possible factors: <code>2, 4, 7, 8, (8 + {@link #MAX_POWER_OF_2_DISTANCE} = 11), 12, 13, 14, 15, 16, 16 + {@link #MAX_POWER_OF_2_DISTANCE}...</code>
    */
-  private static int calculateSampleFactor(final int inW, final int inH, final int width, final int height) {
+  static int calculateSampleFactor(final int inW, final int inH, final int width, final int height) {
     int result = 1;
     final int factor = inW > inH ? inW / width : inH / height;
     if (factor > 1) {

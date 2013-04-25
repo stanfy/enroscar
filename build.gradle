@@ -39,6 +39,7 @@ configure(subprojects.findAll() { !(it.name in androidLibs) }) {
     compile androidMavenDep
     testCompile group: 'junit', name: 'junit', version: '4.10'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
+    testCompile 'org.easytesting:fest-assert-core:2.0M10'
     testCompile group: 'org.robolectric', name: 'robolectric', version: '2.0-alpha-2'
   }
 
