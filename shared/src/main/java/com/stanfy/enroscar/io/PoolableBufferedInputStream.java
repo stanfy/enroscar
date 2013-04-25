@@ -220,7 +220,7 @@ public class PoolableBufferedInputStream extends FilterInputStream {
    *
    * @param buffer
    *            the byte array in which to store the bytes read.
-   * @param offset
+   * @param start
    *            the initial position in {@code buffer} to store the bytes read
    *            from this stream.
    * @param length

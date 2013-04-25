@@ -113,8 +113,7 @@ public class ApiMethods {
   private final SparseArray<RequestTracker> trackersMap = new SparseArray<RequestTracker>();
 
   /**
-   * Constructs remote API methods implementation.<br/>
-   * It creates instances of {@link RequestDescriptionProcessor} and {@link RequestProcessorHooks}.
+   * Constructs remote API methods implementation.
    * @param appService application service
    */
   protected ApiMethods(final ApplicationService appService) {

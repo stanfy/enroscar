@@ -75,7 +75,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
 
   /**
    * Set amount to throttle updates by.  This is the minimum time from
-   * when the last {@link #onLoadInBackground()} call has completed until
+   * when the last {@link RequestBuilder#execute()} call has completed until
    * a new load is scheduled.
    *
    * @param delayMS Amount of delay, in milliseconds.
@@ -87,7 +87,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   /**
    * @param requestId request ID
    * @param requestDescription request description instance (may be null)
-   * @see {@link ApiSupportRequestCallback#filterOperation(int, int)}
+   * @see {@link ApiSupportRequestCallback#filterOperation(int, RequestDescription)}
    * @return whether we are interested in the incoming data
    */
   protected boolean filterOperation(final int requestId, final RequestDescription requestDescription) {

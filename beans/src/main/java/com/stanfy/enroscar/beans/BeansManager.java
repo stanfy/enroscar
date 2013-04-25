@@ -257,6 +257,7 @@ public class BeansManager {
 
   /** Put bean operation. */
   protected interface PutBean {
+    /** Do operation. */
     Object put();
   }
 

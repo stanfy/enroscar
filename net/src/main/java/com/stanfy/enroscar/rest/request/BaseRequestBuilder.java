@@ -294,7 +294,9 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
    * Add meta information to request which could be retrieved in {@link com.stanfy.enroscar.rest.response.ContentAnalyzer}.
    * @param name info name
    * @param value info value
+   * @deprecated try to avoid use of it, it's going to be deleted
    */
+  @Deprecated
   protected void putMetaInfo(final String name, final Object value) {
     result.putMetaInfo(name, value);
   }

@@ -23,6 +23,16 @@ public abstract class StatsManager implements Bean {
   /** Bean name. */
   public static final String BEAN_NAME = "StatsManager";
 
+  /** Logging tag. */
+  protected static final String TAG = "Stats";
+  /** Debug flag. */
+  protected static final boolean DEBUG = DebugFlags.DEBUG_STATS;
+
+  /** ' at ' pattern. */
+  private static final Pattern PATTERN_ST_AT = Pattern.compile("\\s*\\n?\\s*at\\s+");
+  /** Exception class pattern. */
+  private static final Pattern PATTERN_ST_EX_CLASS = Pattern.compile("[a-zA-Z0-9_.]+\\.(\\w+):?");
+
   /**
    * Start session routine.
    * @param activity activity instance
@@ -66,16 +76,6 @@ public abstract class StatsManager implements Bean {
    * @param params event parameters
    */
   public abstract void event(final String tag, final Map<String, String> params);
-
-  /** Logging tag. */
-  protected static final String TAG = "Stats";
-  /** Debug flag. */
-  protected static final boolean DEBUG = DebugFlags.DEBUG_STATS;
-
-  /** ' at ' pattern. */
-  private static final Pattern PATTERN_ST_AT = Pattern.compile("\\s*\\n?\\s*at\\s+");
-  /** Exception class pattern. */
-  private static final Pattern PATTERN_ST_EX_CLASS = Pattern.compile("[a-zA-Z0-9_.]+\\.(\\w+):?");
 
   public void event(final String tag) {
     event(tag, Collections.<String, String>emptyMap());

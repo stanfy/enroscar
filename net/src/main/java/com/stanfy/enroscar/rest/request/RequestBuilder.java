@@ -29,7 +29,7 @@ public interface RequestBuilder<MT> {
 
   /**
    * @param executor request performer instance
-   * @param this instance for chaining
+   * @return this instance for chaining
    */
   RequestBuilder<MT> setExecutor(final RequestExecutor executor);
 

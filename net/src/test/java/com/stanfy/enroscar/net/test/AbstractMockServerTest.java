@@ -36,14 +36,6 @@ import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
 @RunWith(Runner.class)
 public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
 
-  /** Configuration. */
-  private EnroscarConfiguration config;
-
-  /** Web server. */
-  private MockWebServer webServer;
-
-  public MockWebServer getWebServer() { return webServer; }
-
   /** Straight resolver.  */
   private static final StreamResolver STRAIGHT_RESOLVER = new StreamResolver() {
     @Override
@@ -52,8 +44,16 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     }
   };
 
+  /** Configuration. */
+  private EnroscarConfiguration config;
+
+  /** Web server. */
+  private MockWebServer webServer;
+
   /** Requests counter. */
   private int requestsCounter = 0;
+
+  public MockWebServer getWebServer() { return webServer; }
 
 //  protected static <T extends Loader<?>> T directLoaderCall(final T loader) {
 //    return Robolectric.directlyOnFullStack(FullStackDirectCallPolicy.build(initLoader(loader)).include(Arrays.asList("android.support.v4")));

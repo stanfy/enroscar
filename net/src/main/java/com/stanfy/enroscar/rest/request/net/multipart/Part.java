@@ -28,26 +28,6 @@ public abstract class Part {
   /** Debug flag. */
   private static final boolean DEBUG = Utils.DEBUG_IO;
 
-  /**
-   * The boundary.
-   * @deprecated use {@link org.apache.http.client.methods.multipart#MULTIPART_BOUNDARY}
-   */
-  @Deprecated
-  protected static final String BOUNDARY = "----------------314159265358979323846";
-
-  /**
-   * The boundary as a byte array.
-   * @deprecated don't use it ;)
-   */
-  @Deprecated
-  protected static final byte[] BOUNDARY_BYTES = EncodingUtils.getAsciiBytes(BOUNDARY);
-
-  /**
-   * The default boundary to be used if {@link #setPartBoundary(byte[])} has not
-   * been called.
-   */
-  private static final byte[] DEFAULT_BOUNDARY_BYTES = BOUNDARY_BYTES;
-
   /** Carriage return/linefeed. */
   protected static final String CRLF = "\r\n";
 
@@ -97,16 +77,6 @@ public abstract class Part {
     EncodingUtils.getAsciiBytes(CONTENT_TRANSFER_ENCODING);
 
   /**
-   * Return the boundary string.
-   * @return the boundary string
-   * @deprecated uses a constant string. Rather use {@link #getPartBoundary}
-   */
-  @Deprecated
-  public static String getBoundary() {
-    return BOUNDARY;
-  }
-
-  /**
    * The ASCII bytes to use as the multipart boundary.
    */
   private byte[] boundaryBytes;
@@ -143,12 +113,7 @@ public abstract class Part {
    * @since 3.0
    */
   protected byte[] getPartBoundary() {
-    if (boundaryBytes == null) {
-      // custom boundary bytes have not been set, use the default.
-      return DEFAULT_BOUNDARY_BYTES;
-    } else {
-      return boundaryBytes;
-    }
+    return boundaryBytes;
   }
 
   /**
@@ -329,19 +294,6 @@ public abstract class Part {
    *
    * @param out The stream to write to.
    * @param parts The parts to write.
-   *
-   * @throws IOException If an I/O error occurs while writing the parts.
-   */
-  public static void sendParts(final OutputStream out, final Part[] parts)
-  throws IOException {
-    sendParts(out, parts, DEFAULT_BOUNDARY_BYTES);
-  }
-
-  /**
-   * Write all parts and the last boundary to the specified output stream.
-   *
-   * @param out The stream to write to.
-   * @param parts The parts to write.
    * @param partBoundary The ASCII bytes to use as the part boundary.
    *
    * @throws IOException If an I/O error occurs while writing the parts.
@@ -366,19 +318,6 @@ public abstract class Part {
     out.write(partBoundary);
     out.write(EXTRA_BYTES);
     out.write(CRLF_BYTES);
-  }
-
-  /**
-   * Return the total sum of all parts and that of the last boundary.
-   *
-   * @param parts The parts.
-   * @return The total length
-   *
-   * @throws IOException If an I/O error occurs while writing the parts.
-   */
-  public static long getLengthOfParts(final Part[] parts)
-  throws IOException {
-    return getLengthOfParts(parts, DEFAULT_BOUNDARY_BYTES);
   }
 
   /**

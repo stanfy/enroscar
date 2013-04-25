@@ -348,10 +348,18 @@ public class RequestDescription implements Parcelable {
     this.metaParameters.put(name, value);
   }
 
+  /**
+   * @deprecated try to avoid use of it, it's going to be deleted
+   */
+  @Deprecated
   public Object getMetaInfo(final String name) {
     return this.metaParameters == null ? null : this.metaParameters.get(name);
   }
 
+  /**
+   * @deprecated try to avoid use of it, it's going to be deleted
+   */
+  @Deprecated
   public boolean hasMetaInfo(final String name) {
     return this.metaParameters == null ? false : this.metaParameters.containsKey(name);
   }

@@ -172,7 +172,6 @@ public class ImagesManager implements InitializingBean {
   
   /**
    * Clear the cached entities.
-   * @param context context instance
    * @param url image URL
    * @return true if entry was deleted
    */
@@ -197,8 +196,6 @@ public class ImagesManager implements InitializingBean {
    * Populate the requested image to the specified view. Called from the GUI thread.
    * @param view view instance
    * @param url image URL
-   * @param imagesDAO images DAO
-   * @param downloader downloader instance
    */
   public void populateImage(final View view, final String url) {
     final Object tag = view.getTag();
@@ -302,8 +299,8 @@ public class ImagesManager implements InitializingBean {
   protected Executor getImageTaskExecutor() { return Threading.getImageTasksExecutor(); }
 
   /**
-   * @param context context
-   * @return a drawable to display while the image is loading
+   * @param holder image consumer
+   * @return drawable to display while image is being loaded
    */
   protected Drawable getLoadingDrawable(final ImageConsumer holder) {
     final Drawable d = holder.getLoadingImage();
@@ -312,7 +309,7 @@ public class ImagesManager implements InitializingBean {
   }
 
   /**
-   * @param context context instance
+   * @param holder image consumer
    * @param drawable resulting drawable
    * @return decorated drawable
    */
@@ -320,7 +317,7 @@ public class ImagesManager implements InitializingBean {
 
   /**
    * It must be executed in the main thread.
-   * @param imageView image view instance
+   * @param imageHolder image consumer
    * @param drawable incoming drawable
    * @param preloader preloading image flag
    * @param animate whether to animate image change
@@ -347,6 +344,7 @@ public class ImagesManager implements InitializingBean {
 
   /**
    * @param url image URL
+   * @param holder image consumer (to get target size)
    * @return cached drawable
    */
   protected Drawable getFromMemCache(final String url, final ImageConsumer holder) {
@@ -371,9 +369,6 @@ public class ImagesManager implements InitializingBean {
 
   /**
    * @param imageHolder image holder to process
-   * @param imagesDAO images DAO
-   * @param downloader downloader instance
-   * @return loader task instance
    */
   protected void startImageLoaderTask(final ImageConsumer imageHolder) {
     final String key = imageHolder.getLoaderKey();
@@ -397,6 +392,11 @@ public class ImagesManager implements InitializingBean {
     }
   }
 
+  /**
+   * Add image to memory cache.
+   * @param url image URL
+   * @param d drawable instance
+   */
   protected void memCacheImage(final String url, final Drawable d) {
     if (d instanceof BitmapDrawable) {
       if (DEBUG) { Log.d(TAG, "Memcache for " + url); }
@@ -404,6 +404,12 @@ public class ImagesManager implements InitializingBean {
     }
   }
 
+  /**
+   * @param url image URL
+   * @param holder image consumer
+   * @return drawable with loaded image
+   * @throws IOException if error happens
+   */
   protected Drawable readImage(final String url, final ImageConsumer holder) throws IOException {
     if (holder == null) { return null; }
     InputStream imageStream = newConnection(url).getInputStream();
@@ -451,7 +457,7 @@ public class ImagesManager implements InitializingBean {
   /**
    * Possible factors: <code>2, 4, 7, 8, (8 + {@link #MAX_POWER_OF_2_DISTANCE} = 11), 12, 13, 14, 15, 16, 16 + {@link #MAX_POWER_OF_2_DISTANCE}...</code>
    */
-  protected static int calculateSampleFactor(final int inW, final int inH, final int width, final int height) {
+  private static int calculateSampleFactor(final int inW, final int inH, final int width, final int height) {
     int result = 1;
     final int factor = inW > inH ? inW / width : inH / height;
     if (factor > 1) {
@@ -463,6 +469,14 @@ public class ImagesManager implements InitializingBean {
     return result;
   }
 
+  /**
+   * @param is image input stream
+   * @param sourceDensity known image density
+   * @param width target width
+   * @param height target height
+   * @return sampling factor
+   * @throws IOException if error happens
+   */
   protected int resolveSampleFactor(final InputStream is, final int sourceDensity, final int width, final int height) throws IOException {
     final BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inJustDecodeBounds = true;
@@ -481,6 +495,13 @@ public class ImagesManager implements InitializingBean {
     return result;
   }
 
+  /**
+   * @param is image input stream
+   * @param sourceDensity known image density
+   * @param options decoding options
+   * @return drawable with a loaded image
+   * @throws IOException if error happens
+   */
   protected Drawable decodeStream(final InputStream is, final int sourceDensity, final BitmapFactory.Options options) throws IOException {
     final BitmapFactory.Options opts = options != null ? options : new BitmapFactory.Options();
     final InputStream src = prepareImageOptionsAndInput(is, sourceDensity, opts);
@@ -536,10 +557,9 @@ public class ImagesManager implements InitializingBean {
 
   /**
    * Image loader task.
-   * @param <T> image type
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
-  protected static class ImageLoader implements Callable<Void> {
+  public static class ImageLoader implements Callable<Void> {
 
     /** Image URL. */
     private final String url;
@@ -561,6 +581,11 @@ public class ImagesManager implements InitializingBean {
     /** Resolved result flag. */
     private boolean resultResolved = false, started = false;
 
+    /**
+     * @param url image URL
+     * @param key image loader key
+     * @param imagesManager manager instance
+     */
     public ImageLoader(final String url, final String key, final ImagesManager imagesManager) {
       this.url = url;
       this.key = key;
@@ -568,7 +593,7 @@ public class ImagesManager implements InitializingBean {
       this.future = new FutureTask<Void>(this);
     }
 
-    /** Called from UI thread. */
+    /* Called from UI thread. */
     public boolean addTarget(final ImageConsumer imageHolder) {
       if (future.isCancelled()) { return false; } // we should start a new task
       if (!future.isDone()) {
@@ -610,7 +635,7 @@ public class ImagesManager implements InitializingBean {
       }
     }
 
-    protected void safeImageSet(final Drawable source) {
+    private void safeImageSet(final Drawable source) {
       final Drawable d;
       synchronized (this) {
         resultResolved = true;
