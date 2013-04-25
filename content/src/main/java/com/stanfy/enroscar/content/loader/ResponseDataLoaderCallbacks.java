@@ -5,7 +5,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
 /**
- * Callbacks for {@link RequestBuilderLoader}.
+ * Callbacks for that deal with {@link ResponseData}.
  * @param <D> data type
  * @see LoaderCallbacks
  */
