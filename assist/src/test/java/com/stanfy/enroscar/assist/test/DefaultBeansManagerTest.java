@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import com.stanfy.enroscar.assist.DefaultBeansManager;
 import com.stanfy.enroscar.beans.BeansManager;
@@ -20,7 +21,7 @@ import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 /**
  * Tests for {@link DefaultBeansManager}.
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class DefaultBeansManagerTest {
 
   /** Manager. */
