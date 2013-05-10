@@ -5,7 +5,7 @@ package com.stanfy.enroscar.net.cache;
  * <p>File-based cache for remote API responses.</p>
  * Usage:
  * <pre>
- *   @EnroscarBean("MyApiResponseCache")
+ *   &#64;EnroscarBean("MyApiResponseCache")
  *   public class MyApiResponseCache extends ApiFileResponseCache {
  *
  *     private static final TimeRule[] TIME_RULES = {

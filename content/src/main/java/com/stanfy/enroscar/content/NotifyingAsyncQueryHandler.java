@@ -13,8 +13,6 @@ import android.net.Uri;
  * {@link WeakReference} back to a listener. Will properly close any
  * {@link Cursor} if the listener ceases to exist.
  * <p>
- * This pattern can be used to perform background queries without leaking
- * {@link android.app.Context} objects.
  *
  * This class was taken from <a href="http://code.google.com/p/iosched">Google IO Schedule project</a>
  * and a bit modified.
@@ -23,40 +21,6 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
 
   /** Reference. */
   private WeakReference<AsyncQueryListener> mListener;
-
-  /**
-   * Interface to listen for completed query operations.
-   */
-  public interface AsyncQueryListener {
-    /**
-     * Is called when an sync query is completed (after startQuery).
-     * @param token unique token
-     * @param cookie object associated with the current request
-     * @param cursor resulting cursor
-     */
-    void onQueryComplete(int token, Object cookie, Cursor cursor);
-    /**
-     * Is called when an async update is completed (after startUpdate).
-     * @param token unique token
-     * @param cookie object associated with the current request
-     * @param resultCount result of update operation
-     */
-    void onUpdateComplete(int token, Object cookie, int resultCount);
-    /**
-     * Is called when an async delete is completed (after startDelete).
-     * @param token unique token
-     * @param cookie object associated with the current request
-     * @param resultCount result of delete operation
-     */
-    void onDeleteComplete(int token, Object cookie, int resultCount);
-    /**
-     * Is called when an async insert is completed (after startInsert).
-     * @param token unique token
-     * @param cookie object associated with the current request
-     * @param uri result URI
-     */
-    void onInsertComplete(int token, Object cookie, Uri uri);
-  }
 
   public NotifyingAsyncQueryHandler(final ContentResolver resolver, final AsyncQueryListener listener) {
     super(resolver);
@@ -166,6 +130,40 @@ public class NotifyingAsyncQueryHandler extends AsyncQueryHandler {
     if (listener != null) {
       listener.onInsertComplete(token, cookie, uri);
     }
+  }
+
+  /**
+   * Interface to listen for completed query operations.
+   */
+  public interface AsyncQueryListener {
+    /**
+     * Is called when an sync query is completed (after startQuery).
+     * @param token unique token
+     * @param cookie object associated with the current request
+     * @param cursor resulting cursor
+     */
+    void onQueryComplete(int token, Object cookie, Cursor cursor);
+    /**
+     * Is called when an async update is completed (after startUpdate).
+     * @param token unique token
+     * @param cookie object associated with the current request
+     * @param resultCount result of update operation
+     */
+    void onUpdateComplete(int token, Object cookie, int resultCount);
+    /**
+     * Is called when an async delete is completed (after startDelete).
+     * @param token unique token
+     * @param cookie object associated with the current request
+     * @param resultCount result of delete operation
+     */
+    void onDeleteComplete(int token, Object cookie, int resultCount);
+    /**
+     * Is called when an async insert is completed (after startInsert).
+     * @param token unique token
+     * @param cookie object associated with the current request
+     * @param uri result URI
+     */
+    void onInsertComplete(int token, Object cookie, Uri uri);
   }
 
 }

@@ -29,6 +29,10 @@ public class ServiceRequestPerformer implements RequestExecutor  {
     return description.getId();
   }
 
+  /**
+   * @param description request description
+   * @return intent that contains the request description
+   */
   protected Intent constructIntent(final RequestDescription description) {
     // TODO make it configurable
     Class<?> serviceClass = ApplicationService.class;
@@ -43,6 +47,10 @@ public class ServiceRequestPerformer implements RequestExecutor  {
       .putExtra(ApplicationService.EXTRA_REQUEST_DESCRIPTION_BUNDLE, descriptionBundle);
   }
 
+  /**
+   * @param requestBuilder request builder instance
+   * @return intent ready to to be sent for request description processing
+   */
   protected final Intent getIntent(final RequestBuilder<?> requestBuilder) {
     final RequestDescription[] requestDescription = new RequestDescription[1];
     requestBuilder.setExecutor(new RequestExecutor() {

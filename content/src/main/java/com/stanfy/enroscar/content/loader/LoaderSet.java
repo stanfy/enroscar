@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.content.loader;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import android.util.SparseIntArray;
 
 
 /**
- * EXPERIMETNAL Utility for operating with multiple loaders.
+ * Utility for operating with multiple loaders.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 // TODO write test
@@ -29,52 +30,13 @@ public final class LoaderSet {
   private final Object[] results;
 
   /** Results counter. */
-  private int resultsCounter = 0;
+  private BitSet resultsSet = new BitSet();
 
   /** Loader manager. */
   private final LoaderManager loaderManager;
 
   /** Callbacks. */
   private LoaderSetCallback callbacks;
-
-  /** Loader builder. */
-  public static class Builder {
-    /** Context. */
-    private final Context context;
-    /** Descriptions. */
-    private final ArrayList<Description> descriptions = new ArrayList<LoaderSet.Description>();
-
-    /** Loader manager. */
-    private LoaderManager loaderManager;
-
-    /** Internal counter. */
-    private int counter = 0;
-
-    Builder(final Context context) {
-      this.context = context;
-    }
-
-    public Builder withManager(final LoaderManager loaderManaer) {
-      this.loaderManager = loaderManaer;
-      return this;
-    }
-
-    /**
-     * @param callbacks loader callbacks instance
-     * @return identifiers of loaders processed by the defined callbacks
-     */
-    public Builder withCallbacks(final LoaderCallbacks<?> callbacks, final int... ids) {
-      descriptions.add(new Description(callbacks, ids, counter));
-      counter += ids.length;
-      return this;
-    }
-
-    /** @return loader chain instance */
-    public LoaderSet create() {
-      final Description[] desc = new Description[descriptions.size()];
-      return new LoaderSet(context, descriptions.toArray(desc), counter, loaderManager);
-    }
-  }
 
   private LoaderSet(final Context context, final Description[] desc, final int totalCount, final LoaderManager loaderManager) {
     if (desc == null || desc.length == 0) { throw new IllegalArgumentException("Loaders are not provided"); }
@@ -98,16 +60,16 @@ public final class LoaderSet {
   Object[] getResults() { return results; }
 
   public void init(final Bundle arguments, final LoaderSetCallback callbacks) {
-    touchLoader(arguments, callbacks, false);
+    touchLoaders(arguments, callbacks, false);
   }
 
   public void restart(final Bundle arguments, final LoaderSetCallback callbacks) {
-    touchLoader(arguments, callbacks, true);
+    touchLoaders(arguments, callbacks, true);
   }
 
-  private void touchLoader(final Bundle arguments, final LoaderSetCallback callbacks, final boolean reload) {
+  private void touchLoaders(final Bundle arguments, final LoaderSetCallback callbacks, final boolean reload) {
     this.callbacks = callbacks;
-    this.resultsCounter = 0;
+    this.resultsSet.clear();
 
     final LoaderManager loaderManager = LoaderSet.this.loaderManager;
     final Description[] descriptions = LoaderSet.this.descriptions;
@@ -125,11 +87,9 @@ public final class LoaderSet {
   void onLoadFinished(final Loader<Object> loader, final Object data) {
     final int index = loaderIndexMapping.get(loader);
     results[index] = data;
-    if (resultsCounter < results.length) {
-      resultsCounter++;
-    }
+    resultsSet.set(index);
 
-    if (resultsCounter == results.length) {
+    if (resultsSet.cardinality() == results.length) {
       callbacks.onLoadFinished(results);
     }
   }
@@ -230,6 +190,45 @@ public final class LoaderSet {
    */
   public interface LoaderSetCallback {
     void onLoadFinished(final Object[] data);
+  }
+
+  /** Loader builder. */
+  public static class Builder {
+    /** Context. */
+    private final Context context;
+    /** Descriptions. */
+    private final ArrayList<Description> descriptions = new ArrayList<LoaderSet.Description>();
+
+    /** Loader manager. */
+    private LoaderManager loaderManager;
+
+    /** Internal counter. */
+    private int counter = 0;
+
+    Builder(final Context context) {
+      this.context = context;
+    }
+
+    public Builder withManager(final LoaderManager loaderManaer) {
+      this.loaderManager = loaderManaer;
+      return this;
+    }
+
+    /**
+     * @param callbacks loader callbacks instance
+     * @return identifiers of loaders processed by the defined callbacks
+     */
+    public Builder withCallbacks(final LoaderCallbacks<?> callbacks, final int... ids) {
+      descriptions.add(new Description(callbacks, ids, counter));
+      counter += ids.length;
+      return this;
+    }
+
+    /** @return loader chain instance */
+    public LoaderSet create() {
+      final Description[] desc = new Description[descriptions.size()];
+      return new LoaderSet(context, descriptions.toArray(desc), counter, loaderManager);
+    }
   }
 
 }

@@ -41,7 +41,6 @@ public class ApiMethodsSupport extends RequestPerformer {
 
   /**
    * Provides default behavior.
-   * @param <MT> model type
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
   public abstract static class ApiSupportRequestCallback implements ApiMethodCallback {
@@ -91,11 +90,18 @@ public class ApiMethodsSupport extends RequestPerformer {
       }
     }
 
+    /**
+     * Error happened.
+     * @param requestDescription request description instance
+     * @param responseData obtained response data
+     */
     protected void onError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
     }
 
     /**
-     * @see ApiMethodCallback#onCancel(RequestDescription)
+     * @param requestDescription request description instance
+     * @param responseData obtained response data (rather likely it is null)
+     * @see ApiMethodCallback#reportCancel(RequestDescription, ResponseData)
      */
     protected void onCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
       // nothing

@@ -30,8 +30,6 @@ public final class IoUtils {
   /** Debug flag. */
   private static final boolean DEBUG = DebugFlags.DEBUG_IO;
 
-  private IoUtils() { /* hidden */ }
-
   /** UTF-8 character set. */
   public static final Charset UTF_8 = Charset.forName("UTF-8");
   /** ASCII character set. */
@@ -47,6 +45,8 @@ public final class IoUtils {
 
   /** Default buffer size. */
   static final int BUF_SIZE = 8192;
+
+  private IoUtils() { /* hidden */ }
 
   /* From java.util.Arrays */
   public static <T> T[] copyOfRange(final T[] original, final int start, final int end) {

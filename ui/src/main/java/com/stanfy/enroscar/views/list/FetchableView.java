@@ -17,7 +17,4 @@ public interface FetchableView {
   /** @return current adapter */
   ListAdapter getAdapter();
 
-  /** @param i new selection */
-  void setSelection(int i);
-
 }

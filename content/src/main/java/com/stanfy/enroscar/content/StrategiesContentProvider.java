@@ -51,7 +51,7 @@ public abstract class StrategiesContentProvider extends ContentProvider {
   protected abstract void onStrategyMatcherCreate(final StrategyMatcher matcher);
 
   /**
-   * @return context application context
+   * @param context application context
    * @return database manager instance
    */
   protected abstract SQLiteOpenHelper getDatabaseManager(final Context context);

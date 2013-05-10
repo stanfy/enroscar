@@ -61,11 +61,6 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
   protected int getLoadGap() { return LOAD_GAP_DEFAULT; }
 
   @Override
-  public void setSelection(final int i) {
-    // TODO Auto-generated method stub
-  }
-
-  @Override
   public void setAdapter(final ListAdapter listAdapter) {
     if (!(listAdapter instanceof FetchableListAdapter)) { throw new IllegalArgumentException("adapter must implement " + FetchableListAdapter.class); }
     final FetchableListAdapter adapter = (FetchableListAdapter) listAdapter;

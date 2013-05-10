@@ -14,6 +14,11 @@ public abstract class BufferBitmapDecorator extends ImageDecoratorAdapter {
   /** Buffer canvas. */
   Canvas bitmapCanvas;
 
+  /**
+   * Prepare for new width and hight.
+   * @param width new width
+   * @param height new height
+   */
   protected void reset(final int width, final int height) {
     Bitmap bitmap = this.bitmap;
     // recycle old buffer

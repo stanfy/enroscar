@@ -64,6 +64,10 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
 
   public BaseRequestBuilder(final Context context) {
     this.config = BeansManager.get(context).getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class);
+    if (this.config == null) {
+      throw new IllegalStateException("RemoteServerApiConfiguration bean is not added to the container");
+    }
+    
     this.context = context.getApplicationContext();
     this.result = config.createRequestDescription();
 
@@ -294,7 +298,9 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
    * Add meta information to request which could be retrieved in {@link com.stanfy.enroscar.rest.response.ContentAnalyzer}.
    * @param name info name
    * @param value info value
+   * @deprecated try to avoid use of it, it's going to be deleted
    */
+  @Deprecated
   protected void putMetaInfo(final String name, final Object value) {
     result.putMetaInfo(name, value);
   }

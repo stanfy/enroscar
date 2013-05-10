@@ -60,15 +60,21 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
     return this;
   }
 
+  /** @return next 'offset' value */
   protected final String nextOffset() {
     if (offsetIncrementor == null) { return String.valueOf(Integer.parseInt(offset) + 1); }
     return offsetIncrementor.nextValue(offset, lastLoadedCount, itemsList != null ? itemsList.size() : 0);
   }
+  /** @return next 'limit' value */
   protected final String nextLimit() {
     if (limitIncrementor == null) { return String.valueOf(Integer.parseInt(limit) + 1); }
     return limitIncrementor.nextValue(limit, lastLoadedCount, itemsList != null ? itemsList.size() : 0);
   }
 
+  /**
+   * @param offsetInfoProvider one who knows about current position
+   * @return whether load more process should be stopped
+   */
   protected boolean shouldStopLoading(final OffsetInfoProvider offsetInfoProvider) {
     return !offsetInfoProvider.moreElementsAvailable(offset);
   }
@@ -78,7 +84,8 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
     final LT list = data.getModel();
     if (!data.isSuccessful() || list == null) {
 
-      if (DEBUG && data.isSuccessful() && list == null) {
+      if (data.isSuccessful() && list == null) {
+        // FIXME strange case
         Log.e(TAG, "onAcceptData: response is successfull but model is null!");
       }
 

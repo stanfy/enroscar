@@ -26,27 +26,46 @@ task wrapper(type: Wrapper) {
 
 configure(subprojects.findAll() { !(it.name in androidLibs) }) {
   
-  apply plugin : 'java-robolectric'
+  apply plugin : 'java'
   apply plugin : 'nexus'
   
   sourceCompatibility = 1.6
 
-  javarob {
-    packageName = getPackageName(project)
-  }
-  
   dependencies {
     compile androidMavenDep
     testCompile group: 'junit', name: 'junit', version: '4.10'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
-    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.0-alpha-2'
+    testCompile 'org.easytesting:fest-assert-core:2.0M10'
+    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.0-rc1'
   }
 
-  test {
+  def testSelectionConfig = {
+    ignoreFailures = true
     scanForTestClasses = false
-    include "**/*Test.class"
+    
+    def selection = null
+    try {
+      selection = project.testSelection
+    } catch (def e) {
+      // ignore
+    }
+    if (!selection) {
+      selection = "**/*Test.class"
+    }
+    
+    include selection
     exclude "**/Abstract*.class"
   }
+  
+  test(testSelectionConfig)
+  
+  task debugTest(type : Test)
+  debugTest.doFirst {
+    jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
+  }
+  debugTest(testSelectionConfig)
+  debugTest.dependsOn 'cleanTest'
+
   
   task testsJar(type : Jar) {
     classifier = 'tests'

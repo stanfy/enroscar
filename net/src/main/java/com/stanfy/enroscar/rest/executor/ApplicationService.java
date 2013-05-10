@@ -155,6 +155,9 @@ public class ApplicationService extends Service {
     handler.sendEmptyMessageDelayed(MSG_CHECK_FOR_STOP, delay);
   }
 
+  /**
+   * Stop the service.
+   */
   protected void doStop() {
     boolean reallyStopping = stopSelfResult(recentStartId);
     if (DEBUG && !reallyStopping) {
@@ -162,6 +165,9 @@ public class ApplicationService extends Service {
     }
   }
 
+  /**
+   * @return instance of {@link ApiMethods}
+   */
   protected ApiMethods getApiMethods() { return apiMethods; }
 
   private void ensureApiMethods() {
@@ -188,6 +194,9 @@ public class ApplicationService extends Service {
     /** Service instance. */
     private final WeakReference<ApplicationService> serviceRef;
 
+    /**
+     * @param service service instance
+     */
     public InternalHandler(final ApplicationService service) {
       this.serviceRef = new WeakReference<ApplicationService>(service);
     }

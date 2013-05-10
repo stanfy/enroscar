@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.EnroscarBean;
@@ -15,7 +16,7 @@ import com.stanfy.enroscar.beans.EnroscarBean;
 /**
  * Tests for {@link BeansManager.Editor}.
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class BeanManagerEditorTest {
 
   /** Beans manager instance. */

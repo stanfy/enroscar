@@ -1,28 +1,45 @@
 package com.stanfy.enroscar.net.test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.shadows.ShadowApplication;
+import org.robolectric.shadows.ShadowLog;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.Loader;
 
 import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeanUtils;
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine.Config;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngineMode;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.rest.RequestMethod;
+import com.stanfy.enroscar.rest.executor.ApiMethods;
+import com.stanfy.enroscar.rest.executor.ApplicationService;
+import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
+import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
+import com.stanfy.enroscar.rest.request.ListRequestBuilderWrapper;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
@@ -33,16 +50,8 @@ import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
  * Mock server test.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
-
-  /** Configuration. */
-  private EnroscarConfiguration config;
-
-  /** Web server. */
-  private MockWebServer webServer;
-
-  public MockWebServer getWebServer() { return webServer; }
 
   /** Straight resolver.  */
   private static final StreamResolver STRAIGHT_RESOLVER = new StreamResolver() {
@@ -52,29 +61,25 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     }
   };
 
+  /** Error. */
+  private Throwable error;
+
+  /** Configuration. */
+  private EnroscarConfiguration config;
+
+  /** Web server. */
+  private MockWebServer webServer;
+
   /** Requests counter. */
   private int requestsCounter = 0;
 
-//  protected static <T extends Loader<?>> T directLoaderCall(final T loader) {
-//    return Robolectric.directlyOnFullStack(FullStackDirectCallPolicy.build(initLoader(loader)).include(Arrays.asList("android.support.v4")));
-//  }
-//
-//  protected static <T extends Loader<?>> T initLoader(final T loader) {
-//    try {
-//      final Field contextField = Loader.class.getDeclaredField("mContext");
-//      contextField.setAccessible(true);
-//      contextField.set(loader, Robolectric.application);
-//
-//      if (loader instanceof RequestBuilderLoader<?>) {
-//        RbLoaderAccess.initLoader((RequestBuilderLoader<?>)loader);
-//      }
-//
-//      return loader;
-//    } catch (final Exception e) {
-//      throw new RuntimeException(e);
-//    }
-//  }
+  public MockWebServer getWebServer() { return webServer; }
 
+  @Before
+  public void configureLogs() {
+    ShadowLog.stream = System.out;
+  }
+  
   /**
    * @param rb request builder instance
    * @return {@link URLConnection} instance
@@ -94,8 +99,33 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
   }
 
   @Override
+  protected void configureBeansManager(final Editor editor) {
+    super.configureBeansManager(editor);
+    editor.put(BuffersPool.class).put(RemoteServerApiConfiguration.class);
+  }
+  
+  /**
+   * @param name default content handler name.
+   */
+  protected void initContentHandler(final String name) {
+    BeansManager.get(getApplication()).getContainer().getBean(RemoteServerApiConfiguration.class)
+      .setDefaultContentHandlerName(name);
+  }
+  
+  @Override
   protected void whenBeansConfigured() {
     super.whenBeansConfigured();
+    BeansManager.get(getApplication()).getContainer().getBean(RemoteServerApiConfiguration.class).setDefaultRequestMethod(new RequestMethod() {
+      @Override
+      protected void before(final Context systemContext, final RequestDescription description) {
+        // do not use TrafficStats
+      }
+      @Override
+      protected void after(final Context systemContext, final RequestDescription description) {
+        // do not use TrafficStats
+      }
+    });
+    
     if (config == null) {
       EnroscarConnectionsEngineMode.testMode();
       config = BeanUtils.getAnnotationFromHierarchy(getClass(), EnroscarConfiguration.class);
@@ -106,8 +136,19 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
       config.install(Robolectric.application);
     }
 
+    configureServiceBind();
   }
 
+  private void configureServiceBind() {
+    ShadowApplication app = Robolectric.shadowOf(getApplication());
+    ApplicationService service = new ApplicationService();
+    service.onCreate();
+    app.setComponentNameAndServiceForBindService(
+        new ComponentName(ApplicationService.class.getPackage().getName(), ApplicationService.class.getSimpleName()),
+        service.onBind(new Intent().setAction(ApiMethods.class.getName()))
+    );
+  }
+  
   /**
    * Configure connections engine. Called immediately after beans are initialized. 
    * @param config configuration instance.
@@ -128,7 +169,7 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
   }
 
   @After
-  public void shutDownServer() throws IOException {
+  public void shutDownServer() throws IOException, InterruptedException {
     webServer.shutdown();
   }
 
@@ -139,18 +180,18 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
 
   private void doAssertResponse(final URLConnection connection, final String expectedResponse, final boolean cached, final StreamResolver resolver) throws IOException {
     final URLConnection realConnection = UrlConnectionWrapper.unwrap(connection);
-    assertThat(realConnection, instanceOf(HttpURLConnection.class));
+    assertThat(realConnection).isInstanceOf(HttpURLConnection.class);
 
     final HttpURLConnection http = (HttpURLConnection)realConnection;
     final String response = IoUtils.streamToString(resolver.getStream(connection));
-    assertThat(response, equalTo(expectedResponse));
-    assertThat(http.getResponseCode(), equalTo(cached ? -1 : HttpURLConnection.HTTP_OK));
+    assertThat(response).isEqualTo(expectedResponse);
+    assertThat(http.getResponseCode()).isEqualTo(HttpURLConnection.HTTP_OK);
 
     // real request has been performed or not
     if (!cached) {
       ++requestsCounter;
     }
-    assertThat(getWebServer().getRequestCount(), equalTo(requestsCounter));
+    assertThat(getWebServer().getRequestCount()).isEqualTo(requestsCounter);
   }
 
   /**
@@ -163,9 +204,75 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     doAssertResponse(connection, expectedResponse, cached, STRAIGHT_RESOLVER);
   }
 
+  public <T> void waitAndAssert(final Waiter<T> waiter, final Asserter<T> asserter) throws Throwable {
+    final Thread checker = new Thread() {
+      @Override
+      public void run() {
+        final T data = waiter.waitForData();
+        if (asserter != null) {
+          try {
+            asserter.makeAssertions(data);
+          } catch (final Exception e) {
+            error = e;
+          }
+        }
+      }
+    };
+    checker.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(final Thread thread, final Throwable ex) {
+        ex.printStackTrace();
+        error = ex;
+        throw new AssertionError("Exception occured: " + ex.getMessage());
+      }
+    });
+    checker.start();
+
+    final boolean[] res = new boolean[1];
+
+//    final Thread current = Thread.currentThread();
+//    Thread watchdog = new Thread("watchdog") {
+//      @Override
+//      public void run() {
+//        try {
+//          final long max = 5000;
+//          Thread.sleep(max);
+//          if (!res[0]) {
+//            current.interrupt();
+//            checker.interrupt();
+//          }
+//        // CHECKSTYLE:OFF
+//        } catch (InterruptedException e) {
+//          // ignore
+//        }
+//        // CHECKSTYLE:ON
+//      };
+//    };
+//    watchdog.start();
+    
+    try {
+      checker.join();
+      res[0] = true;
+//      watchdog.interrupt();
+    } catch (final InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    if (error != null) { throw error; }
+    if (!res[0]) { throw new AssertionError("Too long"); }
+  }
+
   /** Stream resolver. */
   private interface StreamResolver {
     InputStream getStream(final URLConnection connection) throws IOException;
+  }
+
+  /** Can wait. */
+  public interface Waiter<T> {
+    T waitForData();
+  }
+  /** Can make assertions. */
+  public interface Asserter<T> {
+    void makeAssertions(final T data) throws Exception;
   }
 
   /**
@@ -180,76 +287,42 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     @Override
     public RequestDescription getResult() { return super.getResult(); }
 
-//    @Override
-//    public RequestBuilderLoader<MT> getLoader() {
-//      return (RequestBuilderLoader<MT>) (startedLoader ? new StartedLoader<MT>(this) : super.getLoader());
-//    }
-//
-//    @Override
-//    protected <T, LT extends List<T>> ListRequestBuilderWrapper<LT, T> createLoadMoreListWrapper() {
-//      if (!startedLoader) { return super.createLoadMoreListWrapper(); }
-//      final MyRequestBuilderListWrapper<LT, T> wrapper = new MyRequestBuilderListWrapper<LT, T>(this);
-//      return wrapper;
-//    }
+    @Override
+    public Loader<ResponseData<MT>> getLoader() {
+      return new RequestBuilderLoader<MT>(this) {
+        @Override
+        protected void deliverDispatchCallback(final Runnable dispatcher) {
+          System.out.println("Dispatch service results");
+          dispatcher.run();
+        }
+      };
+    }
+    
+    @Override
+    protected <T, LT extends List<T>> ListRequestBuilderWrapper<LT, T> createLoadMoreListWrapper() {
+      final MyRequestBuilderListWrapper<LT, T> wrapper = new MyRequestBuilderListWrapper<LT, T>(this);
+      return wrapper;
+    }
 
   }
 
-//  /** Test request builder wrapper. */
-//  public static final class MyRequestBuilderListWrapper<LT extends List<MT>, MT> extends ListRequestBuilderWrapper<LT, MT> {
-//
-//    public MyRequestBuilderListWrapper(final MyRequestBuilder<?> core) {
-//      super(core);
-//    }
-//
-//    @Override
-//    public LoadMoreListLoader<MT, LT> getLoader() {
-//      return new StartedLoadmoreLoader<MT, LT>(this);
-//    }
-//
-//  }
-//
-//  /** Started loader. */
-//  public static class StartedLoader<MT> extends RequestBuilderLoader<MT> {
-//
-//    public StartedLoader(final RequestBuilder<MT> requestBuilder) {
-//      super(requestBuilder);
-//    }
-//
-//    @Override
-//    public boolean isReset() { return false; }
-//    @Override
-//    public boolean isStarted() { return true; }
-//    @Override
-//    public boolean isAbandoned() { return false; }
-//
-//    @Override
-//    public void deliverResult(final ResponseData<MT> data) {
-//      directLoaderCall(this);
-//      super.deliverResult(data);
-//    }
-//
-//  }
-//
-//  /** Started loader. */
-//  public static class StartedLoadmoreLoader<MT, LT extends List<MT>> extends LoadMoreListLoader<MT, LT> {
-//
-//    public StartedLoadmoreLoader(final ListRequestBuilder<LT, MT> requestBuilder) {
-//      super(requestBuilder);
-//    }
-//
-//    @Override
-//    public boolean isReset() { return false; }
-//    @Override
-//    public boolean isStarted() { return true; }
-//    @Override
-//    public boolean isAbandoned() { return false; }
-//
-//    @Override
-//    public void deliverResult(final ResponseData<LT> data) {
-//      directLoaderCall(this);
-//      super.deliverResult(data);
-//    }
-//
-//  }
+  /** Test request builder wrapper. */
+  public static final class MyRequestBuilderListWrapper<LT extends List<MT>, MT> extends ListRequestBuilderWrapper<LT, MT> {
+
+    public MyRequestBuilderListWrapper(final MyRequestBuilder<?> core) {
+      super(core);
+    }
+
+    @Override
+    public LoadMoreListLoader<MT, LT> getLoader() {
+      return new LoadMoreListLoader<MT, LT>(this) {
+        @Override
+        protected void deliverDispatchCallback(final Runnable dispatcher) {
+          dispatcher.run();
+        }
+      };
+    }
+
+  }
 
 }

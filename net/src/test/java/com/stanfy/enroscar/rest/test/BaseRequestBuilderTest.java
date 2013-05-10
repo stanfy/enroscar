@@ -3,7 +3,7 @@ package com.stanfy.enroscar.rest.test;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,9 +11,9 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import com.stanfy.enroscar.beans.BeansManager.Editor;
-import com.stanfy.enroscar.net.test.Runner;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.BaseRequestBuilder;
 import com.stanfy.enroscar.rest.request.Parameter;
@@ -24,7 +24,7 @@ import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
 /**
  * Tests for {@link BaseRequestBuilder}.
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class BaseRequestBuilderTest extends AbstractEnroscarTest {
 
   @Override

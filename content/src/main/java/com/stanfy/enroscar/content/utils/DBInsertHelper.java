@@ -43,8 +43,6 @@ public final class DBInsertHelper {
   private String conflictPolicy;
 
   /**
-   * {@hide}
-   *
    * These are the columns returned by sqlite's "PRAGMA
    * table_info(...)" command that we depend on.
    */

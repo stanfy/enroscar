@@ -23,6 +23,7 @@ import com.stanfy.enroscar.beans.DestroyingBean;
 import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.enroscar.beans.InitializingBean;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.sdkdep.SdkDepUtils;
 
 /**
  * Standard HTTP response cache.
@@ -42,9 +43,8 @@ public class StandardHttpResponseCache extends BaseSizeRestrictedCache implement
   private HttpResponseCache delegate;
 
   public StandardHttpResponseCache(final Context context) {
-    // TODO
     final File baseDir = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-        ? null // AppUtils.getSdkDependentUtils().getExternalCacheDir(context) TODO
+        ? SdkDepUtils.get(context).getExternalCacheDir(context)
         : context.getCacheDir();
     setWorkingDirectory(new File(baseDir, "api-http-cache"));
   }

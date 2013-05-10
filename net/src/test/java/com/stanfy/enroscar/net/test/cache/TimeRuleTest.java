@@ -1,7 +1,7 @@
 package com.stanfy.enroscar.net.test.cache;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.net.URI;
 import java.util.Collections;
@@ -10,18 +10,18 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import com.stanfy.enroscar.net.cache.CacheEntry;
 import com.stanfy.enroscar.net.cache.CacheTimeRule;
 import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
-import com.stanfy.enroscar.shared.test.Runner;
 import com.stanfy.enroscar.utils.Time;
 
 /**
  * Tests for {@link CacheTimeRule}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class TimeRuleTest extends AbstractEnroscarTest {
 
   /** Test URL. */
