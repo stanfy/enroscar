@@ -64,6 +64,7 @@ public class JsonRequestTest extends AbstractLoaderTest {
     waitAndAssertForLoader(loader, new Asserter<ResponseData<MyModel>>() {
       @Override
       public void makeAssertions(final ResponseData<MyModel> data) throws Exception {
+        assertThat(data.isSuccessful()).isTrue();
         assertThat(data.getModel()).isEqualTo(model);
       }
     });

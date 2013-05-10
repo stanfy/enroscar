@@ -5,8 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
 import android.content.Context;
-import android.net.TrafficStats;
-import android.os.Build;
+import android.support.v4.net.TrafficStatsCompat;
 import android.util.Log;
 
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
@@ -30,10 +29,8 @@ public class RequestMethod {
    */
   public RequestResult perform(final Context systemContext, final RequestDescription description) throws RequestMethodException {
     final long startTime = System.currentTimeMillis();
-    
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      TrafficStats.setThreadStatsTag(description.getStatsTag());
-    }
+
+    before(systemContext, description);
     
     URLConnection connection = null;
     try {
@@ -57,10 +54,8 @@ public class RequestMethod {
     } catch (final RuntimeException e) {
       throw new RequestMethodException(e);
     } finally {
-      
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-        TrafficStats.clearThreadStatsTag();
-      }
+
+      after(systemContext, description);
       
       // do as mom said
       if (connection != null) {
@@ -83,6 +78,24 @@ public class RequestMethod {
     }
   }
 
+  /**
+   * Take actions before request is sent. Default implementation uses {@link TrafficStatsCompat#tagSocket(java.net.Socket)} in order to track network activity.
+   * @param systemContext context instance
+   * @param description request description
+   */
+  protected void before(final Context systemContext, final RequestDescription description) {
+    TrafficStatsCompat.setThreadStatsTag(description.getStatsTag());
+  }
+  
+  /**
+   * Take actions after request is sent. Default implementation clears network stats tags using {@link TrafficStatsCompat#clearThreadStatsTag()}.
+   * @param systemContext context instance
+   * @param description request description
+   */
+  protected void after(final Context systemContext, final RequestDescription description) {
+    TrafficStatsCompat.clearThreadStatsTag();
+  }
+  
   /** Request result. */
   public static class RequestResult {
     /** Model instance. */

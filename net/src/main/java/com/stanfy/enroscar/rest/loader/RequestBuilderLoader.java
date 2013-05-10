@@ -321,6 +321,14 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
     return getClass().getName() + "{id=" + getId() + ", reqId=" + requestId + ", rb=" + requestBuilder + "}";
   }
 
+  /**
+   * This method is called in a background thread and must deliver the dispatcher callback to the main thread.
+   * @param dispatcher dispatcher callback
+   */
+  protected void deliverDispatchCallback(final Runnable dispatcher) {
+    apiSupport.getHandler().post(dispatcher);
+  }
+  
   @SuppressWarnings({ "rawtypes", "unchecked" })
   ResponseData<MT> castResponseData(final RequestDescription requestDescription, final ResponseData<?> responseData) {
     if (responseData == null) { return null; }
@@ -367,7 +375,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
    * Special executor for this loader.
    * @author Roman Mazur (Stanfy - http://stanfy.com)
    */
-  protected class ApiMethodsExecutor extends ApiMethodsSupport {
+  private class ApiMethodsExecutor extends ApiMethodsSupport {
 
     /**
      * Create executor instance.
@@ -392,15 +400,15 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
         // deliver results
         @Override
         protected void processSuccess(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-          apiSupport.getHandler().post(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), false));
+          deliverDispatchCallback(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), false));
         }
         @Override
         protected void onError(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-          apiSupport.getHandler().post(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), false));
+          deliverDispatchCallback(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), false));
         }
         @Override
         protected void onCancel(final RequestDescription requestDescription, final ResponseData<?> responseData) {
-          apiSupport.getHandler().post(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), true));
+          deliverDispatchCallback(new DispatchLoadedDataRunnable(requestDescription, castResponseData(requestDescription, responseData), true));
         }
       });
     }

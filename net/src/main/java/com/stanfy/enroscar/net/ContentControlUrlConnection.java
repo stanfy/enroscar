@@ -2,6 +2,7 @@ package com.stanfy.enroscar.net;
 
 import java.io.IOException;
 import java.net.ContentHandler;
+import java.net.ContentHandlerFactory;
 import java.net.URLConnection;
 
 import com.stanfy.enroscar.rest.ModelTypeToken;
@@ -39,7 +40,11 @@ public class ContentControlUrlConnection extends UrlConnectionWrapper {
 
   @Override
   public Object getContent() throws IOException {
-    final ContentHandler handler = EnroscarConnectionsEngine.getContentHandlerFactory().createContentHandler("");
+    ContentHandlerFactory factory = EnroscarConnectionsEngine.getContentHandlerFactory();
+    if (factory == null) {
+      throw new IllegalStateException("EnroscarConnectionsEngine seems to be not configured. Have you called EnroscarConnectionsEngine.config().install()?");
+    }
+    final ContentHandler handler = factory.createContentHandler("");
     return handler != null ? handler.getContent(this) : super.getContent();
   }
 

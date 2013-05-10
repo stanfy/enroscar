@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.rest.loader.test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.reflect.core.Reflection.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,7 +68,10 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
     waitAndAssertForLoader(loader, new Asserter<ResponseData<List<String>>>() {
       @Override
       public void makeAssertions(final ResponseData<List<String>> data) throws Exception {
-        assertThat(data.getModel().get(0)).isEqualTo(response);
+        if (data == null) { throw new IllegalStateException("null data"); }
+        System.out.println(data.getModel());
+        assertThat(data.isSuccessful()).isTrue();
+        assertThat(data.getModel().get(data.getModel().size() - 1)).isEqualTo(response);
 
         asserter.makeAssertions(data.getModel());
 
@@ -113,13 +117,16 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
 
   @Test
   public void nextRequestShouldIncrementOffsetLimit() throws Throwable {
-    getWebServer().enqueue(new MockResponse().setBody("LNext"));
-
     final int limit = 3, offset = 2;
 
-    final Loader<ResponseData<List<String>>> loader = createListRb().setLimit(limit).setOffset(offset).getLoader();
+    @SuppressWarnings("unchecked")
+    final LoadMoreListLoader<String, List<String>> loader = (LoadMoreListLoader<String, List<String>>) createListRb().setLimit(limit).setOffset(offset).getLoader();
 
-    loader.startLoading();
+    field("mReset").ofType(boolean.class).in(loader).set(false);
+    field("mStarted").ofType(boolean.class).in(loader).set(true);
+    
+    getWebServer().enqueue(new MockResponse().setBody("LNext"));
+    loader.forceLoadMore();
     makeAsyncAssert(loader, "LNext", new Asserter<List<String>>() {
       @Override
       public void makeAssertions(final List<String> data) throws Exception {
@@ -133,8 +140,6 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
 
   @Test
   public void nextRequestShouldIncrementOffsetLimitCustomType() throws Throwable {
-    getWebServer().enqueue(new MockResponse().setBody("LNextCustom"));
-
     final String limit = "abcd", offset = "dbca", nextLimit = "abc", nextOffset = "bdc";
 
     final ValueIncrementor oInc = new ValueIncrementor() {
@@ -157,8 +162,11 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
         ((LoadMoreListLoader<String, List<String>>)createListRb().setLimit(limit).setOffset(offset).getLoader())
         .setLimitIncrementor(lInc).setOffsetIncrementor(oInc);
 
+    field("mReset").ofType(boolean.class).in(loader).set(false);
+    field("mStarted").ofType(boolean.class).in(loader).set(true);
+    
+    getWebServer().enqueue(new MockResponse().setBody("LNextCustom"));
     loader.forceLoadMore();
-
     makeAsyncAssert(loader, "LNextCustom", new Asserter<List<String>>() {
       @Override
       public void makeAssertions(final List<String> data) throws Exception {
