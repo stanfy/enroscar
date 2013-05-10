@@ -147,8 +147,9 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
 
   dependencies {
     ideHack androidMavenDep
+    ideHack project(':enroscar-beans')
   }
-    
+  
 }
 
 // ==================================== COMMON ====================================
@@ -176,7 +177,19 @@ subprojects {
   
   if (project.name in androidLibs) {
     eclipse {
-      classpath.plusConfigurations += configurations.ideHack
+      project {
+        referencedProjects 'enroscar-beans'
+        natures 'org.eclipse.jdt.core.javanature'
+      }
+      classpath {
+        plusConfigurations += configurations.ideHack
+        file {
+          withXml {
+            def node = it.asNode()
+            node.appendNode('classpathentry', [kind : 'src', path : 'src/main/java'])
+          }
+        }
+      }
     }
   }
   
