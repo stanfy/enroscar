@@ -20,11 +20,15 @@ import android.content.Context;
 
 import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeanUtils;
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine.Config;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngineMode;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
@@ -78,6 +82,20 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     return IoUtils.streamToString(connection.getInputStream());
   }
 
+  @Override
+  protected void configureBeansManager(final Editor editor) {
+    super.configureBeansManager(editor);
+    editor.put(BuffersPool.class).put(RemoteServerApiConfiguration.class);
+  }
+  
+  /**
+   * @param name default content handler name.
+   */
+  protected void initContentHandler(final String name) {
+    BeansManager.get(getApplication()).getContainer().getBean(RemoteServerApiConfiguration.class)
+      .setDefaultContentHandlerName(name);
+  }
+  
   @Override
   protected void whenBeansConfigured() {
     super.whenBeansConfigured();

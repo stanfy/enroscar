@@ -15,14 +15,17 @@ import android.content.Intent;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.executor.ApiMethodCallback;
 import com.stanfy.enroscar.rest.executor.ApiMethods;
 import com.stanfy.enroscar.rest.executor.ApiMethodsSupport;
 import com.stanfy.enroscar.rest.executor.ApplicationService;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
 /**
  * Tests for {@link com.stanfy.enroscar.rest.executor.RequestPerformer}.
@@ -36,16 +39,24 @@ public class RequestPerformerTest extends AbstractMockServerTest {
   private ApiMethodsSupport support;
 
   @Override
+  protected void configureBeansManager(final Editor editor) {
+    super.configureBeansManager(editor);
+    editor.put(StringContentHandler.class);
+  }
+  
+  @Override
   protected void whenBeansConfigured() {
     super.whenBeansConfigured();
+    initContentHandler(StringContentHandler.BEAN_NAME);
+    configureServiceBind();
+    
     callback = new WaitApiCallback();
     support = new ApiMethodsSupport(getApplication(), callback);
     support.bind();
     support.registerCallback();
   }
 
-  @Before
-  public void configureServiceBind() {
+  private void configureServiceBind() {
     ShadowApplication app = Robolectric.shadowOf(getApplication());
     ApplicationService service = new ApplicationService();
     service.onCreate();

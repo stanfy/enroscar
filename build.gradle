@@ -39,11 +39,33 @@ configure(subprojects.findAll() { !(it.name in androidLibs) }) {
     testCompile group: 'org.robolectric', name: 'robolectric', version: '2.0-rc1'
   }
 
-  test {
+  def testSelectionConfig = {
+    ignoreFailures = true
     scanForTestClasses = false
-    include "**/*Test.class"
+    
+    def selection = null
+    try {
+      selection = project.testSelection
+    } catch (def e) {
+      // ignore
+    }
+    if (!selection) {
+      selection = "**/*Test.class"
+    }
+    
+    include selection
     exclude "**/Abstract*.class"
   }
+  
+  test(testSelectionConfig)
+  
+  task debugTest(type : Test)
+  debugTest.doFirst {
+    jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
+  }
+  debugTest(testSelectionConfig)
+  debugTest.dependsOn 'cleanTest'
+
   
   task testsJar(type : Jar) {
     classifier = 'tests'

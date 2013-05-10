@@ -64,6 +64,10 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
 
   public BaseRequestBuilder(final Context context) {
     this.config = BeansManager.get(context).getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class);
+    if (this.config == null) {
+      throw new IllegalStateException("RemoteServerApiConfiguration bean is not added to the container");
+    }
+    
     this.context = context.getApplicationContext();
     this.result = config.createRequestDescription();
 
