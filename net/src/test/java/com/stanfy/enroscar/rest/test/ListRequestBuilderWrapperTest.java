@@ -1,7 +1,7 @@
 package com.stanfy.enroscar.rest.test;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +9,9 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import com.stanfy.enroscar.beans.BeansManager.Editor;
-import com.stanfy.enroscar.net.test.Runner;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
@@ -21,7 +21,7 @@ import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
  * Test for list wrapper.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ListRequestBuilderWrapperTest extends AbstractEnroscarTest {
 
   @Override

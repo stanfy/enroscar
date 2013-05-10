@@ -6,14 +6,13 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import com.stanfy.enroscar.images.test.Runner;
+import org.robolectric.RobolectricTestRunner;
 
 /**
  * Tests for {@link ImagesManager}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ImagesManagerTest {
 
   @Test

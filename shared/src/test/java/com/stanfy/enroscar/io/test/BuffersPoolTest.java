@@ -6,14 +6,14 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import com.stanfy.enroscar.io.BuffersPool;
-import com.stanfy.enroscar.shared.test.Runner;
 
 /**
  * Tests for {@link BuffersPool}. Absolutely useless.
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class BuffersPoolTest {
 
   /** Buffers pool instance. */

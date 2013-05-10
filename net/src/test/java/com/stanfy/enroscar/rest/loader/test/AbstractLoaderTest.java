@@ -1,8 +1,5 @@
 package com.stanfy.enroscar.rest.loader.test;
 
-import java.lang.Thread.UncaughtExceptionHandler;
-
-import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -14,7 +11,6 @@ import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
-import com.stanfy.enroscar.net.test.Runner;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.loader.LoaderAccess;
 import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
@@ -22,7 +18,6 @@ import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
 /**
  * Base test class for loaders.
  */
-@RunWith(Runner.class)
 public class AbstractLoaderTest extends AbstractMockServerTest {
 
   @Override

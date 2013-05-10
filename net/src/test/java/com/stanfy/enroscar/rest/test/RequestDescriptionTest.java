@@ -9,13 +9,13 @@ import java.net.URLConnection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
-import com.stanfy.enroscar.net.test.Runner;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.OperationType;
 
@@ -23,7 +23,7 @@ import com.stanfy.enroscar.rest.request.OperationType;
  * Tests for {@link com.stanfy.serverapi.request.RequestDescription}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class RequestDescriptionTest extends AbstractMockServerTest {
 
 //  @Test

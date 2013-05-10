@@ -5,14 +5,22 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowApplication;
+
+import android.content.ComponentName;
+import android.content.Intent;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.executor.ApiMethodCallback;
+import com.stanfy.enroscar.rest.executor.ApiMethods;
 import com.stanfy.enroscar.rest.executor.ApiMethodsSupport;
+import com.stanfy.enroscar.rest.executor.ApplicationService;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 
@@ -36,6 +44,17 @@ public class RequestPerformerTest extends AbstractMockServerTest {
     support.registerCallback();
   }
 
+  @Before
+  public void configureServiceBind() {
+    ShadowApplication app = Robolectric.shadowOf(getApplication());
+    ApplicationService service = new ApplicationService();
+    service.onCreate();
+    app.setComponentNameAndServiceForBindService(
+        new ComponentName(ApplicationService.class.getPackage().getName(), ApplicationService.class.getSimpleName()),
+        service.onBind(new Intent().setAction(ApiMethods.class.getName()))
+    );
+  }
+  
   @After
   public void destroySupport() {
     support.removeCallback();

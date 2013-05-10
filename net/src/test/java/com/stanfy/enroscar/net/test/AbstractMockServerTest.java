@@ -14,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import android.content.Context;
 
@@ -34,7 +35,7 @@ import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
  * Mock server test.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
 
   /** Straight resolver.  */
@@ -128,7 +129,7 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     final HttpURLConnection http = (HttpURLConnection)realConnection;
     final String response = IoUtils.streamToString(resolver.getStream(connection));
     assertThat(response, equalTo(expectedResponse));
-    assertThat(http.getResponseCode(), equalTo(cached ? -1 : HttpURLConnection.HTTP_OK));
+    assertThat(http.getResponseCode(), equalTo(HttpURLConnection.HTTP_OK));
 
     // real request has been performed or not
     if (!cached) {

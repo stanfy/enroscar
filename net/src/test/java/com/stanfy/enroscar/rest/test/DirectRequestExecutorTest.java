@@ -1,19 +1,19 @@
 package com.stanfy.enroscar.rest.test;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
-import com.stanfy.enroscar.net.test.Runner;
 import com.stanfy.enroscar.rest.DirectRequestExecutor;
 
 /**
  * Direct request executor test.
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class DirectRequestExecutorTest {
 
   @Test

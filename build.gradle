@@ -26,21 +26,17 @@ task wrapper(type: Wrapper) {
 
 configure(subprojects.findAll() { !(it.name in androidLibs) }) {
   
-  apply plugin : 'java-robolectric'
+  apply plugin : 'java'
   apply plugin : 'nexus'
   
   sourceCompatibility = 1.6
 
-  javarob {
-    packageName = getPackageName(project)
-  }
-  
   dependencies {
     compile androidMavenDep
     testCompile group: 'junit', name: 'junit', version: '4.10'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
     testCompile 'org.easytesting:fest-assert-core:2.0M10'
-    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.0-alpha-2'
+    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.0-rc1'
   }
 
   test {

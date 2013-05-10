@@ -4,15 +4,15 @@ import static junit.framework.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
-import com.stanfy.enroscar.shared.test.Runner;
 import com.stanfy.enroscar.utils.AppUtils;
 
 /**
  * Tests for {@link AppUtils}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class AppUtilsTest {
 
   @Test

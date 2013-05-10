@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import android.app.Activity;
 
@@ -19,7 +20,7 @@ import com.stanfy.enroscar.stats.StatsManager;
  * Tests for error reports messages.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ErrorReportTest {
 
   /** Example stack trace. */

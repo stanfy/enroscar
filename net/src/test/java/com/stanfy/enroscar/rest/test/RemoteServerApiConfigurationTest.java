@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.enroscar.net.test.Runner;
 import com.stanfy.enroscar.net.test.cache.DummyResponseCache;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.RequestExecutor;
@@ -21,7 +21,7 @@ import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 /**
  * Tests for {@link RemoteServerApiConfiguration}.
  */
-@RunWith(Runner.class)
+@RunWith(RobolectricTestRunner.class)
 public class RemoteServerApiConfigurationTest {
 
   @Before
