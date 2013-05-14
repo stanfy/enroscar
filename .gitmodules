@@ -1,3 +1,0 @@
-[submodule "integration/actionbarsherlock/actionbarscherlock-enroscar"]
-	path = integration/actionbarsherlock/actionbarscherlock-enroscar
-	url = git://github.com/JakeWharton/ActionBarSherlock.git
