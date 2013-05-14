@@ -1,12 +1,16 @@
 package com.stanfy.enroscar.views.list.test;
 
-import static org.hamcrest.Matchers.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -15,16 +19,16 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.stanfy.enroscar.test.R;
-import com.stanfy.test.AbstractEnroscarTest;
-import com.stanfy.views.StateHelper;
-import com.xtremelabs.robolectric.Robolectric;
+import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.views.StateHelper;
 
 /**
  * Test for {@link com.stanfy.views.list.LoaderAdapter}.
  * @author Vladislav Lipskiy - Stanfy (http://www.stanfy.com)
  *
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest = "src/main/AndroidManifest.xml")
 public class LoaderAdapterTest extends AbstractEnroscarTest {
 
   /** Aadapter to test. */
@@ -56,12 +60,14 @@ public class LoaderAdapterTest extends AbstractEnroscarTest {
   @Before
   public void init() {
     context = Robolectric.application;
-    testData = context.getResources().getTextArray(R.array.adapter_test);
+    testData = new CharSequence[] {"1", "2", "3", "4"};
     listView = new ListView(context);
     coreAdapter = new ArrayAdapter<CharSequence>(context, 0) {
       @Override
       public View getView(final int position, final View convertView, final ViewGroup parent) {
-        return null;
+        View v = new View(parent.getContext());
+        v.setTag("passed");
+        return v;
       }
     };
     loaderAdapter = new MockLoaderAdapter<CharSequence>(context, coreAdapter);
@@ -74,18 +80,18 @@ public class LoaderAdapterTest extends AbstractEnroscarTest {
   @Test
   public void changeStateWithCore() {
     loaderAdapter.onLoadFinished(null, Arrays.asList(testData));
-    assertThat(loaderAdapter.getCount(), is(testData.length));   // pre-test
+    assertThat(loaderAdapter.getCount()).isEqualTo(testData.length);   // pre-test
 
     // 1. If adapter had some data, but then elements were removed through core adapter, wrapper must change its state too.
     coreAdapter.clear();
     coreAdapter.notifyDataSetChanged();
 
     // Key test. State should be set to empty.
-    assertThat(loaderAdapter.getState(), is(StateHelper.STATE_EMPTY));
+    assertThat(loaderAdapter.getState()).isEqualTo(StateHelper.STATE_EMPTY);
     // StateHelper should create a state view.
-    assertThat(loaderAdapter.getView(0, null, listView), notNullValue());
+    assertThat(loaderAdapter.getView(0, null, listView)).isNotNull();
     // And adapter count should be equal to 1
-    assertThat(loaderAdapter.getCount(), is(1));
+    assertThat(loaderAdapter.getCount()).isEqualTo(1);
 
     // 2. Same goes in case adapter received empty data, but then elements added to core adapter
     for (final CharSequence cs : testData) {
@@ -94,11 +100,11 @@ public class LoaderAdapterTest extends AbstractEnroscarTest {
     coreAdapter.notifyDataSetChanged();
 
     // Key test. State should be set to normal.
-    assertThat(loaderAdapter.getState(), is(StateHelper.STATE_NORMAL));
-    // Delegate view creation to our ArrayAdapter which returns null.
-    assertThat(loaderAdapter.getView(0, null, listView), nullValue());
+    assertThat(loaderAdapter.getState()).isEqualTo(StateHelper.STATE_NORMAL);
+    // Delegate view creation to our ArrayAdapter.
+    assertThat(loaderAdapter.getView(0, null, listView).getTag()).isEqualTo("passed");
     // And adapter count should be equal to array length.
-    assertThat(loaderAdapter.getCount(), is(testData.length));
+    assertThat(loaderAdapter.getCount()).isEqualTo(testData.length);
   }
 
 
@@ -108,8 +114,8 @@ public class LoaderAdapterTest extends AbstractEnroscarTest {
 
     notifyChangedCalled = false;
     loaderAdapter.onLoadFinished(null, Arrays.asList(testData));
-    assertThat(notifyChangedCalled, is(true));
-    assertThat(loaderAdapter.onSuccessCalled, is(true));
+    assertThat(notifyChangedCalled).isTrue();
+    assertThat(loaderAdapter.onSuccessCalled).isTrue();
   }
 
   @Test
@@ -118,8 +124,8 @@ public class LoaderAdapterTest extends AbstractEnroscarTest {
 
     notifyChangedCalled = false;
     loaderAdapter.onLoadFinished(null, Collections.<CharSequence>emptyList());
-    assertThat(notifyChangedCalled, is(true));
-    assertThat(loaderAdapter.onEmptyCalled, is(true));
+    assertThat(notifyChangedCalled).isTrue();
+    assertThat(loaderAdapter.onEmptyCalled).isTrue();
   }
 
   @Test
@@ -128,8 +134,8 @@ public class LoaderAdapterTest extends AbstractEnroscarTest {
 
     notifyChangedCalled = false;
     loaderAdapter.onLoadFinished(null, null);
-    assertThat(notifyChangedCalled, is(true));
-    assertThat(loaderAdapter.onErrorCalled, is(true));
+    assertThat(notifyChangedCalled).isTrue();
+    assertThat(loaderAdapter.onErrorCalled).isTrue();
   }
 
 }

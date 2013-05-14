@@ -1,23 +1,26 @@
 package com.stanfy.enroscar.views.list.test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
-import com.stanfy.enroscar.test.R;
-import com.stanfy.test.AbstractEnroscarTest;
-import com.xtremelabs.robolectric.Robolectric;
+import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.views.list.FetchableListAdapter;
+import com.stanfy.enroscar.views.list.LoadmoreAdapter;
 
 
 /**
  * Tests for {@link LoadmoreAdapter}.
  */
+@RunWith(RobolectricTestRunner.class)
 public class LoadmoreAdapterTest extends AbstractEnroscarTest {
 
   /** Adapter to test. */
@@ -35,12 +38,12 @@ public class LoadmoreAdapterTest extends AbstractEnroscarTest {
 
   @Test
   public void loadFlagShouldBeResetAfterChangesInCore() {
-    assertThat(coreAdapter.getCount(), greaterThan(0));
-    assertThat(loadmoreAdapter.getCount(), equalTo(coreAdapter.getCount()));
+    assertThat(coreAdapter.getCount()).isGreaterThan(0);
+    assertThat(loadmoreAdapter.getCount()).isEqualTo(coreAdapter.getCount());
     loadmoreAdapter.setLoadFlag(true);
-    assertThat(loadmoreAdapter.getCount(), equalTo(coreAdapter.getCount() + 1)); // we show footer
+    assertThat(loadmoreAdapter.getCount()).isEqualTo(coreAdapter.getCount() + 1); // we show footer
     coreAdapter.notifyDataSetChanged();
-    assertThat(loadmoreAdapter.getCount(), equalTo(coreAdapter.getCount())); // we don't show footer
+    assertThat(loadmoreAdapter.getCount()).isEqualTo(coreAdapter.getCount()); // we don't show footer
   }
 
   /** Adapter for tests. */
@@ -53,7 +56,7 @@ public class LoadmoreAdapterTest extends AbstractEnroscarTest {
     boolean moreElements, busy;
 
     public Adapter() {
-      super(Robolectric.application, 0, Robolectric.application.getResources().getTextArray(R.array.adapter_test));
+      super(Robolectric.application, 0, new CharSequence[] {"1", "2", "3", "4"});
     }
 
     @Override

@@ -1,9 +1,10 @@
 package com.stanfy.enroscar.views.test;
 
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.equalTo;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import android.content.Context;
 import android.view.View;
@@ -12,13 +13,15 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
-import com.stanfy.test.AbstractEnroscarTest;
-import com.stanfy.views.StateHelper.StateViewCreator;
+import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.views.StateHelper;
+import com.stanfy.enroscar.views.StateHelper.StateViewCreator;
 
 /**
  * {@link com.stanfy.views.StateHelper} test.
  * @author Vladislav Lipskiy - Stanfy (http://www.stanfy.com)
  */
+@RunWith(RobolectricTestRunner.class)
 public class StateHelperTest extends AbstractEnroscarTest {
 
   /** Test helper state. */
@@ -42,6 +45,17 @@ public class StateHelperTest extends AbstractEnroscarTest {
     parent.layout(0, 0, parent.getMeasuredWidth(), parent.getMeasuredHeight());
   }
 
+  private void assertStateView(final int state, final ViewGroup parent, final int width, final int height) {
+    final View stateView = stateHelper.getCustomStateView(STATE_TEST, getApplication(), null, parent);
+    assertThat(stateView).isNotNull();
+
+    final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
+    assertThat(lp).isNotNull();
+
+    assertThat(lp.width).isEqualTo(width);
+    assertThat(lp.height).isEqualTo(height);
+  }
+  
   /**
    * Test case 1.
    * State view wants to match parent, but parent has not been measured and layout.
@@ -61,14 +75,7 @@ public class StateHelperTest extends AbstractEnroscarTest {
       }
     });
 
-    final View stateView = stateHelper.getCustomStateView(STATE_TEST, context, null, parent);
-    assertThat(stateView, notNullValue());
-
-    final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
-    assertThat(lp, notNullValue());
-
-    assertThat(lp.width, equalTo(LayoutParams.MATCH_PARENT));
-    assertThat(lp.height, equalTo(LayoutParams.MATCH_PARENT));
+    assertStateView(STATE_TEST, parent, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
   }
 
   /**
@@ -94,14 +101,7 @@ public class StateHelperTest extends AbstractEnroscarTest {
       }
     });
 
-    final View stateView = stateHelper.getCustomStateView(STATE_TEST, context, null, parent);
-    assertThat(stateView, notNullValue());
-
-    final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
-    assertThat(lp, notNullValue());
-
-    assertThat(lp.width, equalTo(width));
-    assertThat(lp.height, equalTo(height));
+    assertStateView(STATE_TEST, parent, width, height);
   }
 
   /**
@@ -127,14 +127,7 @@ public class StateHelperTest extends AbstractEnroscarTest {
       }
     });
 
-    View stateView = stateHelper.getCustomStateView(STATE_TEST, context, null, parent);
-    assertThat(stateView, notNullValue());
-
-    ViewGroup.LayoutParams lp = stateView.getLayoutParams();
-    assertThat(lp, notNullValue());
-
-    assertThat(lp.width, equalTo(width));
-    assertThat(lp.height, equalTo(height));
+    assertStateView(STATE_TEST, parent, width, height);
 
     // Step 2 - change parent size
     final int newWidth = 240;
@@ -142,26 +135,12 @@ public class StateHelperTest extends AbstractEnroscarTest {
 
     measureAndLayout(parent, newWidth, newHeight);
 
-    stateView = stateHelper.getCustomStateView(STATE_TEST, context, null, parent);
-    assertThat(stateView, notNullValue());
-
-    lp = stateView.getLayoutParams();
-    assertThat(lp, notNullValue());
-
-    assertThat(lp.width, equalTo(newWidth));
-    assertThat(lp.height, equalTo(newHeight));
+    assertStateView(STATE_TEST, parent, newWidth, newHeight);
 
     // Step 3 - fall back to MATCH_PARENT
     measureAndLayout(parent, 0, 0);
 
-    stateView = stateHelper.getCustomStateView(STATE_TEST, context, null, parent);
-    assertThat(stateView, notNullValue());
-
-    lp = stateView.getLayoutParams();
-    assertThat(lp, notNullValue());
-
-    assertThat(lp.width, equalTo(LayoutParams.MATCH_PARENT));
-    assertThat(lp.height, equalTo(LayoutParams.MATCH_PARENT));
+    assertStateView(STATE_TEST, parent, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
   }
 
   /**
@@ -190,14 +169,7 @@ public class StateHelperTest extends AbstractEnroscarTest {
       }
     });
 
-    final View stateView = stateHelper.getCustomStateView(STATE_TEST, context, null, parent);
-    assertThat(stateView, notNullValue());
-
-    final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
-    assertThat(lp, notNullValue());
-
-    assertThat(lp.width, equalTo(stateViewWidth));
-    assertThat(lp.height, equalTo(stateViewHeight));
+    assertStateView(STATE_TEST, parent, stateViewWidth, stateViewHeight);
   }
 
   /**

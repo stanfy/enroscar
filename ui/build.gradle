@@ -8,3 +8,9 @@ dependencies {
   compile project(path : ':enroscar-net', transitive : false)
   compile project(path : ':enroscar-sdk-dep', transitive : false)
 }
+
+eclipse {
+  project {
+    referencedProjects 'enroscar-stats'
+  }
+}
