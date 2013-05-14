@@ -1,0 +1,7 @@
+archivesBaseName='enroscar-sdk-dep'
+
+dependencies {
+
+  compile project(path : ':enroscar-beans', transitive : false)
+
+}

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<lint>
-    <issue id="FieldGetter" severity="informational" />
-    <issue id="IconDensities" severity="informational" />
-    <issue id="Registered" severity="ignore" />
-    <issue id="TypographyQuotes" severity="warning" />
-    <issue id="UnusedResources" severity="ignore" />
-</lint>

@@ -2,11 +2,20 @@
 
 # Local properties
 dev.properties
+local.properties
 
 # Generated
 gen
 bin
+tmp
 
 # Eclipse
 .project
+.classpath
+.settings
+.checkstyle
+
+# Gradle
+build
+.gradle
 

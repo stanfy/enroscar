@@ -14,7 +14,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.stanfy.app.fragments.list.RequestBuilderListFragment;
-import com.stanfy.content.UniqueObject;
+import com.stanfy.enroscar.content.UniqueObject;
 
 public abstract class SherlockRequestBuilderListFragment<MT extends UniqueObject, LT extends List<MT>>
   extends RequestBuilderListFragment<MT, LT>
