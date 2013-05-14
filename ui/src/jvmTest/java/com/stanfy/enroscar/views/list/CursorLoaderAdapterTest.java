@@ -1,10 +1,11 @@
-package com.stanfy.enroscar.views.list.test;
+package com.stanfy.enroscar.views.list;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.fest.assertions.api.Assertions.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -21,6 +22,7 @@ import com.stanfy.enroscar.views.list.CursorLoaderAdapter;
 /**
  * Tests for {@link CursorLoaderAdapter}.
  */
+@RunWith(RobolectricTestRunner.class)
 public class CursorLoaderAdapterTest extends AbstractEnroscarTest {
 
   /** Call flag. */
@@ -51,18 +53,18 @@ public class CursorLoaderAdapterTest extends AbstractEnroscarTest {
     });
     notifyDataSetChanged = false;
     clAdapter.replaceDataInCore(cursor);
-    assertThat(notifyDataSetChanged, is(true));
+    assertThat(notifyDataSetChanged).isTrue();
   }
 
   @Test
   public void replaceDataInCoreShouldSwapCursor() {
-    assertThat(clAdapter.getCore().getCursor(), is(nullValue()));
+    assertThat(clAdapter.getCore().getCursor()).isNull();
     clAdapter.replaceDataInCore(cursor);
-    assertThat(clAdapter.getCore().getCursor(), is((Cursor)cursor));
+    assertThat(clAdapter.getCore().getCursor()).isSameAs(cursor);
     clAdapter.replaceDataInCore(null);
-    assertThat(clAdapter.getCore().getCursor(), is(nullValue()));
+    assertThat(clAdapter.getCore().getCursor()).isNull();
     // swap, not change ;)
-    assertThat(cursor.isClosed(), is(false));
+    assertThat(cursor.isClosed()).isFalse();
   }
 
   /** Adapter for testing. */

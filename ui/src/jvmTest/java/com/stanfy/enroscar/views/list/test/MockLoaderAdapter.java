@@ -6,7 +6,8 @@ import android.content.Context;
 import android.support.v4.content.Loader;
 import android.widget.ArrayAdapter;
 
-import com.stanfy.views.StateHelper;
+import com.stanfy.enroscar.views.StateHelper;
+import com.stanfy.enroscar.views.list.LoaderAdapter;
 
 /**
  * Test loader adapter.

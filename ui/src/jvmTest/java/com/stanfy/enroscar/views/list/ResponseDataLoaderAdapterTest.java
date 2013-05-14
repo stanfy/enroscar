@@ -1,23 +1,27 @@
-package com.stanfy.enroscar.views.list.test;
+package com.stanfy.enroscar.views.list;
 
-import static org.hamcrest.Matchers.is;
+import static org.fest.assertions.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+
+import com.stanfy.enroscar.content.UniqueObject;
+import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.views.list.ModelListAdapter;
+import com.stanfy.enroscar.views.list.ResponseDataLoaderAdapter;
 
 import android.database.DataSetObserver;
-
-import com.stanfy.content.UniqueObject;
-import com.stanfy.serverapi.response.ResponseData;
-import com.stanfy.test.AbstractEnroscarTest;
-import com.xtremelabs.robolectric.Robolectric;
-
 
 /**
  * Tests for {@link ResponseDataLoaderAdapter}.
  */
+@RunWith(RobolectricTestRunner.class)
 public class ResponseDataLoaderAdapterTest extends AbstractEnroscarTest {
 
   /** Call flag. */
@@ -39,7 +43,7 @@ public class ResponseDataLoaderAdapterTest extends AbstractEnroscarTest {
     // test
     notifyDataSetChanged = false;
     rdAdapter.replaceDataInCore(new ResponseData<List<UniqueObject>>(Collections.<UniqueObject>emptyList()));
-    assertThat(notifyDataSetChanged, is(true));
+    assertThat(notifyDataSetChanged).isTrue();
   }
 
 }
