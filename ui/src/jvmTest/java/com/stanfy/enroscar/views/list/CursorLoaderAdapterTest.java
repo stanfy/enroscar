@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
-import com.stanfy.enroscar.views.list.CursorLoaderAdapter;
 
 
 /**

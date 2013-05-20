@@ -13,8 +13,6 @@ import org.robolectric.RobolectricTestRunner;
 import com.stanfy.enroscar.content.UniqueObject;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
-import com.stanfy.enroscar.views.list.ModelListAdapter;
-import com.stanfy.enroscar.views.list.ResponseDataLoaderAdapter;
 
 import android.database.DataSetObserver;
 
