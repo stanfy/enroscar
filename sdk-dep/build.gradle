@@ -1,7 +1,17 @@
-archivesBaseName='enroscar-sdk-dep'
-
 dependencies {
 
   compile project(path : ':enroscar-beans', transitive : false)
 
+}
+
+// POM file modifications
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'Enroscar SDK Dependent Utils'
+        description 'A set of useful tools implemented in backward compatible style'
+      }
+    }
+  }
 }
