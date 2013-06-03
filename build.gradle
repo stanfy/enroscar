@@ -15,11 +15,11 @@ def projectVersion = "0.9-SNAPSHOT"
 def androidLibs = ['enroscar-sdk-dep', 'enroscar-ui']
 
 def androidMavenDep = [
-  group : 'com.google.android', name : 'android', version : '4.1.1.4'
+  group : 'com.google.android', name : 'android', version : '+'
 ]
 
 def robolectricDep = [
-  group: 'org.robolectric', name: 'robolectric', version: '2.0'
+  group: 'org.robolectric', name: 'robolectric', version: '2.1'
 ]
 
 task wrapper(type: Wrapper) {
@@ -112,7 +112,9 @@ configure(subprojects.findAll() { !(it.name in androidLibs) }) {
         def repoUrl = projectVersion.concat("SNAPSHOT") ? "https://oss.sonatype.org/content/repositories/snapshots/"
                                                         : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
         repository(url: repoUrl) {
-          authentication(userName: nexusUsername, password: nexusPassword)
+          if (hasProperty('nexusUsername') && hasProperty('nexusPassword')) {
+            authentication(userName: nexusUsername, password: nexusPassword)
+          }
         }
 
         pom.project {
