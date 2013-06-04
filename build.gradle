@@ -3,9 +3,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath group: 'com.stanfy.android', name: 'gradle-plugin-java-robolectric', version : '2.0'
-    classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.2'
-    classpath 'com.android.tools.build:gradle:0.3'
+    classpath 'com.android.tools.build:gradle:0.4.2'
   }
 }
 
@@ -15,30 +13,98 @@ def projectVersion = "0.9-SNAPSHOT"
 def androidLibs = ['enroscar-sdk-dep', 'enroscar-ui']
 
 def androidMavenDep = [
-  group : 'com.google.android', name : 'android', version : '4.1.1.4'
+  group : 'com.google.android', name : 'android', version : '+'
 ]
 
 def robolectricDep = [
-  group: 'org.robolectric', name: 'robolectric', version: '2.0-rc2'
+  group: 'org.robolectric', name: 'robolectric', version: '+'
 ]
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.4'
+  gradleVersion = '1.6'
 }
+
+// ==================================== COMMON ====================================
+
+def checkstyleDir = new File(rootDir, 'config/checkstyle')
+def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
+
+subprojects {
+
+  apply plugin : 'checkstyle'
+  apply plugin : 'maven'
+  apply plugin : 'signing'
+
+  version = projectVersion
+  group = 'com.stanfy.enroscar'
+
+  checkstyle {
+    configFile = checkstyleConfig
+    configProperties['basedir'] = project.projectDir
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  signing {
+    sign configurations.archives
+  }
+
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        def repoUrl = projectVersion.concat("SNAPSHOT") ? "https://oss.sonatype.org/content/repositories/snapshots/"
+        : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        repository(url: repoUrl) {
+          authentication(userName: nexusUsername, password: nexusPassword)
+        }
+
+        pom.project {
+          name 'Enroscar'
+          description 'Android Library'
+          url 'https://github.com/stanfy/enroscar'
+          inceptionYear '2011'
+
+          scm {
+            url 'https://github.com/stanfy/enroscar'
+            connection 'scm:git:git@github.com:stanfy/enroscar.git'
+            developerConnection 'scm:git:git@github.com:stanfy/enroscar.git'
+          }
+
+          licenses {
+            license {
+              name 'The Apache Software License, Version 2.0'
+              url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+              distribution 'repo'
+            }
+          }
+
+        }
+        pom.whenConfigured { pom ->
+          pom.dependencies.removeAll { dep -> dep.groupId == 'com.google.android' }
+        }
+
+      }
+    }
+  }
+
+}
+
 
 // Java Projects
 
 configure(subprojects.findAll() { !(it.name in androidLibs) }) {
   
   apply plugin : 'java'
-  apply plugin : 'nexus'
-  
+
   sourceCompatibility = 1.6
 
   dependencies {
     compile androidMavenDep
-    testCompile group: 'junit', name: 'junit', version: '4.10'
-    testCompile 'org.hamcrest:hamcrest-all:1.3'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.easytesting:fest-assert-core:2.0M10'
     testCompile robolectricDep
   }
@@ -70,7 +136,17 @@ configure(subprojects.findAll() { !(it.name in androidLibs) }) {
   debugTest(testSelectionConfig)
   debugTest.dependsOn 'cleanTest'
 
-  
+
+  task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+  }
+
+  task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+  }
+
   task testsJar(type : Jar) {
     classifier = 'tests'
     from sourceSets.test.output
@@ -84,30 +160,10 @@ configure(subprojects.findAll() { !(it.name in androidLibs) }) {
   
   artifacts {
     testArchives testsJar
-  }
-  
-  modifyPom {
-    project {
-      name 'Enroscar'
-      description 'Android Library'
-      url 'https://github.com/stanfy/gson-xml'
-      inceptionYear '2012'
-  
-      scm {
-        url 'https://github.com/stanfy/enroscar'
-        connection 'scm:git:git@github.com:stanfy/enroscar.git'
-        developerConnection 'scm:git:git@github.com:stanfy/enroscar.git'
-      }
-  
-      licenses {
-        license {
-          name 'The Apache Software License, Version 2.0'
-          url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-          distribution 'repo'
-        }
-      }
-  
-    }
+
+    archives jar
+    archives sourcesJar
+    archives javadocJar
   }
 
 }
@@ -120,7 +176,9 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
 
   android {
     compileSdkVersion 17
-    
+
+    buildToolsVersion '17'
+
     defaultConfig {
       versionCode 9
       versionName projectVersion
@@ -132,14 +190,13 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
 
   configurations {
     jarPackage { /* jar package for references from other Java projects */ }
-    ideHack { /* IDE integration hack */ }
-    jvmTest.extendsFrom ideHack /* tests on JVM */
+    jvmTest { /* tests on JVM */ }
   }
   
   task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
     from 'build/bundles/release/classes.jar'
     into "build/libs"
-    rename { "${project.name}-unspecified.jar" }
+    rename { "${project.name}-${project.version}.jar" }
   }
   
   sourceSets {
@@ -153,25 +210,31 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
     testClassesDir = project.sourceSets.jvmTest.output.classesDir
     classpath = project.sourceSets.jvmTest.runtimeClasspath
   }
-  
+
+  task sourcesJar(type: Jar) {
+    from 'src/main/java'
+    classifier = 'sources'
+  }
+
   artifacts {
-    jarPackage(file("build/libs/${project.name}-unspecified.jar")) {
+    jarPackage(file("build/libs/${project.name}-${project.version}.jar")) {
       builtBy classesJar
     }
+
+    archives sourcesJar
   }
 
   assemble.dependsOn classesJar
   check.dependsOn testJvm
   
   dependencies {
-    ideHack robolectricDep
-    ideHack androidMavenDep
-    ideHack project(':enroscar-beans'), project(':enroscar-stats'), 
-            project(path: ':enroscar-shared', configuration: 'testArchives'), project(':enroscar-content') 
+    jvmTest robolectricDep
+    jvmTest androidMavenDep
+    jvmTest project(':enroscar-beans'), project(':enroscar-stats'),
+            project(path: ':enroscar-shared', configuration: 'testArchives'), project(':enroscar-content')
 
-    ideHack group: 'junit', name: 'junit', version: '4.10'
-    ideHack 'org.hamcrest:hamcrest-all:1.3'
-    ideHack 'org.easytesting:fest-assert-core:2.0M10'
+    jvmTest group: 'junit', name: 'junit', version: '4.11'
+    jvmTest 'org.easytesting:fest-assert-core:2.0M10'
     
     jvmTest files("$buildDir/classes/debug") {
       builtBy 'compileDebug'
@@ -180,45 +243,3 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
   
 }
 
-// ==================================== COMMON ====================================
-
-def checkstyleDir = new File(rootDir, 'config/checkstyle')
-def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
-  
-subprojects {
-
-  apply plugin : 'checkstyle'
-  apply plugin : 'eclipse'
-  apply plugin : 'maven'
-  
-  version = projectVersion
-  group = 'com.stanfy.enroscar'
-  
-  checkstyle {
-    configFile = checkstyleConfig
-    configProperties['basedir'] = project.projectDir
-  }
-  
-  repositories {
-    mavenCentral()
-  }
-  
-  if (project.name in androidLibs) {
-    eclipse {
-      project {
-        referencedProjects 'enroscar-beans'
-        natures 'org.eclipse.jdt.core.javanature'
-      }
-      classpath {
-        plusConfigurations += configurations.ideHack
-        file {
-          withXml {
-            def node = it.asNode()
-            node.appendNode('classpathentry', [kind : 'src', path : 'src/main/java'])
-          }
-        }
-      }
-    }
-  }
-  
-}

@@ -257,7 +257,10 @@ public class BeansManager {
 
   /** Put bean operation. */
   protected interface PutBean {
-    /** Do operation. */
+    /**
+     * Perform bean editor operation: put bean into container.
+     * @return bean instance
+     */
     Object put();
   }
 

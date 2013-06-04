@@ -15,6 +15,11 @@ tmp
 .settings
 .checkstyle
 
+# IDEA
+out
+.idea
+*.iml
+
 # Gradle
 build
 .gradle
