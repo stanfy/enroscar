@@ -45,6 +45,10 @@ subprojects {
 
   repositories {
     mavenCentral()
+    // XXX this should have been added automatically by Android plugin
+    maven {
+      url "$System.env.ANDROID_HOME/extras/android/m2repository/"
+    }
   }
 
   signing {
@@ -190,7 +194,7 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
 
   configurations {
     jarPackage { /* jar package for references from other Java projects */ }
-    jvmTest { /* tests on JVM */ }
+    jvmTest.extendsFrom compile /* tests on JVM */
   }
   
   task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
@@ -217,10 +221,12 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
   }
 
   artifacts {
+    // this artifact is referenced from other Java-based projects
     jarPackage(file("build/libs/${project.name}-${project.version}.jar")) {
       builtBy classesJar
     }
 
+    // add sources to published artifacts
     archives sourcesJar
   }
 
@@ -230,12 +236,12 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
   dependencies {
     jvmTest robolectricDep
     jvmTest androidMavenDep
-    jvmTest project(':enroscar-beans'), project(':enroscar-stats'),
-            project(path: ':enroscar-shared', configuration: 'testArchives'), project(':enroscar-content')
 
     jvmTest group: 'junit', name: 'junit', version: '4.11'
     jvmTest 'org.easytesting:fest-assert-core:2.0M10'
-    
+
+    // use main sources
+    // TODO can it be made with source sets?
     jvmTest files("$buildDir/classes/debug") {
       builtBy 'compileDebug'
     }

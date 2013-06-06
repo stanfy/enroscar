@@ -2,6 +2,3 @@
   include it
   project(":$it").name = "enroscar-$it"
 }
-
-nexusUsername=''
-nexusPassword=''
