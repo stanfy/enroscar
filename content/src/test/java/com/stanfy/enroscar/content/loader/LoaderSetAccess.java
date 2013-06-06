@@ -1,7 +1,5 @@
 package com.stanfy.enroscar.content.loader;
 
-import com.stanfy.enroscar.content.loader.LoaderSet;
-
 /**
  * Access to {@link LoaderSet}.
  */

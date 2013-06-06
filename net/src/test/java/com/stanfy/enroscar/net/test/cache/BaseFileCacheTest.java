@@ -11,7 +11,7 @@ import java.net.URLConnection;
 import org.junit.Test;
 
 import com.google.mockwebserver.MockResponse;
-import com.jakewharton.DiskLruCache;
+import com.jakewharton.disklrucache.DiskLruCache;
 
 /**
  * Tests for {@link com.stanfy.net.cache.BaseFileResponseCache}.
