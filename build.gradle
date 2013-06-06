@@ -55,6 +55,8 @@ subprojects {
     sign configurations.archives
   }
 
+  boolean hasCredentials = rootProject.hasProperty('nexusUsername') && rootProject.hasProperty('nexusPassword')
+
   uploadArchives {
     repositories {
       mavenDeployer {
@@ -63,7 +65,9 @@ subprojects {
         def repoUrl = projectVersion.concat("SNAPSHOT") ? "https://oss.sonatype.org/content/repositories/snapshots/"
         : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
         repository(url: repoUrl) {
-          authentication(userName: nexusUsername, password: nexusPassword)
+          if (hasCredentials) {
+            authentication(userName: nexusUsername, password: nexusPassword)
+          }
         }
 
         pom.project {
