@@ -3,6 +3,6 @@ dependencies {
   compile project(':enroscar-beans')
   compile project(path : ':enroscar-sdk-dep', configuration : 'jarPackage')
   
-  compile fileTree(dir : "$rootDir/libs", include : '*.jar')
+  compile 'com.android.support:support-v4:13.0.0'
   
 }

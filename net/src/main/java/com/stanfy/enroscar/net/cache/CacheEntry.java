@@ -30,7 +30,7 @@ import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.jakewharton.DiskLruCache.Editor;
+import com.jakewharton.disklrucache.DiskLruCache.Editor;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.utils.AppUtils;

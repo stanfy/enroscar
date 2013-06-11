@@ -18,8 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.jakewharton.DiskLruCache;
-import com.jakewharton.DiskLruCache.Snapshot;
+import com.jakewharton.disklrucache.DiskLruCache;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.DestroyingBean;
 import com.stanfy.enroscar.beans.InitializingBean;
@@ -283,7 +282,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     if (requestInfo == null) { return false; }
 
     final CacheEntry entry = newCacheEntry();
-    final Snapshot snapshot = readCacheInfo(requestInfo, entry);
+    final DiskLruCache.Snapshot snapshot = readCacheInfo(requestInfo, entry);
     if (snapshot == null) { return false; }
     IoUtils.closeQuietly(snapshot);
 

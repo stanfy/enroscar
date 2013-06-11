@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -82,21 +81,21 @@ public class ApiMethods {
   /** Calls {@link ApiMethodCallback#reportSuccess(RequestDescription, ResponseData)}. */
   private static final CallbackReporter SUCCESS_REPORTER = new CallbackReporter("success") {
     @Override
-    void report(final ApiMethodCallback callback, final RequestDescription requestDescription, final ResponseData<?> responseData) throws RemoteException {
+    void report(final ApiMethodCallback callback, final RequestDescription requestDescription, final ResponseData<?> responseData) {
       callback.reportSuccess(requestDescription, responseData);
     }
   };
   /** Calls {@link ApiMethodCallback#reportError(RequestDescription, ResponseData)}. */
   private static final CallbackReporter ERROR_REPORTER = new CallbackReporter("error") {
     @Override
-    void report(final ApiMethodCallback callback, final RequestDescription requestDescription, final ResponseData<?> responseData) throws RemoteException {
+    void report(final ApiMethodCallback callback, final RequestDescription requestDescription, final ResponseData<?> responseData) {
       callback.reportError(requestDescription, responseData);
     }
   };
   /** Calls {@link ApiMethodCallback#reportCancel(RequestDescription, ResponseData)}. */
   private static final CallbackReporter CANCEL_REPORTER = new CallbackReporter("cancel") {
     @Override
-    void report(final ApiMethodCallback callback, final RequestDescription requestDescription, final ResponseData<?> responseData) throws RemoteException {
+    void report(final ApiMethodCallback callback, final RequestDescription requestDescription, final ResponseData<?> responseData) {
       callback.reportCancel(requestDescription, responseData);
     }
   };
@@ -216,7 +215,7 @@ public class ApiMethods {
     protected CallbackReporter(final String name) {
       this.name = name;
     }
-    abstract void report(final ApiMethodCallback callback, final RequestDescription requestDescription, final ResponseData<?> responseData) throws RemoteException;
+    abstract void report(final ApiMethodCallback callback, final RequestDescription requestDescription, final ResponseData<?> responseData);
   }
 
   /** Executor for the task queue. */
@@ -431,13 +430,10 @@ public class ApiMethods {
         int callbacksCount = apiCallbacks.size();
         while (callbacksCount > 0) {
           --callbacksCount;
-          try {
-            final ApiMethodCallback callback = apiCallbacks.get(callbacksCount);
-            if (DEBUG) { Log.d(TAG, "Report API " + reporter.name + "/id=" + description.getId() + "/callback=" + callbacksCount + ": " + callback); }
-            reporter.report(callback, description, responseData);
-          } catch (final RemoteException e) {
-            Log.e(TAG, "Cannot run callback report method", e);
-          }
+
+          final ApiMethodCallback callback = apiCallbacks.get(callbacksCount);
+          if (DEBUG) { Log.d(TAG, "Report API " + reporter.name + "/id=" + description.getId() + "/callback=" + callbacksCount + ": " + callback); }
+          reporter.report(callback, description, responseData);
         }
 
       }
