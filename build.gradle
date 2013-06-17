@@ -218,5 +218,7 @@ subprojects {
     }
   }
 
+  project.conf2ScopeMappings.addMapping(300, project.configurations.jvmTest, "test")
+
 }
 
