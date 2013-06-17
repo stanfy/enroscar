@@ -1,8 +1,9 @@
+dependencies(
+    project.dependOnProjects([':enroscar-beans', ':enroscar-sdk-dep'])
+)
+
 dependencies {
 
-  compile project(':enroscar-beans')
-  compile project(path : ':enroscar-sdk-dep', configuration : 'jarPackage')
-  
   compile 'com.android.support:support-v4:13.0.0'
   
 }

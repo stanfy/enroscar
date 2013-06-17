@@ -1,8 +1,6 @@
-dependencies {
-
-  compile project(path : ':enroscar-beans')
-
-}
+dependencies(
+  project.dependOnProjects([':enroscar-beans'])
+)
 
 // POM file modifications
 uploadArchives {

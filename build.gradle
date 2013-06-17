@@ -128,20 +128,20 @@ subprojects {
     jarPackage { /* jar package for references from other Java projects */ }
     jvmTest.extendsFrom compile /* tests on JVM */
   }
-  
+
   task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
     from 'build/bundles/release/classes.jar'
     into "build/libs"
     rename { "${project.name}-${project.version}.jar" }
   }
-  
+
   sourceSets {
     jvmTest {
       compileClasspath += configurations.jvmTest
       runtimeClasspath += output + compileClasspath
     }
   }
-  
+
   task testJvm(type: Test)
 
   def testSelectionConfig = {
@@ -188,6 +188,7 @@ subprojects {
     // add sources to published artifacts
     archives sourcesJar
 
+    jvmTest file("$buildDir/libs/${project.name}-${project.version}.jar")
     jvmTest jvmTestsJar
   }
 
@@ -207,6 +208,15 @@ subprojects {
       builtBy 'compileDebug'
     }
   }
-  
+
+  project.ext.dependOnProjects = { list ->
+    return {
+      list.each {
+        compile project(it)
+        jvmTest project(path : it, configuration : 'jvmTest')
+      }
+    }
+  }
+
 }
 
