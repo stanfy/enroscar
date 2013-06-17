@@ -1,8 +1,8 @@
+dependencies(
+    project.dependOnProjects([':enroscar-beans', ':enroscar-shared', ':enroscar-content', ':enroscar-sdk-dep'])
+)
+
 dependencies {
-  
-  compile project(':enroscar-beans'), project(':enroscar-content'), project(path : ':enroscar-shared')
-  compile project(path : ':enroscar-sdk-dep')
-  compile project(path : ':enroscar-content')
   
   compile 'com.jakewharton:disklrucache:2.0.1'
   compile 'com.google.code.gson:gson:2.2.2'

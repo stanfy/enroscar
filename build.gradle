@@ -180,7 +180,7 @@ subprojects {
   }
 
   task jvmTestsJar(type : Jar) {
-    from 'src/main/jvmTest'
+    from 'src/jvmTest/java'
     classifier = 'tests'
   }
 
