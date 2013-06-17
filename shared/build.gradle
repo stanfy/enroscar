@@ -1,6 +1,9 @@
+dependencies(
+    project.dependOnProjects([':enroscar-beans'])
+)
+
 dependencies {
-  compile project(':enroscar-beans')
-  
+
   compile 'com.google.code.gson:gson:2.2.2'
   compile 'org.hamcrest:hamcrest-all:1.3'
 

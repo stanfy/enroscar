@@ -1,6 +1,8 @@
+dependencies(
+    project.dependOnProjects([':enroscar-beans', ':enroscar-shared'])
+)
+
 dependencies {
-  
-  compile project(':enroscar-beans'), project(':enroscar-shared')
   
   compile fileTree(dir : 'libs', include : '*.jar')
     

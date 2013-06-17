@@ -1,6 +1,3 @@
-dependencies {
-  compile project(':enroscar-shared')
-  compile project(':enroscar-beans')
-  compile project(':enroscar-net')
-  compile project(path : ':enroscar-sdk-dep', configuration : 'jarPackage')
-}
+dependencies(
+    project.dependOnProjects([':enroscar-beans', ':enroscar-shared', ':enroscar-sdk-dep', ':enroscar-net'])
+)

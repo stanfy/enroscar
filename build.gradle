@@ -62,8 +62,11 @@ subprojects {
       mavenDeployer {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        def repoUrl = projectVersion.concat("SNAPSHOT") ? "https://oss.sonatype.org/content/repositories/snapshots/"
-        : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        def repoUrl = (
+            projectVersion.contains("SNAPSHOT")
+                ? "https://oss.sonatype.org/content/repositories/snapshots/"
+                : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        )
         repository(url: repoUrl) {
           if (hasCredentials) {
             authentication(userName: nexusUsername, password: nexusPassword)
@@ -101,84 +104,9 @@ subprojects {
 
 }
 
-
-// Java Projects
-
-configure(subprojects.findAll() { !(it.name in androidLibs) }) {
-  
-  apply plugin : 'java'
-
-  sourceCompatibility = 1.6
-
-  dependencies {
-    compile androidMavenDep
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    testCompile 'org.easytesting:fest-assert-core:2.0M10'
-    testCompile robolectricDep
-  }
-
-  def testSelectionConfig = {
-    ignoreFailures = true
-    scanForTestClasses = false
-    
-    def selection = null
-    try {
-      selection = project.testSelection
-    } catch (def e) {
-      // ignore
-    }
-    if (!selection) {
-      selection = "**/*Test.class"
-    }
-    
-    include selection
-    exclude "**/Abstract*.class"
-  }
-  
-  test(testSelectionConfig)
-  
-  task debugTest(type : Test)
-  debugTest.doFirst {
-    jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-  }
-  debugTest(testSelectionConfig)
-  debugTest.dependsOn 'cleanTest'
-
-
-  task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-  }
-
-  task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-  }
-
-  task testsJar(type : Jar) {
-    classifier = 'tests'
-    from sourceSets.test.output
-  }
-  
-  configurations {
-    testArchives {
-      extendsFrom testRuntime
-    }
-  }
-  
-  artifacts {
-    testArchives testsJar
-
-    archives jar
-    archives sourcesJar
-    archives javadocJar
-  }
-
-}
-
 // Android Projects
 
-configure(subprojects.findAll() { it.name in androidLibs }) {
+subprojects {
   
   apply plugin : 'android-library'
 
@@ -200,38 +128,68 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
     jarPackage { /* jar package for references from other Java projects */ }
     jvmTest.extendsFrom compile /* tests on JVM */
   }
-  
+
   task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
     from 'build/bundles/release/classes.jar'
     into "build/libs"
     rename { "${project.name}-${project.version}.jar" }
   }
-  
+
   sourceSets {
     jvmTest {
       compileClasspath += configurations.jvmTest
       runtimeClasspath += output + compileClasspath
     }
   }
-  
-  task testJvm(type: Test) {
+
+  task testJvm(type: Test)
+
+  def testSelectionConfig = {
     testClassesDir = project.sourceSets.jvmTest.output.classesDir
     classpath = project.sourceSets.jvmTest.runtimeClasspath
+
+    ignoreFailures = true
+    scanForTestClasses = false
+
+    def selection = null
+    try {
+      selection = project.testSelection
+    } catch (def e) {
+      // ignore
+    }
+    if (!selection) {
+      selection = "**/*Test.class"
+    }
+
+    include selection
+    exclude "**/Abstract*.class"
   }
+
+  testJvm(testSelectionConfig)
+
+  task debugTestJvm(type : Test)
+  debugTestJvm.doFirst {
+    jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
+  }
+  debugTestJvm(testSelectionConfig)
+  //debugTestJvm.dependsOn 'cleanTest'
 
   task sourcesJar(type: Jar) {
     from 'src/main/java'
     classifier = 'sources'
   }
 
-  artifacts {
-    // this artifact is referenced from other Java-based projects
-    jarPackage(file("build/libs/${project.name}-${project.version}.jar")) {
-      builtBy classesJar
-    }
+  task jvmTestsJar(type : Jar) {
+    from 'src/jvmTest/java'
+    classifier = 'tests'
+  }
 
+  artifacts {
     // add sources to published artifacts
     archives sourcesJar
+
+    jvmTest file("$buildDir/libs/${project.name}-${project.version}.jar")
+    jvmTest jvmTestsJar
   }
 
   assemble.dependsOn classesJar
@@ -250,6 +208,17 @@ configure(subprojects.findAll() { it.name in androidLibs }) {
       builtBy 'compileDebug'
     }
   }
-  
+
+  project.ext.dependOnProjects = { list ->
+    return {
+      list.each {
+        compile project(it)
+        jvmTest project(path : it, configuration : 'jvmTest')
+      }
+    }
+  }
+
+  project.conf2ScopeMappings.addMapping(300, project.configurations.jvmTest, "test")
+
 }
 

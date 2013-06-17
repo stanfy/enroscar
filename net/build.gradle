@@ -1,15 +1,13 @@
+dependencies(
+    project.dependOnProjects([':enroscar-beans', ':enroscar-shared', ':enroscar-content', ':enroscar-sdk-dep'])
+)
+
 dependencies {
-  
-  compile project(':enroscar-beans'), project(':enroscar-content'), project(path : ':enroscar-shared', configuration : 'testArchives')
-  compile project(path : ':enroscar-sdk-dep', configuration : 'jarPackage')
-  compile project(path : ':enroscar-content', configuration : 'testArchives')
   
   compile 'com.jakewharton:disklrucache:2.0.1'
   compile 'com.google.code.gson:gson:2.2.2'
   compile 'com.stanfy:gson-xml-java:0.1.4'
   
+  jvmTest 'com.google.mockwebserver:mockwebserver:20130403'
 
-  testCompile 'com.google.mockwebserver:mockwebserver:20130403'
-  testCompile 'org.easytesting:fest-assert-core:2.0M10'
-    
 }

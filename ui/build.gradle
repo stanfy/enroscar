@@ -1,12 +1,8 @@
+dependencies(
+    project.dependOnProjects([':enroscar-beans', ':enroscar-shared', ':enroscar-sdk-dep', ':enroscar-net', ':enroscar-stats', ':enroscar-images'])
+)
+
+
 dependencies {
   compile 'com.android.support:support-v4:13.0.0'
-  
-  compile project(path : ':enroscar-beans', transitive : false)
-  compile project(path : ':enroscar-stats', transitive : false)
-  compile project(path : ':enroscar-images', transitive : false)
-  compile project(path : ':enroscar-content', transitive : false)
-  compile project(path : ':enroscar-net', transitive : false)
-  compile project(path : ':enroscar-sdk-dep', transitive : false)
-
-  jvmTest project(path: ':enroscar-shared', configuration: 'testArchives')
 }
