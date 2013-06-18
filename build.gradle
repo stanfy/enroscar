@@ -10,8 +10,6 @@ buildscript {
 def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').replaceAll(/enroscar/, '')}" }
 def projectVersion = "0.9-SNAPSHOT"
 
-def androidLibs = ['enroscar-sdk-dep', 'enroscar-ui']
-
 def androidMavenDep = [
   group : 'com.google.android', name : 'android', version : '+'
 ]
@@ -24,12 +22,13 @@ task wrapper(type: Wrapper) {
   gradleVersion = '1.6'
 }
 
-// ==================================== COMMON ====================================
 
 def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 
 subprojects {
+
+  // ==================================== COMMON ====================================
 
   apply plugin : 'checkstyle'
   apply plugin : 'maven'
@@ -102,12 +101,9 @@ subprojects {
     }
   }
 
-}
 
-// Android Projects
+  // ==================================== Android ====================================
 
-subprojects {
-  
   apply plugin : 'android-library'
 
   android {
@@ -194,7 +190,7 @@ subprojects {
 
   assemble.dependsOn classesJar
   check.dependsOn testJvm
-  
+
   dependencies {
     jvmTest robolectricDep
     jvmTest androidMavenDep
