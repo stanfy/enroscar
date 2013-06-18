@@ -121,7 +121,6 @@ subprojects {
   }
 
   configurations {
-    jarPackage { /* jar package for references from other Java projects */ }
     jvmTest.extendsFrom compile /* tests on JVM */
   }
 
