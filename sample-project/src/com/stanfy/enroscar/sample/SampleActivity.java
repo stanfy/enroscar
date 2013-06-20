@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.stanfy.app.activities.OneFragmentActivity;
+import com.stanfy.enroscar.activities.OneFragmentActivity;
 import com.stanfy.enroscar.sample.DevelopersLogoFragment.TweetsListener;
 import com.stanfy.enroscar.sample.other.GallerySampleActivity;
 import com.stanfy.enroscar.sample.other.QuickActionsSampleActivity;

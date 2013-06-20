@@ -2,19 +2,19 @@ package com.stanfy.enroscar.sample;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.stanfy.app.loader.RequestBuilderLoaderCallbacks;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.sample.model.Profile;
-import com.stanfy.serverapi.request.SimpleRequestBuilder;
-import com.stanfy.serverapi.response.ResponseData;
+import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 
 
-public class LoadProfileFragment extends Fragment implements RequestBuilderLoaderCallbacks<Profile> {
+public class LoadProfileFragment extends Fragment implements LoaderManager.LoaderCallbacks<ResponseData<Profile>> {
 
   private static final int LOADER_ID = 1;
 

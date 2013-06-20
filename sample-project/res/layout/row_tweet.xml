@@ -5,7 +5,7 @@
     android:padding="10dp"
     >
   
-  <com.stanfy.views.LoadableImageView
+  <com.stanfy.enroscar.views.LoadableImageView
       android:layout_width="48dp"
       android:layout_height="48dp"
       enroscar:sourceDensity="160"
