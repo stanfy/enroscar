@@ -3,51 +3,36 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.4.2'
+    classpath 'com.android.tools.build:gradle:0.4.+'
   }
 }
 
 apply plugin: 'android'
 
 repositories {
-    mavenCentral()
-    maven {
-      url 'https://oss.sonatype.org/content/repositories/snapshots/'
-    }
+  maven {
+    url 'https://oss.sonatype.org/content/repositories/snapshots/'
+  }
+  mavenCentral()
 }
 
 
 dependencies {
-  compile 'com.stanfy.enroscar:enroscar-beans:0.9-SNAPSHOT'
-  compile 'com.stanfy.enroscar:enroscar-sdk-dep:0.9-SNAPSHOT'
-  compile 'com.stanfy.enroscar:enroscar-images:0.9-SNAPSHOT'
-  compile 'com.stanfy.enroscar:enroscar-shared:0.9-SNAPSHOT'
-  compile 'com.stanfy.enroscar:enroscar-content:0.9-SNAPSHOT'
-  compile 'com.stanfy.enroscar:enroscar-net:0.9-SNAPSHOT'
-  compile 'com.stanfy.enroscar:enroscar-stats:0.9-SNAPSHOT'
-  compile 'com.stanfy.enroscar:enroscar-net:0.9-SNAPSHOT'
-  compile 'com.stanfy.enroscar:enroscar-ui:0.9-SNAPSHOT'
-
-
-  compile 'com.jakewharton:disklrucache:2.0.1'
-  compile 'com.google.code.gson:gson:2.2.2'
-  compile 'com.stanfy:gson-xml-java:0.1.4'
-
-  compile 'com.android.support:support-v4:13.0.0'
+  compile 'com.stanfy.enroscar:enroscar-assist:0.9.2-SNAPSHOT'
 }
-  
+
 android {
-    compileSdkVersion 17
+  compileSdkVersion 17
 
-    buildToolsVersion '17'
+  buildToolsVersion '17'
 
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src', 'gen']
-            resources.srcDirs = ['src', 'gen', '(library-res-path)']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
-        }
+  sourceSets {
+    main {
+      manifest.srcFile 'AndroidManifest.xml'
+      java.srcDirs = ['src', 'gen']
+      resources.srcDirs = ['src', 'gen', '(library-res-path)']
+      res.srcDirs = ['res']
+      assets.srcDirs = ['assets']
     }
+  }
 }
