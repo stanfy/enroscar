@@ -45,7 +45,7 @@ android {
         main {
             manifest.srcFile 'AndroidManifest.xml'
             java.srcDirs = ['src', 'gen']
-            resources.srcDirs = ['src', 'gen']
+            resources.srcDirs = ['src', 'gen', '(library-res-path)']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }

@@ -45,7 +45,7 @@
     <activity android:name=".PendingRequestExample" />
     
     <!-- Main application service. Deals with remote server API. -->
-    <service android:name="com.stanfy.app.service.ApplicationService" />
+    <service android:name="com.stanfy.enroscar.rest.executor.ApplicationService" />
     
   </application>
 

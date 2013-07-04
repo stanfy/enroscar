@@ -27,18 +27,9 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
+		<nature>org.springsource.ide.eclipse.gradle.core.nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.jdt.groovy.core.groovyNature</nature>
+		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 	</natures>
-	<filteredResources>
-		<filter>
-			<id>1348313319035</id>
-			<name></name>
-			<type>30</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-projectRelativePath-matches-false-false-build/output</arguments>
-			</matcher>
-		</filter>
-	</filteredResources>
 </projectDescription>
