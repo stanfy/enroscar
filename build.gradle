@@ -3,7 +3,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.4.2'
+    classpath 'com.android.tools.build:gradle:0.4.+'
   }
 }
 
@@ -26,10 +26,11 @@ task wrapper(type: Wrapper) {
 def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 
+boolean hasCredentials = hasProperty('nexusUsername') && hasProperty('nexusPassword')
+
 subprojects {
 
-  // ==================================== COMMON ====================================
-
+  apply plugin : 'android-library'
   apply plugin : 'checkstyle'
   apply plugin : 'maven'
   apply plugin : 'signing'
@@ -44,17 +45,11 @@ subprojects {
 
   repositories {
     mavenCentral()
-    // XXX this should have been added automatically by Android plugin
-    maven {
-      url "$System.env.ANDROID_HOME/extras/android/m2repository/"
-    }
   }
 
   signing {
     sign configurations.archives
   }
-
-  boolean hasCredentials = rootProject.hasProperty('nexusUsername') && rootProject.hasProperty('nexusPassword')
 
   uploadArchives {
     repositories {
@@ -93,18 +88,11 @@ subprojects {
           }
 
         }
-        pom.whenConfigured { pom ->
-          pom.dependencies.removeAll { dep -> dep.groupId == 'com.google.android' }
-        }
 
       }
     }
   }
 
-
-  // ==================================== Android ====================================
-
-  apply plugin : 'android-library'
 
   android {
     compileSdkVersion 17
@@ -213,7 +201,4 @@ subprojects {
     }
   }
 
-  project.conf2ScopeMappings.addMapping(300, project.configurations.jvmTest, "test")
-
 }
-
