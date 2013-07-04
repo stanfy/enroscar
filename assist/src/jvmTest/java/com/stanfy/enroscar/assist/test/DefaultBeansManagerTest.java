@@ -15,6 +15,7 @@ import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
+import com.stanfy.enroscar.views.ImageConsumers;
 
 /**
  * Tests for {@link DefaultBeansManager}.
@@ -61,6 +62,7 @@ public class DefaultBeansManagerTest {
     assertThat(manager.getImageMemoryCache()).isNotNull();
     assertThat(manager.getImagesManager()).isNotNull();
     assertThat(manager.getContainer().getBean(ImageFileCache.class)).isNotNull();
+    assertThat(manager.getContainer().getBean(ImageConsumers.class)).isNotNull();
   }
 
   @Test

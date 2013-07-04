@@ -43,13 +43,13 @@ import com.stanfy.enroscar.net.cache.EnhancedResponseCache;
 public class ImagesManager implements InitializingBean {
 
   /** Bean name. */
-  public static final String BEAN_NAME = "ImagesManager";
+  public static final String BEAN_NAME = "enroscar.ImagesManager";
 
   /** Images cache bean name. */
-  public static final String CACHE_BEAN_NAME = "ImagesCache";
+  public static final String CACHE_BEAN_NAME = "enroscar.ImagesCache";
 
   /** Image consumer factory bean name. */
-  public static final String IMAGE_CONSUMER_FACTORY_NAME = "ViewImageConsumerFactory";
+  public static final String IMAGE_CONSUMER_FACTORY_NAME = "enroscar.ViewImageConsumerFactory";
   
   /** Logging tag. */
   static final String TAG = BEAN_NAME;
@@ -114,6 +114,9 @@ public class ImagesManager implements InitializingBean {
       Log.w(TAG, "Response cache for images is not defined");
     }
     this.consumerFactory = beansContainer.getBean(IMAGE_CONSUMER_FACTORY_NAME, ViewImageConsumerFactory.class);
+    if (this.consumerFactory == null) {
+      throw new IllegalStateException("Image consumers factory bean not found in container. Take a look at DefaultBeansManager.edit().images() method in assist package.");
+    }
   }
 
   /** @return images response cache instance */
@@ -199,15 +202,17 @@ public class ImagesManager implements InitializingBean {
    */
   public void populateImage(final View view, final String url) {
     final Object tag = view.getTag();
-    ImageConsumer imageHolder = null;
+    ImageConsumer consumer = null;
     if (tag == null) {
-      imageHolder = createImageConsumer(view);
-      view.setTag(imageHolder);
+      consumer = createImageConsumer(view);
+      view.setTag(consumer);
     } else {
-      if (!(tag instanceof ImageConsumer)) { throw new IllegalStateException("View already has a tag " + tag); }
-      imageHolder = (ImageConsumer)tag;
+      if (!(tag instanceof ImageConsumer)) {
+        throw new IllegalStateException("View already has a tag " + tag + ". Cannot store consumer");
+      }
+      consumer = (ImageConsumer)tag;
     }
-    populateImage(imageHolder, url);
+    populateImage(consumer, url);
   }
 
   /**

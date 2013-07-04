@@ -1,6 +1,8 @@
 package com.stanfy.enroscar.views;
 
+import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.enroscar.images.ImageConsumer;
+import com.stanfy.enroscar.images.ImagesManager;
 import com.stanfy.enroscar.images.ViewImageConsumer;
 import com.stanfy.enroscar.images.ViewImageConsumerFactory;
 
@@ -15,6 +17,7 @@ import android.widget.TextView;
  * Image holders.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@EnroscarBean(ImagesManager.IMAGE_CONSUMER_FACTORY_NAME)
 public final class ImageConsumers implements ViewImageConsumerFactory {
 
   @Override

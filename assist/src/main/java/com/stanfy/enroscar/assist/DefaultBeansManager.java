@@ -24,6 +24,7 @@ import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
 import com.stanfy.enroscar.stats.EmptyStatsManager;
 import com.stanfy.enroscar.stats.StatsManager;
+import com.stanfy.enroscar.views.ImageConsumers;
 
 /**
  * Default beans manager. Gives access to all standard beans provided by Enroscar library.
@@ -98,6 +99,7 @@ public class DefaultBeansManager extends BeansManager {
     }
     
     public Editor images(final EnroscarConnectionsEngine.Config config) {
+      put(ImageConsumers.class);
       put(ImageFileCache.class);
       put(SupportLruImageMemoryCache.class);
       put(ImagesManager.class);
