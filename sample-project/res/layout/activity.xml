@@ -2,7 +2,7 @@
 <LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/MainContainer"
-    android:id="@id/fragment_container"
+    android:id="@+id/fragment_container"
     >
 
   <TextView

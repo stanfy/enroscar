@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import android.net.Uri;
 
-import com.stanfy.content.UniqueObject;
+import com.stanfy.enroscar.content.UniqueObject;
 
 /**
  * Represent a post in twitter timeline.

@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.stanfy.enroscar.sample.R;
-import com.stanfy.views.gallery.Gallery;
+//import com.stanfy.views.gallery.Gallery;
 
 /**
  * Gallery test activity.
@@ -26,17 +26,17 @@ public class GallerySampleActivity extends Activity {
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    final Gallery gallery = new Gallery(this);
-    gallery.setAdapter(new Adapter());
-    final LinearLayout mainLayout = new LinearLayout(this);
-    final TextView description = new TextView(this);
-    description.setAutoLinkMask(Linkify.WEB_URLS);
-    description.setText(R.string.gallerydemo_description);
-    mainLayout.addView(description, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-    mainLayout.addView(gallery, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-    mainLayout.setOrientation(LinearLayout.VERTICAL);
-    setContentView(mainLayout);
-    gallery.setSelection(0);
+//    final Gallery gallery = new Gallery(this);
+//    gallery.setAdapter(new Adapter());
+//    final LinearLayout mainLayout = new LinearLayout(this);
+//    final TextView description = new TextView(this);
+//    description.setAutoLinkMask(Linkify.WEB_URLS);
+//    description.setText(R.string.gallerydemo_description);
+//    mainLayout.addView(description, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+//    mainLayout.addView(gallery, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+//    mainLayout.setOrientation(LinearLayout.VERTICAL);
+//    setContentView(mainLayout);
+//    gallery.setSelection(0);
   }
 
   /**
@@ -58,7 +58,7 @@ public class GallerySampleActivity extends Activity {
         Log.d("Enroscar", "Use convert view. Position: " + position + ", old position: " + view.getText());
       } else {
         view = new TextView(GallerySampleActivity.this);
-        view.setLayoutParams(new Gallery.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+//        view.setLayoutParams(new Gallery.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         view.setGravity(Gravity.CENTER);
         Log.d("Enroscar", "Create " + position);
       }

@@ -11,11 +11,11 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.TextView;
 
-import com.stanfy.app.fragments.list.RequestBuilderListFragment;
+import com.stanfy.enroscar.fragments.RequestBuilderListFragment;
+import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.sample.model.Tweet;
-import com.stanfy.serverapi.request.RequestBuilder;
-import com.stanfy.views.LoadableImageView;
-import com.stanfy.views.list.ModelListAdapter.ElementRenderer;
+import com.stanfy.enroscar.views.LoadableImageView;
+import com.stanfy.enroscar.views.list.ModelListAdapter;
 
 /**
  * Fragment that displays tweets of Twitter API.
@@ -29,7 +29,7 @@ public class TwitterFragment extends RequestBuilderListFragment<Tweet, List<Twee
   }
 
   /** Post renderer. */
-  private static ElementRenderer<Tweet> RENDERER = new ElementRenderer<Tweet>(R.layout.row_tweet) {
+  private static ModelListAdapter.ElementRenderer<Tweet> RENDERER = new ModelListAdapter.ElementRenderer<Tweet>(R.layout.row_tweet) {
     @Override
     public void render(final Adapter adapter, final ViewGroup parent, final Tweet element, final View view, final Object holder, final int position) {
       final TweetViewHolder h = (TweetViewHolder)holder;
@@ -46,7 +46,7 @@ public class TwitterFragment extends RequestBuilderListFragment<Tweet, List<Twee
   };
 
   @Override
-  protected ElementRenderer<Tweet> createRenderer() { return RENDERER; }
+  protected ModelListAdapter.ElementRenderer<Tweet> createRenderer() { return RENDERER; }
 
   @Override
   protected RequestBuilder<List<Tweet>> createRequestBuilder() {

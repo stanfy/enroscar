@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import com.stanfy.app.BaseFragment;
-import com.stanfy.views.LoadableImageView;
+import com.stanfy.enroscar.fragments.BaseFragment;
+import com.stanfy.enroscar.views.LoadableImageView;
 
 /**
  * Sample fragment.

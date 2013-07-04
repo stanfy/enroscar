@@ -7,11 +7,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.stanfy.enroscar.sample.R;
-import com.stanfy.views.qa.BasicQuickAction;
-import com.stanfy.views.qa.BasicQuickActionsAdapter;
-import com.stanfy.views.qa.QuickActionsBar;
-import com.stanfy.views.qa.QuickActionsWidget;
-import com.stanfy.views.qa.QuickActionsWidget.OnQuickActionClickListener;
+import com.stanfy.enroscar.views.qa.BasicQuickAction;
+import com.stanfy.enroscar.views.qa.BasicQuickActionsAdapter;
+import com.stanfy.enroscar.views.qa.QuickActionsBar;
+import com.stanfy.enroscar.views.qa.QuickActionsWidget;
 
 /**
  * Sample for quick actions.
@@ -35,7 +34,7 @@ public class QuickActionsSampleActivity extends Activity {
         qaBar.show(v);
       }
     });
-    qaBar.setOnQuickActionClickListener(new OnQuickActionClickListener() {
+    qaBar.setOnQuickActionClickListener(new QuickActionsWidget.OnQuickActionClickListener() {
       @Override
       public void onQuickActionClicked(final QuickActionsWidget widget, final int position) {
         Log.d("EnroscarQA", "Pos " + position);

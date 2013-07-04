@@ -4,9 +4,9 @@ import java.util.List;
 
 import android.content.Context;
 
+import com.stanfy.enroscar.rest.request.BaseRequestBuilder;
+import com.stanfy.enroscar.rest.request.ListRequestBuilderWrapper;
 import com.stanfy.enroscar.sample.model.Tweet;
-import com.stanfy.serverapi.request.BaseRequestBuilder;
-import com.stanfy.serverapi.request.ListRequestBuilderWrapper;
 
 /**
  * Custom request builder.
