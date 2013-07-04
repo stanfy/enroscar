@@ -6,8 +6,14 @@ import java.net.ResponseCache;
 import android.app.Application;
 import android.content.Context;
 
+import com.stanfy.enroscar.activities.ActivityBehaviorFactory;
+import com.stanfy.enroscar.activities.CrucialGUIOperationManager;
 import com.stanfy.enroscar.beans.BeanUtils;
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.images.ImagesManager;
+import com.stanfy.enroscar.images.cache.ImageFileCache;
+import com.stanfy.enroscar.images.cache.ImageMemoryCache;
+import com.stanfy.enroscar.images.cache.SupportLruImageMemoryCache;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
@@ -16,6 +22,7 @@ import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
+import com.stanfy.enroscar.stats.EmptyStatsManager;
 import com.stanfy.enroscar.stats.StatsManager;
 
 /**
@@ -54,18 +61,18 @@ public class DefaultBeansManager extends BeansManager {
     return (DefaultBeansManager) BeansManager.get(context);
   }
   
-//  /** @return images manager instance */
-//  public ImagesManager getImagesManager() { return getContainer().getBean(ImagesManager.BEAN_NAME, ImagesManager.class); }
+  /** @return images manager instance */
+  public ImagesManager getImagesManager() { return getContainer().getBean(ImagesManager.BEAN_NAME, ImagesManager.class); }
   /** @return main buffers pool instance */
   public BuffersPool getMainBuffersPool() { return getContainer().getBean(BuffersPool.BEAN_NAME, BuffersPool.class); }
-//  /** @return image memory cache instance */
-//  public ImageMemoryCache getImageMemoryCache() { return getContainer().getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class); }
+  /** @return image memory cache instance */
+  public ImageMemoryCache getImageMemoryCache() { return getContainer().getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class); }
   /** @return response cache instance */
   public ResponseCache getResponseCache(final String name) { return getContainer().getBean(name, ResponseCache.class); }
-//  /** @return crucial GUI operation manager */
-//  public CrucialGUIOperationManager getCrucialGUIOperationManager() { return getContainer().getBean(CrucialGUIOperationManager.BEAN_NAME, CrucialGUIOperationManager.class); }
-//  /** @return activity behavior factory */
-//  public ActivityBehaviorFactory getActivityBehaviorFactory() { return getContainer().getBean(ActivityBehaviorFactory.BEAN_NAME, ActivityBehaviorFactory.class); }
+  /** @return crucial GUI operation manager */
+  public CrucialGUIOperationManager getCrucialGUIOperationManager() { return getContainer().getBean(CrucialGUIOperationManager.BEAN_NAME, CrucialGUIOperationManager.class); }
+  /** @return activity behavior factory */
+  public ActivityBehaviorFactory getActivityBehaviorFactory() { return getContainer().getBean(ActivityBehaviorFactory.BEAN_NAME, ActivityBehaviorFactory.class); }
   /** @return statistics manager */
   public StatsManager getStatsManager() { return getContainer().getBean(StatsManager.BEAN_NAME, StatsManager.class); }
   /** @return SDK dependent utilities factory */
@@ -87,33 +94,33 @@ public class DefaultBeansManager extends BeansManager {
     {
       put(SDKDependentUtilsFactory.class);
       put(BuffersPool.class);
-//      put(EmptyStatsManager.class);
+      put(EmptyStatsManager.class);
     }
     
-//    public Editor images(final EnroscarConnectionsEngine.Config config) {
-//      put(ImageFileCache.class);
-//      put(SupportLruImageMemoryCache.class);
-//      put(ImagesManager.class);
-//
-//      editorActions.put("images-connections-config", new PutBean() {
-//        @Override
-//        public Object put() {
-//          // install connections engine
-//          config.install(application);
-//          return null;
-//        }
-//      });
-//      return this;
-//    }
-//
-//    public Editor images() { return images(EnroscarConnectionsEngine.config()); }
-//
-//    public Editor activitiesBehavior() {
-//      put(ActivityBehaviorFactory.class);
-//      put(CrucialGUIOperationManager.class);
-//      return this;
-//    }
-//
+    public Editor images(final EnroscarConnectionsEngine.Config config) {
+      put(ImageFileCache.class);
+      put(SupportLruImageMemoryCache.class);
+      put(ImagesManager.class);
+
+      getEditorActions().put("images-connections-config", new PutBean() {
+        @Override
+        public Object put() {
+          // install connections engine
+          config.install(getApplication());
+          return null;
+        }
+      });
+      return this;
+    }
+
+    public Editor images() { return images(EnroscarConnectionsEngine.config()); }
+
+    public Editor activitiesBehavior() {
+      put(ActivityBehaviorFactory.class);
+      put(CrucialGUIOperationManager.class);
+      return this;
+    }
+
     public Editor remoteServerApi(final EnroscarConnectionsEngine.Config config, final String... formats) {
       put(RemoteServerApiConfiguration.class);
       if (formats.length > 0) {
@@ -161,13 +168,12 @@ public class DefaultBeansManager extends BeansManager {
       return remoteServerApi(EnroscarConnectionsEngine.config(), formats);
     }
 
-//    public Editor defaults() {
-//      required();
-//      images();
-//      activitiesBehavior();
-//      remoteServerApi();
-//      return this;
-//    }
+    public Editor defaults() {
+      images();
+      activitiesBehavior();
+      remoteServerApi();
+      return this;
+    }
     
   }
   
