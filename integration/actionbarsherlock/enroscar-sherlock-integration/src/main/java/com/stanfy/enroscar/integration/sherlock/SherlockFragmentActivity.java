@@ -1,4 +1,4 @@
-package com.stanfy.integration.sherlock;
+package com.stanfy.enroscar.integration.sherlock;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -7,12 +7,12 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.stanfy.app.ActivityBehaviorFactory;
 import com.stanfy.app.BaseActivityBehavior;
+import com.stanfy.app.BaseFragmentActivity;
 
 /**
- * Base class for preference activities.
- * @see com.actionbarsherlock.app.SherlockPreferenceActivity
+ * Sherlock activity that extends {@link BaseFragmentActivity}.
  */
-public class SherlockPreferenceActivity extends com.actionbarsherlock.app.SherlockPreferenceActivity {
+public class SherlockFragmentActivity extends com.actionbarsherlock.app.SherlockFragmentActivity {
 
   /** Behavior. */
   private SherlockActivityBehavior behavior;

@@ -1,10 +1,10 @@
-package com.stanfy.integration.sherlock.enroscar;
+package com.stanfy.enroscar.integration.sherlock;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import com.stanfy.integration.sherlock.SherlockFragmentActivity;
+import com.stanfy.enroscar.integration.sherlock.SherlockFragmentActivity;
 
 
 public abstract class SherlockOneFragmentActivity extends SherlockFragmentActivity {

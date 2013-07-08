@@ -1,4 +1,14 @@
-['beans', 'shared', 'net', 'assist', 'stats', 'content', 'images', 'sdk-dep', 'ui'].each {
-  include it
-  project(":$it").name = "enroscar-$it"
+def includeInt = { path, name ->
+  include path
+  project(":$path").name = name
 }
+
+// core
+
+['beans', 'shared', 'net', 'assist', 'stats', 'content', 'images', 'sdk-dep', 'ui'].each {
+  includeInt it, "enroscar-$it"
+}
+
+// integration
+
+includeInt 'integration:actionbarsherlock:enroscar-sherlock-integration', 'enroscar-sherlock-integration'

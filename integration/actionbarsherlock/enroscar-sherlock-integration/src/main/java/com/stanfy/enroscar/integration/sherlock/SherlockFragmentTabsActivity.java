@@ -1,4 +1,4 @@
-package com.stanfy.integration.sherlock.enroscar;
+package com.stanfy.enroscar.integration.sherlock;
 
 import java.util.HashMap;
 
@@ -10,7 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TabHost;
 
-import com.stanfy.integration.sherlock.SherlockFragmentActivity;
+import com.stanfy.enroscar.integration.sherlock.SherlockFragmentActivity;
 
 public abstract class SherlockFragmentTabsActivity extends SherlockFragmentActivity {
   /** Saved tab key. */

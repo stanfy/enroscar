@@ -30,6 +30,12 @@ boolean hasCredentials = hasProperty('nexusUsername') && hasProperty('nexusPassw
 
 subprojects {
 
+  // XXX change me
+  def checkDir = "$project.projectDir"
+  if (checkDir.contains("/integration") && !checkDir.endsWith("sherlock-integration")) {
+    return
+  }
+
   apply plugin : 'android-library'
   apply plugin : 'checkstyle'
   apply plugin : 'maven'

@@ -1,4 +1,4 @@
-package com.stanfy.integration.sherlock;
+package com.stanfy.enroscar.integration.sherlock;
 
 import android.app.Activity;
 
@@ -10,8 +10,8 @@ import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.stanfy.app.ActivityBehaviorFactory;
-import com.stanfy.app.BaseActivityBehavior;
+import com.stanfy.enroscar.activities.ActivityBehaviorFactory;
+import com.stanfy.enroscar.activities.BaseActivityBehavior;
 
 /**
  * Behavior for sherlock activities.

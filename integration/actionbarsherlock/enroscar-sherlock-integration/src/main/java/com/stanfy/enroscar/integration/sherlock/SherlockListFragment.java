@@ -1,6 +1,7 @@
-package com.stanfy.integration.sherlock;
+package com.stanfy.enroscar.integration.sherlock;
 
 import android.app.Activity;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.Watson.OnCreateOptionsMenuListener;
 import android.support.v4.app.Watson.OnOptionsItemSelectedListener;
 import android.support.v4.app.Watson.OnPrepareOptionsMenuListener;
@@ -11,9 +12,8 @@ import com.actionbarsherlock.internal.view.menu.MenuWrapper;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.stanfy.app.BaseDialogFragment;
 
-public class SherlockDialogFragment extends BaseDialogFragment implements OnCreateOptionsMenuListener, OnPrepareOptionsMenuListener, OnOptionsItemSelectedListener {
+public class SherlockListFragment extends ListFragment implements OnCreateOptionsMenuListener, OnPrepareOptionsMenuListener, OnOptionsItemSelectedListener {
   private SherlockFragmentActivity mActivity;
 
   public SherlockFragmentActivity getSherlockActivity() {
@@ -67,4 +67,3 @@ public class SherlockDialogFragment extends BaseDialogFragment implements OnCrea
     return false;
   }
 }
-
