@@ -1,3 +1,11 @@
+android {
+
+  defaultConfig {
+    packageName 'com.stanfy.enroscar.integration.sherlock'
+  }
+
+}
+
 repositories {
   // ABS can be installed here
   mavenLocal()
