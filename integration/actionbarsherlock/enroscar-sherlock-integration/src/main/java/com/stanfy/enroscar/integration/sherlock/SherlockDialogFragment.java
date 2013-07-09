@@ -11,7 +11,7 @@ import com.actionbarsherlock.internal.view.menu.MenuWrapper;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.stanfy.app.BaseDialogFragment;
+import com.stanfy.enroscar.fragments.BaseDialogFragment;
 
 public class SherlockDialogFragment extends BaseDialogFragment implements OnCreateOptionsMenuListener, OnPrepareOptionsMenuListener, OnOptionsItemSelectedListener {
   private SherlockFragmentActivity mActivity;

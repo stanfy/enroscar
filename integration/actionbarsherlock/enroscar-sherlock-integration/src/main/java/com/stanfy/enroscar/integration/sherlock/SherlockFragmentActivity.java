@@ -5,12 +5,11 @@ import android.view.KeyEvent;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.stanfy.app.ActivityBehaviorFactory;
-import com.stanfy.app.BaseActivityBehavior;
-import com.stanfy.app.BaseFragmentActivity;
+import com.stanfy.enroscar.activities.ActivityBehaviorFactory;
+import com.stanfy.enroscar.activities.BaseActivityBehavior;
 
 /**
- * Sherlock activity that extends {@link BaseFragmentActivity}.
+ * Sherlock activity that extends {@link com.stanfy.enroscar.activities.BaseFragmentActivity}.
  */
 public class SherlockFragmentActivity extends com.actionbarsherlock.app.SherlockFragmentActivity {
 
@@ -19,20 +18,6 @@ public class SherlockFragmentActivity extends com.actionbarsherlock.app.Sherlock
 
   /** @return the behavior */
   protected BaseActivityBehavior getBehavior() { return behavior; }
-
-  /**
-   * Ensure that this activity is a root task when started from launcher.
-   * Usage:
-   * <pre>
-   *   public void onCreate() {
-   *     super.onCreate();
-   *     if (!ensureRoot()) { return; }
-   *     ...
-   *   }
-   * </pre>
-   * @return false id this activity was incorrectly started from launcher
-   */
-  protected boolean ensureRoot() { return behavior.ensureRoot(); }
 
   /**
    * Perform here all the operations required before creating API methods support.
@@ -44,7 +29,7 @@ public class SherlockFragmentActivity extends com.actionbarsherlock.app.Sherlock
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
-    behavior = (SherlockActivityBehavior)ActivityBehaviorFactory.createBehavior(this);
+    behavior = (SherlockActivityBehavior) ActivityBehaviorFactory.createBehavior(this);
     super.onCreate(savedInstanceState);
     onInitialize(savedInstanceState);
     behavior.onCreate(savedInstanceState);
@@ -94,24 +79,19 @@ public class SherlockFragmentActivity extends com.actionbarsherlock.app.Sherlock
     super.onContentChanged();
     behavior.onContentChanged();
   }
+
   @Override
   public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-    final boolean r = behavior.onKeyDown(keyCode, event);
-    if (r) { return true; }
-    return super.onKeyDown(keyCode, event);
+    return behavior.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
   }
 
   @Override
   public boolean onOptionsItemSelected(final MenuItem item) {
-    final boolean r = behavior.onOptionsItemSelected(item);
-    if (r) { return true; }
-    return super.onOptionsItemSelected(item);
+    return behavior.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
   }
   @Override
   public boolean onCreateOptionsMenu(final Menu menu) {
-    final boolean r = behavior.onCreateOptionsMenu(menu);
-    if (r) { return true; }
-    return super.onCreateOptionsMenu(menu);
+    return behavior.onCreateOptionsMenu(menu) || super.onCreateOptionsMenu(menu);
   }
 
   @Override

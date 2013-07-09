@@ -69,26 +69,23 @@ public abstract class BasePreferenceActivity extends PreferenceActivity {
     behavior.onContentChanged();
     super.onContentChanged();
   }
+
   @Override
   public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-    final boolean r = behavior.onKeyDown(keyCode, event);
-    if (r) { return true; }
-    return super.onKeyDown(keyCode, event);
+    return behavior.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
   }
+
   @Override
   public boolean onOptionsItemSelected(final MenuItem item) {
-    final boolean r = behavior.onOptionsItemSelected(item);
-    if (r) { return true; }
-    return super.onOptionsItemSelected(item);
+    return behavior.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
   }
   @Override
   public boolean onCreateOptionsMenu(final Menu menu) {
-    final boolean r = behavior.onCreateOptionsMenu(menu);
-    if (r) { return true; }
-    return super.onCreateOptionsMenu(menu);
+    return behavior.onCreateOptionsMenu(menu) || super.onCreateOptionsMenu(menu);
   }
+
   @Override
-  public void onOptionsMenuClosed(final Menu menu) {
+  public void onOptionsMenuClosed(final android.view.Menu menu) {
     behavior.onOptionsMenuClosed(menu);
     super.onOptionsMenuClosed(menu);
   }
