@@ -28,14 +28,6 @@
     <declare-styleable name="HorizontalScrollView">
         <attr name="frozeScrollPosition" />
     </declare-styleable>
-    <declare-styleable name="GridLayout">
-        <attr name="numColumns" format="integer" />
-        <attr name="numRows" format="integer" />
-    </declare-styleable>
-    <declare-styleable name="MainWithBubbleLayout">
-        <attr name="bubbleOffsetX" format="dimension" />
-        <attr name="bubbleOffsetY" format="dimension" />
-    </declare-styleable>
     <declare-styleable name="ImageView">
         <attr name="android:radius" />
     </declare-styleable>
@@ -69,11 +61,6 @@
     </declare-styleable>
     <declare-styleable name="RelativeRadioGroup">
         <attr name="checkedButton" format="integer" />
-    </declare-styleable>
-    <declare-styleable name="FontPreference">
-        <attr name="testText" format="string" />
-        <attr name="fromSize" format="dimension" />
-        <attr name="toSize" format="dimension" />
     </declare-styleable>
 
     <!-- =================== -->

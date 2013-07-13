@@ -240,17 +240,21 @@ public class BeansManager {
       final long start = System.currentTimeMillis();
       commitInProgress = true;
 
-      performActions(editorActions);
+      try {
 
-      registerComponentCallbacks();
+        performActions(editorActions);
 
-      if (postponedActions != null && !postponedActions.isEmpty()) {
-        performActions(postponedActions);
-        postponedActions.clear();
+        registerComponentCallbacks();
+
+        if (postponedActions != null && !postponedActions.isEmpty()) {
+          performActions(postponedActions);
+          postponedActions.clear();
+        }
+
+      } finally {
+        commitInProgress = false;
+        if (DEBUG) { Log.d(TAG, "All commit time: " + (System.currentTimeMillis() - start)); }
       }
-
-      commitInProgress = false;
-      if (DEBUG) { Log.d(TAG, "All commit time: " + (System.currentTimeMillis() - start)); }
     }
 
   }
