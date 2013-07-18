@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
@@ -64,7 +65,7 @@ public class ImagesManager implements InitializingBean {
   private static final boolean DEBUG_IO = false;
 
   /** Debug flag. */
-  static final boolean DEBUG = false;
+  static final boolean DEBUG = true;
 
   /** Resources. */
   private final Resources resources;
@@ -114,9 +115,6 @@ public class ImagesManager implements InitializingBean {
       Log.w(TAG, "Response cache for images is not defined");
     }
     this.consumerFactory = beansContainer.getBean(IMAGE_CONSUMER_FACTORY_NAME, ViewImageConsumerFactory.class);
-    if (this.consumerFactory == null) {
-      throw new IllegalStateException("Image consumers factory bean not found in container. Take a look at DefaultBeansManager.edit().images() method in assist package.");
-    }
   }
 
   /** @return images response cache instance */
@@ -239,10 +237,10 @@ public class ImagesManager implements InitializingBean {
    * @return image holder instance
    */
   protected ImageConsumer createImageConsumer(final View view) {
-    if (consumerFactory != null) {
-      return consumerFactory.createConsumer(view);
+    if (this.consumerFactory == null) {
+      throw new IllegalStateException("Image consumers factory bean not found in container. Take a look at DefaultBeansManager.edit().images() method in assist package.");
     }
-    return null;
+    return consumerFactory.createConsumer(view);
   }
 
   /**
@@ -257,45 +255,68 @@ public class ImagesManager implements InitializingBean {
    * @return image bitmap from memory cache
    */
   public Drawable getMemCached(final String url, final View view) {
-    final Object tag = view.getTag();
-    if (tag == null || !(tag instanceof ImageConsumer)) { return null; }
-    final Drawable res = getFromMemCache(url, (ImageConsumer)tag);
-    if (res == null) { return null; }
-    return decorateDrawable((ImageConsumer)tag, res);
+    Object tag = view.getTag();
+    if (tag == null) {
+      tag = createImageConsumer(view);
+    }
+    if (!(tag instanceof ImageConsumer)) { throw new IllegalStateException("View already has a tag"); }
+    return getMemCached(url, (ImageConsumer)tag);
   }
 
-  public void populateImage(final ImageConsumer imageHolder, final String url) {
-    if (imageHolder.isMatchingParentButNotMeasured()) {
-      imageHolder.post(new Runnable() {
+  public Drawable getMemCached(final String url, final ImageConsumer consumer) {
+    final Drawable res = getFromMemCache(url, consumer);
+    if (res == null) { return null; }
+    return decorateDrawable(consumer, res);
+  }
+
+  public void populateImage(final ImageConsumer consumer, final String url) {
+    if (consumer.isMatchingParentButNotMeasured()) {
+
+      if (consumer instanceof ViewImageConsumer) {
+        final View view = ((ViewImageConsumer) consumer).getView();
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @SuppressWarnings("deprecation")
+          @Override
+          public void onGlobalLayout() {
+            view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            populateImageNow(consumer, url);
+          }
+        });
+        return;
+      }
+
+      consumer.post(new Runnable() {
         @Override
-        public void run() { populateImageNow(imageHolder, url); }
+        public void run() {
+          populateImageNow(consumer, url);
+        }
       });
     } else {
-      populateImageNow(imageHolder, url);
+      populateImageNow(consumer, url);
     }
   }
 
-  public void populateImageNow(final ImageConsumer imageHolder, final String url) {
+  public void populateImageNow(final ImageConsumer consumer, final String url) {
     if (DEBUG) { Log.d(TAG, "Process url " + url); }
     if (TextUtils.isEmpty(url)) {
-      setLoadingImage(imageHolder);
+      setLoadingImage(consumer);
       return;
     }
 
-    imageHolder.performCancellingLoader();
+    consumer.performCancellingLoader();
 
-    final Drawable memCached = getFromMemCache(url, imageHolder);
+    final Drawable memCached = getFromMemCache(url, consumer);
     if (memCached != null) {
-      imageHolder.onStart(null, url);
-      setImage(imageHolder, memCached, false, false);
-      imageHolder.onFinish(url, memCached);
+      consumer.onStart(null, url);
+      setImage(consumer, memCached, false, false);
+      consumer.onFinish(url, memCached);
       return;
     }
 
     if (DEBUG) { Log.d(TAG, "Set loading for " + url); }
-    setLoadingImage(imageHolder);
-    imageHolder.currentUrl = url; // we are in GUI thread
-    startImageLoaderTask(imageHolder);
+    setLoadingImage(consumer);
+    consumer.currentUrl = url; // we are in GUI thread
+    startImageLoaderTask(consumer);
   }
 
   /**
@@ -342,8 +363,10 @@ public class ImagesManager implements InitializingBean {
    */
   private void setLoadingImage(final ImageConsumer holder) {
     if (!holder.skipLoadingImage()) {
-      final Drawable d = !holder.isDynamicSize() ? getLoadingDrawable(holder) : null;
-      setImage(holder, d, true, false/* ignored */);
+      Drawable d = getLoadingDrawable(holder);
+      if (!holder.hasUndefinedSize() || (d.getIntrinsicWidth() != 0 && d.getIntrinsicHeight() != 0)) {
+        setImage(holder, d, true, false/* ignored */);
+      }
     }
   }
 
@@ -356,18 +379,17 @@ public class ImagesManager implements InitializingBean {
     synchronized (holder) {
       if (holder.currentUrl != null && !holder.currentUrl.equals(url)) { return null; }
     }
+
     final Bitmap map = memCache.getElement(url);
     if (map == null) {
       if (DEBUG) { Log.v(TAG, "Not in mem " + url); }
       return null;
     }
+
     final BitmapDrawable result = new BitmapDrawable(holder.context.getResources(), map);
-    final int gap = 5;
-    final boolean suits = holder.isDynamicSize()
-        || holder.allowSmallImagesFromCache()
-        || holder.skipScaleBeforeCache()
-        || Math.abs(holder.getRequiredWidth() - result.getIntrinsicWidth()) < gap
-        || Math.abs(holder.getRequiredHeight() - result.getIntrinsicHeight()) < gap;
+
+    // check bitmap size
+    final boolean suits = holder.allowSmallImagesFromCache() || holder.checkDrawableSize(result);
     if (DEBUG) { Log.v(TAG, "Use mem cache " + suits + " for " + url); }
     return suits ? result : null;
   }
@@ -420,8 +442,9 @@ public class ImagesManager implements InitializingBean {
     InputStream imageStream = newConnection(url).getInputStream();
     final BitmapFactory.Options options = new BitmapFactory.Options();
 
-    if (holder.useSampling() && !holder.isDynamicSize()) {
+    if (holder.useSampling()) {
       options.inSampleSize = resolveSampleFactor(imageStream, holder.getSourceDensity(), holder.getRequiredWidth(), holder.getRequiredHeight());
+      if (DEBUG) { Log.d(TAG, "Sample factor " + options.inSampleSize + " for " + holder.getLoaderKey()); }
       // image must have been cached now
       imageStream = newConnection(url).getInputStream();
     }
@@ -463,14 +486,27 @@ public class ImagesManager implements InitializingBean {
    * Possible factors: <code>2, 4, 7, 8, (8 + {@link #MAX_POWER_OF_2_DISTANCE} = 11), 12, 13, 14, 15, 16, 16 + {@link #MAX_POWER_OF_2_DISTANCE}...</code>
    */
   static int calculateSampleFactor(final int inW, final int inH, final int width, final int height) {
+    if (width == 0 && height == 0) {
+      throw new IllegalArgumentException("Absolutely undefined size");
+    }
+
+    int factor = 0;
+    if (width == 0) {
+      factor = inH / height;
+    } else if (height == 0) {
+      factor = inW / width;
+    } else {
+      factor = inW > inH ? inW / width : inH / height;
+    }
+
     int result = 1;
-    final int factor = inW > inH ? inW / width : inH / height;
     if (factor > 1) {
       result = factor;
       final int p = nearestPowerOf2(factor);
       if (result - p < MAX_POWER_OF_2_DISTANCE) { result = p; }
       if (DEBUG) { Log.d(TAG, "Sampling: factor=" + factor + ", p=" + p + ", result=" + result); }
     }
+
     return result;
   }
 
@@ -517,6 +553,7 @@ public class ImagesManager implements InitializingBean {
       return res;
     } catch (final OutOfMemoryError e) {
       // I know, it's bad to catch errors but files can be VERY big!
+      Log.e(TAG, "Out of memory while decoding an image", e);
       return null;
     } finally {
       // recycle

@@ -100,9 +100,9 @@ public final class ImageConsumers implements ViewImageConsumerFactory {
       }
     }
     @Override
-    public int getRequiredHeight() { return -1; }
+    protected int getTargetHeight() { return -1; }
     @Override
-    public int getRequiredWidth() { return -1; }
+    protected int getTargetWidth() { return -1; }
   }
 
 }

@@ -43,7 +43,7 @@ public abstract class ViewImageConsumer<T extends View> extends ImageConsumer {
     view.post(r);
   }
   @Override
-  public int getRequiredHeight() {
+  protected int getTargetHeight() {
     final View view = this.view;
     final LayoutParams params = view.getLayoutParams();
     if (params == null || params.height == LayoutParams.WRAP_CONTENT) { return -1; }
@@ -51,7 +51,7 @@ public abstract class ViewImageConsumer<T extends View> extends ImageConsumer {
     return h > 0 ? h : params.height;
   }
   @Override
-  public int getRequiredWidth() {
+  protected int getTargetWidth() {
     final View view = this.view;
     final LayoutParams params = view.getLayoutParams();
     if (params == null || params.width == LayoutParams.WRAP_CONTENT) { return -1; }

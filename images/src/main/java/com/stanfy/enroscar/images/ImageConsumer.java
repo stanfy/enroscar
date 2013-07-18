@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.images;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -76,14 +77,31 @@ public abstract class ImageConsumer {
     this.currentUrl = null;
   }
 
+  boolean hasUndefinedSize() { return getTargetWidth() <= 0 && getTargetHeight() <= 0; }
+
+  boolean checkDrawableSize(final Drawable drawable) {
+    final int safeGap = 5;
+    int w = getTargetWidth(), h = getTargetHeight();
+    return (w <= 0 || w - drawable.getIntrinsicWidth() < safeGap)
+        && (h <= 0 || h - drawable.getIntrinsicHeight() < safeGap);
+  }
+
   /* parameters */
   
-  public abstract int getRequiredWidth();
-  
-  public abstract int getRequiredHeight();
-  
-  public boolean isDynamicSize() { return getRequiredWidth() <= 0 || getRequiredHeight() <= 0; }
-  
+  public final int getRequiredWidth() {
+    int targetW = getTargetWidth();
+    if (targetW > 0) { return targetW; }
+    return context.getResources().getDisplayMetrics().widthPixels;
+  }
+  public final int getRequiredHeight() {
+    int targetH = getTargetHeight();
+    if (targetH > 0) { return targetH; }
+    return context.getResources().getDisplayMetrics().heightPixels;
+  }
+
+  protected abstract int getTargetWidth();
+  protected abstract int getTargetHeight();
+
   public boolean isMatchingParentButNotMeasured() { return false; }
   
   public Drawable getLoadingImage() { return null; }
@@ -107,6 +125,6 @@ public abstract class ImageConsumer {
   
   public boolean useSampling() { return true; }
   
-  public boolean allowSmallImagesFromCache() { return false; }
+  public boolean allowSmallImagesFromCache() { return hasUndefinedSize(); }
   
 }
