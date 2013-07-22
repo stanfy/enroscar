@@ -30,8 +30,8 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   private boolean skipScaleBeforeCache;
   /** Skip loading indicator flag.  */
   private boolean skipLoadingImage;
-  /** Use sampling flag. Sampling can affect the image quality. */
-  private boolean useSampling;
+  /** Use sampling flag. */
+  private boolean useSampling = true;
   /** Image type. */
   private int imageType;
   /** Use transition option. */
@@ -126,10 +126,11 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   }
   
   /** @param listener load listener */
+  @SuppressWarnings("ConstantConditions")
   public void setImagesLoadListener(final ImagesLoadListener listener) {
     this.listener = listener;
     final Object tag = getTag();
-    if (tag != null && tag instanceof ViewImageConsumer) { ((ViewImageConsumer<?>) tag).notifyAboutViewChanges(); }
+    if (tag instanceof ViewImageConsumer) { ((ViewImageConsumer<?>) tag).notifyAboutViewChanges(); }
   }
   @Override
   public ImagesLoadListener getImagesLoadListener() { return listener; }
