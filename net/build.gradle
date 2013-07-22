@@ -1,13 +1,15 @@
 dependencies(
-    project.dependOnProjects([':enroscar-beans', ':enroscar-shared', ':enroscar-content', ':enroscar-sdk-dep'])
+  project.dependOnProjects([':enroscar-beans', ':enroscar-shared', ':enroscar-content', ':enroscar-sdk-dep'])
 )
 
 dependencies {
   
   compile 'com.jakewharton:disklrucache:2.0.1'
   compile 'com.google.code.gson:gson:2.2.2'
-  compile 'com.stanfy:gson-xml-java:0.1.4'
-  
+  compile('com.stanfy:gson-xml-java:0.2-SNAPSHOT') {
+    exclude group: 'xmlpull', module: 'xmlpull'
+  }
+
   jvmTest 'com.google.mockwebserver:mockwebserver:20130403'
 
 }
