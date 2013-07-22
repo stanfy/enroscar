@@ -4,7 +4,7 @@ package com.stanfy.enroscar.rest.executor;
 final class DebugFlags {
 
   /** Debug flag. */
-  public static final boolean DEBUG = true; // @debug.rest.executor@
+  public static final boolean DEBUG = false;
   
   private DebugFlags() { }
   
