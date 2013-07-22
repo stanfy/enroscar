@@ -1,17 +1,15 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:enroscar="http://schemas.android.com/apk/res/com.stanfy.enroscar.sample"
+    xmlns:enroscar="http://schemas.android.com/apk/res-auto"
     style="@style/StretchHorizontallyContainer"
-    android:padding="10dp"
     >
   
   <com.stanfy.enroscar.views.LoadableImageView
-      android:layout_width="48dp"
-      android:layout_height="48dp"
+      android:layout_width="75dp"
+      android:layout_height="75dp"
       enroscar:sourceDensity="160"
       enroscar:loadingImage="@drawable/no_image"
       enroscar:useTransition="yes"
-      android:layout_marginRight="10dp"
       android:id="@+id/tweet_image"
       />
   
@@ -21,6 +19,7 @@
       android:layout_toRightOf="@id/tweet_image"
       android:layout_alignParentRight="true"
       android:lines="4"
+      android:layout_margin="7dp"
       />
   
 </RelativeLayout>

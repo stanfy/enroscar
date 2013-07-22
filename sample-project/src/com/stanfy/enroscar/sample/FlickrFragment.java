@@ -1,7 +1,6 @@
 package com.stanfy.enroscar.sample;
 
-import java.util.List;
-
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,32 +12,33 @@ import android.widget.TextView;
 
 import com.stanfy.enroscar.fragments.RequestBuilderListFragment;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
-import com.stanfy.enroscar.sample.model.Tweet;
+import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.sample.model.Rss;
 import com.stanfy.enroscar.views.LoadableImageView;
 import com.stanfy.enroscar.views.list.ModelListAdapter;
 
 /**
  * Fragment that displays tweets of Twitter API.
  */
-public class TwitterFragment extends RequestBuilderListFragment<Tweet, List<Tweet>> {
+public class FlickrFragment extends RequestBuilderListFragment<Rss.Item, Rss.RssItemsList> {
 
   /** Row view holder. */
-  private static class TweetViewHolder {
+  private static class FlickrViewHolder {
     LoadableImageView image;
     TextView text;
   }
 
   /** Post renderer. */
-  private static ModelListAdapter.ElementRenderer<Tweet> RENDERER = new ModelListAdapter.ElementRenderer<Tweet>(R.layout.row_tweet) {
+  private static ModelListAdapter.ElementRenderer<Rss.Item> RENDERER = new ModelListAdapter.ElementRenderer<Rss.Item>(R.layout.row_tweet) {
     @Override
-    public void render(final Adapter adapter, final ViewGroup parent, final Tweet element, final View view, final Object holder, final int position) {
-      final TweetViewHolder h = (TweetViewHolder)holder;
-      h.text.setText(element.getText());
-      h.image.setImageURI(element.getProfileImageUri());
+    public void render(final Adapter adapter, final ViewGroup parent, final Rss.Item element, final View view, final Object holder, final int position) {
+      final FlickrViewHolder h = (FlickrViewHolder)holder;
+      h.text.setText(element.getTitle());
+      h.image.setImageURI(Uri.parse(element.getThumbnail().getUrl()));
     }
     @Override
     public Object createHolder(final View view) {
-      final TweetViewHolder h = new TweetViewHolder();
+      final FlickrViewHolder h = new FlickrViewHolder();
       h.image = (LoadableImageView)view.findViewById(R.id.tweet_image);
       h.text = (TextView)view.findViewById(R.id.tweet_text);
       return h;
@@ -46,15 +46,14 @@ public class TwitterFragment extends RequestBuilderListFragment<Tweet, List<Twee
   };
 
   @Override
-  protected ModelListAdapter.ElementRenderer<Tweet> createRenderer() { return RENDERER; }
+  protected ModelListAdapter.ElementRenderer<Rss.Item> createRenderer() { return RENDERER; }
 
   @Override
-  protected RequestBuilder<List<Tweet>> createRequestBuilder() {
-    return new TweetsRequestBuilder(getActivity())
-        .setScreenname("twitterapi")
-        .asLoadMoreList()
-        .setLimit(10)
-        .setOffset(1);
+  protected RequestBuilder<Rss.RssItemsList> createRequestBuilder() {
+    return new SimpleRequestBuilder<Rss.RssItemsList>(getActivity()) {}
+        .setUrl("http://ycpi.api.flickr.com/services/feeds/photos_public.gne")
+        .addParam("format", "rss2")
+        .setFormat("xml");
   }
 
   @Override

@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.sample;
+package com.stanfy.enroscar.sample.other;
 
 import android.app.Activity;
 import android.app.AlarmManager;

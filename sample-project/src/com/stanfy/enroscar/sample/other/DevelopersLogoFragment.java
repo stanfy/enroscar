@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.sample;
+package com.stanfy.enroscar.sample.other;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import com.stanfy.enroscar.fragments.BaseFragment;
+import com.stanfy.enroscar.sample.R;
 import com.stanfy.enroscar.views.LoadableImageView;
 
 /**

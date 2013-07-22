@@ -3,7 +3,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.4.+'
+    classpath 'com.android.tools.build:gradle:0.5.+'
   }
 }
 
@@ -18,7 +18,18 @@ repositories {
 
 
 dependencies {
-  compile 'com.stanfy.enroscar:enroscar-assist:0.9.2-SNAPSHOT'
+  compile('com.stanfy:gson-xml-java:0.2-SNAPSHOT') {
+    exclude group: 'xmlpull', module: 'xmlpull'
+  }
+  compile 'com.stanfy.enroscar:enroscar-assist:0.9.10-SNAPSHOT'
+
+
+  def enroscarVersion = '0.9.10-SNAPSHOT'
+  // for Android studio...
+  def enrsocarModules = ['assist', 'net', 'stats', 'ui', 'beans', 'content', 'images', 'sdk-dep', 'shared']
+  enrsocarModules.each {
+    compile "com.stanfy.enroscar:enroscar-$it:$enroscarVersion"
+  }
 }
 
 android {

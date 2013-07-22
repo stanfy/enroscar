@@ -449,8 +449,7 @@ public class ImagesManager implements InitializingBean {
       imageStream = newConnection(url).getInputStream();
     }
 
-    final Drawable d = decodeStream(imageStream, holder.getSourceDensity(), options);
-    return d;
+    return decodeStream(imageStream, holder.getSourceDensity(), options);
   }
 
   private InputStream prepareImageOptionsAndInput(final InputStream is, final int sourceDensity, final BitmapFactory.Options options) {
