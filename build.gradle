@@ -1,14 +1,16 @@
 buildscript {
   repositories {
     mavenCentral()
+    ivy { url 'http://dev.stanfy.com/repository/libs' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.4.+'
+    classpath 'com.android.tools.build:gradle:0.5.+'
+    classpath 'com.stanfy.integration:gradle-stanfy-plugin:1.2.3'
   }
 }
 
 def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').replaceAll(/enroscar/, '')}" }
-def projectVersion = "0.9.6-SNAPSHOT"
+def projectVersion = "0.9.10-SNAPSHOT"
 
 def androidMavenDep = [
   group : 'com.google.android', name : 'android', version : '+'
@@ -40,6 +42,7 @@ subprojects {
   apply plugin : 'checkstyle'
   apply plugin : 'maven'
   apply plugin : 'signing'
+//  apply plugin: 'stanfy-repo'
 
   version = projectVersion
   group = 'com.stanfy.enroscar'
@@ -51,6 +54,7 @@ subprojects {
 
   repositories {
     mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
 
   signing {
