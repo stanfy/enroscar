@@ -65,7 +65,7 @@ public class ImagesManager implements InitializingBean {
   private static final boolean DEBUG_IO = false;
 
   /** Debug flag. */
-  static final boolean DEBUG = true;
+  static final boolean DEBUG = false;
 
   /** Resources. */
   private final Resources resources;
@@ -91,8 +91,15 @@ public class ImagesManager implements InitializingBean {
   /** Paused state. */
   private boolean paused = false;
 
+  /** Debug flag. */
+  private boolean debug = DEBUG;
+
   public ImagesManager(final Context context) {
     this.resources = context.getResources();
+  }
+
+  public void setDebug(final boolean value) {
+    this.debug = value;
   }
 
   /**
@@ -297,7 +304,7 @@ public class ImagesManager implements InitializingBean {
   }
 
   public void populateImageNow(final ImageConsumer consumer, final String url) {
-    if (DEBUG) { Log.d(TAG, "Process url " + url); }
+    if (debug) { Log.d(TAG, "Process url " + url); }
     if (TextUtils.isEmpty(url)) {
       setLoadingImage(consumer);
       return;
@@ -313,7 +320,7 @@ public class ImagesManager implements InitializingBean {
       return;
     }
 
-    if (DEBUG) { Log.d(TAG, "Set loading for " + url); }
+    if (debug) { Log.d(TAG, "Set loading for " + url); }
     setLoadingImage(consumer);
     consumer.currentUrl = url; // we are in GUI thread
     startImageLoaderTask(consumer);
@@ -382,7 +389,7 @@ public class ImagesManager implements InitializingBean {
 
     final Bitmap map = memCache.getElement(url);
     if (map == null) {
-      if (DEBUG) { Log.v(TAG, "Not in mem " + url); }
+      if (debug) { Log.v(TAG, "Not in mem " + url); }
       return null;
     }
 
@@ -390,7 +397,7 @@ public class ImagesManager implements InitializingBean {
 
     // check bitmap size
     final boolean suits = holder.allowSmallImagesFromCache() || holder.checkDrawableSize(result);
-    if (DEBUG) { Log.v(TAG, "Use mem cache " + suits + " for " + url); }
+    if (debug) { Log.v(TAG, "Use mem cache " + suits + " for " + url); }
     return suits ? result : null;
   }
 
@@ -399,7 +406,7 @@ public class ImagesManager implements InitializingBean {
    */
   protected void startImageLoaderTask(final ImageConsumer imageHolder) {
     final String key = imageHolder.getLoaderKey();
-    if (DEBUG) { Log.d(TAG, "Key " + key); }
+    if (debug) { Log.d(TAG, "Key " + key); }
     ImageLoader loader = currentLoads.get(key);
     if (loader != null) {
       final boolean added = loader.addTarget(imageHolder);
@@ -411,11 +418,11 @@ public class ImagesManager implements InitializingBean {
       final boolean added = loader.addTarget(imageHolder);
       if (!added) { throw new IllegalStateException("Cannot add target to the new loader"); }
       currentLoads.put(key, loader);
-      if (DEBUG) { Log.d(TAG, "Current loaders count: " + currentLoads.size()); }
+      if (debug) { Log.d(TAG, "Current loaders count: " + currentLoads.size()); }
       final Executor executor = getImageTaskExecutor();
       executor.execute(loader.future);
-    } else if (DEBUG) {
-      Log.d(TAG, "Joined to the existing task");
+    } else if (debug) {
+      Log.d(TAG, "Joined to the existing task " + key);
     }
   }
 
@@ -444,7 +451,7 @@ public class ImagesManager implements InitializingBean {
 
     if (holder.useSampling()) {
       options.inSampleSize = resolveSampleFactor(imageStream, holder.getSourceDensity(), holder.getRequiredWidth(), holder.getRequiredHeight());
-      if (DEBUG) { Log.d(TAG, "Sample factor " + options.inSampleSize + " for " + holder.getLoaderKey()); }
+      if (debug) { Log.d(TAG, "Sample factor " + options.inSampleSize + " for " + holder.getLoaderKey()); }
       // image must have been cached now
       imageStream = newConnection(url).getInputStream();
     }
@@ -548,7 +555,7 @@ public class ImagesManager implements InitializingBean {
     try {
       final Bitmap bm = BitmapFactory.decodeResourceStream(null, null, src, null, opts);
       final Drawable res = bm != null ? new BitmapDrawable(resources, bm) : null;
-      if (DEBUG) { Log.d(TAG, "Image decoded: " + opts.outWidth + "x" + opts.outHeight + ", res=" + res); }
+      if (debug) { Log.d(TAG, "Image decoded: " + opts.outWidth + "x" + opts.outHeight + ", res=" + res); }
       return res;
     } catch (final OutOfMemoryError e) {
       // I know, it's bad to catch errors but files can be VERY big!
@@ -692,7 +699,7 @@ public class ImagesManager implements InitializingBean {
       mainTarget.post(new Runnable() {
         @Override
         public void run() {
-          if (DEBUG) { Log.v(TAG, "Set drawable for " + url); }
+          if (imagesManager.debug) { Log.v(TAG, "Set drawable for " + url); }
 
           final ArrayList<ImageConsumer> targets = ImageLoader.this.targets;
           final int count = targets.size();
@@ -716,7 +723,7 @@ public class ImagesManager implements InitializingBean {
         if (currentUrl != null && currentUrl.equals(url)) {
           imagesManager.setImage(imageHolder, d, false, true);
         } else {
-          if (DEBUG) { Log.d(TAG, "Skip set for " + imageHolder); }
+          if (imagesManager.debug) { Log.d(TAG, "Skip set for " + imageHolder); }
         }
       }
     }
@@ -725,7 +732,7 @@ public class ImagesManager implements InitializingBean {
       if (mainTarget == null) { return map; }
       int dstW = mainTarget.getRequiredWidth(), dstH = mainTarget.getRequiredHeight();
       if (dstW <= 0 || dstH <= 0 || mainTarget.skipScaleBeforeCache()) {
-        if (DEBUG) { Log.d(TAG, "Skip scaling for " + mainTarget + " skip flag: " + mainTarget.skipScaleBeforeCache()); }
+        if (imagesManager.debug) { Log.d(TAG, "Skip scaling for " + mainTarget + " skip flag: " + mainTarget.skipScaleBeforeCache()); }
         return map;
       }
 
