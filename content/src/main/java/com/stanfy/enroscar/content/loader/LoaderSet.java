@@ -17,7 +17,6 @@ import android.util.SparseIntArray;
  * Utility for operating with multiple loaders.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-// TODO write test
 public final class LoaderSet {
 
   /** Index. */

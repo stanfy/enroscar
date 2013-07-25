@@ -20,7 +20,8 @@ import android.support.v4.app.ShareCompat;
 import android.text.TextUtils;
 
 /**
- * Sharing helper class. Be sure to call its methods from the main thread.
+ * Helper class for activities that respond to {@link Intent#ACTION_SEND} action.
+ * Be sure to call its methods from the main thread.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 public final class SharingHelper {

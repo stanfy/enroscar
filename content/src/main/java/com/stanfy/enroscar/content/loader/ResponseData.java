@@ -3,8 +3,8 @@ package com.stanfy.enroscar.content.loader;
 
 
 /**
- * Response data that is passed to service callbacks.
- * @param <T> model type
+ * Response from some remote service. It contains error (or result) code, text message, and result object.
+ * @param <T> result object type
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
 public class ResponseData<T>  {
@@ -13,7 +13,7 @@ public class ResponseData<T>  {
   private int errorCode;
   /** Message. */
   private String message;
-  /** Model. */
+  /** Result object. */
   private T model;
 
   public ResponseData() {
