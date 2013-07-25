@@ -1,5 +1,5 @@
 dependencies(
-    project.dependOnProjects([':enroscar-beans', ':enroscar-shared'])
+  project.dependOnProjects([':enroscar-beans', ':enroscar-shared'])
 )
 
 dependencies {
@@ -7,3 +7,16 @@ dependencies {
   compile fileTree(dir : 'libs', include : '*.jar')
     
 }
+
+// POM file modifications
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'Enroscar stats'
+        description 'Statistics manager abstraction for integration with analytics services.'
+      }
+    }
+  }
+}
+
