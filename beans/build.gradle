@@ -10,3 +10,11 @@ uploadArchives {
     }
   }
 }
+
+android {
+
+  defaultConfig {
+    proguardFile 'proguard.txt'
+  }
+
+}

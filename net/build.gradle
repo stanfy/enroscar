@@ -13,3 +13,11 @@ dependencies {
   jvmTest 'com.google.mockwebserver:mockwebserver:20130403'
 
 }
+
+android {
+
+  defaultConfig {
+    proguardFile 'proguard.txt'
+  }
+
+}

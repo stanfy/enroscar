@@ -1,0 +1,12 @@
+# Enroscar beans - Proguard configuration
+
+# Bean constructor
+
+-keepclassmembers class * implements com.stanfy.enroscar.beans.Bean {
+  public <init>(android.content.Context);
+  public <init>();
+}
+-keepclassmembers @com.stanfy.enroscar.beans.EnroscarBean class * {
+  public <init>(android.content.Context);
+  public <init>();
+}
