@@ -5,3 +5,15 @@ dependencies(
         ':enroscar-ui'
     ])
 )
+
+// POM file modifications
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'Enroscar Assist'
+        description 'Helper module that gives easy access to standard Android modules and makes it easy to configure all the Enroscar stuff together.'
+      }
+    }
+  }
+}

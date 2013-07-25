@@ -13,10 +13,9 @@ uploadArchives {
   repositories {
     mavenDeployer {
       pom.project {
-        name 'Enroscar stats'
+        name 'Enroscar Stats'
         description 'Statistics manager abstraction for integration with analytics services.'
       }
     }
   }
 }
-
