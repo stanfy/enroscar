@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import com.stanfy.enroscar.sdkdep.notifications.JellyBeanNotificationBuilder;
 import com.stanfy.enroscar.sdkdep.notifications.NotificationBuilder;
@@ -23,6 +24,11 @@ public class JellyBeanUtils extends IcsUtils {
   @Override
   public void setBackground(final View view, final Drawable background) {
     view.setBackground(background);
+  }
+
+  @Override
+  public void removeOnGlobalLayoutListener(final ViewTreeObserver observer, final ViewTreeObserver.OnGlobalLayoutListener listener) {
+    observer.removeOnGlobalLayoutListener(listener);
   }
 
 }

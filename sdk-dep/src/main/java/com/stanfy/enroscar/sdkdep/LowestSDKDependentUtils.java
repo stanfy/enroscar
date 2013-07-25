@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 
 import com.stanfy.enroscar.sdkdep.notifications.BaseNotificationBuilder;
@@ -72,6 +73,12 @@ public class LowestSDKDependentUtils implements SdkDependentUtils {
   @Override
   public void setBackground(final View view, final Drawable background) {
     view.setBackgroundDrawable(background);
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void removeOnGlobalLayoutListener(final ViewTreeObserver observer, final ViewTreeObserver.OnGlobalLayoutListener listener) {
+    observer.removeGlobalOnLayoutListener(listener);
   }
 
 }

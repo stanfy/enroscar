@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 
 import com.stanfy.enroscar.sdkdep.notifications.NotificationBuilder;
@@ -89,5 +90,12 @@ public interface SdkDependentUtils {
    * @param background drawable
    */
   void setBackground(final View view, final Drawable background);
+
+  /**
+   * Remove a previously installed global layout callback.
+   * @param observer observer instance
+   * @param listener the callback to remove
+   */
+  void removeOnGlobalLayoutListener(final ViewTreeObserver observer, final ViewTreeObserver.OnGlobalLayoutListener listener);
 
 }
