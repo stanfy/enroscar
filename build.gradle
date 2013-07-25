@@ -10,7 +10,7 @@ buildscript {
 }
 
 def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').replaceAll(/enroscar/, '')}" }
-def projectVersion = "0.9.10-SNAPSHOT"
+def projectVersion = "0.9.10"
 
 def androidMavenDep = [
   group : 'com.google.android', name : 'android', version : '+'
