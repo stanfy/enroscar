@@ -23,32 +23,11 @@ import com.stanfy.enroscar.io.IoUtils;
  */
 public class AppUtils {
 
-  /** DB data types. */
-  public static final String DB_INTEGER = "INTEGER", DB_REAL = "REAL", DB_TEXT = "TEXT", DB_BLOB = "BLOB";
-
   /** App utils. */
   private static final String TAG = "AppUtils";
 
   /** Hidden constructor. */
   protected AppUtils() { /* nothing to do */ }
-
-  public static String convertToHex(final byte[] data) {
-    final StringBuilder buf = new StringBuilder();
-    final int mask = 0x0F, ten = 10, nine = 9, shiftLength = 4;
-    for (final byte element : data) {
-      int halfbyte = element >>> shiftLength & mask;
-      int twoHalfs = 0;
-      do {
-        if (0 <= halfbyte && halfbyte <= nine) {
-          buf.append((char) ('0' + halfbyte));
-        } else {
-          buf.append((char) ('a' + (halfbyte - ten)));
-        }
-        halfbyte = element & mask;
-      } while (twoHalfs++ < 1);
-    }
-    return buf.toString();
-  }
 
   /**
    * Calculate 32 bytes length MD5 digest.
@@ -86,19 +65,32 @@ public class AppUtils {
   }
 
   /**
-   * @param ctx context
-   * @return application preferences
+   * Get default preferences.
+   * @param ctx context instance
+   * @return default preferences for the specified context
+   * @see PreferenceManager#getDefaultSharedPreferences(android.content.Context)
    */
   public static SharedPreferences getPreferences(final Context ctx) {
     return PreferenceManager.getDefaultSharedPreferences(ctx);
   }
 
+  /**
+   * Check whether there is an activity that can respond to the specified intent action in the system.
+   * @param context context instance
+   * @param action intent action
+   * @return true if there is an activity that can respond to the specified intent action
+   */
   public static boolean isIntentAvailable(final Context context, final String action) {
     final PackageManager packageManager = context.getPackageManager();
     final List<?> list = packageManager.queryIntentActivities(new Intent(action), PackageManager.MATCH_DEFAULT_ONLY);
     return list.size() > 0;
   }
 
+  /**
+   * Log intent details.
+   * @param tag logcat tag
+   * @param intent intent instance to log about
+   */
   public static void logIntent(final String tag, final Intent intent) {
     Log.d(tag, "========================================================");
     Log.d(tag, "action=" + intent.getAction());
@@ -106,7 +98,7 @@ public class AppUtils {
     Log.d(tag, "type=" + intent.getType());
     Log.d(tag, "categories=" + intent.getCategories());
     Log.d(tag, "flags=" + Integer.toHexString(intent.getFlags()));
-    // Log.d(tag, "sourceBounds=" + intent.getSourceBounds());
+    Log.d(tag, "sourceBounds=" + intent.getSourceBounds());
     Log.d(tag, "extras:");
     final Bundle extras = intent.getExtras();
     if (extras != null) {

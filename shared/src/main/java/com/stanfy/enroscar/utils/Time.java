@@ -21,4 +21,16 @@ public final class Time {
     return millis / SECONDS;
   }
 
+  public static long asMinutes(final long millis) {
+    return millis / MINUTES;
+  }
+
+  public static long asHours(final long millis) {
+    return millis / HOURS;
+  }
+
+  public static long asDays(final long millis) {
+    return millis / DAYS;
+  }
+
 }
