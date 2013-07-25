@@ -10,6 +10,7 @@ import java.io.Writer;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import com.stanfy.enroscar.beans.Bean;
 import com.stanfy.enroscar.beans.BeansContainer;
@@ -40,13 +41,21 @@ public class ImageFileCache extends BaseFileResponseCache implements Bean {
   
   @Override
   public void onInitializationFinished(final BeansContainer beansContainer) {
-    final String eState = Environment.getExternalStorageState();
-    SdkDependentUtils sdkUtils = SdkDepUtils.get(context);
-    final File baseDir = Environment.MEDIA_MOUNTED.equals(eState)
-        ? sdkUtils.getExternalCacheDir(context)
-        : context.getCacheDir();
-    setWorkingDirectory(new File(baseDir, "images"));
-    setMaxSize(MAX_SIZE);
+    if (getWorkingDirectory() == null) {
+      final String eState = Environment.getExternalStorageState();
+      SdkDependentUtils sdkUtils = SdkDepUtils.get(context);
+      File baseDir = Environment.MEDIA_MOUNTED.equals(eState)
+          ? sdkUtils.getExternalCacheDir(context)
+          : context.getCacheDir();
+      if (baseDir == null) {
+        baseDir = context.getCacheDir();
+        Log.w(TAG, "Could not locate cache on the external storage");
+      }
+      setWorkingDirectory(new File(baseDir, "images"));
+    }
+    if (getMaxSize() == 0) {
+      setMaxSize(MAX_SIZE);
+    }
     super.onInitializationFinished(beansContainer);
   }
   
