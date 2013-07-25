@@ -4,8 +4,8 @@ dependencies(
 
 dependencies {
   
-  compile 'com.jakewharton:disklrucache:2.0.1'
-  compile 'com.google.code.gson:gson:2.2.2'
+  compile 'com.jakewharton:disklrucache:2.0.2'
+  compile 'com.google.code.gson:gson:2.2.4'
   compile('com.stanfy:gson-xml-java:0.2-SNAPSHOT') {
     exclude group: 'xmlpull', module: 'xmlpull'
   }
@@ -21,3 +21,16 @@ android {
   }
 
 }
+
+// POM file modifications
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'Enroscar Net'
+        description 'Tools for building REST clients in top of Android services'
+      }
+    }
+  }
+}
+
