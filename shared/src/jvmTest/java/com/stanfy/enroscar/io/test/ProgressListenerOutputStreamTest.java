@@ -1,7 +1,6 @@
 package com.stanfy.enroscar.io.test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.api.Assertions.*;
 
 import static com.stanfy.enroscar.io.test.ProgressListenerInputStreamTest.*;
 
@@ -37,7 +36,7 @@ public class ProgressListenerOutputStreamTest {
     @Override
     public void onOutputProgress(final long bytesWritten, final long totalCount, final float percent) {
       if (progressCallCounter > 0) {
-        assertThat(percent - lastProgress, greaterThan(THROTTLE));
+        assertThat(percent - lastProgress).isGreaterThan(THROTTLE);
       }
       ++progressCallCounter;
       lastProgress = percent;
@@ -72,9 +71,9 @@ public class ProgressListenerOutputStreamTest {
   public void listenerShouldBeNotifiedAboutProgress() throws Exception {
     IoUtils.transfer(source, stream, null);
     stream.close();
-    assertThat(closeCalled, is(true));
-    assertThat(progressCallCounter, greaterThanOrEqualTo(LENGTH_FACTOR - 1));
-    assertThat(1 - lastProgress, lessThan(THROTTLE));
+    assertThat(closeCalled).isTrue();
+    assertThat(progressCallCounter).isGreaterThanOrEqualTo(LENGTH_FACTOR - 1);
+    assertThat(1 - lastProgress).isLessThan(THROTTLE);
   }
 
 }

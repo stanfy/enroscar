@@ -13,9 +13,3 @@ uploadArchives {
 dependencies(
     project.dependOnProjects([':enroscar-beans'])
 )
-
-dependencies {
-
-  jvmTest 'org.hamcrest:hamcrest-all:1.3'
-
-}
