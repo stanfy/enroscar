@@ -3,18 +3,6 @@ Enroscar
 
 **An Android library focused on web-service clients implementation**
 
-Modules branch
-==============
-
-This branch is used for dividing Enroscar into several independent modules.
-Modules can be built separately. 
-
-Building
---------
-
-Gradle is used for building. 
-Simple Java projects that use Robolectric for testing are built with [Gradle Java Robolectric plugin](https://github.com/stanfy/gradle-plugin-java-robolectric).
-
 Quick Start Guide
 =================
 Here you'll find information how to start using enroscar in few simple steps.
@@ -54,7 +42,7 @@ public class SampleApplication extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
-    BeansManager.get(this).edit()
+    DefaultBeansManager.get(this).edit()
         .defaults()                   // default components configuration
         .remoteServerApi("json")      // use JSON format to communicate with remote server
         .commit();
@@ -180,6 +168,16 @@ Default queue name is "default".
 
 You may also call method `setParallel` on your request builder in order to schedule your request processing outside queues in a thread from the pool.
 On Honeycomb and later Android versions `AsyncTask`'s thread pool is used. And a separate pool is created for earlier versions.
+
+Usage
+-----
+
+Enroscar is published to Maven central repository. And you can use it with the following string in your Gradle build file:
+
+```
+compile 'com.stanfy.enroscar:enroscar-assist:0.9.+'
+```
+
 
 License
 -------
