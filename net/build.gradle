@@ -6,7 +6,7 @@ dependencies {
   
   compile 'com.jakewharton:disklrucache:2.0.2'
   compile 'com.google.code.gson:gson:2.2.4'
-  compile('com.stanfy:gson-xml-java:0.2-SNAPSHOT') {
+  compile('com.stanfy:gson-xml-java:0.1.+') {
     exclude group: 'xmlpull', module: 'xmlpull'
   }
 
