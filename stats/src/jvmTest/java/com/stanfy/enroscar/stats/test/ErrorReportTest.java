@@ -1,10 +1,6 @@
 package com.stanfy.enroscar.stats.test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.Map;
 
@@ -46,11 +42,11 @@ public class ErrorReportTest {
   @Test
   public void testStackTraceTrim() {
     final String trimmed = StatsManager.trimStackTrace(EXAMPLE_ST);
-    assertThat("Stack trace is not trimmed", trimmed.length(), lessThan(EXAMPLE_ST.length()));
-    assertThat("Stack trace has \\n", -1, equalTo(trimmed.indexOf('\n')));
-    assertThat("Stack trace has \\r", -1, equalTo(trimmed.indexOf('\r')));
-    assertThat("Stack trace has \\t", -1, equalTo(trimmed.indexOf('\t')));
-    assertThat("Exception class has not been cut", 0, equalTo(trimmed.indexOf("SQLiteConstraintException")));
+    assertThat(trimmed.length()).describedAs("Stack trace is not trimmed").isLessThan(EXAMPLE_ST.length());
+    assertThat(-1).describedAs("Stack trace has \\n").isEqualTo(trimmed.indexOf('\n'));
+    assertThat(-1).describedAs("Stack trace has \\r").isEqualTo(trimmed.indexOf('\r'));
+    assertThat(-1).describedAs("Stack trace has \\t").isEqualTo(trimmed.indexOf('\t'));
+    assertThat(0).describedAs("Exception class has not been cut").isEqualTo(trimmed.indexOf("SQLiteConstraintException"));
   }
 
   @Test
@@ -80,8 +76,8 @@ public class ErrorReportTest {
       }
     }
     .readException(new Throwable(), maxLen);
-    assertThat(msg.length(), lessThanOrEqualTo(maxLen));
-    assertThat(msg, startsWith("Throwable"));
+    assertThat(msg.length()).isLessThanOrEqualTo(maxLen);
+    assertThat(msg).startsWith("Throwable");
   }
 
 }

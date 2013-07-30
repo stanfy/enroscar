@@ -1,7 +1,6 @@
 package com.stanfy.enroscar.net.test.cache;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,8 +53,8 @@ public class CacheWrapperTest extends AbstractOneCacheTest {
     IoUtils.consumeStream(stream, BeansManager.get(getApplication()).getContainer().getBean(BuffersPool.class));
 
     // cache entry has been written to the CORE cache
-    assertThat(cache.getWriteSuccessCount(), equalTo(1));
-    assertThat(cache.getHitCount(), equalTo(0));
+    assertThat(cache.getWriteSuccessCount()).isEqualTo(1);
+    assertThat(cache.getHitCount()).isZero();
 
     // we can read from cache
     stream = new UrlConnectionBuilder()
@@ -65,10 +64,10 @@ public class CacheWrapperTest extends AbstractOneCacheTest {
       .getInputStream();
 
     final String response = IoUtils.streamToString(stream);
-    assertThat(response, equalTo(text));
+    assertThat(response).isEqualTo(text);
 
-    assertThat(cache.getWriteSuccessCount(), equalTo(1));
-    assertThat(cache.getHitCount(), equalTo(1));
+    assertThat(cache.getWriteSuccessCount()).isEqualTo(1);
+    assertThat(cache.getHitCount()).isEqualTo(1);
 
   }
 

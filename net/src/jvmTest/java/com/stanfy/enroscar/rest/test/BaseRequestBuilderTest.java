@@ -1,9 +1,6 @@
 package com.stanfy.enroscar.rest.test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +40,7 @@ public class BaseRequestBuilderTest extends AbstractEnroscarTest {
     b.addSimpleParameter("long", 2L);
 
     final RequestDescription d = b.getResult();
-    assertThat(d.getSimpleParameters().getChildren().size(), equalTo(count));
+    assertThat(d.getSimpleParameters().getChildren().size()).isEqualTo(count);
 
     final ArrayList<String> names = new ArrayList<String>(), values = new ArrayList<String>();
     for (final Parameter p : d.getSimpleParameters().getChildren()) {
@@ -51,8 +48,8 @@ public class BaseRequestBuilderTest extends AbstractEnroscarTest {
       names.add(pv.getName());
       values.add(pv.getValue());
     }
-    assertThat(names, equalTo(Arrays.asList("boolean1", "boolean2", "string", "int", "long")));
-    assertThat(values, equalTo(Arrays.asList("1", "0", "abc", "1", "2")));
+    assertThat(names).isEqualTo(Arrays.asList("boolean1", "boolean2", "string", "int", "long"));
+    assertThat(values).isEqualTo(Arrays.asList("1", "0", "abc", "1", "2"));
   }
 
   @Test
@@ -61,15 +58,15 @@ public class BaseRequestBuilderTest extends AbstractEnroscarTest {
     b.addSimpleParameter("p1", "v1");
     b.addSimpleParameter("p2", "v2");
 
-    assertThat(b.getResult().getSimpleParameters().getChildren().size(), equalTo(2));
+    assertThat(b.getResult().getSimpleParameters().getChildren().size()).isEqualTo(2);
 
     final Parameter removed = b.removeParameter("p1");
-    assertThat(removed, is(notNullValue()));
-    assertThat(removed.getName(), equalTo("p1"));
-    assertThat(((ParameterValue)removed).getValue(), equalTo("v1"));
+    assertThat(removed).isNotNull();
+    assertThat(removed.getName()).isEqualTo("p1");
+    assertThat(((ParameterValue)removed).getValue()).isEqualTo("v1");
 
-    assertThat(b.getResult().getSimpleParameters().getChildren().size(), equalTo(1));
-    assertThat(b.getResult().getSimpleParameters().getChildren().get(0).getName(), equalTo("p2"));
+    assertThat(b.getResult().getSimpleParameters().getChildren().size()).isEqualTo(1);
+    assertThat(b.getResult().getSimpleParameters().getChildren().get(0).getName()).isEqualTo("p2");
   }
 
   @Test
@@ -77,10 +74,10 @@ public class BaseRequestBuilderTest extends AbstractEnroscarTest {
     final MyBuilder b = new MyBuilder();
     b.addSimpleParameter("p1", "v1");
     b.addSimpleParameter("p2", "v2");
-    assertThat(b.getResult().getSimpleParameters().getChildren().size(), equalTo(2));
+    assertThat(b.getResult().getSimpleParameters().getChildren().size()).isEqualTo(2);
 
     b.clear();
-    assertThat(b.getResult().getSimpleParameters().getChildren().size(), equalTo(0));
+    assertThat(b.getResult().getSimpleParameters().getChildren().size()).isEqualTo(0);
   }
 
   /**

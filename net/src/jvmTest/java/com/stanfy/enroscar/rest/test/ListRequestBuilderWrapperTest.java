@@ -1,7 +1,6 @@
 package com.stanfy.enroscar.rest.test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +32,10 @@ public class ListRequestBuilderWrapperTest extends AbstractEnroscarTest {
   public void shouldReturnCorrectExpectedModelType() {
 
     final SimpleRequestBuilder<String> rb = new SimpleRequestBuilder<String>(Robolectric.application) { };
-    assertThat(rb.getExpectedModelType().getRawClass().toString(), equalTo(String.class.toString()));
+    assertThat(rb.getExpectedModelType().getRawClass().toString()).isEqualTo(String.class.toString());
 
     final RequestBuilder<List<String>> listRb = rb.<String, List<String>>asLoadMoreList();
-    assertThat(listRb.getExpectedModelType().getRawClass().isInstance(new ArrayList<String>()), equalTo(true));
+    assertThat(listRb.getExpectedModelType().getRawClass().isInstance(new ArrayList<String>())).isTrue();
 
   }
 

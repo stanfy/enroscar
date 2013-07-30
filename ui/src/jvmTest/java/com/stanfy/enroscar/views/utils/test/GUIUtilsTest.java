@@ -1,7 +1,6 @@
 package com.stanfy.enroscar.views.utils.test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,8 +26,8 @@ public class GUIUtilsTest {
     testView.setId(3);
     parent.addView(testView);
 
-    assertThat(GUIUtils.<LinearLayout>find(parent, 2), is(parent));
-    assertThat(GUIUtils.find(parent, 3), is(testView));
+    assertThat(GUIUtils.<LinearLayout>find(parent, 2)).isSameAs(parent);
+    assertThat(GUIUtils.find(parent, 3)).isSameAs(testView);
   }
 
 }

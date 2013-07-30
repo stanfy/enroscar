@@ -1,8 +1,6 @@
 package com.stanfy.enroscar.net.test.cache;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.net.URL;
@@ -30,21 +28,21 @@ public class BaseFileCacheTest extends AbstractOneCacheTest {
     // real request has been successfully performed
     assertResponse(connection, text, false);
     // cache entry has been written
-    assertThat(cache.getWriteSuccessCount(), equalTo(1));
-    assertThat(cache.getHitCount(), equalTo(0));
+    assertThat(cache.getWriteSuccessCount()).isEqualTo(1);
+    assertThat(cache.getHitCount()).isZero();
 
     final URLConnection secondConnection = url.openConnection();
     // real request has not been performed
     assertResponse(secondConnection, text, true);
     // nothing has been written
-    assertThat(cache.getWriteSuccessCount(), equalTo(1));
-    assertThat(cache.getHitCount(), equalTo(1));
+    assertThat(cache.getWriteSuccessCount()).isEqualTo(1);
+    assertThat(cache.getHitCount()).isEqualTo(1);
 
     // check disk content
     final DiskLruCache diskCache = cache.getDiskCache();
-    assertThat(diskCache.size(), greaterThan((long)text.length()));
+    assertThat(diskCache.size()).isGreaterThan((long)text.length());
     // 3 filed should be here: journal, body, metadata
-    assertThat(diskCache.getDirectory().list().length, equalTo(3));
+    assertThat(diskCache.getDirectory().list().length).isEqualTo(3);
 
   }
 

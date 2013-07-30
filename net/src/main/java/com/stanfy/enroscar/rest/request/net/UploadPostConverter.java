@@ -40,7 +40,7 @@ public class UploadPostConverter extends PostConverter {
   /**
    * The pool of ASCII chars to be used for generating a multipart boundary.
    */
-  private static final byte[] MULTIPART_CHARS = EncodingUtils.getAsciiBytes("-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  private static byte[] multipartChars = null;
 
   /** Boundary. */
   private final byte[] boundary;
@@ -51,6 +51,13 @@ public class UploadPostConverter extends PostConverter {
   public UploadPostConverter(final RequestDescription requestDescription, final Context context) {
     super(requestDescription, context, null);
     this.boundary = generateMultipartBoundary();
+  }
+
+  private static byte[] getMultipartChars() {
+    if (multipartChars == null) {
+      multipartChars = EncodingUtils.getAsciiBytes("-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    }
+    return multipartChars;
   }
 
   @Override
@@ -66,8 +73,9 @@ public class UploadPostConverter extends PostConverter {
     final Random rand = new Random();
     final int c11 = 11, c30 = 30;
     final byte[] bytes = new byte[rand.nextInt(c11) + c30]; // a random size from 30 to 40
+    final byte[] chars = getMultipartChars();
     for (int i = 0; i < bytes.length; i++) {
-      bytes[i] = MULTIPART_CHARS[rand.nextInt(MULTIPART_CHARS.length)];
+      bytes[i] = chars[rand.nextInt(chars.length)];
     }
     return bytes;
   }

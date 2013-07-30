@@ -1,7 +1,6 @@
 package com.stanfy.enroscar.rest.test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -67,12 +66,12 @@ public class RemoteServerApiConfigurationTest {
 
   @Test
   public void setDefaultCacheBeanNameShouldAffectRequestDescriptions() {
-    assertThat(createRequestDescription().getCacheName(), equalTo("defaultCacheBeanName"));
+    assertThat(createRequestDescription().getCacheName()).isEqualTo("defaultCacheBeanName");
   }
   
   @Test
   public void setDefaultContentHandlerNameShouldAffectRequestDescriptions() {
-    assertThat(createRequestDescription().getContentHandler(), equalTo("defaultContentHandlerName"));
+    assertThat(createRequestDescription().getContentHandler()).isEqualTo("defaultContentHandlerName");
   }
   
 }

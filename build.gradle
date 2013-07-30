@@ -186,7 +186,7 @@ subprojects {
   check.dependsOn testJvm
 
   dependencies {
-    jvmTest group: 'org.robolectric', name: 'robolectric', version: '+'
+    jvmTest group: 'org.robolectric', name: 'robolectric', version: '2.1.1'
     jvmTest files("$System.env.ANDROID_HOME/platforms/android-17/android.jar")
 
     jvmTest group: 'junit', name: 'junit', version: '4.11'

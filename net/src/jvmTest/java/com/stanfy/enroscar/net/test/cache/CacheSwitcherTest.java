@@ -1,11 +1,6 @@
 package com.stanfy.enroscar.net.test.cache;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.net.ResponseCache;
@@ -53,9 +48,9 @@ public class CacheSwitcherTest extends AbstractMockServerTest {
 
   @Test
   public void testCacheSwitcherInitialized() {
-    assertThat(ResponseCache.getDefault(), instanceOf(ResponseCacheSwitcher.class));
-    assertThat(cache1, is(notNullValue()));
-    assertThat(cache2, is(notNullValue()));
+    assertThat(ResponseCache.getDefault()).isInstanceOf(ResponseCacheSwitcher.class);
+    assertThat(cache1).isNotNull();
+    assertThat(cache2).isNotNull();
   }
 
   private void perform(final String path, final SimpleFileCache cache, final String response, final boolean cached) throws IOException {
@@ -64,10 +59,10 @@ public class CacheSwitcherTest extends AbstractMockServerTest {
         .setCacheManagerName(cache.getName())
         .create();
     assertResponse(connection, response, cached);
-    assertThat(cache.getWriteSuccessCount(), equalTo(1));
-    assertThat(cache.getHitCount(), equalTo(cached ? 1 : 0));
+    assertThat(cache.getWriteSuccessCount()).isEqualTo(1);
+    assertThat(cache.getHitCount()).isEqualTo(cached ? 1 : 0);
     // check switcher connections stack
-    assertThat(ResponseCacheSwitcher.getLastUrlConnection(), is(nullValue()));
+    assertThat(ResponseCacheSwitcher.getLastUrlConnection()).isNull();
   }
 
   @Test

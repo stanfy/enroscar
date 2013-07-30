@@ -1,7 +1,6 @@
 package com.stanfy.enroscar.net.test.cache;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.net.URI;
 import java.util.Collections;
@@ -44,11 +43,11 @@ public class TimeRuleTest extends AbstractEnroscarTest {
       CacheTimeRule.ttlRuleForUri("ignored", 0),
       CacheTimeRule.ttlRuleForUri(URL, System.currentTimeMillis() - ts + Time.SECONDS),
     });
-    assertThat(entry.canBeUsed(), equalTo(true));
+    assertThat(entry.canBeUsed()).isTrue();
     entry.setTimeRules(new CacheTimeRule[] {
       CacheTimeRule.untilRuleForUri(URL, ts / Time.HOURS * Time.HOURS - ts / Time.DAYS * Time.DAYS + Time.HOURS)
     });
-    assertThat(entry.canBeUsed(), equalTo(true));
+    assertThat(entry.canBeUsed()).isTrue();
   }
 
   @Test
@@ -56,13 +55,13 @@ public class TimeRuleTest extends AbstractEnroscarTest {
     entry.setTimeRules(new CacheTimeRule[] {
       CacheTimeRule.ttlRuleForUri(URL, 0)
     });
-    assertThat(entry.canBeUsed(), equalTo(false));
+    assertThat(entry.canBeUsed()).isFalse();
 
     final long ts = entry.getTimestamp();
     entry.setTimeRules(new CacheTimeRule[] {
       CacheTimeRule.untilRuleForUri(URL, ts / Time.HOURS * Time.HOURS - ts / Time.DAYS * Time.DAYS - Time.DAYS)
     });
-    assertThat(entry.canBeUsed(), equalTo(false));
+    assertThat(entry.canBeUsed()).isFalse();
   }
 
 }

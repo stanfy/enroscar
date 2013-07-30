@@ -1,14 +1,11 @@
 package com.stanfy.enroscar.net.test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.zip.GZIPOutputStream;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -37,7 +34,7 @@ public class CompressedResponseTest extends AbstractOneCacheTest {
 
     final byte[] zipped = getZippedText(text);
     // it's really zipped
-    assertThat(zipped, is(not(equalTo(text.getBytes(IoUtils.UTF_8_NAME)))));
+    assertThat(zipped).isNotEqualTo(text.getBytes(IoUtils.UTF_8_NAME));
 
     getWebServer().enqueue(
         new MockResponse().setBody(zipped).setHeader("Content-Encoding", "gzip")

@@ -11,7 +11,8 @@ dependencies {
   }
 
   jvmTest 'com.google.mockwebserver:mockwebserver:20130403'
-
+  // TODO: it should come from robolectric
+  jvmTest 'net.sf.kxml:kxml2:2.3.0'
 }
 
 android {
