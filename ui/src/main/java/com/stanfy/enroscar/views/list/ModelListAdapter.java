@@ -282,15 +282,13 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
     }
 
     /**
-     * @param root view
-     * @param imagesManagerContext images context
+     * @param view view instance
      * @return additional holder for views
      */
     public Object createHolder(final View view) { return null; }
 
     /**
-     * @param root section view
-     * @param imagesManagerContext images context
+     * @param view section view
      * @return additional holder for section views
      */
     public Object createOtherTypeHolder(final View view) { return null; }
