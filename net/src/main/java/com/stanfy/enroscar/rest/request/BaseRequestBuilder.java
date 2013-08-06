@@ -295,6 +295,23 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   }
 
   /**
+   * Add header to request description.
+   * @param name header name
+   * @param value header value
+   */
+  protected void addHeader(final String name, final String value) {
+    result.addHeader(name, value);
+  }
+
+  /**
+   * Remove header.
+   * @param name header name
+   */
+  protected void removeHeader(final String name) {
+    result.removeHeader(name);
+  }
+
+  /**
    * Add meta information to request which could be retrieved in {@link com.stanfy.enroscar.rest.response.ContentAnalyzer}.
    * @param name info name
    * @param value info value

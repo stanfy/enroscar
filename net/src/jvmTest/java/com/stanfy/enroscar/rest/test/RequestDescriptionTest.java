@@ -18,6 +18,7 @@ import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.OperationType;
+import com.stanfy.enroscar.rest.request.RequestDescription;
 
 /**
  * Tests for {@link com.stanfy.serverapi.request.RequestDescription}.
@@ -118,5 +119,38 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     );
     assertThat(connection.getURL().toString()).isEqualTo("http://example.com?a=b&c=d");
   }
-  
+
+  @Test
+  public void shouldManageHeaders() {
+    RequestDescription rd = new RequestDescription();
+
+    assertThat(rd.getHeader("h1")).isNull();
+    rd.addHeader("h1", "v1");
+    assertThat(rd.getHeader("h1")).isEqualTo("v1");
+    rd.removeHeader("h1");
+    assertThat(rd.getHeader("h1")).isNull();
+
+    rd.addHeader("h1", "v1");
+    rd.addHeader("h2", "v2");
+    assertThat(rd.getHeader("h2")).isEqualTo("v2");
+    rd.clearHeaders();
+    assertThat(rd.getHeader("h1")).isNull();
+    assertThat(rd.getHeader("h2")).isNull();
+  }
+
+  @Test
+  public void shouldSetHeadersToUrlConnecion() throws Exception {
+    final URLConnection connection = makeConnection(
+        new MyRequestBuilder<String>(Robolectric.application) {
+          {
+            getResult().addHeader("h1", "v1");
+            getResult().addHeader("h2", "v2");
+          }
+        }
+            .setUrl("http://example.com")
+    );
+    assertThat(connection.getRequestProperty("h1")).isEqualTo("v1");
+    assertThat(connection.getRequestProperty("h2")).isEqualTo("v2");
+  }
+
 }

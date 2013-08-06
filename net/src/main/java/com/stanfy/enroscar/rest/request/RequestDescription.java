@@ -13,6 +13,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.SparseArray;
@@ -44,9 +45,6 @@ public class RequestDescription implements Parcelable {
 
   /** Logging tag. */
   public static final String TAG = "ReqDesc";
-
-  /** Charset. */
-  public  static final String CHARSET = "UTF-8";
 
   /** Creator. */
   public static final Creator<RequestDescription> CREATOR = new Creator<RequestDescription>() {
@@ -109,7 +107,10 @@ public class RequestDescription implements Parcelable {
 
   /** Statistics tag. */
   int statsTag;
-  
+
+  /** Request headers. */
+  private Bundle headers;
+
   /**
    * Create with predefined ID.
    * @param id request ID
@@ -160,6 +161,8 @@ public class RequestDescription implements Parcelable {
     }
     
     this.statsTag = source.readInt();
+
+    this.headers = source.readBundle(cl);
   }
 
   public static void registerConverterFactory(final int opertationType, final ConverterFactory factory) {
@@ -210,6 +213,8 @@ public class RequestDescription implements Parcelable {
     }
     
     dest.writeInt(statsTag);
+
+    dest.writeBundle(headers);
   }
 
   @Override
@@ -330,13 +335,21 @@ public class RequestDescription implements Parcelable {
   /** @return task queue name */
   public String getTaskQueueName() { return taskQueueName; }
 
-  /** @return the metaParameters */
+  /**
+   * @return the metaParameters
+   * @deprecated will be removed
+   */
+  @Deprecated
   public Map<String, Object> getMetaParameters() { return metaParameters; }
 
   /** @return the simpleParameters */
   public ParametersGroup getSimpleParameters() { return simpleParameters; }
 
-  /** @return new meta parameters instance */
+  /**
+   * @return new meta parameters instance
+   * @deprecated will be removed
+   */
+  @Deprecated
   protected Map<String, Object> createMetaParameters() { return new HashMap<String, Object>(); }
 
   /**
@@ -378,7 +391,42 @@ public class RequestDescription implements Parcelable {
   public int getStatsTag() {
     return statsTag;
   }
-  
+
+  /**
+   * @param name request header name
+   * @return request header value
+   */
+  public String getHeader(final String name) {
+    return headers != null ? headers.getString(name) : null;
+  }
+
+  /**
+   * @param name request header name
+   * @param value request header value
+   */
+  public void addHeader(final String name, final String value) {
+    if (this.headers == null) {
+      this.headers = new Bundle();
+    }
+    this.headers.putString(name, value);
+  }
+
+  /**
+   * @param name request header name
+   */
+  public void removeHeader(final String name) {
+    if (this.headers != null) {
+      this.headers.remove(name);
+    }
+  }
+
+  /**
+   * Remove all request headers.
+   */
+  public void clearHeaders() {
+    this.headers = null;
+  }
+
   // ============================ HTTP REQUESTS ============================
 
   /**
@@ -419,6 +467,12 @@ public class RequestDescription implements Parcelable {
     }
     urlConnection.addRequestProperty("Accept-Encoding", IoUtils.ENCODING_GZIP);
     urlConnection.addRequestProperty("User-Agent", buildUserAgent(context));
+
+    if (headers != null) {
+      for (String name : headers.keySet()) {
+        urlConnection.addRequestProperty(name, headers.getString(name));
+      }
+    }
   }
 
   /**

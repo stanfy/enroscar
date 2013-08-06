@@ -80,6 +80,15 @@ public class BaseRequestBuilderTest extends AbstractEnroscarTest {
     assertThat(b.getResult().getSimpleParameters().getChildren().size()).isEqualTo(0);
   }
 
+  @Test
+  public void addRemoveHeaderShouldAffectDescription() {
+    final MyBuilder b = new MyBuilder();
+    b.addHeader("a", "b");
+    assertThat(b.getResult().getHeader("a")).isEqualTo("b");
+    b.removeHeader("a");
+    assertThat(b.getResult().getHeader("a")).isNull();
+  }
+
   /**
    * Builder for testing.
    */
@@ -115,6 +124,16 @@ public class BaseRequestBuilderTest extends AbstractEnroscarTest {
     @Override
     public Parameter removeParameter(final String name) {
       return super.removeParameter(name);
+    }
+
+    @Override
+    protected void addHeader(final String name, final String value) {
+      super.addHeader(name, value);
+    }
+
+    @Override
+    protected void removeHeader(final String name) {
+      super.removeHeader(name);
     }
 
   }
