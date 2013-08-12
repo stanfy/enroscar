@@ -130,12 +130,9 @@ public abstract class SimpleRequestBuilder<MT> extends BaseRequestBuilder<MT> {
     return this;
   }
 
-  /**
-   * @deprecated this method will be deleted
-   */
-  @Deprecated
-  public SimpleRequestBuilder<MT> setMetaInfo(final String name, final Object value) {
-    putMetaInfo(name, value);
+  @Override
+  public SimpleRequestBuilder<MT> addHeader(final String name, final String value) {
+    super.addHeader(name, value);
     return this;
   }
 

@@ -81,6 +81,19 @@ public class BaseRequestBuilderTest extends AbstractEnroscarTest {
   }
 
   @Test
+  public void clearShouldRemoveAllHeaders() {
+    final MyBuilder b = new MyBuilder();
+    b.addHeader("h1", "v1");
+    b.addHeader("h2", "v2");
+    assertThat(b.getResult().getHeader("h1")).isEqualTo("v1");
+    assertThat(b.getResult().getHeader("h2")).isEqualTo("v2");
+
+    b.clear();
+    assertThat(b.getResult().getHeader("h1")).isNull();
+    assertThat(b.getResult().getHeader("h2")).isNull();
+  }
+
+  @Test
   public void addRemoveHeaderShouldAffectDescription() {
     final MyBuilder b = new MyBuilder();
     b.addHeader("a", "b");
@@ -127,8 +140,9 @@ public class BaseRequestBuilderTest extends AbstractEnroscarTest {
     }
 
     @Override
-    protected void addHeader(final String name, final String value) {
+    protected MyBuilder addHeader(final String name, final String value) {
       super.addHeader(name, value);
+      return this;
     }
 
     @Override

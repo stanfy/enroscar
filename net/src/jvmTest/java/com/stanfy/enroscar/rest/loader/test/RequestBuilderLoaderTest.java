@@ -8,6 +8,7 @@ import android.content.Context;
 import android.support.v4.content.Loader;
 
 import com.google.mockwebserver.MockResponse;
+import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.request.RequestDescription;
@@ -24,7 +25,6 @@ public class RequestBuilderLoaderTest extends AbstractLoaderTest {
   protected void configureBeansManager(final Editor editor) {
     super.configureBeansManager(editor);
     editor.put(StringContentHandler.class);
-    editor.put("analyzer", new Analyzer());
   }
 
   @Test
@@ -49,16 +49,15 @@ public class RequestBuilderLoaderTest extends AbstractLoaderTest {
   }
 
   @Test
-  public void metaInformationTest() throws Throwable {
+  public void headersTest() throws Throwable {
     final String meta = "meta";
-    getWebServer().enqueue(new MockResponse().setBody("doLoadShouldDeliverResults"));
+    getWebServer().enqueue(new MockResponse().setBody("headersTest"));
 
     @SuppressWarnings("deprecation")
     final Loader<ResponseData<String>> loader = new MyRequestBuilder<String>(getApplication()) { }
         .setUrl(getWebServer().getUrl("/").toString())
         .setFormat(StringContentHandler.BEAN_NAME)
-        .setMetaInfo(meta, meta)
-        .setContentAnalyzer("analyzer")
+        .addHeader("test", "value")
         .getLoader();
 
     loader.startLoading();
@@ -66,27 +65,10 @@ public class RequestBuilderLoaderTest extends AbstractLoaderTest {
     waitAndAssertForLoader(loader, new Asserter<ResponseData<String>>() {
       @Override
       public void makeAssertions(final ResponseData<String> data) throws Exception {
-        assertThat(data.getModel()).isEqualTo(meta);
+        RecordedRequest request = getWebServer().takeRequest();
+        assertThat(request.getHeader("test")).isEqualTo("value");
       }
     });
   }
-
-  /**
-   * @author Olexandr Tereshchuk (Stanfy - http://www.stanfy.com)
-   */
-  public static class Analyzer implements ContentAnalyzer<String, String> {
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public ResponseData<String> analyze(final Context context,
-        final RequestDescription description, final ResponseData<String> responseData) {
-      if (description.hasMetaInfo("meta")) {
-        responseData.setModel(description.getMetaInfo("meta").toString());
-      }
-      return responseData;
-    }
-
-  }
-
 
 }

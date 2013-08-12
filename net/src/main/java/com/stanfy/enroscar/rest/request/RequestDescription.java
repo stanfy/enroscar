@@ -1,13 +1,5 @@
 package com.stanfy.enroscar.rest.request;
 
-import java.io.IOException;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -30,6 +22,12 @@ import com.stanfy.enroscar.rest.request.net.SimpleGetConverter;
 import com.stanfy.enroscar.rest.request.net.SimplePostConverter;
 import com.stanfy.enroscar.rest.request.net.UploadPostConverter;
 import com.stanfy.enroscar.rest.response.Model;
+
+import java.io.IOException;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Request method description. This object is passed to the service describing the request.
@@ -82,9 +80,6 @@ public class RequestDescription implements Parcelable {
   Charset encoding = IoUtils.UTF_8;
   /** Content language. */
   String contentLanguage;
-
-  /** Meta information. */
-  Map<String, Object> metaParameters;
 
   /** Binary data array. */
   ArrayList<BinaryData<?>> binaryData;
@@ -335,47 +330,8 @@ public class RequestDescription implements Parcelable {
   /** @return task queue name */
   public String getTaskQueueName() { return taskQueueName; }
 
-  /**
-   * @return the metaParameters
-   * @deprecated will be removed
-   */
-  @Deprecated
-  public Map<String, Object> getMetaParameters() { return metaParameters; }
-
   /** @return the simpleParameters */
   public ParametersGroup getSimpleParameters() { return simpleParameters; }
-
-  /**
-   * @return new meta parameters instance
-   * @deprecated will be removed
-   */
-  @Deprecated
-  protected Map<String, Object> createMetaParameters() { return new HashMap<String, Object>(); }
-
-  /**
-   * @param name parameter name
-   * @param value parameter value
-   */
-  public void putMetaInfo(final String name, final Object value) {
-    if (this.metaParameters == null) { this.metaParameters = createMetaParameters(); }
-    this.metaParameters.put(name, value);
-  }
-
-  /**
-   * @deprecated try to avoid use of it, it's going to be deleted
-   */
-  @Deprecated
-  public Object getMetaInfo(final String name) {
-    return this.metaParameters == null ? null : this.metaParameters.get(name);
-  }
-
-  /**
-   * @deprecated try to avoid use of it, it's going to be deleted
-   */
-  @Deprecated
-  public boolean hasMetaInfo(final String name) {
-    return this.metaParameters == null ? false : this.metaParameters.containsKey(name);
-  }
 
   /**
    * Set a tag that will be used as a parameter for {@link android.net.TrafficStats}.

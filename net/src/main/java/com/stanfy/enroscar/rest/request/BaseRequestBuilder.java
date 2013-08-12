@@ -1,17 +1,5 @@
 package com.stanfy.enroscar.rest.request;
 
-import java.io.File;
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -31,6 +19,17 @@ import com.stanfy.enroscar.rest.request.binary.AssetFdBinaryData;
 import com.stanfy.enroscar.rest.request.binary.BitmapBinaryData;
 import com.stanfy.enroscar.rest.request.binary.ContentUriBinaryData;
 import com.stanfy.enroscar.rest.request.binary.EmptyBinaryData;
+
+import java.io.File;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Base class for request builders.
@@ -298,9 +297,11 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
    * Add header to request description.
    * @param name header name
    * @param value header value
+   * @return this for chaining
    */
-  protected void addHeader(final String name, final String value) {
+  protected BaseRequestBuilder<MT> addHeader(final String name, final String value) {
     result.addHeader(name, value);
+    return this;
   }
 
   /**
@@ -309,17 +310,6 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
    */
   protected void removeHeader(final String name) {
     result.removeHeader(name);
-  }
-
-  /**
-   * Add meta information to request which could be retrieved in {@link com.stanfy.enroscar.rest.response.ContentAnalyzer}.
-   * @param name info name
-   * @param value info value
-   * @deprecated try to avoid use of it, it's going to be deleted
-   */
-  @Deprecated
-  protected void putMetaInfo(final String name, final Object value) {
-    result.putMetaInfo(name, value);
   }
 
   /**
@@ -342,11 +332,9 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   public void clear() {
     final RequestDescription result = this.result;
     result.simpleParameters.children.clear();
-    final Map<String, Object> meta = result.metaParameters;
-    if (meta != null) { meta.clear(); }
     result.clearBinaryData();
     result.contentType = null;
-    result.metaParameters = null;
+    result.clearHeaders();
   }
 
   public BaseRequestBuilder<?> setParallel(final boolean value) {
