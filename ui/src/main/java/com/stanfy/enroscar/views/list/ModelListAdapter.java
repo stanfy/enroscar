@@ -75,13 +75,13 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
   @Override
   public int getCount() { return elements.size(); }
   @Override
-  public T getItem(final int position) { return elements.get(position); }
+  public UniqueObject getItem(final int position) { return elements.get(position); }
   @Override
   public long getItemId(final int position) {
-    final T el = getItem(position);
-    return el.getId();
+    return getItem(position).getId();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public View getView(final int position, final View convertView, final ViewGroup parent) {
     final int type = getItemViewType(position);
@@ -90,10 +90,10 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
       view = createView(type, parent, layoutInflater);
     }
 
-    final T item = getItem(position);
+    final UniqueObject item = getItem(position);
     final Object holder = view.getTag();
 
-    renderView(position, type, view, parent, item, holder);
+    renderView(position, type, view, parent, (T)item, holder);
 
     return view;
   }
