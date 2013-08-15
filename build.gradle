@@ -11,7 +11,7 @@ def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').repla
 def projectVersion = "1.0-SNAPSHOT"
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.6'
+  gradleVersion = '1.7'
 }
 
 
