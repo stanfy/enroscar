@@ -134,14 +134,29 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
   public void remove(final int position) {
     synchronized (dataLock) {
       elements.remove(position);
+      checkFictionRemove(position);
       notifyDataSetChanged();
     }
   }
 
   public void remove(final T e) {
     synchronized (dataLock) {
+      int pos = -1;
+      if (getViewTypeCount() > 1) {
+        pos = elements.indexOf(e);
+      }
       elements.remove(e);
+      if (pos >= 0) {
+        checkFictionRemove(pos);
+      }
       notifyDataSetChanged();
+    }
+  }
+
+  private void checkFictionRemove(final int position) {
+    boolean lastRemoved = position >= elements.size() || elements.get(position) instanceof FictionObject;
+    if (lastRemoved && position > 0 && elements.get(position - 1) instanceof FictionObject) {
+      elements.remove(position - 1);
     }
   }
 
@@ -157,6 +172,9 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
    */
   public void add(final T e) {
     synchronized (dataLock) {
+      if (e instanceof FictionObject && lastFiction != null && e.equals(lastFiction)) {
+        return;
+      }
       elements.add(e);
       notifyDataSetChanged();
     }
