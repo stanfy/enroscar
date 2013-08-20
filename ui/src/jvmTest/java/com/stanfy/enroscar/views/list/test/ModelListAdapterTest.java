@@ -11,9 +11,11 @@ import org.junit.runner.RunWith;
 import org.junit.Test;
 import org.junit.Before;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.reflect.core.Reflection.*;
 
 /**
  * Tests for ModelListAdapter.
@@ -24,10 +26,12 @@ public class ModelListAdapterTest {
   /** Testing instance. */
   private ModelListAdapter<Model> adapter;
 
+  /** First real item reference. */
   private Model firstModel;
 
   @Before
   public void init() {
+    //CHECKSTYLE:OFF
     adapter = new ModelListAdapter<Model>(Robolectric.application, new ModelListAdapter.ElementRenderer<Model>(0) { }) {
       @Override
       public int getViewTypeCount() {
@@ -36,20 +40,24 @@ public class ModelListAdapterTest {
     };
     firstModel = new Model(2);
     adapter.addAll(Arrays.asList(new Fiction(1), firstModel, new Model(3), new Fiction(4), new Model(5)));
+    //CHECKSTYLE:ON
   }
 
   @Test
   public void shouldMergeFictions() {
+    //CHECKSTYLE:OFF
     assertThat(adapter.getCount()).isEqualTo(5);
     adapter.add(new Fiction(4));
     adapter.add(new Model(10));
     assertThat(adapter.getCount()).isEqualTo(6);
     adapter.addAll(Arrays.asList(new Fiction(4), new Model(6), new Fiction(7)));
     assertThat(adapter.getCount()).isEqualTo(8);
+    //CHECKSTYLE:ON
   }
 
   @Test
   public void removeShouldTrackFictionItems() {
+    //CHECKSTYLE:OFF
     assertThat(adapter.getCount()).isEqualTo(5);
     adapter.remove(4);
     assertThat(adapter.getCount()).isEqualTo(3);
@@ -61,6 +69,13 @@ public class ModelListAdapterTest {
     adapter.remove(2);
     adapter.remove(firstModel);
     assertThat(adapter.getCount()).isEqualTo(0);
+    //CHECKSTYLE:ON
+  }
+
+  @Test
+  public void shouldMakeElementsCopyWhenConstructedFromOtherAdapter() {
+    ModelListAdapter<Model> another = new ModelListAdapter<Model>(adapter);
+    assertThat(field("elements").ofType(ArrayList.class).in(another)).isNotSameAs(field("elements").ofType(ArrayList.class).in(adapter));
   }
 
   /** Model. */
@@ -78,9 +93,14 @@ public class ModelListAdapterTest {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
       Model m = (Model) o;
       return m.id == id;
+    }
+
+    @Override
+    public int hashCode() {
+      return Long.valueOf(id).hashCode();
     }
   }
 

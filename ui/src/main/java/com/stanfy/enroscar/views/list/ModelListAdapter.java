@@ -39,7 +39,7 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
   private FictionObject lastFiction = null;
 
   /** Data lock for elements. */
-  Object dataLock = new Object();
+  final Object dataLock = new Object();
 
   public ModelListAdapter(final Context context, final ElementRenderer<T> renderer) {
     this.context = context;
@@ -70,12 +70,12 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
    * @param position item position
    * @return whether this id item is {@link FictionObject}
    */
-  protected boolean isFictionElement(final int position) { return getItem(position) instanceof FictionObject; }
+  protected boolean isFictionElement(final int position) { return elements.get(position) instanceof FictionObject; }
 
   @Override
   public int getCount() { return elements.size(); }
   @Override
-  public UniqueObject getItem(final int position) { return elements.get(position); }
+  public T getItem(final int position) { return elements.get(position); }
   @Override
   public long getItemId(final int position) {
     return getItem(position).getId();
@@ -231,8 +231,7 @@ public class ModelListAdapter<T extends UniqueObject> extends BaseAdapter {
   public ArrayList<T> copyElements() {
     synchronized (dataLock) {
       final ArrayList<T> list = elements;
-      final ArrayList<T> result = list == null ? null : new ArrayList<T>(list);
-      return result;
+      return list == null ? null : new ArrayList<T>(list);
     }
   }
 
