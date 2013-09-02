@@ -10,6 +10,8 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListAdapter;
 
 import com.stanfy.enroscar.ui.R;
+import com.stanfy.enroscar.views.list.adapter.FetchableListAdapter;
+import com.stanfy.enroscar.views.list.adapter.LoadmoreAdapter;
 
 /**
  * List view that can call to load more records on scrolling.
@@ -86,7 +88,7 @@ public class FetchableListView extends ListView implements OnScrollListener, Fet
     if (adapter.isEmpty()) { return; }
     if (totalItemCount - firstVisibleItem - visibleItemCount > getLoadGap()) { return; }
 
-    final FetchableListAdapter coreAdapter = adapter.core;
+    final FetchableListAdapter coreAdapter = adapter.getWrappedAdapter();
     if (!coreAdapter.moreElementsAvailable()) {
       adapter.setLoadFlag(false);
       return;

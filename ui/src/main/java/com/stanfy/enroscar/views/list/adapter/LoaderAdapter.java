@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views.list;
+package com.stanfy.enroscar.views.list.adapter;
 
 import static com.stanfy.enroscar.views.StateHelper.STATE_EMPTY;
 import static com.stanfy.enroscar.views.StateHelper.STATE_LOADING;

@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views.list;
+package com.stanfy.enroscar.views.list.adapter;
 
 import static org.fest.assertions.api.Assertions.*;
 
@@ -19,7 +19,7 @@ import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
 
 
 /**
- * Tests for {@link CursorLoaderAdapter}.
+ * Tests for {@link com.stanfy.enroscar.views.list.adapter.CursorLoaderAdapter}.
  */
 @RunWith(RobolectricTestRunner.class)
 public class CursorLoaderAdapterTest extends AbstractEnroscarTest {

@@ -19,9 +19,9 @@ import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.views.list.FetchableListView;
 import com.stanfy.enroscar.views.list.FetchableView;
-import com.stanfy.enroscar.views.list.ModelListAdapter;
-import com.stanfy.enroscar.views.list.ModelListAdapter.ElementRenderer;
-import com.stanfy.enroscar.views.list.ResponseDataLoaderAdapter;
+import com.stanfy.enroscar.views.list.adapter.ModelListAdapter;
+import com.stanfy.enroscar.views.list.adapter.ModelListAdapter.ElementRenderer;
+import com.stanfy.enroscar.views.list.adapter.ResponseDataLoaderAdapter;
 
 /**
  * Base fragment that displays fetchable lists. This fragment retains its state.

@@ -11,6 +11,9 @@ import android.widget.ListAdapter;
 
 import com.stanfy.enroscar.ui.R;
 import com.stanfy.enroscar.views.StateHelper;
+import com.stanfy.enroscar.views.list.adapter.FetchableListAdapter;
+import com.stanfy.enroscar.views.list.adapter.LoaderAdapter;
+import com.stanfy.enroscar.views.list.adapter.LoadmoreAdapter;
 
 /**
  * Beta.
@@ -90,7 +93,7 @@ public class FetchableStaggeredGridView extends GUICrucialStaggeredGridView impl
     if (adapter.isEmpty()) { return; }
     if (totalItemCount - firstVisibleItem - visibleItemCount > getLoadGap()) { return; }
 
-    final FetchableListAdapter coreAdapter = adapter.core;
+    final FetchableListAdapter coreAdapter = adapter.getWrappedAdapter();
     if (!coreAdapter.moreElementsAvailable()) {
       adapter.setLoadFlag(false);
       return;

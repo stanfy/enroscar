@@ -1,8 +1,8 @@
 package com.stanfy.enroscar.views.list.test;
 
 import com.stanfy.enroscar.content.UniqueObject;
-import com.stanfy.enroscar.views.list.FictionObject;
-import com.stanfy.enroscar.views.list.ModelListAdapter;
+import com.stanfy.enroscar.views.list.adapter.FictionObject;
+import com.stanfy.enroscar.views.list.adapter.ModelListAdapter;
 
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;

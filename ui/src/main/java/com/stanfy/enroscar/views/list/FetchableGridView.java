@@ -11,9 +11,11 @@ import android.widget.GridView;
 import android.widget.ListAdapter;
 
 import com.stanfy.enroscar.ui.R;
+import com.stanfy.enroscar.views.list.adapter.FetchableListAdapter;
+import com.stanfy.enroscar.views.list.adapter.LoadmoreAdapter;
 
 /**
- * Implementation of {@link FetchableAbsListView} which uses {@link GridView} as main view.
+ * Implementation of {@link FetchableListView} which uses {@link GridView} as main view.
  * @author Vladislav Lipskiy - Stanfy (http://www.stanfy.com)
  *
  */
@@ -90,7 +92,7 @@ public class FetchableGridView extends GridView implements OnScrollListener, Fet
     if (adapter.isEmpty()) { return; }
     if (totalItemCount - firstVisibleItem - visibleItemCount > getLoadGap()) { return; }
 
-    final FetchableListAdapter coreAdapter = adapter.core;
+    final FetchableListAdapter coreAdapter = adapter.getWrappedAdapter();
     if (!coreAdapter.moreElementsAvailable()) {
       adapter.setLoadFlag(false);
       return;

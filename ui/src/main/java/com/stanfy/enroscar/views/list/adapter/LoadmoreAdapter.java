@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views.list;
+package com.stanfy.enroscar.views.list.adapter;
 
 import android.annotation.SuppressLint;
 import android.database.DataSetObserver;
@@ -17,6 +17,7 @@ import com.stanfy.enroscar.ui.R;
  * Adapter that shows load more footer.
  */
 @SuppressLint("FieldGetter")
+//TODO: extend from TemporaryItemWrapper
 public class LoadmoreAdapter extends BaseAdapter implements WrapperListAdapter, Filterable {
 
   /** Main adapter. */
@@ -77,7 +78,7 @@ public class LoadmoreAdapter extends BaseAdapter implements WrapperListAdapter, 
     }
   }
   
-  protected boolean isLoadViewPosition(final int position) {
+  public boolean isLoadViewPosition(final int position) {
     return loadFlag && position == core.getCount();
   }
 

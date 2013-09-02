@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views.list;
+package com.stanfy.enroscar.views.list.adapter;
 
 import static org.fest.assertions.api.Assertions.*;
 
@@ -17,7 +17,7 @@ import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
 import android.database.DataSetObserver;
 
 /**
- * Tests for {@link ResponseDataLoaderAdapter}.
+ * Tests for {@link com.stanfy.enroscar.views.list.adapter.ResponseDataLoaderAdapter}.
  */
 @RunWith(RobolectricTestRunner.class)
 public class ResponseDataLoaderAdapterTest extends AbstractEnroscarTest {

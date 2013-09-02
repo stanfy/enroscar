@@ -13,8 +13,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 
 import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
-import com.stanfy.enroscar.views.list.FetchableListAdapter;
-import com.stanfy.enroscar.views.list.LoadmoreAdapter;
+import com.stanfy.enroscar.views.list.adapter.FetchableListAdapter;
+import com.stanfy.enroscar.views.list.adapter.LoadmoreAdapter;
 
 
 /**

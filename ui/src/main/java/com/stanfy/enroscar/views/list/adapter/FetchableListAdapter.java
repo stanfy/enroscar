@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views.list;
+package com.stanfy.enroscar.views.list.adapter;
 
 import android.widget.ListAdapter;
 

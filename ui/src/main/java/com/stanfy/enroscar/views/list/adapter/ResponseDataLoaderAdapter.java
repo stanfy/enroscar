@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views.list;
+package com.stanfy.enroscar.views.list.adapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +10,9 @@ import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.views.StateHelper;
 
 /**
- * Adapter that consumes {@link ResponseData}.
+ * Adapter that consumes {@link ResponseData}. Assumes that a wrapped adapter is instance of ModelListAdapter.
  * @param <T> model type
  * @param <LT> list type
- * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 public class ResponseDataLoaderAdapter<T extends UniqueObject, LT extends List<T>> extends LoaderAdapter<ResponseData<LT>> {
 
