@@ -3,6 +3,7 @@ package com.stanfy.enroscar.beans;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -15,7 +16,10 @@ import android.util.Log;
 public class DefaultBeansContainer implements BeansContainer {
 
   /** Entities map. */
-  private final HashMap<String, Object> entitiesMap = new HashMap<String, Object>();
+  private final HashMap<String, Object> beansMap = new HashMap<String, Object>();
+
+  /** Identifiers counter. */
+  private int idCounter = 0;
 
   @Override
   public <T> T putEntityInstance(final Class<T> clazz, final Context context) {
@@ -39,13 +43,7 @@ public class DefaultBeansContainer implements BeansContainer {
   @Override
   public void putEntityInstance(final String name, final Object instance) {
     if (DEBUG) { Log.d(TAG, "New bean: " + name + " - " + instance.getClass()); }
-    entitiesMap.put(name, instance);
-  }
-
-  @Override
-  public void removeEntityInstance(final String name) {
-    final Object instance = entitiesMap.remove(name);
-    if (DEBUG) { Log.d(TAG, "Remove bean: " + name + " - " + instance.getClass()); }
+    beansMap.put(name, instance);
   }
 
   @Override
@@ -57,7 +55,7 @@ public class DefaultBeansContainer implements BeansContainer {
 
   @Override
   public <T> T getBean(final String name, final Class<T> clazz) {
-    final Object instance = entitiesMap.get(name);
+    final Object instance = beansMap.get(name);
     return clazz.cast(instance);
   }
 
@@ -70,7 +68,7 @@ public class DefaultBeansContainer implements BeansContainer {
 
   @Override
   public void onConfigurationChanged(final Configuration config) {
-    for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
+    for (final Entry<String, Object> entry : beansMap.entrySet()) {
       final Object instance = entry.getValue();
       if (instance instanceof ConfigurationDependentBean) {
         ((ConfigurationDependentBean) instance).triggerConfigurationChange(config);
@@ -80,7 +78,7 @@ public class DefaultBeansContainer implements BeansContainer {
 
   @Override
   public void onLowMemory() {
-    for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
+    for (final Entry<String, Object> entry : beansMap.entrySet()) {
       final Object instance = entry.getValue();
       if (instance instanceof FlushableBean) {
         ((FlushableBean) instance).flushResources(this);
@@ -90,18 +88,46 @@ public class DefaultBeansContainer implements BeansContainer {
 
   @Override
   public void destroy() {
-    for (final Entry<String, Object> entry : entitiesMap.entrySet()) {
+    for (final Entry<String, Object> entry : beansMap.entrySet()) {
       final Object instance = entry.getValue();
       if (instance instanceof DestroyingBean) {
         ((DestroyingBean) instance).onDestroy(this);
       }
     }
-    entitiesMap.clear();
+    beansMap.clear();
   }
 
   @Override
   public boolean containsBean(final String name) {
-    return entitiesMap.containsKey(name);
+    return beansMap.containsKey(name);
+  }
+
+  @Override
+  public void removeEntityInstance(final String name) {
+    final Object instance = beansMap.remove(name);
+    if (instance == null) {
+      throw new IllegalArgumentException("Bean " + name + " is not found in beans container");
+    }
+    if (DEBUG) { Log.d(TAG, "Remove bean: " + name + " - " + instance.getClass()); }
+  }
+
+  @Override
+  public void removeEntityInstance(final Object instance) {
+    String name = null;
+    for (Entry<String, Object> pair : beansMap.entrySet()) {
+      if (pair.getValue() == instance) {
+        name = pair.getKey();
+        break;
+      }
+    }
+    removeEntityInstance(name);
+  }
+
+  @Override
+  public String putTemporaryInstance(final Object instance) {
+    String beanName = instance.getClass() + "-" + System.currentTimeMillis() + "-" + (++idCounter);
+    putEntityInstance(beanName, instance);
+    return beanName;
   }
 
 }

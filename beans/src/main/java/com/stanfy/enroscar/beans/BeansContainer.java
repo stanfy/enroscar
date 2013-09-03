@@ -8,6 +8,7 @@ import android.content.Context;
  * Contains instances of different named application entities.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+// TODO: change method names
 public interface BeansContainer extends ComponentCallbacks {
 
   /** Logging tag. */
@@ -55,6 +56,18 @@ public interface BeansContainer extends ComponentCallbacks {
    * @param name entity name
    */
   void removeEntityInstance(final String name);
+
+  /**
+   * @param instance instance to remove
+   */
+  void removeEntityInstance(final Object instance);
+
+  /**
+   * Put a short-living bean to the container.
+   * @param instance instance to put
+   * @return bean name
+   */
+  String putTemporaryInstance(final Object instance);
 
   /**
    * Destroy all beans.
