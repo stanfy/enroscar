@@ -23,21 +23,18 @@ public abstract class TemporaryItemWrapper<T> extends BaseAdapter implements Wra
   /** Temporary item. */
   private T tempItem;
 
-  /** Core adapter observer. */
-  private final DataSetObserver coreObserver = new DataSetObserver() {
-    @Override
-    public void onChanged() {
-      notifyDataSetChanged();
-    }
-    @Override
-    public void onInvalidated() {
-      notifyDataSetInvalidated();
-    }
-  };
-
   public TemporaryItemWrapper(final ListAdapter core) {
     this.core = core;
-    core.registerDataSetObserver(coreObserver);
+    core.registerDataSetObserver(new DataSetObserver() {
+      @Override
+      public void onChanged() {
+        notifyDataSetChanged();
+      }
+      @Override
+      public void onInvalidated() {
+        notifyDataSetInvalidated();
+      }
+    });
   }
 
   public void setTempItem(final T tempItem) {
@@ -45,10 +42,14 @@ public abstract class TemporaryItemWrapper<T> extends BaseAdapter implements Wra
     notifyDataSetChanged();
   }
 
+  public T getTempItem() { return tempItem; }
+
   public void setAtTheEnd(final boolean atTheEnd) {
     this.atTheEnd = atTheEnd;
     notifyDataSetChanged();
   }
+
+  public boolean isAtTheEnd() { return atTheEnd; }
 
   private boolean isTempItemPosition(final int position) {
     return tempItem != null && (!atTheEnd && position == 0 || atTheEnd && position == getCount() - 1);
