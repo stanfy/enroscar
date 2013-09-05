@@ -18,10 +18,10 @@ Put the following lines to your AndroidManifest.xml file.
 
       <!-- Enroscar application service declaration. -->    
       <service
-          android:name="com.stanfy.app.service.ApplicationService"
+          android:name="com.stanfy.enroscar.rest.executor.ApplicationService"
           android:exported="false" >
           <intent-filter>
-              <action android:name="com.stanfy.app.service.ApiMethods" />
+              <action android:name="com.stanfy.enroscar.rest.executor.ApiMethods" />
           </intent-filter>
       </service>
 
