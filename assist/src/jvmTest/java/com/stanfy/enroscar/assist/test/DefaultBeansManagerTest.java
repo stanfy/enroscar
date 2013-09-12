@@ -11,10 +11,13 @@ import org.robolectric.RobolectricTestRunner;
 import com.stanfy.enroscar.assist.DefaultBeansManager;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.cache.ImageFileCache;
+import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
+import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
+import com.stanfy.enroscar.stats.StatsManager;
 import com.stanfy.enroscar.views.ImageConsumers;
 
 /**
@@ -28,7 +31,7 @@ public class DefaultBeansManagerTest {
   
   @Before
   public void useDefaultBeansManager() {
-    manager = DefaultBeansManager.get(Robolectric.application);
+    manager = (DefaultBeansManager) DefaultBeansManager.get(Robolectric.application);
   }
   
   @Test
@@ -69,6 +72,23 @@ public class DefaultBeansManagerTest {
   public void activitiesBehavior() {
     manager.edit().activitiesBehavior().commit();
     assertThat(manager.getActivityBehaviorFactory()).isNotNull();
+  }
+
+  @Test
+  public void defaultBeansShouldNotBeOverridenTwice() {
+    manager.edit().commit();
+    BuffersPool pool = manager.getMainBuffersPool();
+    SDKDependentUtilsFactory sdkDependentUtilsFactory = manager.getSdkDependentUtilsFactory();
+    StatsManager statsManager = manager.getStatsManager();
+
+    assertThat(pool).isNotNull();
+    assertThat(sdkDependentUtilsFactory).isNotNull();
+    assertThat(statsManager).isNotNull();
+
+    manager.edit().commit();
+    assertThat(manager.getMainBuffersPool()).isSameAs(pool);
+    assertThat(manager.getSdkDependentUtilsFactory()).isSameAs(sdkDependentUtilsFactory);
+    assertThat(manager.getStatsManager()).isSameAs(statsManager);
   }
 
 }

@@ -9,6 +9,7 @@ import android.content.Context;
 import com.stanfy.enroscar.activities.ActivityBehaviorFactory;
 import com.stanfy.enroscar.activities.CrucialGUIOperationManager;
 import com.stanfy.enroscar.beans.BeanUtils;
+import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.ImagesManager;
 import com.stanfy.enroscar.images.cache.ImageFileCache;
@@ -93,9 +94,17 @@ public class DefaultBeansManager extends BeansManager {
   public class Editor extends BeansManager.Editor {
 
     {
-      put(SDKDependentUtilsFactory.class);
-      put(BuffersPool.class);
-      put(EmptyStatsManager.class);
+      // set default beans
+      BeansContainer container = getContainer();
+      if (!container.containsBean(SDKDependentUtilsFactory.BEAN_NAME)) {
+        put(SDKDependentUtilsFactory.BEAN_NAME, new SDKDependentUtilsFactory());
+      }
+      if (!container.containsBean(BuffersPool.BEAN_NAME)) {
+        put(BuffersPool.BEAN_NAME, new BuffersPool());
+      }
+      if (!container.containsBean(EmptyStatsManager.BEAN_NAME)) {
+        put(EmptyStatsManager.BEAN_NAME, new EmptyStatsManager());
+      }
     }
     
     public Editor images(final EnroscarConnectionsEngine.Config config) {
