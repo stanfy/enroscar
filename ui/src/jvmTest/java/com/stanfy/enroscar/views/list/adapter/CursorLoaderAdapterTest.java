@@ -1,12 +1,5 @@
 package com.stanfy.enroscar.views.list.adapter;
 
-import static org.fest.assertions.api.Assertions.*;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
@@ -16,6 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 
 /**

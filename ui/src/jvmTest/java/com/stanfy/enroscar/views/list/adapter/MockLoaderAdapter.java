@@ -1,13 +1,12 @@
 package com.stanfy.enroscar.views.list.adapter;
 
-import java.util.List;
-
 import android.content.Context;
 import android.support.v4.content.Loader;
 import android.widget.ArrayAdapter;
 
 import com.stanfy.enroscar.views.StateHelper;
-import com.stanfy.enroscar.views.list.adapter.LoaderAdapter;
+
+import java.util.List;
 
 /**
  * Test loader adapter.

@@ -1,6 +1,10 @@
 package com.stanfy.enroscar.views.list.adapter;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ArrayAdapter;
+
+import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,13 +12,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ArrayAdapter;
-
-import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
-import com.stanfy.enroscar.views.list.adapter.FetchableListAdapter;
-import com.stanfy.enroscar.views.list.adapter.LoadmoreAdapter;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 
 /**

@@ -1,20 +1,20 @@
 package com.stanfy.enroscar.views.list.adapter;
 
-import static org.fest.assertions.api.Assertions.*;
+import android.database.DataSetObserver;
 
-import java.util.Collections;
-import java.util.List;
+import com.stanfy.enroscar.content.UniqueObject;
+import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
-import com.stanfy.enroscar.content.UniqueObject;
-import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import java.util.Collections;
+import java.util.List;
 
-import android.database.DataSetObserver;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * Tests for {@link com.stanfy.enroscar.views.list.adapter.ResponseDataLoaderAdapter}.

@@ -1,17 +1,5 @@
 package com.stanfy.enroscar.views.list.adapter;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import java.util.Arrays;
-import java.util.Collections;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.view.View;
@@ -22,7 +10,18 @@ import android.widget.ListView;
 
 import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
 import com.stanfy.enroscar.views.StateHelper;
-import com.stanfy.enroscar.views.list.adapter.MockLoaderAdapter;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * Test for {@link LoaderAdapter}.

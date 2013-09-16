@@ -1,21 +1,18 @@
 package com.stanfy.enroscar.views.list.adapter;
 
 import com.stanfy.enroscar.content.UniqueObject;
-import com.stanfy.enroscar.views.list.adapter.FictionObject;
-import com.stanfy.enroscar.views.list.adapter.ModelListAdapter;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-
-import org.junit.runner.RunWith;
-import org.junit.Test;
-import org.junit.Before;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.reflect.core.Reflection.*;
+import static org.fest.reflect.core.Reflection.field;
 
 /**
  * Tests for ModelListAdapter.
