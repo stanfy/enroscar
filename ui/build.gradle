@@ -5,6 +5,8 @@ dependencies(
 
 dependencies {
   compile 'com.android.support:support-v4:18.0.0'
+
+  testCompile 'com.google.mockwebserver:mockwebserver:20130403'
 }
 
 // POM file modifications

@@ -148,6 +148,9 @@ public class ImageView extends android.widget.ImageView {
     setDrawingCacheEnabled(true);
   }
 
+  /** @return image decorator */
+  public ImageDecorator getImageDecorator() { return imageDecorator; }
+
   /**
    * Set a radius of corners when drawing a bitmap image.
    * @param r radius to set

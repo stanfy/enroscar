@@ -18,11 +18,6 @@ public class CursorLoaderAdapter extends LoaderAdapter<Cursor> {
   protected CursorAdapter getCore() { return (CursorAdapter) super.getCore(); }
 
   @Override
-  public void notifyDataSetChanged() {
-    getCore().notifyDataSetChanged();
-  }
-
-  @Override
   protected boolean isResponseSuccessful(final Cursor data) {
     return data != null;
   }
