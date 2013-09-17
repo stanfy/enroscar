@@ -13,7 +13,7 @@ import com.stanfy.enroscar.beans.BeansManager;
 /**
  * Base test class.
  */
-public class AbstractEnroscarTest {
+public abstract class AbstractEnroscarTest {
 
   /** Beans manager. */
   private BeansManager beansManager;

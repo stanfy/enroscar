@@ -17,7 +17,7 @@ import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
  * Base test class for loaders.
  */
 @EnroscarConfiguration(connectionEngineRequired = true)
-public class AbstractLoaderTest extends AbstractMockServerTest {
+public abstract class AbstractLoaderTest extends AbstractMockServerTest {
 
   @Before
   public void logging() {

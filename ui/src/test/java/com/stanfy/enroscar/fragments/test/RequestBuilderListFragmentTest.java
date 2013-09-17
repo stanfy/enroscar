@@ -3,21 +3,20 @@ package com.stanfy.enroscar.fragments.test;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.Loader;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.mockwebserver.MockResponse;
-import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.fragments.RequestBuilderListFragment;
-import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
-import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
-import com.stanfy.enroscar.views.list.adapter.ElementRenderer;
 import com.stanfy.enroscar.views.list.adapter.RendererBasedAdapter;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +32,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Tests for RequestBuilderListFragment.
  */
 @RunWith(RobolectricTestRunner.class)
-public class RequestBuilderListFragmentTest {
+public class RequestBuilderListFragmentTest extends AbstractMockServerTest {
 
   /** Test loader ID. */
   private static final int LOADER_ID = 100;
@@ -41,46 +40,72 @@ public class RequestBuilderListFragmentTest {
   /** Fragment under the test. */
   private RequestBuilderListFragment<String, List<String>> fragment;
 
-  /** Mock web server. */
-  private MockWebServer mockWebServer;
+  /** Items adapter. */
+  private RendererBasedAdapter<String> adapter;
 
   /** Last used loader ID. */
   private int lastUserLoaderId;
 
+  /** Method call flag. */
+  private boolean createViewCalled, modifyLoaderCalled;
+
+  private void scheduleResponse() {
+    getWebServer().enqueue(new MockResponse().setResponseCode(HttpURLConnection.HTTP_OK).setBody("['a', 'b', 'c']"));
+  }
+
+  @Override
+  protected void configureBeansManager(final BeansManager.Editor editor) {
+    super.configureBeansManager(editor);
+    editor.put(GsonContentHandler.class);
+  }
+
+  @Override
+  protected void whenBeansConfigured() {
+    super.whenBeansConfigured();
+    initContentHandler(GsonContentHandler.BEAN_NAME);
+  }
+
   @Before
-  public void init() throws Exception {
-    EnroscarConnectionsEngine.config().install(Robolectric.application);
-    BeansManager.get(Robolectric.application).edit()
-        .put(RemoteServerApiConfiguration.class)
-        .put(GsonContentHandler.class)
-        .commit();
+  public void init() {
 
-    mockWebServer = new MockWebServer();
-    mockWebServer.play();
+    createViewCalled = false;
+    modifyLoaderCalled = false;
 
-    mockWebServer.enqueue(new MockResponse().setResponseCode(HttpURLConnection.HTTP_OK).setBody("['a', 'b', 'c']"));
+    adapter = new RendererBasedAdapter<String>(Robolectric.application, null) {
+      @Override
+      public long getItemId(final int position) {
+        return position;
+      }
+    };
 
     fragment = new RequestBuilderListFragment<String, List<String>>() {
       @Override
       protected RequestBuilder<List<String>> createRequestBuilder() {
         return new SimpleRequestBuilder<List<String>>(getActivity()) { }
-            .setUrl(mockWebServer.getUrl("test").toString());
+            .setUrl(getWebServer().getUrl("/").toString());
       }
 
       @Override
       protected RendererBasedAdapter<String> createAdapter() {
-        return new RendererBasedAdapter<String>(getActivity(), null) {
-          @Override
-          public long getItemId(final int position) {
-            return position;
-          }
-        };
+        return adapter;
       }
 
       @Override
       public Loader<ResponseData<List<String>>> onCreateLoader(final int id, final Bundle bundle) {
         lastUserLoaderId = id;
         return super.onCreateLoader(id, bundle);
+      }
+
+      @Override
+      protected View createView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        createViewCalled = true;
+        return super.createView(inflater, container, savedInstanceState);
+      }
+
+      @Override
+      protected Loader<ResponseData<List<String>>> modifyLoader(final Loader<ResponseData<List<String>>> loader) {
+        modifyLoaderCalled = true;
+        return super.modifyLoader(loader);
       }
     };
 
@@ -94,12 +119,30 @@ public class RequestBuilderListFragmentTest {
 
   @Test
   public void shouldUseDefinedLoaderId() {
+    scheduleResponse();
+    fragment.startLoad();
     assertThat(lastUserLoaderId).isEqualTo(LOADER_ID).isEqualTo(fragment.getLoaderId());
+    assertThat(modifyLoaderCalled).as("modifyLoader method should be called").isTrue();
   }
 
-  @After
-  public void stopWebServer() throws Exception {
-    mockWebServer.shutdown();
+  @Test
+  public void shouldProvideCoreAdapter() {
+    assertThat(fragment.getCoreAdapter()).isSameAs(adapter);
+  }
+
+  @Test
+  public void shouldProvideLoaderAdapter() {
+    assertThat(fragment.getAdapter()).isNotNull();
+  }
+
+  @Test
+  public void shouldProvideListView() {
+    assertThat(fragment.getListView()).isNotNull();
+  }
+
+  @Test
+  public void shouldDelegateToCreateView() {
+    assertThat(createViewCalled).isTrue();
   }
 
 }

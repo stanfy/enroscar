@@ -1,8 +1,5 @@
 package com.stanfy.enroscar.fragments;
 
-import java.util.List;
-import java.util.Locale;
-
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -14,15 +11,15 @@ import android.view.ViewGroup;
 
 import com.stanfy.enroscar.activities.CrucialGUIOperationManager;
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.enroscar.content.UniqueObject;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.views.list.FetchableListView;
 import com.stanfy.enroscar.views.list.FetchableView;
-import com.stanfy.enroscar.views.list.adapter.ModelListAdapter;
-import com.stanfy.enroscar.views.list.adapter.ElementRenderer;
 import com.stanfy.enroscar.views.list.adapter.RendererBasedAdapter;
 import com.stanfy.enroscar.views.list.adapter.ResponseDataLoaderAdapter;
+
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Base fragment that displays fetchable lists. This fragment retains its state.
@@ -124,7 +121,7 @@ public abstract class RequestBuilderListFragment<MT, LT extends List<MT>> extend
   public void onStart() {
     super.onStart();
     if (DEBUG) { Log.v(TAG, "Start " + this); }
-    if (rbAdapter != null) {
+    if (rbAdapter != null && crucialGUIOperationManager != null) {
       crucialGUIOperationManager.addCrucialGUIOperationListener(rbAdapter);
     }
   }
@@ -133,7 +130,7 @@ public abstract class RequestBuilderListFragment<MT, LT extends List<MT>> extend
   public void onStop() {
     super.onStop();
     if (DEBUG) { Log.v(TAG, "Stop " + this); }
-    if (rbAdapter != null) {
+    if (rbAdapter != null && crucialGUIOperationManager != null) {
       crucialGUIOperationManager.removeCrucialGUIOperationListener(rbAdapter);
     }
   }
@@ -224,6 +221,12 @@ public abstract class RequestBuilderListFragment<MT, LT extends List<MT>> extend
     getLoaderManager().restartLoader(loaderId, null, this);
   }
 
+  /**
+   * @param inflater instance of LayoutInflater
+   * @param container fragment container
+   * @param savedInstanceState bundle with saved state
+   * @return fragment view instance
+   */
   protected View createView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
     final FetchableListView result = new FetchableListView(getActivity());
     final ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
