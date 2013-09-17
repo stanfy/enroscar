@@ -88,6 +88,9 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
 
     if (!isInEditMode()) {
       this.imagesManager = BeansManager.get(context).getContainer().getBean(ImagesManager.class);
+    } else if (loadingImage != null) {
+      setScaleType(ScaleType.FIT_XY);
+      setImageDrawable(loadingImage);
     }
   }
 

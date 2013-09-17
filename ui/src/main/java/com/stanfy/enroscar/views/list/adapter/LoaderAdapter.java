@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.WrapperListAdapter;
 
@@ -26,7 +27,7 @@ import com.stanfy.enroscar.views.StateHelper;
  * @param <MT> container model type
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public abstract class LoaderAdapter<MT> implements WrapperListAdapter, FetchableListAdapter, CrucialGUIOperationListener {
+public abstract class LoaderAdapter<MT> extends BaseAdapter implements WrapperListAdapter, FetchableListAdapter, CrucialGUIOperationListener {
 
   /** Logging tag. */
   private static final String TAG = "LoaderAdapter";
@@ -88,16 +89,6 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
   public boolean isEnabled(final int position) {
     if (state != STATE_NORMAL) { return false; }
     return core.isEnabled(position);
-  }
-
-  @Override
-  public void registerDataSetObserver(final DataSetObserver observer) {
-    core.registerDataSetObserver(observer);
-  }
-
-  @Override
-  public void unregisterDataSetObserver(final DataSetObserver observer) {
-    core.unregisterDataSetObserver(observer);
   }
 
   @Override
@@ -258,13 +249,15 @@ public abstract class LoaderAdapter<MT> implements WrapperListAdapter, Fetchable
 
     @Override
     public void onChanged() {
+      if (state == STATE_EMPTY && core.isEmpty()) {
+        return;
+      }
       if (state == STATE_NORMAL && core.isEmpty()) {
         state = STATE_EMPTY;
-        notifyDataSetChanged();
-      } else if (state == STATE_EMPTY && !core.isEmpty()) {
+      } else if (!core.isEmpty()) {
         state = STATE_NORMAL;
-        notifyDataSetChanged();
       }
+      notifyDataSetChanged();
     }
 
   }

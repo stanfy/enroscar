@@ -4,6 +4,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:0.5.+'
+    classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.+'
   }
 }
 
@@ -11,7 +12,7 @@ def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').repla
 def projectVersion = "1.0-SNAPSHOT"
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.7'
+  gradleVersion = '1.6'
 }
 
 
@@ -28,11 +29,11 @@ subprojects {
     return
   }
 
-  apply plugin : 'android-library'
-  apply plugin : 'checkstyle'
-  apply plugin : 'maven'
-  apply plugin : 'signing'
-//  apply plugin: 'stanfy-repo'
+  apply plugin: 'android-library'
+  apply plugin: 'android-test'
+  apply plugin: 'checkstyle'
+  apply plugin: 'maven'
+  apply plugin: 'signing'
 
   version = projectVersion
   group = 'com.stanfy.enroscar'
@@ -115,62 +116,49 @@ subprojects {
     }
   }
 
-  configurations {
-    jvmTest.extendsFrom compile /* tests on JVM */
-  }
-
   task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
     from 'build/bundles/release/classes.jar'
     into "build/libs"
     rename { "${project.name}-${project.version}.jar" }
   }
 
-  sourceSets {
-    jvmTest {
-      compileClasspath += configurations.jvmTest
-      runtimeClasspath += output + compileClasspath
+//  testJvm(testSelectionConfig)
+//
+//  task debugTestJvm(type : Test)
+//  debugTestJvm.doFirst {
+//    jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
+//  }
+//  debugTestJvm(testSelectionConfig)
+//  //debugTestJvm.dependsOn 'cleanTest'
+
+  android.libraryVariants.all { variant ->
+    if (variant.buildType.name.equalsIgnoreCase('release')) { return }
+    tasks["test$variant.name"].configure {
+      ignoreFailures = true
+      scanForTestClasses = false
+
+      def selection = null
+      try {
+        selection = project.testSelection
+      } catch (def e) {
+        // ignore
+      }
+      if (!selection) {
+        selection = "**/*Test.class"
+      }
+
+      include selection
+      exclude "**/Abstract*.class"
     }
   }
-
-  task testJvm(type: Test)
-
-  def testSelectionConfig = {
-    testClassesDir = project.sourceSets.jvmTest.output.classesDir
-    classpath = project.sourceSets.jvmTest.runtimeClasspath
-
-    ignoreFailures = true
-    scanForTestClasses = false
-
-    def selection = null
-    try {
-      selection = project.testSelection
-    } catch (def e) {
-      // ignore
-    }
-    if (!selection) {
-      selection = "**/*Test.class"
-    }
-
-    include selection
-    exclude "**/Abstract*.class"
-  }
-
-  testJvm(testSelectionConfig)
-
-  task debugTestJvm(type : Test)
-  debugTestJvm.doFirst {
-    jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-  }
-  debugTestJvm(testSelectionConfig)
-  //debugTestJvm.dependsOn 'cleanTest'
 
   task sourcesJar(type: Jar) {
     from 'src/main/java'
     classifier = 'sources'
   }
 
-  task jvmTestsJar(type : Jar) {
-    from 'src/jvmTest/java'
+  task testsJar(type : Jar) {
+    from 'src/test/java'
     classifier = 'tests'
   }
 
@@ -178,32 +166,27 @@ subprojects {
     // add sources to published artifacts
     archives sourcesJar
 
-    jvmTest file("$buildDir/libs/${project.name}-${project.version}.jar")
-    jvmTest jvmTestsJar
+    testCompile file("$buildDir/libs/${project.name}-${project.version}.jar")
+    testCompile testsJar
   }
 
   assemble.dependsOn classesJar
-  check.dependsOn testJvm
 
   dependencies {
-    jvmTest group: 'org.robolectric', name: 'robolectric', version: '2.1.1'
-    jvmTest files("$System.env.ANDROID_HOME/platforms/android-17/android.jar")
+    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.2-SNAPSHOT'
 
-    jvmTest group: 'junit', name: 'junit', version: '4.11'
-    jvmTest 'org.easytesting:fest-assert-core:2.0M10'
-
-    // use main sources
-    // TODO can it be made with source sets?
-    jvmTest files("$buildDir/classes/debug") {
-      builtBy 'compileDebug'
-    }
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile 'org.easytesting:fest-assert-core:2.0M10'
+    testCompile 'org.easytesting:fest-reflect:1.4.1'
+    testCompile 'org.easytesting:fest-util:1.2.5'
+    testCompile 'com.squareup:fest-android:1.0.+'
   }
 
   project.ext.dependOnProjects = { list ->
     return {
       list.each {
         compile project(it)
-        jvmTest project(path : it, configuration : 'jvmTest')
+        testCompile project(path : it, configuration : 'testCompile')
       }
     }
   }
