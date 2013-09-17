@@ -35,11 +35,6 @@ public class MockLoaderAdapter<T> extends LoaderAdapter<List<T>> {
   }
 
   @Override
-  public void notifyDataSetChanged() {
-    getCore().notifyDataSetChanged();
-  }
-
-  @Override
   protected boolean isResponseSuccessful(final List<T> data) {
     return data != null;
   }

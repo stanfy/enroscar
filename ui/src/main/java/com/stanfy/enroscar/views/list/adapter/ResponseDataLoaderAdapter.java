@@ -1,13 +1,12 @@
 package com.stanfy.enroscar.views.list.adapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 
-import com.stanfy.enroscar.content.UniqueObject;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.views.StateHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adapter that consumes {@link ResponseData}. Assumes that a wrapped adapter is instance of ModelListAdapter.
@@ -16,17 +15,17 @@ import com.stanfy.enroscar.views.StateHelper;
  */
 public class ResponseDataLoaderAdapter<T, LT extends List<T>> extends LoaderAdapter<ResponseData<LT>> {
 
-  public ResponseDataLoaderAdapter(final Context context, final RendererBasedAdapter<T> coreAdapter) {
+  public ResponseDataLoaderAdapter(final Context context, final ReplaceableListAdapter<T> coreAdapter) {
     super(context, coreAdapter);
   }
 
-  public ResponseDataLoaderAdapter(final Context context, final RendererBasedAdapter<T> coreAdapter, final StateHelper stateHelper) {
+  public ResponseDataLoaderAdapter(final Context context, final ReplaceableListAdapter<T> coreAdapter, final StateHelper stateHelper) {
     super(context, coreAdapter, stateHelper);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  protected RendererBasedAdapter<T> getCore() { return (RendererBasedAdapter<T>) super.getCore(); }
+  protected ReplaceableListAdapter<T> getCore() { return (ReplaceableListAdapter<T>) super.getCore(); }
 
   @Override
   protected boolean isResponseSuccessful(final ResponseData<LT> data) { return data.isSuccessful(); }
@@ -38,18 +37,7 @@ public class ResponseDataLoaderAdapter<T, LT extends List<T>> extends LoaderAdap
 
   @Override
   protected void replaceDataInCore(final ResponseData<LT> data) {
-    final RendererBasedAdapter<T> core = getCore();
-    final List<T> list = data.getModel();
-    if (list instanceof ArrayList) {
-      core.replace((ArrayList<T>)list);
-    } else {
-      core.replace(new ArrayList<T>(list));
-    }
-  }
-
-  @Override
-  public void notifyDataSetChanged() {
-    getCore().notifyDataSetChanged();
+    getCore().replace(data.getModel());
   }
 
 }

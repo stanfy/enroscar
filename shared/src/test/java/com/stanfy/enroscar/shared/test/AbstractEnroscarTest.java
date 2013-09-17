@@ -1,5 +1,6 @@
 package com.stanfy.enroscar.shared.test;
 
+import org.fest.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.robolectric.Robolectric;
@@ -8,7 +9,6 @@ import org.robolectric.shadows.ShadowLog;
 import android.app.Application;
 
 import com.stanfy.enroscar.beans.BeansManager;
-
 
 /**
  * Base test class.
@@ -24,6 +24,11 @@ public abstract class AbstractEnroscarTest {
 
   public Application getApplication() {
     return (Application)Robolectric.application;
+  }
+
+  {
+    // XXX load Arrays class
+    Arrays.format(new String[]{"a"});
   }
 
   @Before

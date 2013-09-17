@@ -16,7 +16,7 @@ import java.util.List;
  * Base class for adapters that delegate views creation and population to ElementRenderer.
  * @param <T> element type
  */
-public abstract class RendererBasedAdapter<T> extends BaseAdapter {
+public abstract class RendererBasedAdapter<T> extends BaseAdapter implements ReplaceableListAdapter<T> {
 
   /** Main type of views. */
   public static final int TYPE_MAIN = 0;
@@ -205,12 +205,15 @@ public abstract class RendererBasedAdapter<T> extends BaseAdapter {
     elements = list;
   }
 
-  /**
-   * Replace the list of elements.
-   * @param list replacement list
-   */
-  public void replace(final ArrayList<T> list) {
+  @Override
+  public void replace(final Collection<T> collection) {
     synchronized (dataLock) {
+      final ArrayList<T> list;
+      if (collection instanceof ArrayList) {
+        list = (ArrayList<T>) collection;
+      } else {
+        list = new ArrayList<T>(collection);
+      }
       resetElements(list);
       notifyDataSetChanged();
     }
