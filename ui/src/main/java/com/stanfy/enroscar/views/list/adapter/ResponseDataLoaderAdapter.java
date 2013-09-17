@@ -14,19 +14,19 @@ import com.stanfy.enroscar.views.StateHelper;
  * @param <T> model type
  * @param <LT> list type
  */
-public class ResponseDataLoaderAdapter<T extends UniqueObject, LT extends List<T>> extends LoaderAdapter<ResponseData<LT>> {
+public class ResponseDataLoaderAdapter<T, LT extends List<T>> extends LoaderAdapter<ResponseData<LT>> {
 
-  public ResponseDataLoaderAdapter(final Context context, final ModelListAdapter<T> coreAdapter) {
+  public ResponseDataLoaderAdapter(final Context context, final RendererBasedAdapter<T> coreAdapter) {
     super(context, coreAdapter);
   }
 
-  public ResponseDataLoaderAdapter(final Context context, final ModelListAdapter<T> coreAdapter, final StateHelper stateHelper) {
+  public ResponseDataLoaderAdapter(final Context context, final RendererBasedAdapter<T> coreAdapter, final StateHelper stateHelper) {
     super(context, coreAdapter, stateHelper);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  protected ModelListAdapter<T> getCore() { return (ModelListAdapter<T>) super.getCore(); }
+  protected RendererBasedAdapter<T> getCore() { return (RendererBasedAdapter<T>) super.getCore(); }
 
   @Override
   protected boolean isResponseSuccessful(final ResponseData<LT> data) { return data.isSuccessful(); }
@@ -38,7 +38,7 @@ public class ResponseDataLoaderAdapter<T extends UniqueObject, LT extends List<T
 
   @Override
   protected void replaceDataInCore(final ResponseData<LT> data) {
-    final ModelListAdapter<T> core = getCore();
+    final RendererBasedAdapter<T> core = getCore();
     final List<T> list = data.getModel();
     if (list instanceof ArrayList) {
       core.replace((ArrayList<T>)list);

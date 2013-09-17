@@ -20,7 +20,8 @@ import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.views.list.FetchableListView;
 import com.stanfy.enroscar.views.list.FetchableView;
 import com.stanfy.enroscar.views.list.adapter.ModelListAdapter;
-import com.stanfy.enroscar.views.list.adapter.ModelListAdapter.ElementRenderer;
+import com.stanfy.enroscar.views.list.adapter.ElementRenderer;
+import com.stanfy.enroscar.views.list.adapter.RendererBasedAdapter;
 import com.stanfy.enroscar.views.list.adapter.ResponseDataLoaderAdapter;
 
 /**
@@ -29,7 +30,7 @@ import com.stanfy.enroscar.views.list.adapter.ResponseDataLoaderAdapter;
  * @param <LT> list type
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT extends List<MT>> extends BaseFragment implements LoaderCallbacks<ResponseData<LT>> {
+public abstract class RequestBuilderListFragment<MT, LT extends List<MT>> extends BaseFragment implements LoaderCallbacks<ResponseData<LT>> {
 
   /** Logging tag. */
   protected static final String TAG = "RBListFragment";
@@ -43,7 +44,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   private int loaderId = LIST_LOADER_DEFAULT_ID;
 
   /** Core adapter instance. */
-  private ModelListAdapter<MT> coreAdapter;
+  private RendererBasedAdapter<MT> coreAdapter;
   /** Adapter. */
   private ResponseDataLoaderAdapter<MT, LT> rbAdapter;
   /** List view instance. */
@@ -57,16 +58,11 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
 
   /** @return request builder instance */
   protected abstract RequestBuilder<LT> createRequestBuilder();
-  /** @return renderer instance */
-  protected abstract ElementRenderer<MT> createRenderer();
-
   /** @return adapter with renderer */
-  protected ModelListAdapter<MT> createAdapter(final ElementRenderer<MT> renderer) {
-    return new ModelListAdapter<MT>(getActivity(), renderer);
-  }
+  protected abstract RendererBasedAdapter<MT> createAdapter();
 
   /** @return request builder adapter */
-  protected ResponseDataLoaderAdapter<MT, LT> wrapAdapter(final ModelListAdapter<MT> adapter) {
+  protected ResponseDataLoaderAdapter<MT, LT> wrapAdapter(final RendererBasedAdapter<MT> adapter) {
     return new ResponseDataLoaderAdapter<MT, LT>(getActivity(), adapter);
   }
 
@@ -83,7 +79,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   protected boolean isDataLocaleDependent() { return false; }
 
   /** @return model loader ID */
-  protected int getLoaderId() { return loaderId; }
+  public int getLoaderId() { return loaderId; }
   /**
    * Set loader ID that is used for operating with loader created
    * by {@link #onCreateLoader(int, Bundle)}.
@@ -106,7 +102,7 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
     this.listView = listView;
 
     // create adapter
-    this.coreAdapter = createAdapter(createRenderer());
+    this.coreAdapter = createAdapter();
     this.rbAdapter = wrapAdapter(this.coreAdapter);
 
     // connect list and adapter
@@ -198,14 +194,14 @@ public abstract class RequestBuilderListFragment<MT extends UniqueObject, LT ext
   }
 
   /**
-   * @return instance of an adapter created by {@link #createAdapter(ElementRenderer)} method
+   * @return instance of an adapter created by {@link #createAdapter()} method
    */
-  public ModelListAdapter<MT> getCoreAdapter() { return coreAdapter; }
+  public final RendererBasedAdapter<MT> getCoreAdapter() { return coreAdapter; }
 
   /**
-   * @return instance of an adapter returned by {@link #wrapAdapter(ModelListAdapter)}
+   * @return instance of an adapter returned by {@link #wrapAdapter(com.stanfy.enroscar.views.list.adapter.RendererBasedAdapter)}
    */
-  public ResponseDataLoaderAdapter<MT, LT> getAdapter() { return rbAdapter; }
+  public final ResponseDataLoaderAdapter<MT, LT> getAdapter() { return rbAdapter; }
 
   /**
    * Start loading.
