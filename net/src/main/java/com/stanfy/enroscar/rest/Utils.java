@@ -10,10 +10,7 @@ import com.stanfy.enroscar.beans.BeansManager;
 public final class Utils {
 
   /** Debug networks-related classes. */
-  public static final boolean DEBUG_IO = false; // @debug.io@
-
-  /** Debug loaders. */
-  public static final boolean DEBUG_LOADERS = false; // @debug.loaders@
+  public static final boolean DEBUG_IO = false;
 
   private Utils() { }
   

@@ -94,6 +94,7 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     final URLConnection connection = makeConnection(
         new MyRequestBuilder<String>(Robolectric.application) { }
           .setUrl(getWebServer().getUrl("/post").toString())
+          .addParam("p1", "v1")
           .setOperationType(OperationType.SIMPLE_POST)
     );
 
@@ -102,6 +103,7 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     final String response = read(connection);
     final RecordedRequest request = getWebServer().takeRequest();
     assertThat(request.getMethod()).isEqualTo("POST");
+    assertThat(new String(request.getBody())).isEqualTo("p1=v1");
 
     final HttpURLConnection http = (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
     assertThat(http.getResponseCode()).isEqualTo(HttpURLConnection.HTTP_OK);

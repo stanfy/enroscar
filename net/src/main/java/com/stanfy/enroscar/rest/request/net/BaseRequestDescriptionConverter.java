@@ -8,6 +8,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.net.UrlConnectionBuilder;
+import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.OperationType;
@@ -20,6 +23,9 @@ import com.stanfy.enroscar.rest.request.RequestDescription;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 public abstract class BaseRequestDescriptionConverter {
+
+  /** Bean name of UrlConnectionBuilderFactory. */
+  public static final String CONNECTION_BUILDER_FACTORY_NAME = "enroscar.RequestConnectionBuilder";
 
   /** Logging tag. */
   protected static final String TAG = RequestDescription.TAG;
@@ -56,6 +62,20 @@ public abstract class BaseRequestDescriptionConverter {
       Log.d(TAG, idPrefix + "Headers: " + connection.getRequestProperties());
     }
     connection.connect();
+  }
+
+  /**
+   * @return URL connection builder with set cache,
+   */
+  protected UrlConnectionBuilder prepareUrlConnectionBuilder() {
+    UrlConnectionBuilderFactory factory = BeansManager.get(context).getContainer().getBean(CONNECTION_BUILDER_FACTORY_NAME, UrlConnectionBuilderFactory.class);
+    if (factory == null) {
+      throw new IllegalStateException("UrlConnectionBuilderFactory bean is not defined.");
+    }
+    return factory.newUrlConnectionBuilder()
+        .setCacheManagerName(requestDescription.getCacheName())
+        .setContentHandlerName(requestDescription.getContentHandler())
+        .setModelType(requestDescription.getModelType());
   }
 
   /**

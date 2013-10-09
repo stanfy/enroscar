@@ -1,20 +1,19 @@
 package com.stanfy.enroscar.rest.loader;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import android.os.SystemClock;
 import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.executor.ApiMethodsSupport;
 import com.stanfy.enroscar.rest.executor.ApiMethodsSupport.ApiSupportRequestCallback;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.rest.request.RequestDescription;
+
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Loader that uses a request builder.
@@ -27,7 +26,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   protected static final String TAG = "RBLoader";
 
   /** Debug flag. */
-  protected static final boolean DEBUG = Utils.DEBUG_LOADERS;
+  protected static final boolean DEBUG = false;
 
   /** Request builder instance. */
   private final RequestBuilder<MT> requestBuilder;
@@ -102,7 +101,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   }
 
   /**
-   * Attempt to cancel the current request. See {@link com.stanfy.app.service.ApiMethods#cancelRequest(int)}
+   * Attempt to cancel the current request. See {@link com.stanfy.enroscar.rest.executor.ApiMethods#cancelRequest(int)}
    * for more info.  Must be called on the main thread of the process.
    */
   public void cancelLoad() {

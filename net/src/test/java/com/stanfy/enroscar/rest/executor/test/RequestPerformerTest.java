@@ -3,6 +3,7 @@ package com.stanfy.enroscar.rest.executor.test;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Test;
@@ -115,7 +116,7 @@ public class RequestPerformerTest extends AbstractMockServerTest {
 
     public ResponseData<?> waitData() {
       try {
-        latch.await();
+        latch.await(3, TimeUnit.SECONDS);
       } catch (final InterruptedException e) {
         throw new RuntimeException("Wait is interrupted!");
       }

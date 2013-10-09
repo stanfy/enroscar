@@ -32,6 +32,7 @@ import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine.Config;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngineMode;
+import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.RequestMethod;
@@ -43,6 +44,7 @@ import com.stanfy.enroscar.rest.request.ListRequestBuilderWrapper;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
 import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
 
@@ -101,7 +103,8 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
   @Override
   protected void configureBeansManager(final Editor editor) {
     super.configureBeansManager(editor);
-    editor.put(BuffersPool.class).put(RemoteServerApiConfiguration.class);
+    editor.put(BuffersPool.class).put(RemoteServerApiConfiguration.class)
+          .put(BaseRequestDescriptionConverter.CONNECTION_BUILDER_FACTORY_NAME, UrlConnectionBuilderFactory.DEFAULT);
   }
   
   /**

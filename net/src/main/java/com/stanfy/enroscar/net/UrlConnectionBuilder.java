@@ -18,7 +18,7 @@ import com.stanfy.enroscar.utils.Time;
 /**
  * Builder for creating URL connections.
  * 
- * **WARNING: this implementation won't work correctly in case HTTPS throw HTTP-proxy**.
+ * **WARNING: this implementation won't work correctly in case HTTPS through HTTP-proxy**.
  * 
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  * @author Michael Pustovit (Stanfy - http://www.stanfy.com) (proxy methods)  

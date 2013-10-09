@@ -1,19 +1,16 @@
 package com.stanfy.enroscar.rest.loader.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import org.junit.Test;
-
-import android.content.Context;
 import android.support.v4.content.Loader;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.rest.request.RequestDescription;
-import com.stanfy.enroscar.rest.response.ContentAnalyzer;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
+
+import org.junit.Test;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * Tests for {@link com.stanfy.enroscar.rest.loader.RequestBuilderLoader}.

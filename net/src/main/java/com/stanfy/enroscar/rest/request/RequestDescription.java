@@ -12,7 +12,6 @@ import android.util.SparseArray;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.net.UrlConnectionBuilder;
 import com.stanfy.enroscar.rest.ModelTypeToken;
 import com.stanfy.enroscar.rest.request.binary.BinaryData;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
@@ -429,18 +428,6 @@ public class RequestDescription implements Parcelable {
         urlConnection.addRequestProperty(name, headers.getString(name));
       }
     }
-  }
-
-  /**
-   * Pass cache and content control parameters to URL connection builder.
-   * @param context context instance
-   * @return URL connection builder instance
-   */
-  public UrlConnectionBuilder prepareConnectionBuilder(final Context context) {
-    return new UrlConnectionBuilder()
-      .setCacheManagerName(cacheName)
-      .setContentHandlerName(contentHandler)
-      .setModelType(modelType);
   }
 
   /**

@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import com.stanfy.enroscar.rest.Utils;
@@ -34,20 +35,22 @@ public class SimplePostConverter extends PostConverter {
 
   @Override
   public void sendRequest(final URLConnection connection) throws IOException {
-    final LinkedList<ParameterValue> parameters = new LinkedList<ParameterValue>();
+    Uri.Builder builder = Uri.parse("http://any.com").buildUpon();
     for (final Parameter p : requestDescription.getSimpleParameters().getChildren()) {
       if (p instanceof ParameterValue) {
-        parameters.add((ParameterValue)p);
+        builder.appendQueryParameter(p.getName(), ((ParameterValue) p).getValue());
       }
     }
-    final String encoding = requestDescription.getEncoding().name();
-    final byte[] content = URLEncodedUtils.format(parameters, encoding).getBytes(encoding);
+    @SuppressWarnings("ConstantConditions")
+    String query = builder.build().getEncodedQuery();
+    if (query == null) { query = ""; }
+    final byte[] content = query.getBytes(requestDescription.getEncoding().name());
 
     final OutputStream stream = connection.getOutputStream();
     stream.write(content);
     stream.flush();
 
-    if (Utils.isDebugRest(context)) { Log.d(TAG, "(" + requestDescription.getId() + ")" + ": " + parameters.toString()); }
+    if (Utils.isDebugRest(context)) { Log.d(TAG, "(" + requestDescription.getId() + ")" + ": " + query); }
   }
 
 }

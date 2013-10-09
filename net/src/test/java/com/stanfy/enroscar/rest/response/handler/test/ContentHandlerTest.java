@@ -14,10 +14,12 @@ import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.OperationType;
+import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.response.handler.BaseContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
@@ -31,7 +33,9 @@ public class ContentHandlerTest extends AbstractMockServerTest {
   protected void configureBeansManager(final Editor editor) {
     editor
       .put(BuffersPool.class)
-      .put(RemoteServerApiConfiguration.class).put(StringContentHandler.class);
+      .put(RemoteServerApiConfiguration.class)
+      .put(BaseRequestDescriptionConverter.CONNECTION_BUILDER_FACTORY_NAME, UrlConnectionBuilderFactory.DEFAULT)
+      .put(StringContentHandler.class);
   }
 
   private String scheduleBadMethodResponse() {

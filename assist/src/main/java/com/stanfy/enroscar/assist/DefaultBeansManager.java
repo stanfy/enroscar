@@ -17,8 +17,10 @@ import com.stanfy.enroscar.images.cache.ImageMemoryCache;
 import com.stanfy.enroscar.images.cache.SupportLruImageMemoryCache;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
+import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
@@ -134,6 +136,7 @@ public class DefaultBeansManager extends BeansManager {
 
     public Editor remoteServerApi(final EnroscarConnectionsEngine.Config config, final String... formats) {
       put(RemoteServerApiConfiguration.class);
+      put(BaseRequestDescriptionConverter.CONNECTION_BUILDER_FACTORY_NAME, UrlConnectionBuilderFactory.DEFAULT);
       if (formats.length > 0) {
 
         Class<?> mainClass = null;

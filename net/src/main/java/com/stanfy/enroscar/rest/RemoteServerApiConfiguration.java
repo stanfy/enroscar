@@ -17,7 +17,7 @@ import com.stanfy.enroscar.rest.response.ResponseModelConverter;
 public class RemoteServerApiConfiguration implements InitializingBean, ManagerAwareBean {
 
   /** Bean name. */
-  public static final String BEAN_NAME = "RemoteServerApiConfiguration";
+  public static final String BEAN_NAME = "enroscar.RemoteServerApiConfiguration";
 
   /** Bean manager instance. */
   private BeansManager beansManager;

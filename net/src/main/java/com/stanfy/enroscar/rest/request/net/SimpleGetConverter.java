@@ -26,7 +26,7 @@ public class SimpleGetConverter extends BaseRequestDescriptionConverter {
 
   @Override
   public URLConnection prepareConnectionInstance() throws IOException {
-    final URLConnection connection = requestDescription.prepareConnectionBuilder(context)
+    final URLConnection connection = prepareUrlConnectionBuilder()
       .setUrl(buildUri().build())
       .create();
 
