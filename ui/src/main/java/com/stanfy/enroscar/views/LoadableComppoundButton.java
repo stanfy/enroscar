@@ -10,7 +10,6 @@ import android.widget.CompoundButton;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.ImagesManager;
-import com.stanfy.enroscar.images.RemoteImageDensityProvider;
 
 import com.stanfy.enroscar.ui.R;
 

@@ -29,7 +29,7 @@ import com.stanfy.enroscar.sdkdep.SdkDependentUtils;
 @EnroscarBean(value = ImagesManager.CACHE_BEAN_NAME, contextDependent = true)
 public class ImageFileCache extends BaseFileResponseCache implements Bean {
 
-  /** Bigger images cache (10M). */
+  /** Default images cache size (10M). */
   public static final long MAX_SIZE = 10 * 1024 * 1024;
 
   /** Application context. */

@@ -4,37 +4,19 @@ import android.graphics.Bitmap;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.cache.SupportLruImageMemoryCache;
-import com.stanfy.enroscar.io.BuffersPool;
-import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import org.junit.Test;
+import org.robolectric.Robolectric;
 
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ImagesManager}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class ImagesManagerTest {
-
-  @Before
-  public void init() {
-    BeansManager.get(Robolectric.application).edit()
-        .put(BuffersPool.class)
-        .put(SDKDependentUtilsFactory.class)
-        .put(SupportLruImageMemoryCache.class)
-        .put(ImagesManager.class)
-        .commit();
-  }
+public class ImagesManagerTest extends AbstractImagesTest {
 
   @Test
   public void getFromMemCacheShouldCheckConsumerSize() {

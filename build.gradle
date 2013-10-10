@@ -1,6 +1,7 @@
 buildscript {
   repositories {
     mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:0.5.+'
@@ -45,6 +46,7 @@ subprojects {
 
   repositories {
     mavenCentral()
+    ivy { url 'http://dev.stanfy.com/repository/libs' }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
 
@@ -173,10 +175,13 @@ subprojects {
   assemble.dependsOn classesJar
 
   dependencies {
-    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.2-SNAPSHOT'
+    // TODO: it should be removed, but current version of 'android-test' plugin does not treat aar dependencies appropriately
+    testCompile fileTree(dir: "$buildDir/exploded-bundles", include: "*/classes.jar")
+    testCompile fileTree(dir: "$buildDir/exploded-bundles", include: "*/libs/*.jar")
+
+    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    testCompile 'org.easytesting:fest-assert-core:2.0M10'
     testCompile 'org.easytesting:fest-reflect:1.4.1'
     testCompile 'org.easytesting:fest-util:1.2.5'
     testCompile 'com.squareup:fest-android:1.0.+'

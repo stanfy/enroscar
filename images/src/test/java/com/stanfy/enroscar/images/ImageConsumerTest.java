@@ -2,20 +2,15 @@ package com.stanfy.enroscar.images;
 
 import android.content.Context;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * Tests for ImageConsumer.
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class ImageConsumerTest {
+public class ImageConsumerTest extends AbstractImagesTest {
 
   @Test
   public void consumerShouldReturnRequiredSizeRespectingScreenDimensions() {

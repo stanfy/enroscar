@@ -1,3 +1,17 @@
 dependencies(
     project.dependOnProjects([':enroscar-beans', ':enroscar-shared', ':enroscar-sdk-dep', ':enroscar-net'])
 )
+
+android {
+  defaultConfig {
+    packageName "com.stanfy.enroscar.images"
+    testPackageName "com.stanfy.enroscar.images.test"
+    testInstrumentationRunner "android.test.InstrumentationTestRunner"
+  }
+}
+
+dependencies {
+  instrumentTestCompile "com.squareup:fest-android:1.0.+"
+}
+
+

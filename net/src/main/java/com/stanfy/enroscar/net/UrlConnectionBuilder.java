@@ -56,6 +56,10 @@ public class UrlConnectionBuilder {
     return this;
   }
 
+  public URL getUrl() {
+    return url;
+  }
+
   /**
    * @param connectTimeout the connect timeout
    * @return instance for queuing
@@ -106,9 +110,17 @@ public class UrlConnectionBuilder {
     return this;
   }
 
+  public String getCacheManagerName() {
+    return cacheManagerName;
+  }
+
   public UrlConnectionBuilder setContentHandlerName(final String contentHandlerName) {
     this.contentHandlerName = contentHandlerName;
     return this;
+  }
+
+  public String getContentHandlerName() {
+    return contentHandlerName;
   }
 
   public UrlConnectionBuilder setModelType(final ModelTypeToken modelType) {
@@ -116,9 +128,17 @@ public class UrlConnectionBuilder {
     return this;
   }
 
+  public ModelTypeToken getModelType() {
+    return modelType;
+  }
+
   public UrlConnectionBuilder setSslSocketFactory(final SSLSocketFactory factory) {
     this.sslSF = factory;
     return this;
+  }
+
+  public SSLSocketFactory getSslSocketFactory() {
+    return sslSF;
   }
 
   /**

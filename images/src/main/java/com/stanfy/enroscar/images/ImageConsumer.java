@@ -1,11 +1,8 @@
 package com.stanfy.enroscar.images;
 
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
-
-import com.stanfy.enroscar.images.ImagesManager.ImageLoader;
 
 /**
  * Image consumer receives an image loaded by {@link ImagesManager}. 
@@ -19,16 +16,13 @@ import com.stanfy.enroscar.images.ImagesManager.ImageLoader;
  * </p>
  */
 public abstract class ImageConsumer {
+
   /** Context instance. */
   Context context;
-  /** Current image URL. Set this field from the GUI thread only! */
-  String currentUrl;
   /** Listener. */
   ImagesLoadListener listener;
   /** Current loader. */
   ImageLoader currentLoader;
-  /** Loader key. */
-  private String loaderKey;
 
   /** @param context context instance */
   public ImageConsumer(final Context context) {
@@ -49,13 +43,11 @@ public abstract class ImageConsumer {
 
   /** Reset holder state. Must be called from the main thread. */
   void reset() {
-    currentUrl = null;
-    loaderKey = null;
+    currentLoader = null;
   }
-  final void performCancellingLoader() {
-    final String url = currentUrl;
+
+  final void cancelCurrentLoading() {
     final ImageLoader loader = currentLoader;
-    if (ImagesManager.DEBUG) { Log.d(ImagesManager.TAG, "Cancel URL: " + url + "\nLoader: " + loader); }
     if (loader != null) { loader.removeTarget(this); }
   }
 
@@ -63,9 +55,9 @@ public abstract class ImageConsumer {
     this.currentLoader = loader;
     if (listener != null) { listener.onLoadStart(this, url); }
   }
-  final void onFinish(final String url, final Drawable drawable) {
+  final void onFinish(final String url, final ImageResult result) {
     this.currentLoader = null;
-    if (listener != null) { listener.onLoadFinished(this, url, drawable); }
+    if (listener != null) { listener.onLoadFinished(this, url, result); }
   }
   final void onError(final String url, final Throwable exception) {
     this.currentLoader = null;
@@ -74,16 +66,15 @@ public abstract class ImageConsumer {
   final void onCancel(final String url) {
     this.currentLoader = null;
     if (listener != null) { listener.onLoadCancel(this, url); }
-    this.currentUrl = null;
   }
 
   boolean hasUndefinedSize() { return getTargetWidth() <= 0 && getTargetHeight() <= 0; }
 
-  boolean checkDrawableSize(final Drawable drawable) {
+  boolean checkBitmapSize(final Bitmap bitmap) {
     final int safeGap = 5;
     int w = getTargetWidth(), h = getTargetHeight();
-    return (w <= 0 || w - drawable.getIntrinsicWidth() < safeGap)
-        && (h <= 0 || h - drawable.getIntrinsicHeight() < safeGap);
+    return (w <= 0 || w - bitmap.getWidth() < safeGap)
+        && (h <= 0 || h - bitmap.getHeight() < safeGap);
   }
 
   /* parameters */
@@ -106,25 +97,13 @@ public abstract class ImageConsumer {
   
   public Drawable getLoadingImage() { return null; }
   
-  public int getImageType() { return 0; }
-  
-  public int getSourceDensity() { return -1; }
-  
-  String getLoaderKey() {
-    if (loaderKey == null) {
-      loaderKey = currentUrl + "!" + getRequiredWidth() + "x" + getRequiredHeight();
-    }
-    return loaderKey;
+  public boolean skipLoadingImage() { return false; }
+
+  protected void prepareImageRequest(final ImageRequest request) {
+    request.setRequiredHeight(getRequiredHeight());
+    request.setRequiredWidth(getRequiredWidth());
   }
 
-  /* options */
-  
-  public boolean skipScaleBeforeCache() { return false; }
-  
-  public boolean skipLoadingImage() { return false; }
-  
-  public boolean useSampling() { return true; }
-  
-  public boolean allowSmallImagesFromCache() { return hasUndefinedSize(); }
-  
+  public boolean allowSmallImagesFromCache() { return false; }
+
 }

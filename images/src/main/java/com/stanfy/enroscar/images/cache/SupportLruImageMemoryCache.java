@@ -19,6 +19,9 @@ import com.stanfy.enroscar.sdkdep.SdkDependentUtils;
 @EnroscarBean(value = ImageMemoryCache.BEAN_NAME, contextDependent = true)
 public class SupportLruImageMemoryCache implements ImageMemoryCache, Bean {
 
+  /** 1 MB. */
+  private static final int MB = 1024 * 1024;
+
   /** LRU cache instance. */
   private final LruCache<String, Bitmap> cache;
 
@@ -26,14 +29,24 @@ public class SupportLruImageMemoryCache implements ImageMemoryCache, Bean {
   final SdkDependentUtils sdkUtils;
 
   public SupportLruImageMemoryCache(final Context context) {
+    this(context, 0);
+  }
+
+  public SupportLruImageMemoryCache(final Context context, final int size) {
     this.sdkUtils = SdkDepUtils.get(context);
-    int memClass = ((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
-    if (memClass == 0) { // can be in tests
-      memClass = 3;
+
+    int cacheSize = size;
+    if (cacheSize == 0) {
+      int memClass = ((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
+      if (memClass == 0) { // can be in tests
+        memClass = 3;
+      }
+
+      final int part = 8;
+      cacheSize = memClass * MB / part;
     }
-    final int mb = 1024 * 1024, part = 8;
-    final int cacheSize = memClass * mb / part;
-    Log.i(BEAN_NAME, "Images cache size: " + cacheSize + "(" + (cacheSize / mb) + " MB)");
+
+    Log.i(BEAN_NAME, "Images cache size: " + cacheSize + "(" + (cacheSize / MB) + " MB)");
     this.cache = new LruCache<String, Bitmap>(cacheSize) {
       @Override
       protected int sizeOf(final String key, final Bitmap value) {

@@ -30,14 +30,7 @@ public abstract class ViewImageConsumer<T extends View> extends ImageConsumer {
       this.listener = ((ImagesLoadListenerProvider)view).getImagesLoadListener();
     }
   }
-  
-  @Override
-  public int getSourceDensity() {
-    if (view instanceof RemoteImageDensityProvider) {
-      return ((RemoteImageDensityProvider)view).getSourceDensity();
-    }
-    return super.getSourceDensity();
-  }
+
   @Override
   public void post(final Runnable r) {
     view.post(r);
@@ -66,4 +59,5 @@ public abstract class ViewImageConsumer<T extends View> extends ImageConsumer {
     return params.width == LayoutParams.MATCH_PARENT && view.getWidth() == 0
         || params.height == LayoutParams.MATCH_PARENT && view.getHeight() == 0;
   }
+
 }

@@ -10,7 +10,6 @@ import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.ImagesLoadListener;
 import com.stanfy.enroscar.images.ImagesLoadListenerProvider;
 import com.stanfy.enroscar.images.ImagesManager;
-import com.stanfy.enroscar.images.RemoteImageDensityProvider;
 import com.stanfy.enroscar.images.ViewImageConsumer;
 
 import com.stanfy.enroscar.ui.R;

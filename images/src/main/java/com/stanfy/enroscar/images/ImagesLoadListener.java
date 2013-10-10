@@ -1,17 +1,14 @@
 package com.stanfy.enroscar.images;
 
-import android.graphics.drawable.Drawable;
-
-
 /**
  * Image load listener.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
 public interface ImagesLoadListener {
 
-  void onLoadStart(final ImageConsumer holder, final String url);
+  void onLoadStart(final ImageConsumer consumer, final String url);
 
-  void onLoadFinished(final ImageConsumer holder, final String url, final Drawable drawable);
+  void onLoadFinished(final ImageConsumer holder, final String url, final ImageResult result);
 
   void onLoadError(final ImageConsumer holder, final String url, final Throwable exception);
 
