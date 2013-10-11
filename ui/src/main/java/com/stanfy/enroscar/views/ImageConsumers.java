@@ -1,17 +1,18 @@
 package com.stanfy.enroscar.views;
 
-import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.images.ImageConsumer;
-import com.stanfy.enroscar.images.ImagesManager;
-import com.stanfy.enroscar.images.ViewImageConsumer;
-import com.stanfy.enroscar.images.ViewImageConsumerFactory;
-
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
+
+import com.stanfy.enroscar.beans.EnroscarBean;
+import com.stanfy.enroscar.images.ImageConsumer;
+import com.stanfy.enroscar.images.ImageRequest;
+import com.stanfy.enroscar.images.ImagesManager;
+import com.stanfy.enroscar.images.ViewImageConsumer;
+import com.stanfy.enroscar.images.ViewImageConsumerFactory;
 
 /**
  * Image holders.
@@ -44,17 +45,32 @@ public final class ImageConsumers implements ViewImageConsumerFactory {
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
   static class LoadableImageViewConsumer extends ImageViewConsumer {
-    public LoadableImageViewConsumer(final LoadableImageView view) { super(view); }
+
+    public LoadableImageViewConsumer(final LoadableImageView view) {
+      super(view);
+    }
+
     @Override
-    public boolean allowSmallImagesFromCache() { return ((LoadableImageView)getView()).isAllowSmallImagesInCache(); }
+    protected void prepareImageRequest(final ImageRequest request) {
+      super.prepareImageRequest(request);
+      request.setSkipScaleBeforeMemCache(((LoadableImageView)getView()).isSkipScaleBeforeCache());
+    }
+
     @Override
-    public boolean skipScaleBeforeCache() { return ((LoadableImageView)getView()).isSkipScaleBeforeCache(); }
+    public boolean allowSmallImagesFromCache() {
+      return ((LoadableImageView)getView()).isAllowSmallImagesInCache();
+    }
+
     @Override
-    public boolean skipLoadingImage() { return ((LoadableImageView)getView()).isSkipLoadingImage(); }
+    public boolean skipLoadingImage() {
+      return ((LoadableImageView)getView()).isSkipLoadingImage();
+    }
+
     @Override
-    public boolean useSampling() { return ((LoadableImageView)getView()).isUseSampling(); }
-    @Override
-    public Drawable getLoadingImage() { return ((LoadableImageView)getView()).getLoadingImage(); }
+    public Drawable getLoadingImage() {
+      return ((LoadableImageView)getView()).getLoadingImage();
+    }
+
     @Override
     public void setImage(final Drawable d, final boolean animate) {
       final LoadableImageView view = (LoadableImageView)this.getView();
@@ -64,14 +80,14 @@ public final class ImageConsumers implements ViewImageConsumerFactory {
         view.setImageDrawable(d);
       }
     }
+
     @Override
     public void setLoadingImage(final Drawable d) {
       final LoadableImageView view = (LoadableImageView)getView();
       view.setImageDrawable(d);
       view.setTemporaryScaleType(ScaleType.FIT_XY);
     }
-    @Override
-    public int getImageType() { return ((LoadableImageView)getView()).getImageType(); }
+
   }
 
   /**
@@ -79,9 +95,16 @@ public final class ImageConsumers implements ViewImageConsumerFactory {
    * @author Roman Mazur - Stanfy (http://www.stanfy.com)
    */
   static class CompoundButtonConsumer extends ViewImageConsumer<CompoundButton> {
-    public CompoundButtonConsumer(final CompoundButton view) { super(view); }
+
+    public CompoundButtonConsumer(final CompoundButton view) {
+      super(view);
+    }
+
     @Override
-    public void setImage(final Drawable d, final boolean animate) { getView().setButtonDrawable(d); }
+    public void setImage(final Drawable d, final boolean animate) {
+      getView().setButtonDrawable(d);
+    }
+
   }
 
   /**
@@ -89,7 +112,11 @@ public final class ImageConsumers implements ViewImageConsumerFactory {
    * @author Olexandr Tereshchuk - Stanfy (http://www.stanfy.com)
    */
   static class TextViewConsumer extends ViewImageConsumer<TextView> {
-    public TextViewConsumer(final TextView view) { super(view); }
+
+    public TextViewConsumer(final TextView view) {
+      super(view);
+    }
+
     @Override
     public void setImage(final Drawable d, final boolean animate) {
       TextView view = getView();
@@ -99,10 +126,17 @@ public final class ImageConsumers implements ViewImageConsumerFactory {
         view.setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
       }
     }
+
     @Override
-    protected int getTargetHeight() { return -1; }
+    protected int getTargetHeight() {
+      return -1;
+    }
+
     @Override
-    protected int getTargetWidth() { return -1; }
+    protected int getTargetWidth() {
+      return -1;
+    }
+
   }
 
 }

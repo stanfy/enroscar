@@ -1,46 +1,37 @@
 package com.stanfy.enroscar.images;
 
 import android.content.res.Resources;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
-import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.enroscar.images.cache.SupportLruImageMemoryCache;
-import com.stanfy.enroscar.net.UrlConnectionBuilder;
-import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
-import com.stanfy.enroscar.net.cache.EnhancedResponseCache;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.stanfy.enroscar.io.IoUtils;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
-import org.robolectric.shadows.ShadowBitmap;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.CacheRequest;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import static com.stanfy.enroscar.images.TestUtils.*;
 import static org.fest.assertions.api.ANDROID.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for ImageRequest.
  */
 public class ImageRequestTest extends AbstractImagesTest {
 
-  private static final int DEFAULT_SIZE = 100;
-
-  private static final String URL = "http://example.com/image";
-
   @Override
-  protected void configureBeansManager(final BeansManager.Editor editor) {
-    super.configureBeansManager(editor);
-    setupFakeStream(editor);
+  public void startServer() throws IOException {
+    super.startServer();
+    server.enqueue(new MockResponse().setResponseCode(200).setBody(new byte[100000]));
   }
 
   @Test
@@ -48,13 +39,13 @@ public class ImageRequestTest extends AbstractImagesTest {
     Resources res = Robolectric.application.getResources();
 
     ImageRequest request = new ImageRequest(manager, "any", -1);
-    assertThat(request.maxAllowedWidth).isEqualTo(-1);
-    assertThat(request.maxAllowedHeight).isEqualTo(-1);
+    assertThat(request.getRequiredWidth()).isEqualTo(0);
+    assertThat(request.getRequiredHeight()).isEqualTo(0);
     assertThat(request.hasAllowedSize()).isFalse();
 
     request = new ImageRequest(manager, "any", 2);
-    assertThat(request.maxAllowedWidth).isEqualTo(res.getDisplayMetrics().widthPixels * 2);
-    assertThat(request.maxAllowedHeight).isEqualTo(res.getDisplayMetrics().heightPixels * 2);
+    assertThat(request.getRequiredWidth()).isEqualTo(res.getDisplayMetrics().widthPixels * 2);
+    assertThat(request.getRequiredHeight()).isEqualTo(res.getDisplayMetrics().heightPixels * 2);
     assertThat(request.hasAllowedSize()).isTrue();
   }
 
@@ -79,83 +70,142 @@ public class ImageRequestTest extends AbstractImagesTest {
   @Test
   public void shouldDecodeImage() throws IOException {
     ImageRequest request = new ImageRequest(manager, URL, -1);
-    request.setRequiredHeight(100);
-    request.setRequiredWidth(100);
+    request.setRequiredHeight(TEST_BITMAP_SIZE);
+    request.setRequiredWidth(TEST_BITMAP_SIZE);
     ImageResult result = request.readImage();
     assertThat(result).isNotNull();
     assertThat(result.getBitmap()).isNotNull();
-    assertThat(result.getType()).isSameAs(ImageResult.ResultType.NETWORK);
-    assertThat(result.getBitmap()).hasWidth(100);
-    assertThat(result.getBitmap()).hasHeight(100);
+    assertThat(result.getType()).isSameAs(ImageSourceType.NETWORK);
+    assertThat(result.getBitmap()).hasWidth(TEST_BITMAP_SIZE);
+    assertThat(result.getBitmap()).hasHeight(TEST_BITMAP_SIZE);
   }
 
   @Test
   public void shouldIndicateWhenImageIsLoadedFromCache() throws Exception {
-    CacheRequest cacheRequest = manager.getImagesResponseCache().put(new URI(URL), fakeConnection(new URL(URL)));
-    OutputStream out = cacheRequest.getBody();
-    out.write(new byte[] {1});
-    out.close();
-
+    putCachedContent(manager, URL);
     ImageRequest request = new ImageRequest(manager, URL, 1);
-    assertThat(request.readImage().getType()).isSameAs(ImageResult.ResultType.CACHE);
+    assertThat(request.readImage().getType()).isSameAs(ImageSourceType.DISK);
   }
 
   @Test
   public void shouldScaleBitmaps() throws IOException {
     ImageRequest request = new ImageRequest(manager, URL, 1);
-    request.setRequiredHeight(DEFAULT_SIZE / 2);
-    request.setRequiredWidth(DEFAULT_SIZE / 2);
+    request.setRequiredHeight(TEST_BITMAP_SIZE / 3);
+    request.setRequiredWidth(TEST_BITMAP_SIZE / 3);
     ImageResult result = request.readImage();
     assertThat(result.getBitmap()).hasWidth(request.getRequiredWidth());
     assertThat(result.getBitmap()).hasHeight(request.getRequiredHeight());
   }
 
-  private InputStream imageStream() {
-    //return getClass().getResourceAsStream("/logo.png");
-    return new ByteArrayInputStream(new byte[100000]);
+  @Test
+  public void shouldRecoverFromOom() throws IOException {
+    ImageRequest request = new ImageRequest(manager, URL, 1);
+    request = spy(request);
+    doThrow(OutOfMemoryError.class).when(request).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
+    try {
+      request.readImage();
+      fail("Wrapped OOM expected");
+    } catch (IOException e) {
+      assertThat(e).hasMessage("out of memory for " + request.getKey());
+    }
   }
 
-  private URLConnection fakeConnection(final URL url) {
-    return new HttpURLConnection(url) {
-      @Override
-      public void connect() throws IOException {
+  @Test
+  public void shoutDecodeWithSpecifiedFormat() throws IOException {
+    ImageRequest request = new ImageRequest(manager, URL, 1);
+    request.setFormat(Bitmap.Config.ALPHA_8);
+    request = spy(request);
+    request.readImage();
+    verify(request, times(2)).doStreamDecode(any(InputStream.class), argThat(new BaseMatcher<BitmapFactory.Options>() {
 
+      @Override
+      public boolean matches(final Object o) {
+        if (!(o instanceof BitmapFactory.Options)) {
+          return false;
+        }
+        BitmapFactory.Options opts = (BitmapFactory.Options) o;
+        return opts.inPreferredConfig == Bitmap.Config.ALPHA_8;
       }
 
       @Override
-      public String getRequestMethod() {
-        return "GET";
+      public void describeTo(final Description description) {
+        description.appendText("Bitmap format is not respected");
       }
-
-      @Override
-      public InputStream getInputStream() throws IOException {
-        return imageStream();
-      }
-
-      @Override
-      public void disconnect() {
-
-      }
-
-      @Override
-      public boolean usingProxy() {
-        return false;
-      }
-    };
+    }));
   }
 
-  private void setupFakeStream(final BeansManager.Editor editor) {
-    editor.put(ImagesManager.CONNECTION_BUILDER_FACTORY_NAME, new UrlConnectionBuilderFactory() {
+  @Test
+  public void storeToDiskShouldNotDecodeImageIfAllowedSizeIsNotSpecified() throws IOException {
+    ImageRequest request = spy(new ImageRequest(manager, URL, -1));
+    request.storeToDisk();
+    verify(request).newConnection();
+    verify(request, times(0)).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
+  }
+
+  @Test
+  public void storeToDiskShouldDoNothingIfImageIsOnTheDisk() throws Exception {
+    putCachedContent(manager, URL);
+    ImageRequest request = spy(new ImageRequest(manager, URL, -1));
+    request.storeToDisk();
+    verify(request, times(0)).newConnection();
+  }
+
+  @Test
+  public void storeToDiskShouldDecodeImageIfAllowedSizeIsSet() throws Exception {
+    final float small = 0.05f;
+    final ImageRequest request = spy(new ImageRequest(manager, URL, small));
+    request.storeToDisk();
+    verify(request).newConnection();
+    verify(request, times(2)).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
+
+    int factor = ImagesManager.calculateSampleFactor(TEST_BITMAP_SIZE, TEST_BITMAP_SIZE,
+        request.getRequiredWidth(), request.getRequiredHeight());
+    final int expectedSize = TEST_BITMAP_SIZE / factor;
+    verify(request).writeBitmapToDisk(argThat(new BaseMatcher<Bitmap>() {
+      private Bitmap bitmap;
+
       @Override
-      public UrlConnectionBuilder newUrlConnectionBuilder() {
-        return new UrlConnectionBuilder() {
-          @Override
-          protected URLConnection openConnection(URL url) throws IOException {
-            return fakeConnection(url);
-          }
-        };
+      public boolean matches(Object o) {
+        this.bitmap = (Bitmap) o;
+        return bitmap.getWidth() == expectedSize && bitmap.getHeight() == expectedSize;
       }
-    });
+
+      @Override
+      public void describeTo(final Description description) {
+        description.appendText("Bitmap has bad size: " + bitmap.getWidth() + "x" + bitmap.getHeight() + "; expected: "
+            + expectedSize + "x" + expectedSize);
+      }
+    }));
+  }
+
+  @Test
+  public void storeToDiskShouldNotFullyDecodeIfScaleFactorIsOne() throws Exception {
+    final ImageRequest request = spy(new ImageRequest(manager, URL, 1));
+    request.storeToDisk();
+    verify(request).newConnection();
+    verify(request, times(1)).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
+    verify(request, times(0)).writeBitmapToDisk(any(Bitmap.class));
+  }
+
+  @Test
+  public void shouldCacheImages() throws IOException {
+    final ImageRequest request = spy(new ImageRequest(manager, URL, 1));
+    doAnswer(new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        InputStream input = (InputStream) invocation.getArguments()[0];
+        BitmapFactory.Options options = (BitmapFactory.Options) invocation.getArguments()[1];
+        if (!options.inJustDecodeBounds) {
+          IoUtils.consumeStream(input, manager.getBuffersPool());
+        }
+        return invocation.callRealMethod();
+      }
+    }).when(request).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
+
+    ImageResult netResult = request.readImage();
+    assertThat(netResult.getType()).isSameAs(ImageSourceType.NETWORK);
+    ImageResult diskResult = request.readImage();
+    assertThat(diskResult.getType()).isSameAs(ImageSourceType.DISK);
   }
 
 }

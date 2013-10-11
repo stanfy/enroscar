@@ -4,14 +4,8 @@ dependencies(
 
 android {
   defaultConfig {
-    packageName "com.stanfy.enroscar.images"
-    testPackageName "com.stanfy.enroscar.images.test"
+    testPackageName "com.stanfy.enroscar.images"
     testInstrumentationRunner "android.test.InstrumentationTestRunner"
   }
 }
-
-dependencies {
-  instrumentTestCompile "com.squareup:fest-android:1.0.+"
-}
-
 

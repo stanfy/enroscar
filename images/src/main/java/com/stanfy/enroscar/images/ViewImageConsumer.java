@@ -22,7 +22,7 @@ public abstract class ViewImageConsumer<T extends View> extends ImageConsumer {
   public T getView() { return view; }
   
   /**
-   * Method should be when wrapped view gets changes related to this consumer.
+   * Method should be called when wrapped view gets changes related to this consumer.
    */
   public void notifyAboutViewChanges() {
     final T view = this.view;

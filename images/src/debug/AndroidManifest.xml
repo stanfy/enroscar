@@ -5,10 +5,6 @@
     android:versionCode="9"
     android:versionName="0.9" >
 
-  <uses-sdk
-      android:minSdkVersion="8"
-      android:targetSdkVersion="17" />
-
-  <application android:allowBackup="false" />
+  <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

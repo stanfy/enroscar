@@ -18,7 +18,7 @@ import com.stanfy.enroscar.ui.R;
  * Image view that can load a remote image.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class LoadableImageView extends ImageView implements ImagesLoadListenerProvider, RemoteImageDensityProvider {
+public class LoadableImageView extends ImageView implements ImagesLoadListenerProvider {
 
   /** Use transition. */
   public static final int USE_TRANSITION_NO = 0, USE_TRANSITION_YES = 1, USE_TRANSITION_CROSSFADE = 2;
@@ -29,18 +29,11 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   private boolean skipScaleBeforeCache;
   /** Skip loading indicator flag.  */
   private boolean skipLoadingImage;
-  /** Use sampling flag. */
-  private boolean useSampling = true;
-  /** Image type. */
-  private int imageType;
   /** Use transition option. */
   private int useTransition;
 
   /** Images load listener. */
   private ImagesLoadListener listener;
-
-  /** Source density. */
-  private int sourceDensity;
 
   /** Image URI. */
   private Uri loadImageUri;
@@ -70,19 +63,15 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
     final boolean skipLoadIndicator = a.getBoolean(R.styleable.LoadableImageView_skipLoadingImage, false);
     final boolean allowSmallCachedImages = a.getBoolean(R.styleable.LoadableImageView_allowSmallImagesInCache, false);
     final Drawable loadingImage = a.getDrawable(R.styleable.LoadableImageView_loadingImage);
-    final int type = a.getInt(R.styleable.LoadableImageView_imageType, 0);
-    final int sourceDensity = a.getInt(R.styleable.LoadableImageView_sourceDensity, -1);
     final int useTransition = a.getInt(R.styleable.LoadableImageView_useTransition, USE_TRANSITION_NO);
     a.recycle();
 
     setAllowSmallImagesInCache(allowSmallCachedImages);
-    setSourceDensity(sourceDensity);
     setSkipScaleBeforeCache(skipCache);
     setSkipLoadingImage(skipLoadIndicator);
     if (loadingImage != null) {
       setLoadingImageDrawable(loadingImage);
     }
-    setImageType(type);
     setUseTransitionMode(useTransition);
 
     if (!isInEditMode()) {
@@ -94,31 +83,39 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   }
 
   /** @param mode mode specification (see {@link #USE_TRANSITION_NO}, {@link #USE_TRANSITION_YES}, {@link #USE_TRANSITION_CROSSFADE}) */
-  public void setUseTransitionMode(final int mode) { this.useTransition = mode; }
-  /** @return whether this view wants to use transitions */
-  public boolean isUseTransition() { return this.useTransition != USE_TRANSITION_NO; }
-  /** @return whether transition must be performed with crossfade option */
-  public boolean isTransitionCrossfade() { return this.useTransition == USE_TRANSITION_CROSSFADE; }
+  public void setUseTransitionMode(final int mode) {
+    this.useTransition = mode;
+  }
 
-  /** @param imageType the imageType to set */
-  public void setImageType(final int imageType) { this.imageType = imageType; }
-  /** @return the imageType */
-  public int getImageType() { return imageType; }
+  /** @return whether this view wants to use transitions */
+  public boolean isUseTransition() {
+    return this.useTransition != USE_TRANSITION_NO;
+  }
+
+  /** @return whether transition must be performed with crossfade option */
+  public boolean isTransitionCrossfade() {
+    return this.useTransition == USE_TRANSITION_CROSSFADE;
+  }
 
   /** @param skipScaleBeforeCache the skipScaleBeforeCache to set */
-  public void setSkipScaleBeforeCache(final boolean skipScaleBeforeCache) { this.skipScaleBeforeCache = skipScaleBeforeCache; }
+  public void setSkipScaleBeforeCache(final boolean skipScaleBeforeCache) {
+    this.skipScaleBeforeCache = skipScaleBeforeCache;
+  }
+
   /** @return the skipScaleBeforeCache */
-  public boolean isSkipScaleBeforeCache() { return skipScaleBeforeCache; }
+  public boolean isSkipScaleBeforeCache() {
+    return skipScaleBeforeCache;
+  }
 
   /** @param skipLoadingImage the skipLoadingImage to set */
-  public void setSkipLoadingImage(final boolean skipLoadingImage) { this.skipLoadingImage = skipLoadingImage; }
-  /** @return the skipLoadingImage */
-  public boolean isSkipLoadingImage() { return skipLoadingImage; }
+  public void setSkipLoadingImage(final boolean skipLoadingImage) {
+    this.skipLoadingImage = skipLoadingImage;
+  }
 
-  /** @param useSampling the useSampling to set */
-  public void setUseSampling(final boolean useSampling) { this.useSampling = useSampling; }
-  /** @return the useSampling */
-  public boolean isUseSampling() { return useSampling; }
+  /** @return the skipLoadingImage */
+  public boolean isSkipLoadingImage() {
+    return skipLoadingImage;
+  }
 
   public void setAllowSmallImagesInCache(final boolean allowSmallImagesInCache) {
     this.allowSmallImagesInCache = allowSmallImagesInCache;
@@ -128,29 +125,33 @@ public class LoadableImageView extends ImageView implements ImagesLoadListenerPr
   }
   
   /** @param listener load listener */
-  @SuppressWarnings("ConstantConditions")
   public void setImagesLoadListener(final ImagesLoadListener listener) {
     this.listener = listener;
     final Object tag = getTag();
     if (tag instanceof ViewImageConsumer) { ((ViewImageConsumer<?>) tag).notifyAboutViewChanges(); }
   }
-  @Override
-  public ImagesLoadListener getImagesLoadListener() { return listener; }
 
-  /** @param sourceDensity the sourceDensity to set */
-  public void setSourceDensity(final int sourceDensity) { this.sourceDensity = sourceDensity; }
   @Override
-  public int getSourceDensity() { return sourceDensity; }
+  public ImagesLoadListener getImagesLoadListener() {
+    return listener;
+  }
 
   /** @param loadingImage the loadingImage to set */
   public void setLoadingImageDrawable(final Drawable loadingImage) {
     if (this.loadingImage != null) { this.loadingImage.setCallback(null); }
     this.loadingImage = loadingImage;
   }
+
   /** @param loadingImage the loadingImage to set */
-  public void setLoadingImageResourceId(final int loadingImage) { setLoadingImageDrawable(getResources().getDrawable(loadingImage)); }
+  public void setLoadingImageResourceId(final int loadingImage) {
+    //noinspection ConstantConditions
+    setLoadingImageDrawable(getResources().getDrawable(loadingImage));
+  }
+
   /** @return the loadingImage */
-  public Drawable getLoadingImage() { return loadingImage; }
+  public Drawable getLoadingImage() {
+    return loadingImage;
+  }
 
   @Override
   public void setImageURI(final Uri uri) {

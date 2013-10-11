@@ -11,13 +11,13 @@ public class ImageResult {
   private Bitmap bitmap;
 
   /** Result type. */
-  private ResultType type;
+  private ImageSourceType type;
 
   ImageResult() {
 
   }
 
-  ImageResult(final Bitmap bitmap, final ResultType type) {
+  ImageResult(final Bitmap bitmap, final ImageSourceType type) {
     this.bitmap = bitmap;
     this.type = type;
   }
@@ -26,7 +26,7 @@ public class ImageResult {
     this.bitmap = bitmap;
   }
 
-  void setType(final ResultType type) {
+  void setType(final ImageSourceType type) {
     this.type = type;
   }
 
@@ -34,7 +34,7 @@ public class ImageResult {
     return bitmap;
   }
 
-  public ResultType getType() {
+  public ImageSourceType getType() {
     return type;
   }
 
@@ -42,11 +42,6 @@ public class ImageResult {
   public String toString() {
     if (bitmap == null) { return "not ready"; }
     return "Bitmap " + bitmap.getWidth() + "x" + bitmap.getHeight() + " from " + type;
-  }
-
-  /** Image loading result type. */
-  public enum ResultType {
-    MEMORY, CACHE, NETWORK
   }
 
 }

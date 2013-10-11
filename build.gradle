@@ -149,6 +149,16 @@ subprojects {
         selection = "**/*Test.class"
       }
 
+      def debug = null
+      try {
+        debug = project.testDebug
+      } catch (def e) {
+        // ignore
+      }
+      if (debug == "yes") {
+        jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
+      }
+
       include selection
       exclude "**/Abstract*.class"
     }
@@ -174,17 +184,27 @@ subprojects {
 
   assemble.dependsOn classesJar
 
+  def testDeps = [
+      'com.squareup:fest-android:1.0.+',
+      'com.google.mockwebserver:mockwebserver:20130706',
+      'org.easytesting:fest-reflect:1.4.1'
+  ]
+
   dependencies {
     // TODO: it should be removed, but current version of 'android-test' plugin does not treat aar dependencies appropriately
     testCompile fileTree(dir: "$buildDir/exploded-bundles", include: "*/classes.jar")
     testCompile fileTree(dir: "$buildDir/exploded-bundles", include: "*/libs/*.jar")
 
-    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
 
+    testDeps.each {
+      testCompile it
+      instrumentTestCompile it
+    }
+
+    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    testCompile 'org.easytesting:fest-reflect:1.4.1'
     testCompile 'org.easytesting:fest-util:1.2.5'
-    testCompile 'com.squareup:fest-android:1.0.+'
+    testCompile 'org.mockito:mockito-all:1.9.5'
   }
 
   project.ext.dependOnProjects = { list ->

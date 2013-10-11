@@ -10,6 +10,7 @@ import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.FlushedInputStream;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.io.PoolableBufferedInputStream;
+import com.stanfy.enroscar.io.PoolableBufferedOutputStream;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.cache.EnhancedResponseCache;
 
@@ -26,7 +27,7 @@ import static com.stanfy.enroscar.images.ImagesManager.TAG;
  * Contains information about max allowed size of an image.
  * It's the size an image will be scaled down to before storing on disk.
  */
-class ImageRequest {
+public class ImageRequest {
 
   /** Mark for getting bounds info. */
   private static final int BOUNDS_INFO_MARK = 65536;
@@ -38,7 +39,7 @@ class ImageRequest {
   final String url;
 
   /** Maximum allowed height. */
-  final int maxAllowedWidth, maxAllowedHeight;
+  private final int maxAllowedWidth, maxAllowedHeight;
 
   /** Required size. */
   private int requiredWidth, requiredHeight;
@@ -55,7 +56,7 @@ class ImageRequest {
    * @param maxRelativeSize max allowed size of an image relatively to screen size,
    *                        negative value means allowed size will be ignored
    */
-  public ImageRequest(final ImagesManager manager, final String url, final float maxRelativeSize) {
+  ImageRequest(final ImagesManager manager, final String url, final float maxRelativeSize) {
     this.manager = manager;
     this.url = url;
     if (maxRelativeSize < 0) {
@@ -69,7 +70,7 @@ class ImageRequest {
   }
 
   public int getRequiredWidth() {
-    return requiredWidth;
+    return requiredWidth == 0 && hasAllowedSize() ? maxAllowedWidth : requiredWidth;
   }
 
   public void setRequiredWidth(final int requiredWidth) {
@@ -77,7 +78,7 @@ class ImageRequest {
   }
 
   public int getRequiredHeight() {
-    return requiredHeight;
+    return requiredHeight == 0 && hasAllowedSize() ? maxAllowedHeight : requiredHeight;
   }
 
   public void setRequiredHeight(final int requiredHeight) {
@@ -97,7 +98,7 @@ class ImageRequest {
   }
 
   public String getKey() {
-    return url + "!" + requiredWidth + "x" + requiredHeight;
+    return url + "!" + getRequiredHeight() + "x" + getRequiredHeight();
   }
 
   public String getCacheKey() {
@@ -108,8 +109,25 @@ class ImageRequest {
     return maxAllowedWidth > 0 && maxAllowedHeight > 0;
   }
 
+  /**
+   * Store image to the disk cache.
+   * If max allowed size is set image may be rescaled on disk.
+   * @throws IOException if error happens
+   */
   public void storeToDisk() throws IOException {
-    IoUtils.consumeStream(newConnection().getInputStream(), manager.getBuffersPool());
+    if (manager.isPresentOnDisk(url)) {
+      return;
+    }
+
+    if (!hasAllowedSize()) {
+      IoUtils.consumeStream(newConnection().getInputStream(), manager.getBuffersPool());
+      return;
+    }
+
+    ImageResult result = decodeStream(newConnection().getInputStream(), true);
+    if (result.getType() == ImageSourceType.NETWORK && result.getBitmap() != null) {
+      writeBitmapToDisk(result.getBitmap());
+    }
   }
 
   /**
@@ -117,14 +135,10 @@ class ImageRequest {
    * @throws IOException if error happens
    */
   public ImageResult readImage() throws IOException {
-    ImageResult result = decodeStream(newConnection().getInputStream());
-    if (hasAllowedSize() && result.getType() == ImageResult.ResultType.NETWORK) {
-      manager.getImageTaskExecutor().execute(createRescaleTask(result.getBitmap()));
-    }
-    return result;
+    return decodeStream(newConnection().getInputStream(), false);
   }
 
-  private URLConnection newConnection() throws IOException {
+  URLConnection newConnection() throws IOException {
     UrlConnectionBuilderFactory builderFactory =
         BeansManager.get(manager.getContext())
             .getContainer()
@@ -136,27 +150,23 @@ class ImageRequest {
         .create();
   }
 
-  /**
-   * @param is image input stream
-   * @return drawable with a loaded image
-   * @throws IOException if error happens
-   */
-  private ImageResult decodeStream(final InputStream is) throws IOException {
-    final BitmapFactory.Options options = new BitmapFactory.Options();
-    prepareBitmapOptions(options);
+  private ImageResult decodeStream(final InputStream is, boolean onlyIfNeedsRescale) throws IOException {
+    final BitmapFactory.Options options = createBitmapOptions();
 
     final InputStream src = prepareInputStream(is);
 
     try {
 
       ImageResult result = new ImageResult();
-      result.setType(manager.isPresentInFileCache(url) ? ImageResult.ResultType.CACHE : ImageResult.ResultType.NETWORK);
+      result.setType(manager.isPresentOnDisk(url) ? ImageSourceType.DISK : ImageSourceType.NETWORK);
 
       // get scale factor
       options.inSampleSize = resolveSampleFactor(src, options);
 
-      // actually decode
-      result.setBitmap(BitmapFactory.decodeStream(src, null, options));
+      if (options.inSampleSize > 1 || !onlyIfNeedsRescale) {
+        // actually decode
+        result.setBitmap(doStreamDecode(src, options));
+      }
 
       if (manager.debug) {
         Log.d(TAG, "Image decoded: " + result);
@@ -170,17 +180,26 @@ class ImageRequest {
 
     } finally {
 
-      // recycle
-      manager.getBuffersPool().release(options.inTempStorage);
+      recycle(options);
       src.close();
 
     }
 
   }
 
-  private void prepareBitmapOptions(final BitmapFactory.Options options) {
+  Bitmap doStreamDecode(final InputStream input, final BitmapFactory.Options options) throws IOException {
+    return BitmapFactory.decodeStream(input, null, options);
+  }
+
+  private BitmapFactory.Options createBitmapOptions() {
+    BitmapFactory.Options options = new BitmapFactory.Options();
     options.inTempStorage = manager.getBuffersPool().get(BuffersPool.DEFAULT_SIZE_FOR_IMAGES);
     options.inPreferredConfig = format;
+    return options;
+  }
+
+  private void recycle(final BitmapFactory.Options options) {
+    manager.getBuffersPool().release(options.inTempStorage);
   }
 
   private InputStream prepareInputStream(final InputStream is) throws IOException {
@@ -205,18 +224,10 @@ class ImageRequest {
 
       MarkableInputStream markableStream = new MarkableInputStream(is); // Thanks to Square guys :)
       long mark = markableStream.savePosition(BOUNDS_INFO_MARK);
-      BitmapFactory.decodeStream(is, null, options);
+      doStreamDecode(is, options);
 
-      final int inW = options.outWidth, inH = options.outHeight;
-      int width = requiredWidth, height = requiredHeight;
-      if (width == 0 && height == 0 && hasAllowedSize()) {
-        width = maxAllowedWidth;
-        height = maxAllowedHeight;
-      }
-
-      if (inW > width || inH > height) {
-        result = ImagesManager.calculateSampleFactor(inW, inH, width, height);
-      }
+      result = ImagesManager.calculateSampleFactor(options.outWidth, options.outHeight,
+          getRequiredWidth(), getRequiredHeight());
 
       markableStream.reset(mark);
 
@@ -226,27 +237,16 @@ class ImageRequest {
     return result;
   }
 
-  private Runnable createRescaleTask(final Bitmap bitmap) {
-    return new Runnable() {
-      @Override
-      public void run() {
-        EnhancedResponseCache cache = (EnhancedResponseCache) manager.getImagesResponseCache();
-        if (cache.contains(url)) {
-          OutputStream output = null;
-          try {
-            final int quality = 90;
-            output = new FileOutputStream(cache.getLocalPath(url));
-            bitmap.compress(Bitmap.CompressFormat.PNG, quality, output);
-          } catch (IOException e) {
-            if (manager.debug) {
-              Log.e(TAG, "Cannot rescale image on disk " + url, e);
-            }
-          } finally {
-            IoUtils.closeQuietly(output);
-          }
-        }
-      }
-    };
+  void writeBitmapToDisk(final Bitmap bitmap) throws IOException {
+    EnhancedResponseCache cache = (EnhancedResponseCache) manager.getImagesResponseCache();
+    OutputStream output = new FileOutputStream(cache.getLocalPath(url));
+    output = new PoolableBufferedOutputStream(output, BuffersPool.DEFAULT_SIZE_FOR_IMAGES, manager.getBuffersPool());
+    try {
+      final int quality = 100;
+      bitmap.compress(Bitmap.CompressFormat.PNG, quality, output);
+    } finally {
+      IoUtils.closeQuietly(output);
+    }
   }
 
 }

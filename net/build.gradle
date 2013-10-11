@@ -10,8 +10,6 @@ dependencies {
     exclude group: 'xmlpull', module: 'xmlpull'
   }
 
-  testCompile 'com.google.mockwebserver:mockwebserver:20130403'
-  // TODO: it should come from robolectric
   testCompile 'net.sf.kxml:kxml2:2.3.0'
 }
 

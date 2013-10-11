@@ -160,7 +160,7 @@ class ImageLoader implements Callable<Void> {
   }
 
   private void memCacheImage(final ImageResult result) {
-    if (result.getType() != ImageResult.ResultType.MEMORY) {
+    if (result.getType() != ImageSourceType.MEMORY) {
       Bitmap input = result.getBitmap();
       Bitmap resultBitmap = prepare(input);
       if (resultBitmap != input) {

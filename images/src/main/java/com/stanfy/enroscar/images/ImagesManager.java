@@ -1,5 +1,6 @@
 package com.stanfy.enroscar.images;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -134,8 +135,11 @@ public class ImagesManager implements InitializingBean {
   /** @return images response cache instance */
   public ResponseCache getImagesResponseCache() { return (ResponseCache)imagesResponseCache; }
 
-  boolean isPresentInFileCache(final String url) {
-    return imagesResponseCache.contains(url);
+  boolean isPresentOnDisk(final String url) {
+    return url.startsWith(ContentResolver.SCHEME_FILE)
+        || url.startsWith(ContentResolver.SCHEME_CONTENT)
+        || url.startsWith(ContentResolver.SCHEME_ANDROID_RESOURCE)
+        || imagesResponseCache.contains(url);
   }
 
   /**
@@ -148,7 +152,7 @@ public class ImagesManager implements InitializingBean {
       public void run() {
         for (final ImageRequest request : images) {
           try {
-            if (!isPresentInFileCache(request.url)) {
+            if (!isPresentOnDisk(request.url)) {
               request.storeToDisk();
             }
           } catch (final IOException e) {
@@ -196,18 +200,12 @@ public class ImagesManager implements InitializingBean {
    */
   public boolean clearCache(final String url) {
     memCache.remove(url);
-    if (imagesResponseCache instanceof EnhancedResponseCache) {
-      try {
-        return ((EnhancedResponseCache) imagesResponseCache).deleteGetEntry(url);
-      } catch (final IOException e) {
-        Log.w(TAG, "Cannot clear disk cache for " + url, e);
-        return false;
-      }
+    try {
+      return imagesResponseCache.deleteGetEntry(url);
+    } catch (final IOException e) {
+      Log.w(TAG, "Cannot clear disk cache for " + url, e);
+      return false;
     }
-    if (debug && imagesResponseCache != null) {
-      Log.w(TAG, "Images response cache does not implement " + EnhancedResponseCache.class);
-    }
-    return false;
   }
 
   /**
@@ -280,7 +278,7 @@ public class ImagesManager implements InitializingBean {
       tag = createImageConsumer(view);
     }
     if (!(tag instanceof ImageConsumer)) { throw new IllegalStateException("View already has a tag"); }
-    return getMemCached(url, (ImageConsumer)tag);
+    return getMemCached(url, (ImageConsumer) tag);
   }
 
   public Bitmap getMemCached(final String url, final ImageConsumer consumer) {
@@ -429,7 +427,7 @@ public class ImagesManager implements InitializingBean {
     // check bitmap size
     final boolean suits = consumer.allowSmallImagesFromCache() || consumer.checkBitmapSize(map);
     if (debug) { Log.v(TAG, "Use mem cache " + suits + " for " + cacheKey); }
-    return suits ? new ImageResult(map, ImageResult.ResultType.MEMORY) : null;
+    return suits ? new ImageResult(map, ImageSourceType.MEMORY) : null;
   }
 
   /**
@@ -475,25 +473,13 @@ public class ImagesManager implements InitializingBean {
     memCache.putElement(url, bitmap);
   }
 
-  static int nearestPowerOf2(final int value) {
-    if (value <= 0) { return -1; }
-    int result = -1, x = value;
-    while (x > 0) {
-      ++result;
-      x >>>= 1;
-    }
-    return 1 << result;
-  }
-
-  /**
-   * Possible factors: <code>2, 4, 7, 8, (8 + {@link #MAX_POWER_OF_2_DISTANCE} = 11), 12, 13, 14, 15, 16, 16 + {@link #MAX_POWER_OF_2_DISTANCE}...</code>
-   */
   static int calculateSampleFactor(final int inW, final int inH, final int width, final int height) {
+    if (inW <= width && inH <= height) { return 1; }
     if (width == 0 && height == 0) {
       throw new IllegalArgumentException("Absolutely undefined size");
     }
 
-    int factor;
+    final int factor;
     if (width == 0) {
       factor = inH / height;
     } else if (height == 0) {
@@ -502,15 +488,7 @@ public class ImagesManager implements InitializingBean {
       factor = inW > inH ? inW / width : inH / height;
     }
 
-    int result = 1;
-    if (factor > 1) {
-      result = factor;
-      final int p = nearestPowerOf2(factor);
-      if (result - p < MAX_POWER_OF_2_DISTANCE) { result = p; }
-      if (DEBUG) { Log.d(TAG, "Sampling: factor=" + factor + ", p=" + p + ", result=" + result); }
-    }
-
-    return result;
+    return factor;
   }
 
   /**

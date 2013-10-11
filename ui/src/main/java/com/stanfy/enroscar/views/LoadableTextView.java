@@ -18,7 +18,7 @@ import com.stanfy.enroscar.ui.R;
  * @author Olexandr Tereshchuk - Stanfy (http://www.stanfy.com)
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class LoadableTextView extends TextView implements RemoteImageDensityProvider {
+public class LoadableTextView extends TextView {
 
   /** Image URI. */
   private Uri imageUri;
@@ -30,9 +30,6 @@ public class LoadableTextView extends TextView implements RemoteImageDensityProv
 
   /** Loadable drawable position. */
   private LoadableImagePosition loadableDrawablePosition;
-
-  /** Source density. */
-  private int sourceDensity;
 
   /**
    * Loadable drawable positions.
@@ -62,10 +59,8 @@ public class LoadableTextView extends TextView implements RemoteImageDensityProv
     setLoadableDrawableWidth(a.getDimensionPixelSize(R.styleable.LoadableTextView_loadableDrawableWidth, -1));
     setLoadableDrawableHeight(a.getDimensionPixelSize(R.styleable.LoadableTextView_loadableDrawableHeight, -1));
     final int pos = a.getInt(R.styleable.LoadableTextView_loadableDrawablePosition, 0);
-    final int sourceDensity = a.getInt(R.styleable.LoadableTextView_sourceDensity, -1);
     a.recycle();
 
-    setSourceDensity(sourceDensity);
     setLoadableDrawablePosition(LoadableImagePosition.values()[pos]);
     if (loadableDrawablePosition != LoadableImagePosition.LEFT) { // reset drawables
       final Drawable[] drawables = getCompoundDrawables();
@@ -75,17 +70,20 @@ public class LoadableTextView extends TextView implements RemoteImageDensityProv
     this.imagesManager = BeansManager.get(context).getContainer().getBean(ImagesManager.class);
   }
 
-  /** @param sourceDensity the sourceDensity to set */
-  public void setSourceDensity(final int sourceDensity) { this.sourceDensity = sourceDensity; }
-  @Override
-  public int getSourceDensity() { return sourceDensity; }
-
   /** @param loadableDrawablePosition the loadableDrawablePosition to set */
-  public void setLoadableDrawablePosition(final LoadableImagePosition loadableDrawablePosition) { this.loadableDrawablePosition = loadableDrawablePosition; }
+  public void setLoadableDrawablePosition(final LoadableImagePosition loadableDrawablePosition) {
+    this.loadableDrawablePosition = loadableDrawablePosition;
+  }
+
   /** @param loadableDrawableWidth the loadableDrawableWidth to set */
-  public void setLoadableDrawableWidth(final int loadableDrawableWidth) { this.loadableDrawableWidth = loadableDrawableWidth; }
+  public void setLoadableDrawableWidth(final int loadableDrawableWidth) {
+    this.loadableDrawableWidth = loadableDrawableWidth;
+  }
+
   /** @param loadableDrawableHeight the loadableDrawableHeight to set */
-  public void setLoadableDrawableHeight(final int loadableDrawableHeight) { this.loadableDrawableHeight = loadableDrawableHeight; }
+  public void setLoadableDrawableHeight(final int loadableDrawableHeight) {
+    this.loadableDrawableHeight = loadableDrawableHeight;
+  }
 
   /**
    * Sets remote image to be downloaded.

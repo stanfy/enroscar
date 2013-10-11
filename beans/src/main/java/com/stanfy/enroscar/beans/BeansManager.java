@@ -100,7 +100,7 @@ public class BeansManager {
     }
   }
   /**
-   * Call this method from {@link Application#onConfigurationChanged()} to integrate enroscar on pre-ICS versions.
+   * Call this method from {@link Application#onConfigurationChanged(Configuration)} to integrate enroscar on pre-ICS versions.
    * @param context application context
    * @param newConfig new configuration
    */
@@ -167,6 +167,10 @@ public class BeansManager {
       if (bean instanceof InitializingBean) {
         ((InitializingBean) bean).onInitializationFinished(container);
       }
+    }
+
+    public boolean hasBean(final String name) {
+      return container.containsBean(name) || editorActions.containsKey(name);
     }
 
     public <T> Editor put(final String name, final T bean) {
