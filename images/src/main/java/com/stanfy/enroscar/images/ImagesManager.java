@@ -152,9 +152,7 @@ public class ImagesManager implements InitializingBean {
       public void run() {
         for (final ImageRequest request : images) {
           try {
-            if (!isPresentOnDisk(request.url)) {
-              request.storeToDisk();
-            }
+            request.storeToDisk();
           } catch (final IOException e) {
             if (DEBUG_IO) { Log.e(TAG, "IO error for " + request.url + ": " + e.getMessage()); }
           } catch (final Exception e) {

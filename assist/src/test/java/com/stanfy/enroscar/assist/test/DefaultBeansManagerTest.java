@@ -1,13 +1,5 @@
 package com.stanfy.enroscar.assist.test;
 
-import static org.fest.assertions.api.Assertions.*;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-
 import com.stanfy.enroscar.assist.DefaultBeansManager;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.cache.ImageFileCache;
@@ -20,6 +12,14 @@ import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
 import com.stanfy.enroscar.stats.StatsManager;
 import com.stanfy.enroscar.views.ImageConsumers;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+
 /**
  * Tests for {@link DefaultBeansManager}.
  */
@@ -31,7 +31,7 @@ public class DefaultBeansManagerTest {
   
   @Before
   public void useDefaultBeansManager() {
-    manager = (DefaultBeansManager) DefaultBeansManager.get(Robolectric.application);
+    manager = DefaultBeansManager.get(Robolectric.application);
   }
   
   @Test
@@ -48,15 +48,15 @@ public class DefaultBeansManagerTest {
   @Test
   public void remoteServerApi() {
     DefaultBeansManager.Editor editor = manager.edit().remoteServerApi("xml", "json", "string");
-//    editor.commit();
+    editor.commit();
 
-//    assertThat(EnroscarConnectionsEngine.isInstalled(), is(true));
-//
-//    assertThat(manager.getRemoteServerApiConfiguration(), notNullValue());
-//
-//    assertThat(manager.getContentHandler(GsonContentHandler.BEAN_NAME), notNullValue());
-//    assertThat(manager.getContentHandler(XmlGsonContentHandler.BEAN_NAME), notNullValue());
-//    assertThat(manager.getContentHandler(StringContentHandler.BEAN_NAME), notNullValue());
+    assertThat(EnroscarConnectionsEngine.isInstalled()).isTrue();
+
+    assertThat(manager.getRemoteServerApiConfiguration()).isNotNull();
+
+    assertThat(manager.getContentHandler(GsonContentHandler.BEAN_NAME)).isNotNull();
+    assertThat(manager.getContentHandler(XmlGsonContentHandler.BEAN_NAME)).isNotNull();
+    assertThat(manager.getContentHandler(StringContentHandler.BEAN_NAME)).isNotNull();
   }
 
   @Test

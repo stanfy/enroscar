@@ -5,10 +5,19 @@ import android.graphics.Bitmap;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.cache.SupportLruImageMemoryCache;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.Test;
 import org.robolectric.Robolectric;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Executor;
+
 import static org.fest.assertions.api.Assertions.assertThat;
+
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link ImagesManager}.
@@ -67,6 +76,40 @@ public class ImagesManagerTest extends AbstractImagesTest {
     assertThat(manager.isPresentOnDisk("file://ahahaha")).isTrue();
     assertThat(manager.isPresentOnDisk("android.resource://ahahaha")).isTrue();
     assertThat(manager.isPresentOnDisk("content://ahahaha")).isTrue();
+  }
+
+  @Test
+  public void requestsBuilderShouldCallEnsureImages() {
+    manager = spy(manager);
+    doNothing().when(manager).ensureImages(anyListOf(ImageRequest.class), any(Executor.class));
+
+    manager.load().add("1").add("2", 1).scaleToScreenSize().add("3").scaleToScreenSize(2).add("4").startLoading();
+
+    verify(manager).ensureImages(argThat(new BaseMatcher<List<ImageRequest>>() {
+      @Override
+      public boolean matches(final Object o) {
+        @SuppressWarnings("unchecked") List<ImageRequest> requests = (List<ImageRequest>) o;
+        assertThat(requests).hasSize(4);
+        assertThat(requests.get(0).hasAllowedSize()).isFalse();
+        assertThat(requests.get(1).hasAllowedSize()).isTrue();
+        assertThat(requests.get(2).getRequiredWidth()).isEqualTo(requests.get(1).getRequiredWidth());
+        assertThat(requests.get(3).getRequiredWidth()).isEqualTo(requests.get(1).getRequiredWidth() * 2);
+        return true;
+      }
+
+      @Override
+      public void describeTo(final Description description) {
+        description.appendText("bad requests built");
+      }
+    }), isNull(Executor.class));
+  }
+
+  @Test
+  public void ensureImagesShouldDelegateToRequestAndIgnoreErrors() throws IOException {
+    ImageRequest request = spy(new ImageRequest(manager, "1", 1));
+    doThrow(IOException.class).when(request).storeToDisk();
+    manager.ensureImages(Collections.singletonList(request), null);
+    verify(request).storeToDisk();
   }
 
 }

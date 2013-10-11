@@ -1,14 +1,11 @@
 package com.stanfy.enroscar.views.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import com.stanfy.enroscar.views.LoadableImageView;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-
-import com.stanfy.enroscar.views.LoadableImageView;
 
 /**
  * Tests for LoadableImageView.
@@ -22,11 +19,6 @@ public class LoadableImageViewTest {
   @Before
   public void create() {
     imageView = new LoadableImageView(Robolectric.application);
-  }
-
-  @Test
-  public void isUseSamplisgShouldBeTrueByDefault() {
-    assertThat(imageView.isUseSampling()).isTrue();
   }
 
 }

@@ -4,7 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.io.IoUtils;
 
 import org.hamcrest.BaseMatcher;
@@ -31,7 +31,7 @@ public class ImageRequestTest extends AbstractImagesTest {
   @Override
   public void startServer() throws IOException {
     super.startServer();
-    server.enqueue(new MockResponse().setResponseCode(200).setBody(new byte[100000]));
+    server.enqueue(new MockResponse().setResponseCode(200).setBody(new byte[1]));
   }
 
   @Test

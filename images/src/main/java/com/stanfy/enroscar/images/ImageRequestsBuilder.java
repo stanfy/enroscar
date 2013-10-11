@@ -13,7 +13,7 @@ public class ImageRequestsBuilder {
   private final LinkedList<ImageRequest> requests = new LinkedList<ImageRequest>();
 
   /** Default allowed size. */
-  private float defaultAllowedSize = 1;
+  private float defaultAllowedSize = -1;
 
   /** Executor instance. */
   private Executor executor;

@@ -1,20 +1,14 @@
 package com.stanfy.enroscar.assist;
 
-import java.net.ContentHandler;
-import java.net.ResponseCache;
-
 import android.app.Application;
 import android.content.Context;
 
 import com.stanfy.enroscar.activities.ActivityBehaviorFactory;
 import com.stanfy.enroscar.activities.CrucialGUIOperationManager;
 import com.stanfy.enroscar.beans.BeanUtils;
-import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.ImagesManager;
-import com.stanfy.enroscar.images.cache.ImageFileCache;
 import com.stanfy.enroscar.images.cache.ImageMemoryCache;
-import com.stanfy.enroscar.images.cache.SupportLruImageMemoryCache;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
@@ -28,6 +22,9 @@ import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
 import com.stanfy.enroscar.stats.EmptyStatsManager;
 import com.stanfy.enroscar.stats.StatsManager;
 import com.stanfy.enroscar.views.ImageConsumers;
+
+import java.net.ContentHandler;
+import java.net.ResponseCache;
 
 /**
  * Default beans manager. Gives access to all standard beans provided by Enroscar library.
@@ -97,23 +94,20 @@ public class DefaultBeansManager extends BeansManager {
 
     {
       // set default beans
-      BeansContainer container = getContainer();
-      if (!container.containsBean(SDKDependentUtilsFactory.BEAN_NAME)) {
+      if (!hasBean(SDKDependentUtilsFactory.BEAN_NAME)) {
         put(SDKDependentUtilsFactory.BEAN_NAME, new SDKDependentUtilsFactory());
       }
-      if (!container.containsBean(BuffersPool.BEAN_NAME)) {
+      if (!hasBean(BuffersPool.BEAN_NAME)) {
         put(BuffersPool.BEAN_NAME, new BuffersPool());
       }
-      if (!container.containsBean(EmptyStatsManager.BEAN_NAME)) {
+      if (!hasBean(EmptyStatsManager.BEAN_NAME)) {
         put(EmptyStatsManager.BEAN_NAME, new EmptyStatsManager());
       }
     }
     
     public Editor images(final EnroscarConnectionsEngine.Config config) {
+      com.stanfy.enroscar.images.BeanSetup.setup(this);
       put(ImageConsumers.class);
-      put(ImageFileCache.class);
-      put(SupportLruImageMemoryCache.class);
-      put(ImagesManager.class);
 
       getEditorActions().put("images-connections-config", new PutBean() {
         @Override

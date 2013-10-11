@@ -54,6 +54,13 @@ subprojects {
     sign configurations.archives
   }
 
+  task("installToMaven", type: Upload) {
+    configuration = configurations.archives
+    repositories {
+      mavenLocal()
+    }
+  }
+
   uploadArchives {
     repositories {
       mavenDeployer {
@@ -213,6 +220,12 @@ subprojects {
         compile project(it)
         testCompile project(path : it, configuration : 'testCompile')
       }
+    }
+  }
+
+  afterEvaluate {
+    ['uploadArchives', 'installToMaven'].each {
+      tasks[it].dependsOn 'check'
     }
   }
 

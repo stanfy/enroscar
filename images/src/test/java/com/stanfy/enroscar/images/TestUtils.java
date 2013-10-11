@@ -13,7 +13,7 @@ import java.net.URLConnection;
 /**
  * Test utilities.
  */
-class TestUtils {
+final class TestUtils {
 
   static final String URL = "http://example.com/image";
 
