@@ -9,8 +9,8 @@ android {
   }
 }
 
-afterEvaluate {
-  ['uploadArchives', 'installToMaven'].each {
-    tasks[it].dependsOn 'connectedCheck'
-  }
-}
+//afterEvaluate {
+//  ['uploadArchives', 'installToMaven'].each {
+//    tasks[it].dependsOn 'connectedCheck'
+//  }
+//}

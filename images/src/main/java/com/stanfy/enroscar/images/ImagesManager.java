@@ -135,7 +135,7 @@ public class ImagesManager implements InitializingBean {
   /** @return images response cache instance */
   public ResponseCache getImagesResponseCache() { return (ResponseCache)imagesResponseCache; }
 
-  boolean isPresentOnDisk(final String url) {
+  public boolean isPresentOnDisk(final String url) {
     return url.startsWith(ContentResolver.SCHEME_FILE)
         || url.startsWith(ContentResolver.SCHEME_CONTENT)
         || url.startsWith(ContentResolver.SCHEME_ANDROID_RESOURCE)
@@ -143,10 +143,10 @@ public class ImagesManager implements InitializingBean {
   }
 
   /**
-   * @param images list of URLs to load
+   * @param images list of requests to load
    * @param executor executor to run the task (if null task is solved in the current thread)
    */
-  void ensureImages(final List<ImageRequest> images, final Executor executor) {
+  public void ensureImages(final List<ImageRequest> images, final Executor executor) {
     final Runnable task = new Runnable() {
       @Override
       public void run() {

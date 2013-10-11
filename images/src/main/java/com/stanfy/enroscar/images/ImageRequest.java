@@ -69,6 +69,10 @@ public class ImageRequest {
     }
   }
 
+  public String getUrl() {
+    return url;
+  }
+
   public int getRequiredWidth() {
     return requiredWidth == 0 && hasAllowedSize() ? maxAllowedWidth : requiredWidth;
   }
@@ -126,6 +130,7 @@ public class ImageRequest {
 
     ImageResult result = decodeStream(newConnection().getInputStream(), true);
     if (result.getType() == ImageSourceType.NETWORK && result.getBitmap() != null) {
+      // image was scaled
       writeBitmapToDisk(result.getBitmap());
     }
   }
@@ -166,6 +171,9 @@ public class ImageRequest {
       if (options.inSampleSize > 1 || !onlyIfNeedsRescale) {
         // actually decode
         result.setBitmap(doStreamDecode(src, options));
+      } else {
+        // consume input in order to cache it
+        IoUtils.consumeStream(src, manager.getBuffersPool());
       }
 
       if (manager.debug) {
