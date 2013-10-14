@@ -1,9 +1,5 @@
 package com.stanfy.enroscar.views;
 
-import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
-import java.util.TreeMap;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -22,6 +18,10 @@ import com.stanfy.enroscar.images.decorator.ImageDecorator;
 import com.stanfy.enroscar.images.decorator.MaskImageDecorator;
 import com.stanfy.enroscar.ui.R;
 
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
+import java.util.TreeMap;
+
 /**
  * Image view that slightly extends possibilities of a standard image view.
  * <p>
@@ -29,7 +29,7 @@ import com.stanfy.enroscar.ui.R;
  *   <ul>
  *     <li><b>rounded corners</b> - set cornersRadius > 0 (attribute {@code android:radius})</li>
  *     <li><b>other image decorators</b> - see {@link #setImageDecorator(ImageDecorator)} and {@link ImageDecorator}</li>
- *     <li><b>image transitions</b> - see {@link #setImageDrawableWithTransition(Drawable, int)}</li>
+ *     <li><b>image transitions</b> - see {@link #setImageDrawableWithTransition(Drawable, int, boolean)}</li>
  *   </ul>
  * </p>
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
@@ -183,21 +183,22 @@ public class ImageView extends android.widget.ImageView {
     }
   }
 
-  // XXX this is a separate method only to avoid lint warnings
+  // XXX this is a separate method to avoid lint warnings only
+  // we do make an allocation here but expect it ot be a very rare event
   private void updateDecorationCacheReference(final Bitmap decorated) {
     decoratedCache = new SoftReference<Bitmap>(decorated);
   }
 
   @Override
   protected void onDraw(final Canvas canvas) {
+    final Drawable d = getDrawable();
+    if (d == null) { return; }
+
     final ImageDecorator imageDecorator = this.imageDecorator;
     if (imageDecorator == null) {
       super.onDraw(canvas);
       return;
     }
-
-    final Drawable d = getDrawable();
-    if (d == null) { return; }
 
     final int pl = getPaddingLeft(), pt = getPaddingTop();
     final int resultW = getMeasuredWidth() - pl - getPaddingRight(), resultH = getMeasuredHeight() - pt - getPaddingBottom();
