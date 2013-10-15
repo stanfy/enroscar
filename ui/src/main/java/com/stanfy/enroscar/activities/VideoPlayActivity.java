@@ -27,6 +27,9 @@ public class VideoPlayActivity extends OneFragmentActivity {
   @Override
   protected Fragment createFragment(final Bundle savedInstanceState) {
     final Uri uri = getIntent().getData();
+    if (uri == null) {
+      throw new IllegalArgumentException("Video URI is not specified");
+    }
     fragment = VideoPlayFragment.create(uri);
     return fragment;
   }
