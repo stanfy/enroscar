@@ -7,9 +7,11 @@ import android.graphics.BitmapFactory;
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.io.IoUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static org.fest.assertions.api.ANDROID.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -102,5 +104,26 @@ public class ImageRequestRealTest extends BaseTest {
     assertThat(imagesManager.isPresentOnDisk(url)).isTrue();
 
     server.shutdown();
+  }
+
+  public void testRealRemoteImage() throws IOException {
+    MockWebServer server = new MockWebServer();
+    server.play();
+
+    final InputStream imageStream = getContext().getResources().getAssets().open("mustard.jpg");
+    final byte[] imageBytes = new byte[imageStream.available()];
+    assertThat(imageBytes.length).isNotZero();
+    imageStream.read(imageBytes);
+    IoUtils.closeQuietly(imageStream);
+
+    server.enqueue(new MockResponse().setResponseCode(200).setBody(imageBytes));
+    String url = server.getUrl("/image").toString();
+
+    ImageRequest request = new ImageRequest(imagesManager, url, 1);
+    ImageResult result = request.readImage();
+    assertThat(result.getType()).isSameAs(ImageSourceType.NETWORK);
+
+    final Bitmap resultBitmap = result.getBitmap();
+    assertThat(resultBitmap).isNotNull();
   }
 }
