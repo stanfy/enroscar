@@ -184,7 +184,7 @@ public class ImageRequest {
     } catch (final OutOfMemoryError e) {
 
       // wrap OOM in IO
-      throw new IOException("out of memory for " + getKey(), e);
+      throw new IOException("out of memory for " + getKey());
 
     } finally {
 
