@@ -184,7 +184,9 @@ public class ImageRequest {
     } catch (final OutOfMemoryError e) {
 
       // wrap OOM in IO
-      throw new IOException("out of memory for " + getKey(), e);
+      final IOException wrapped = new IOException("out of memory for " + getKey());
+      wrapped.initCause(e);
+      throw wrapped;
 
     } finally {
 
@@ -232,7 +234,7 @@ public class ImageRequest {
 
       MarkableInputStream markableStream = new MarkableInputStream(is); // Thanks to Square guys :)
       long mark = markableStream.savePosition(BOUNDS_INFO_MARK);
-      doStreamDecode(is, options);
+      doStreamDecode(markableStream, options);
 
       result = ImagesManager.calculateSampleFactor(options.outWidth, options.outHeight,
           getRequiredWidth(), getRequiredHeight());
