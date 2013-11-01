@@ -103,4 +103,11 @@ public class ImageRequestRealTest extends BaseTest {
 
     server.shutdown();
   }
+
+  public void testRealRemoteImage() throws IOException {
+    ImageRequest request = new ImageRequest(imagesManager, "https://raw.github.com/stanfy/enroscar/images-remote-tests/test-res/mustard.jpg", 1);
+    ImageResult result = request.readImage();
+    checkBitmap(result);
+    assertThat(result.getType()).isSameAs(ImageSourceType.NETWORK);
+  }
 }
