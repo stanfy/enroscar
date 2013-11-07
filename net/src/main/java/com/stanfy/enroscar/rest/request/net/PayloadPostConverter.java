@@ -1,11 +1,5 @@
 package com.stanfy.enroscar.rest.request.net;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
-import java.net.URLConnection;
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -17,6 +11,12 @@ import com.stanfy.enroscar.io.PoolableBufferedOutputStream;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.binary.BinaryData;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
+import java.net.URLConnection;
+import java.util.ArrayList;
 
 
 /**
@@ -47,15 +47,15 @@ public class PayloadPostConverter extends PostConverter {
 
   @Override
   public void sendRequest(final URLConnection connection) throws IOException {
-    ArrayList<BinaryData<?>> binaryData = requestDescription.getBinaryData();
+    ArrayList<BinaryData<?>> binaryData = getRequestDescription().getBinaryData();
     if (binaryData != null) {
-      final BuffersPool buffersPool = BeansManager.get(context).getContainer().getBean(BuffersPool.class);
+      final BuffersPool buffersPool = BeansManager.get(getContext()).getContainer().getBean(BuffersPool.class);
       final PoolableBufferedOutputStream out = new PoolableBufferedOutputStream(connection.getOutputStream(), buffersPool);
 
       try {
         int size = binaryData.size();
         for (int i = 0; i < size; i++) {
-          binaryData.get(i).writeContentTo(context, out);
+          binaryData.get(i).writeContentTo(getContext(), out);
         }
         doSendWorkarounds(UrlConnectionWrapper.unwrap(connection));
       } finally {

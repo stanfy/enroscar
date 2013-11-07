@@ -1,9 +1,5 @@
 package com.stanfy.enroscar.rest.request.binary;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,6 +10,10 @@ import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.net.multipart.Part;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Binary data info.
@@ -112,7 +112,7 @@ public abstract class BinaryData<T extends Parcelable> implements Parcelable {
    * @return internal data object read from the parcel
    */
   protected T readData(final Parcel source) {
-    return source.readParcelable(getClass().getClassLoader());
+    return source.readParcelable(BinaryData.class.getClassLoader());
   }
 
   /**

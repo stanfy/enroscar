@@ -1,12 +1,5 @@
 package com.stanfy.enroscar.rest.request.net;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URLConnection;
-import java.util.LinkedList;
-
-import org.apache.http.client.utils.URLEncodedUtils;
-
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -15,6 +8,10 @@ import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.Parameter;
 import com.stanfy.enroscar.rest.request.ParameterValue;
 import com.stanfy.enroscar.rest.request.RequestDescription;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLConnection;
 
 /**
  * @author Roman Mazur (Stanfy - http://stanfy.com)
@@ -36,7 +33,7 @@ public class SimplePostConverter extends PostConverter {
   @Override
   public void sendRequest(final URLConnection connection) throws IOException {
     Uri.Builder builder = Uri.parse("http://any.com").buildUpon();
-    for (final Parameter p : requestDescription.getSimpleParameters().getChildren()) {
+    for (final Parameter p : getRequestDescription().getSimpleParameters().getChildren()) {
       if (p instanceof ParameterValue) {
         builder.appendQueryParameter(p.getName(), ((ParameterValue) p).getValue());
       }
@@ -44,13 +41,13 @@ public class SimplePostConverter extends PostConverter {
     @SuppressWarnings("ConstantConditions")
     String query = builder.build().getEncodedQuery();
     if (query == null) { query = ""; }
-    final byte[] content = query.getBytes(requestDescription.getEncoding().name());
+    final byte[] content = query.getBytes(getRequestDescription().getEncoding().name());
 
     final OutputStream stream = connection.getOutputStream();
     stream.write(content);
     stream.flush();
 
-    if (Utils.isDebugRest(context)) { Log.d(TAG, "(" + requestDescription.getId() + ")" + ": " + query); }
+    if (Utils.isDebugRest(getContext())) { Log.d(TAG, "(" + getRequestDescription().getId() + ")" + ": " + query); }
   }
 
 }

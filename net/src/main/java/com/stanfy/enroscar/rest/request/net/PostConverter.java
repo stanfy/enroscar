@@ -1,13 +1,13 @@
 package com.stanfy.enroscar.rest.request.net;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URLConnection;
-
 import android.content.Context;
 
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.rest.request.RequestDescription;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URLConnection;
 
 /**
  * @author Roman Mazur (Stanfy - http://stanfy.com)
@@ -43,7 +43,7 @@ public abstract class PostConverter extends BaseRequestDescriptionConverter {
     connection.setDoInput(true);
     connection.setDoOutput(true);
 
-    final String rdContentType = requestDescription.getContentType();
+    final String rdContentType = getRequestDescription().getContentType();
     if (rdContentType == null) {
       connection.addRequestProperty("Content-Type", this.contentType);
     }
