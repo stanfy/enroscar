@@ -121,7 +121,6 @@ subprojects {
       versionCode 10
       versionName projectVersion
       minSdkVersion 8
-      targetSdkVersion 19
       packageName getPackageName(project)
     }
   }
