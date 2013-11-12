@@ -112,7 +112,7 @@ public abstract class BinaryData<T extends Parcelable> implements Parcelable {
    * @return internal data object read from the parcel
    */
   protected T readData(final Parcel source) {
-    return source.readParcelable(BinaryData.class.getClassLoader());
+    return source.readParcelable(getClass().getClassLoader());
   }
 
   /**

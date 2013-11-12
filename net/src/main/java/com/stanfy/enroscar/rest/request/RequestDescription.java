@@ -126,7 +126,7 @@ public class RequestDescription implements Parcelable {
    */
   protected RequestDescription(final Parcel source) {
     this(source.readInt());
-    final ClassLoader cl = RequestDescription.class.getClassLoader();
+    final ClassLoader cl = getClass().getClassLoader();
 
     this.operationType = source.readInt();
     this.url = source.readString();
