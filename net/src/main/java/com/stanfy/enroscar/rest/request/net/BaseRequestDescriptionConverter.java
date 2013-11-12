@@ -1,9 +1,5 @@
 package com.stanfy.enroscar.rest.request.net;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URLConnection;
-
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -18,6 +14,10 @@ import com.stanfy.enroscar.rest.request.Parameter;
 import com.stanfy.enroscar.rest.request.ParameterValue;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URLConnection;
+
 /**
  * Converts request description to {@link URLConnection}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
@@ -31,10 +31,10 @@ public abstract class BaseRequestDescriptionConverter {
   protected static final String TAG = RequestDescription.TAG;
 
   /** Request description. */
-  final RequestDescription requestDescription;
+  private final RequestDescription requestDescription;
 
   /** Context. */
-  final Context context;
+  private final Context context;
 
   public BaseRequestDescriptionConverter(final RequestDescription requestDescription, final Context context) {
     this.requestDescription = requestDescription;
@@ -91,7 +91,15 @@ public abstract class BaseRequestDescriptionConverter {
     }
     return builder;
   }
-  
+
+  public RequestDescription getRequestDescription() {
+    return requestDescription;
+  }
+
+  public Context getContext() {
+    return context;
+  }
+
   /**
    * @param connection potentially wrapped connection
    * @return unwrapped {@link HttpURLConnection} instance

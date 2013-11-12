@@ -1,14 +1,5 @@
 package com.stanfy.enroscar.rest.request.net;
 
-import java.io.IOException;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
-import org.apache.http.util.EncodingUtils;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -23,6 +14,15 @@ import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.binary.BinaryData;
 import com.stanfy.enroscar.rest.request.net.multipart.Part;
 import com.stanfy.enroscar.rest.request.net.multipart.StringPart;
+
+import org.apache.http.util.EncodingUtils;
+
+import java.io.IOException;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 /**
  * @author Roman Mazur (Stanfy - http://stanfy.com)
@@ -62,7 +62,7 @@ public class UploadPostConverter extends PostConverter {
 
   @Override
   protected String getRequestUrl() {
-    return requestDescription.getUrl();
+    return getRequestDescription().getUrl();
   }
   
   /**
@@ -85,7 +85,7 @@ public class UploadPostConverter extends PostConverter {
     final URLConnection connection = super.prepareConnectionInstance();
     connection.addRequestProperty("Content-Type", "multipart/form-data; boundary=" + EncodingUtils.getAsciiString(boundary));
 
-    this.parts = composeParts(context, requestDescription);
+    this.parts = composeParts(getContext(), getRequestDescription());
 
     asHttp(connection).setFixedLengthStreamingMode((int)Part.getLengthOfParts(parts, boundary));
 
@@ -94,11 +94,11 @@ public class UploadPostConverter extends PostConverter {
 
   @Override
   public void sendRequest(final URLConnection connection) throws IOException {
-    final BuffersPool buffersPool = BeansManager.get(context).getContainer().getBean(BuffersPool.class);
+    final BuffersPool buffersPool = BeansManager.get(getContext()).getContainer().getBean(BuffersPool.class);
     final PoolableBufferedOutputStream out = new PoolableBufferedOutputStream(connection.getOutputStream(), buffersPool);
 
-    if (Utils.isDebugRest(context)) {
-      Log.d(TAG, "(" + requestDescription.getId() + ") Parts: " + Arrays.toString(parts));
+    if (Utils.isDebugRest(getContext())) {
+      Log.d(TAG, "(" + getRequestDescription().getId() + ") Parts: " + Arrays.toString(parts));
     }
     
     try {
