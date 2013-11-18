@@ -15,8 +15,6 @@ import java.net.URLConnection;
  */
 final class TestUtils {
 
-  static final String URL = "http://example.com/image";
-
   static final int TEST_BITMAP_SIZE = 100; // from ShadowBitmapFactory
 
   static void putCachedContent(final ImagesManager manager, final String url) throws Exception {

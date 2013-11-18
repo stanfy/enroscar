@@ -3,6 +3,7 @@ package com.stanfy.enroscar.views.test;
 import com.stanfy.enroscar.views.LoadableImageView;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
@@ -19,6 +20,11 @@ public class LoadableImageViewTest {
   @Before
   public void create() {
     imageView = new LoadableImageView(Robolectric.application);
+  }
+
+  @Test
+  public void todo() {
+
   }
 
 }

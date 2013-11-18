@@ -10,7 +10,7 @@ buildscript {
 }
 
 def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').replaceAll(/enroscar/, '')}" }
-def projectVersion = "1.0-SNAPSHOT"
+def projectVersion = "1.0"
 
 task wrapper(type: Wrapper) {
   gradleVersion = '1.8'
@@ -143,7 +143,6 @@ subprojects {
   android.libraryVariants.all { variant ->
     if (variant.buildType.name.equalsIgnoreCase('release')) { return }
     tasks["test$variant.name"].configure {
-      ignoreFailures = true
       scanForTestClasses = false
 
       def selection = null

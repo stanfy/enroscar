@@ -28,10 +28,13 @@ import static org.mockito.Mockito.*;
  */
 public class ImageRequestTest extends AbstractImagesTest {
 
+  private String defaultUrl;
+
   @Override
   public void startServer() throws IOException {
     super.startServer();
     server.enqueue(new MockResponse().setResponseCode(200).setBody(new byte[1]));
+    defaultUrl = server.getUrl("/").toString();
   }
 
   @Test
@@ -52,7 +55,7 @@ public class ImageRequestTest extends AbstractImagesTest {
   @Test
   public void shouldThrowIfUndefinedRequiredSize() throws IOException {
     try {
-      ImageRequest request = new ImageRequest(manager, URL, -1);
+      ImageRequest request = new ImageRequest(manager, defaultUrl, -1);
       request.readImage();
       fail("Exception expected");
     } catch (IllegalArgumentException e) {
@@ -62,14 +65,14 @@ public class ImageRequestTest extends AbstractImagesTest {
 
   @Test
   public void shouldNotThrowIfAllowedSizedSet() throws IOException {
-    ImageRequest request = new ImageRequest(manager, URL, 1);
+    ImageRequest request = new ImageRequest(manager, defaultUrl, 1);
     ImageResult result = request.readImage();
     assertThat(result).isNotNull();
   }
 
   @Test
   public void shouldDecodeImage() throws IOException {
-    ImageRequest request = new ImageRequest(manager, URL, -1);
+    ImageRequest request = new ImageRequest(manager, defaultUrl, -1);
     request.setRequiredHeight(TEST_BITMAP_SIZE);
     request.setRequiredWidth(TEST_BITMAP_SIZE);
     ImageResult result = request.readImage();
@@ -82,14 +85,14 @@ public class ImageRequestTest extends AbstractImagesTest {
 
   @Test
   public void shouldIndicateWhenImageIsLoadedFromCache() throws Exception {
-    putCachedContent(manager, URL);
-    ImageRequest request = new ImageRequest(manager, URL, 1);
+    putCachedContent(manager, defaultUrl);
+    ImageRequest request = new ImageRequest(manager, defaultUrl, 1);
     assertThat(request.readImage().getType()).isSameAs(ImageSourceType.DISK);
   }
 
   @Test
   public void shouldScaleBitmaps() throws IOException {
-    ImageRequest request = new ImageRequest(manager, URL, 1);
+    ImageRequest request = new ImageRequest(manager, defaultUrl, 1);
     request.setRequiredHeight(TEST_BITMAP_SIZE / 3);
     request.setRequiredWidth(TEST_BITMAP_SIZE / 3);
     ImageResult result = request.readImage();
@@ -99,7 +102,7 @@ public class ImageRequestTest extends AbstractImagesTest {
 
   @Test
   public void shouldRecoverFromOom() throws IOException {
-    ImageRequest request = new ImageRequest(manager, URL, 1);
+    ImageRequest request = new ImageRequest(manager, defaultUrl, 1);
     request = spy(request);
     doThrow(OutOfMemoryError.class).when(request).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
     try {
@@ -112,7 +115,7 @@ public class ImageRequestTest extends AbstractImagesTest {
 
   @Test
   public void shoutDecodeWithSpecifiedFormat() throws IOException {
-    ImageRequest request = new ImageRequest(manager, URL, 1);
+    ImageRequest request = new ImageRequest(manager, defaultUrl, 1);
     request.setFormat(Bitmap.Config.ALPHA_8);
     request = spy(request);
     request.readImage();
@@ -136,7 +139,7 @@ public class ImageRequestTest extends AbstractImagesTest {
 
   @Test
   public void storeToDiskShouldNotDecodeImageIfAllowedSizeIsNotSpecified() throws IOException {
-    ImageRequest request = spy(new ImageRequest(manager, URL, -1));
+    ImageRequest request = spy(new ImageRequest(manager, defaultUrl, -1));
     request.storeToDisk();
     verify(request).newConnection();
     verify(request, times(0)).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
@@ -144,8 +147,8 @@ public class ImageRequestTest extends AbstractImagesTest {
 
   @Test
   public void storeToDiskShouldDoNothingIfImageIsOnTheDisk() throws Exception {
-    putCachedContent(manager, URL);
-    ImageRequest request = spy(new ImageRequest(manager, URL, -1));
+    putCachedContent(manager, defaultUrl);
+    ImageRequest request = spy(new ImageRequest(manager, defaultUrl, -1));
     request.storeToDisk();
     verify(request, times(0)).newConnection();
   }
@@ -153,7 +156,7 @@ public class ImageRequestTest extends AbstractImagesTest {
   @Test
   public void storeToDiskShouldDecodeImageIfAllowedSizeIsSet() throws Exception {
     final float small = 0.05f;
-    final ImageRequest request = spy(new ImageRequest(manager, URL, small));
+    final ImageRequest request = spy(new ImageRequest(manager, defaultUrl, small));
     request.storeToDisk();
     verify(request).newConnection();
     verify(request, times(2)).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
@@ -180,7 +183,7 @@ public class ImageRequestTest extends AbstractImagesTest {
 
   @Test
   public void storeToDiskShouldNotFullyDecodeIfScaleFactorIsOne() throws Exception {
-    final ImageRequest request = spy(new ImageRequest(manager, URL, 1));
+    final ImageRequest request = spy(new ImageRequest(manager, defaultUrl, 1));
     request.storeToDisk();
     verify(request).newConnection();
     verify(request, times(1)).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
@@ -189,7 +192,7 @@ public class ImageRequestTest extends AbstractImagesTest {
 
   @Test
   public void shouldCacheImages() throws IOException {
-    final ImageRequest request = spy(new ImageRequest(manager, URL, 1));
+    final ImageRequest request = spy(new ImageRequest(manager, defaultUrl, 1));
     doAnswer(new Answer() {
       @Override
       public Object answer(final InvocationOnMock invocation) throws Throwable {
