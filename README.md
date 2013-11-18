@@ -3,6 +3,8 @@ Enroscar
 
 **An Android library focused on web-service clients implementation**
 
+[![Build Status](https://secure.travis-ci.org/stanfy/enroscar.png?branch=master)](http://travis-ci.org/stanfy/enroscar)
+
 Quick Start Guide
 =================
 Here you'll find information how to start using enroscar in few simple steps.

@@ -1,0 +1,13 @@
+language: java
+
+before_install:
+  - export ANDROID_HOME=$PWD/android-sdk-linux
+  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
+  - chmod +x scripts/install_android_sdk.sh
+  - ./scripts/install_android_sdk.sh
+
+install:
+  - TERM=dumb ./gradlew assembleRelease
+
+script:
+  - TERM=dumb ./gradlew -i check
