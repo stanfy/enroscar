@@ -5,6 +5,7 @@ import static org.fest.assertions.api.Assertions.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import com.stanfy.enroscar.utils.AppUtils;
 
@@ -13,6 +14,7 @@ import com.stanfy.enroscar.utils.AppUtils;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class AppUtilsTest {
 
   @Test

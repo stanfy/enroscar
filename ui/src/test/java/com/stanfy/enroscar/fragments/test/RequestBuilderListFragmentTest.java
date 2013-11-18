@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.net.HttpURLConnection;
 import java.util.List;
@@ -32,6 +33,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Tests for RequestBuilderListFragment.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class RequestBuilderListFragmentTest extends AbstractMockServerTest {
 
   /** Test loader ID. */

@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import com.stanfy.enroscar.io.BuffersPool;
 
@@ -14,6 +15,7 @@ import com.stanfy.enroscar.io.BuffersPool;
  * Tests for {@link BuffersPool}. Absolutely useless.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class BuffersPoolTest {
 
   /** Buffers pool instance. */

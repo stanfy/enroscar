@@ -8,6 +8,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Test;
 
+import org.robolectric.annotation.Config;
+
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
@@ -23,6 +25,7 @@ import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
  * Tests for {@link com.stanfy.enroscar.rest.executor.RequestPerformer}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@Config(emulateSdk = 18)
 public class RequestPerformerTest extends AbstractMockServerTest {
 
   /** Callback. */

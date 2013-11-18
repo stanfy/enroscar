@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
@@ -22,6 +23,7 @@ import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
  * Tests for {@link BaseRequestBuilder}.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class BaseRequestBuilderTest extends AbstractEnroscarTest {
 
   @Override

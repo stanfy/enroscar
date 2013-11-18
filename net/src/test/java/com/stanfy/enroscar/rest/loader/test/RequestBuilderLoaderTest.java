@@ -10,12 +10,15 @@ import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
 import org.junit.Test;
 
+import org.robolectric.annotation.Config;
+
 import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * Tests for {@link com.stanfy.enroscar.rest.loader.RequestBuilderLoader}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@Config(emulateSdk = 18)
 public class RequestBuilderLoaderTest extends AbstractLoaderTest {
 
   @Override

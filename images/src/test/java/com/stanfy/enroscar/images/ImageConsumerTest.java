@@ -4,12 +4,14 @@ import android.content.Context;
 
 import org.junit.Test;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * Tests for ImageConsumer.
  */
+@Config(emulateSdk = 18)
 public class ImageConsumerTest extends AbstractImagesTest {
 
   @Test

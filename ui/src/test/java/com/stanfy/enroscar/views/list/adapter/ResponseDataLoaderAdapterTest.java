@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Tests for {@link com.stanfy.enroscar.views.list.adapter.ResponseDataLoaderAdapter}.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class ResponseDataLoaderAdapterTest extends AbstractEnroscarTest {
 
   /** Call flag. */

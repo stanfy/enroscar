@@ -8,6 +8,8 @@ import java.net.URLConnection;
 
 import org.junit.Test;
 
+import org.robolectric.annotation.Config;
+
 import com.google.mockwebserver.MockResponse;
 import com.jakewharton.disklrucache.DiskLruCache;
 
@@ -15,6 +17,7 @@ import com.jakewharton.disklrucache.DiskLruCache;
  * Tests for {@link com.stanfy.net.cache.BaseFileResponseCache}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@Config(emulateSdk = 18)
 public class BaseFileCacheTest extends AbstractOneCacheTest {
 
   @Test

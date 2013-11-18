@@ -4,6 +4,7 @@ import org.fest.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import android.app.Application;
@@ -13,6 +14,7 @@ import com.stanfy.enroscar.beans.BeansManager;
 /**
  * Base test class.
  */
+@Config(emulateSdk = 18)
 public abstract class AbstractEnroscarTest {
 
   /** Beans manager. */

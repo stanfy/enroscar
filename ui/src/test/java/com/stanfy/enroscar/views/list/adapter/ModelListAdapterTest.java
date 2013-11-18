@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 
@@ -14,6 +15,7 @@ import java.util.Arrays;
  * Tests for ModelListAdapter.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class ModelListAdapterTest {
 
   /** Adapter under test. */

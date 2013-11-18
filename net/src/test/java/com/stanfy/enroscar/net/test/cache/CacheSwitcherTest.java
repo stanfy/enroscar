@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
@@ -25,6 +26,7 @@ import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @EnroscarConfiguration(connectionEngineRequired = true)
+@Config(emulateSdk = 18)
 public class CacheSwitcherTest extends AbstractMockServerTest {
 
   /** Cache instances. */

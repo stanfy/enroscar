@@ -9,6 +9,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Test;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.*;
  * Tests for {@link ImagesManager}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@Config(emulateSdk = 18)
 public class ImagesManagerTest extends AbstractImagesTest {
 
   @Test

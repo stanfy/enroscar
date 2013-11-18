@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
@@ -25,6 +26,7 @@ import com.stanfy.enroscar.rest.request.RequestDescription;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class RequestDescriptionTest extends AbstractMockServerTest {
 
 //  @Test

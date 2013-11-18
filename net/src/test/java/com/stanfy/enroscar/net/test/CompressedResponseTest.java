@@ -9,6 +9,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Test;
 
+import org.robolectric.annotation.Config;
+
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.test.cache.AbstractOneCacheTest;
@@ -18,6 +20,7 @@ import com.stanfy.enroscar.net.test.cache.AbstractOneCacheTest;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  *
  */
+@Config(emulateSdk = 18)
 public class CompressedResponseTest extends AbstractOneCacheTest {
 
   public static byte[] getZippedText(final String text) throws IOException {

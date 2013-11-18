@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.util.FragmentTestUtil;
+import org.robolectric.annotation.Config;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ import com.stanfy.enroscar.content.loader.LoaderSet;
  * Tests for {@link LoaderSet}.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class LoaderSetTest {
 
   private Loader<String> createLoader(final String data) {

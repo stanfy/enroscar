@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import org.robolectric.annotation.Config;
+
 import android.content.Context;
 import android.support.v4.content.Loader;
 
@@ -28,6 +30,7 @@ import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
  * Tests for {@link LoadMoreListLoader}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@Config(emulateSdk = 18)
 public class LoadMoreListLoaderTest extends AbstractLoaderTest {
 
   /** Analyzer. */

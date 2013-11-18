@@ -47,7 +47,6 @@ subprojects {
 
   repositories {
     mavenCentral()
-    ivy { url 'http://dev.stanfy.com/repository/libs' }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
 

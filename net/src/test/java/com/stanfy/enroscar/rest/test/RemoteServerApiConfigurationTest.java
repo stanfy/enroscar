@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.net.test.cache.DummyResponseCache;
@@ -21,6 +22,7 @@ import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
  * Tests for {@link RemoteServerApiConfiguration}.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class RemoteServerApiConfigurationTest {
 
   @Before

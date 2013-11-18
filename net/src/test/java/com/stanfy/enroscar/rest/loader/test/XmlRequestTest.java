@@ -2,6 +2,8 @@ package com.stanfy.enroscar.rest.loader.test;
 
 import org.junit.Before;
 
+import org.robolectric.annotation.Config;
+
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
@@ -9,6 +11,7 @@ import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 /**
  * XML format support test.
  */
+@Config(emulateSdk = 18)
 public class XmlRequestTest extends JsonRequestTest {
 
   @Override

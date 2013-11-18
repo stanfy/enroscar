@@ -8,6 +8,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+import org.robolectric.annotation.Config;
 import org.robolectric.util.FragmentTestUtil;
 
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
  * Test for {@link LoaderSet}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@Config(emulateSdk = 18)
 public class LoaderSetTest extends AbstractLoaderTest {
 
   @Override

@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.*;
 /**
  * Tests for ImageRequest.
  */
+@Config(emulateSdk = 18)
 public class ImageRequestTest extends AbstractImagesTest {
 
   private String defaultUrl;

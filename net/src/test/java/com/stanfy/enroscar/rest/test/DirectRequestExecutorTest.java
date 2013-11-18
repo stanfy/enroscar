@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import com.stanfy.enroscar.rest.DirectRequestExecutor;
 
@@ -13,6 +14,7 @@ import com.stanfy.enroscar.rest.DirectRequestExecutor;
  * Direct request executor test.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class DirectRequestExecutorTest {
 
   @Test

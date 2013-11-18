@@ -10,6 +10,8 @@ import java.net.URLConnection;
 import org.junit.Test;
 import org.robolectric.Robolectric;
 
+import org.robolectric.annotation.Config;
+
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
@@ -27,6 +29,7 @@ import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 /**
  * Test for content handlers.
  */
+@Config(emulateSdk = 18)
 public class ContentHandlerTest extends AbstractMockServerTest {
 
   @Override

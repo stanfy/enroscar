@@ -9,6 +9,7 @@ import java.net.ResponseCache;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansContainer;
@@ -25,6 +26,7 @@ import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
  * Test for {@link CacheWrapper}.
  */
 @EnroscarConfiguration(connectionEngineRequired = true)
+@Config(emulateSdk = 18)
 public class CacheWrapperTest extends AbstractOneCacheTest {
 
   @Override

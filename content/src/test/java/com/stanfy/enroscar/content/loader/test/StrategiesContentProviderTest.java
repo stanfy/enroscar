@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -18,6 +19,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Tests for StrategiesContentProvider.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class StrategiesContentProviderTest {
 
   /** Provider under the test. */

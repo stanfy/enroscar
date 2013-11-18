@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.EnroscarBean;
@@ -17,6 +18,7 @@ import com.stanfy.enroscar.beans.EnroscarBean;
  * Tests for {@link BeansManager.Editor}.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class BeanManagerEditorTest {
 
   /** Beans manager instance. */

@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import com.stanfy.enroscar.net.cache.CacheEntry;
 import com.stanfy.enroscar.net.cache.CacheTimeRule;
@@ -21,6 +22,7 @@ import com.stanfy.enroscar.utils.Time;
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class TimeRuleTest extends AbstractEnroscarTest {
 
   /** Test URL. */

@@ -29,7 +29,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  *
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = "src/main/AndroidManifest.xml")
+@Config(manifest = "src/main/AndroidManifest.xml", emulateSdk = 18)
 public class LoaderAdapterTest extends AbstractEnroscarTest {
 
   /** Aadapter to test. */

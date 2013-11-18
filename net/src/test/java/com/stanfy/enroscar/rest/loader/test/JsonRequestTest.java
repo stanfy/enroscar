@@ -5,6 +5,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.robolectric.annotation.Config;
+
 import android.support.v4.content.Loader;
 
 import com.google.gson.Gson;
@@ -18,6 +20,7 @@ import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
  * Test how JSON is parsed.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
+@Config(emulateSdk = 18)
 public class JsonRequestTest extends AbstractLoaderTest {
 
   /** Format. */

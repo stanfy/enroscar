@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import android.view.View;
 import android.widget.LinearLayout;
@@ -16,6 +17,7 @@ import com.stanfy.enroscar.views.GUIUtils;
  * Tests for {@link GUIUtils}.
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class GUIUtilsTest {
 
   @Test

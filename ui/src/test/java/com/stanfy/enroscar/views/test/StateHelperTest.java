@@ -5,6 +5,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import android.content.Context;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.stanfy.enroscar.views.StateHelper.StateViewCreator;
  * @author Vladislav Lipskiy - Stanfy (http://www.stanfy.com)
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 18)
 public class StateHelperTest extends AbstractEnroscarTest {
 
   /** Test helper state. */
