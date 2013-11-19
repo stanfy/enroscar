@@ -21,7 +21,7 @@ install:
   - TERM=dumb ./gradlew assembleRelease
 
 script:
-  - TERM=dumb ./gradlew check
+  - TERM=dumb ./gradlew -i check
 
 after_success:
   - ./scripts/deploy_to_maven.sh
