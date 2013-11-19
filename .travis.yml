@@ -10,4 +10,4 @@ install:
   - TERM=dumb ./gradlew assembleRelease
 
 script:
-  - TERM=dumb ./gradlew -i check
+  - TERM=dumb ./gradlew check
