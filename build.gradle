@@ -10,7 +10,7 @@ buildscript {
 }
 
 def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').replaceAll(/enroscar/, '')}" }
-def projectVersion = "1.0"
+def projectVersion = "1.1-SNAPSHOT"
 
 task wrapper(type: Wrapper) {
   gradleVersion = '1.8'
@@ -50,28 +50,28 @@ subprojects {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
 
-  signing {
-    sign configurations.archives
-  }
+  boolean snapshot = projectVersion.contains("SNAPSHOT")
 
-//  task("installToMaven", type: Upload) {
-//    configuration = configurations.archives
-//    repositories {
-//      mavenLocal()
-//    }
-//  }
+  if (!snapshot) {
+    signing {
+      sign configurations.archives
+    }
+  }
 
   uploadArchives {
     repositories {
       mavenDeployer {
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        def repoUrl = (
-            projectVersion.contains("SNAPSHOT")
-                ? "https://oss.sonatype.org/content/repositories/snapshots/"
-                : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-        )
-        repository(url: repoUrl) {
+        if (!snapshot) {
+          beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        }
+
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+          if (hasCredentials) {
+            authentication(userName: nexusUsername, password: nexusPassword)
+          }
+        }
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
           if (hasCredentials) {
             authentication(userName: nexusUsername, password: nexusPassword)
           }
@@ -129,15 +129,6 @@ subprojects {
     into "build/libs"
     rename { "${project.name}-${project.version}.jar" }
   }
-
-//  testJvm(testSelectionConfig)
-//
-//  task debugTestJvm(type : Test)
-//  debugTestJvm.doFirst {
-//    jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-//  }
-//  debugTestJvm(testSelectionConfig)
-//  //debugTestJvm.dependsOn 'cleanTest'
 
   android.libraryVariants.all { variant ->
     if (variant.buildType.name.equalsIgnoreCase('release')) { return }
@@ -220,11 +211,5 @@ subprojects {
       }
     }
   }
-
-//  afterEvaluate {
-//    ['uploadArchives', 'installToMaven'].each {
-//      tasks[it].dependsOn 'check'
-//    }
-//  }
 
 }
