@@ -21,13 +21,13 @@ import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.io.PoolableBufferedInputStream;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
-import com.stanfy.enroscar.sdkdep.SdkDepUtils;
 
 /**
  * Service that can be used instead of {@link android.app.DownloadManager} on older devices.
@@ -247,7 +247,7 @@ public class DownloadsService extends Service {
       final float p = progress == null ? 0 : progress;
       final int max = 1000;
 
-      final Notification n = SdkDepUtils.get(DownloadsService.this).createNotificationBuilder(DownloadsService.this)
+      final Notification n = new NotificationCompat.Builder(DownloadsService.this)
           .setWhen(notificationTime)
           .setSmallIcon(android.R.drawable.stat_sys_download)
           .setTicker(request.title)

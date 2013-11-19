@@ -19,8 +19,6 @@ import com.stanfy.enroscar.images.ImagesManager;
 import com.stanfy.enroscar.net.cache.BaseFileResponseCache;
 import com.stanfy.enroscar.net.cache.CacheEntry;
 import com.stanfy.enroscar.net.cache.CacheTimeRule;
-import com.stanfy.enroscar.sdkdep.SdkDepUtils;
-import com.stanfy.enroscar.sdkdep.SdkDependentUtils;
 
 /**
  * File-based cache used by images manager.
@@ -43,9 +41,8 @@ public class ImageFileCache extends BaseFileResponseCache implements Bean {
   public void onInitializationFinished(final BeansContainer beansContainer) {
     if (getWorkingDirectory() == null) {
       final String eState = Environment.getExternalStorageState();
-      SdkDependentUtils sdkUtils = SdkDepUtils.get(context);
       File baseDir = Environment.MEDIA_MOUNTED.equals(eState)
-          ? sdkUtils.getExternalCacheDir(context)
+          ? context.getExternalCacheDir()
           : context.getCacheDir();
       if (baseDir == null) {
         baseDir = context.getCacheDir();

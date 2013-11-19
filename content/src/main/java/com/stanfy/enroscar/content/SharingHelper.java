@@ -3,8 +3,6 @@ package com.stanfy.enroscar.content;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-import com.stanfy.enroscar.sdkdep.SdkDepUtils;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -123,8 +121,7 @@ public final class SharingHelper {
       return;
     }
     asyncTask = new ResolveContentUriTask();
-  
-    SdkDepUtils.get(context).executeAsyncTaskParallel(asyncTask, data);
+    asyncTask.execute(data);
   }
 
   private void deliverError() {

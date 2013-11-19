@@ -18,7 +18,6 @@ import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
-import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
 import com.stanfy.enroscar.stats.EmptyStatsManager;
 import com.stanfy.enroscar.stats.StatsManager;
 import com.stanfy.enroscar.views.ImageConsumers;
@@ -76,8 +75,6 @@ public class DefaultBeansManager extends BeansManager {
   public ActivityBehaviorFactory getActivityBehaviorFactory() { return getContainer().getBean(ActivityBehaviorFactory.BEAN_NAME, ActivityBehaviorFactory.class); }
   /** @return statistics manager */
   public StatsManager getStatsManager() { return getContainer().getBean(StatsManager.BEAN_NAME, StatsManager.class); }
-  /** @return SDK dependent utilities factory */
-  public SDKDependentUtilsFactory getSdkDependentUtilsFactory() { return getContainer().getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class); }
   /** @return remote server API access configuration */
   public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
   /** @return content handler instance */
@@ -94,9 +91,6 @@ public class DefaultBeansManager extends BeansManager {
 
     {
       // set default beans
-      if (!hasBean(SDKDependentUtilsFactory.BEAN_NAME)) {
-        put(SDKDependentUtilsFactory.BEAN_NAME, new SDKDependentUtilsFactory());
-      }
       if (!hasBean(BuffersPool.BEAN_NAME)) {
         put(BuffersPool.BEAN_NAME, new BuffersPool());
       }
