@@ -24,4 +24,5 @@ script:
   - TERM=dumb ./gradlew -i check
 
 after_success:
+  - chmod +x scripts/deploy_to_maven.sh
   - ./scripts/deploy_to_maven.sh
