@@ -20,12 +20,14 @@ import com.stanfy.enroscar.rest.executor.ApiMethodsSupport;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
+import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
 
 /**
  * Tests for {@link com.stanfy.enroscar.rest.executor.RequestPerformer}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @Config(emulateSdk = 18)
+@EnroscarConfiguration(connectionEngineRequired = true)
 public class RequestPerformerTest extends AbstractMockServerTest {
 
   /** Callback. */
