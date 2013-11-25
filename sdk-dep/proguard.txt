@@ -1,5 +1,0 @@
-# Enroscar sdk-dep - Proguard configuration
-
-# Dynamic loading of SDK utils implementations
-
--keep class * implements com.stanfy.enroscar.sdkdep.SdkDependentUtils

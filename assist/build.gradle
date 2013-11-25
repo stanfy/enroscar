@@ -1,6 +1,6 @@
 dependencies(
     project.dependOnProjects([
-        ':enroscar-beans', ':enroscar-shared', ':enroscar-sdk-dep',
+        ':enroscar-beans', ':enroscar-shared',
         ':enroscar-net', ':enroscar-stats', ':enroscar-images',
         ':enroscar-ui'
     ])

@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.images;
 
 import android.graphics.Bitmap;
+import android.os.Build;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.cache.SupportLruImageMemoryCache;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.*;
  * Tests for {@link ImagesManager}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@Config(emulateSdk = 18)
+@Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class ImagesManagerTest extends AbstractImagesTest {
 
   @Test

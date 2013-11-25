@@ -5,7 +5,7 @@ def includeInt = { path, name ->
 
 // core
 
-['beans', 'shared', 'net', 'assist', 'stats', 'content', 'images', 'sdk-dep', 'ui'].each {
+['beans', 'shared', 'net', 'assist', 'stats', 'content', 'images', 'ui'].each {
   includeInt it, "enroscar-$it"
 }
 

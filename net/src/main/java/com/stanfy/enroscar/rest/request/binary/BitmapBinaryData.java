@@ -57,7 +57,7 @@ public class BitmapBinaryData extends BinaryData<Bitmap> {
 
   @Override
   public Part createHttpPart(final Context context) {
-    final BitmapPart bitmapPart = new BitmapPart(context, getName(), getContentName(), getData());
+    final BitmapPart bitmapPart = new BitmapPart(getName(), getContentName(), getData());
     Options opts = getOptions();
     bitmapPart.setCompressQuality(opts.quality);
     bitmapPart.setCompressFormat(opts.format);

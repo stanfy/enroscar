@@ -7,10 +7,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -109,4 +112,14 @@ public class AppUtils {
     }
   }
 
+  @SuppressLint("NewApi")
+  public static int bitmapSize(final Bitmap bitmap) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1) {
+      return bitmap.getRowBytes() * bitmap.getHeight();
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+      return bitmap.getByteCount();
+    }
+    return bitmap.getAllocationByteCount();
+  }
 }
