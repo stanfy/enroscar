@@ -37,7 +37,7 @@ public class PoolableBufferedOutputStream extends FilterOutputStream {
    * @param buffersPool buffers pool instance
    */
   public PoolableBufferedOutputStream(final OutputStream out, final BuffersPool buffersPool) {
-    this(out, IoUtils.BUF_SIZE, buffersPool);
+    this(out, IoUtils.DEFAULT_BUFFER_SIZE, buffersPool);
   }
 
   /**
@@ -59,9 +59,7 @@ public class PoolableBufferedOutputStream extends FilterOutputStream {
     if (buf == null) {
       buf = new byte[size];
     }
-    if (DebugFlags.STRICT_MODE) {
-      this.stack = new Throwable();
-    }
+    this.stack = new Throwable();
   }
 
   /**
@@ -187,8 +185,8 @@ public class PoolableBufferedOutputStream extends FilterOutputStream {
   @Override
   protected void finalize() throws Throwable {
     super.finalize();
-    if (DebugFlags.STRICT_MODE && pool != null && buf != null) {
-      Log.e(BuffersPool.BEAN_NAME, "Poolable stream was not closed " + this + " / " + buf.length, stack);
+    if (pool != null && buf != null) {
+      Log.e(PoolableBufferedInputStream.class.getSimpleName(), "stream was not closed", stack);
     }
   }
 
