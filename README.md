@@ -177,7 +177,7 @@ Usage
 Enroscar is published to Maven central repository. And you can use it with the following string in your Gradle build file:
 
 ```
-compile 'com.stanfy.enroscar:enroscar-assist:0.9.+'
+compile 'com.stanfy.enroscar:enroscar-assist:1.0'
 ```
 
 
