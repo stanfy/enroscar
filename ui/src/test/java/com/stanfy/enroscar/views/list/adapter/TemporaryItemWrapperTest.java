@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.views.list.adapter;
 
 import android.database.DataSetObserver;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -21,7 +22,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Tests for TemporaryItemWrapper.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(emulateSdk = 18)
+@Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class TemporaryItemWrapperTest {
 
   /** Adapter under the test. */

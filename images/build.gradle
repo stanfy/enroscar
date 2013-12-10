@@ -1,6 +1,4 @@
-dependencies(
-    project.dependOnProjects([':enroscar-beans', ':enroscar-shared', ':enroscar-net'])
-)
+dependOnProjects([':enroscar-beans', ':enroscar-io', ':enroscar-net'])
 
 android {
   defaultConfig {
@@ -8,9 +6,3 @@ android {
     testInstrumentationRunner "android.test.InstrumentationTestRunner"
   }
 }
-
-//afterEvaluate {
-//  ['uploadArchives', 'installToMaven'].each {
-//    tasks[it].dependsOn 'connectedCheck'
-//  }
-//}

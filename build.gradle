@@ -204,7 +204,7 @@ subprojects {
   }
 
   project.ext.dependOnProjects = { list ->
-    return {
+    project.dependencies {
       list.each {
         compile project(it)
         testCompile project(path : it, configuration : 'testCompile')

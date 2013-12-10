@@ -1,0 +1,35 @@
+  /**
+   * Log intent details.
+   * @param tag logcat tag
+   * @param intent intent instance to log about
+   */
+  public static void logIntent(final String tag, final Intent intent) {
+    Log.d(tag, "========================================================");
+    Log.d(tag, "action=" + intent.getAction());
+    Log.d(tag, "data=" + intent.getData());
+    Log.d(tag, "type=" + intent.getType());
+    Log.d(tag, "categories=" + intent.getCategories());
+    Log.d(tag, "flags=" + Integer.toHexString(intent.getFlags()));
+    Log.d(tag, "sourceBounds=" + intent.getSourceBounds());
+    Log.d(tag, "extras:");
+    final Bundle extras = intent.getExtras();
+    if (extras != null) {
+      for (final String key : extras.keySet()) {
+        final Object o = intent.getExtras().get(key);
+        Log.d(tag, "  " + key + "=" + (o != null ? o.getClass() : null) + "/" + o);
+      }
+    }
+  }
+
+  /**
+   * Check whether there is an activity that can respond to the specified intent action in the system.
+   * @param context context instance
+   * @param action intent action
+   * @return true if there is an activity that can respond to the specified intent action
+   */
+  public static boolean isIntentAvailable(final Context context, final String action) {
+    final PackageManager packageManager = context.getPackageManager();
+    final List<?> list = packageManager.queryIntentActivities(new Intent(action), PackageManager.MATCH_DEFAULT_ONLY);
+    return list.size() > 0;
+  }
+

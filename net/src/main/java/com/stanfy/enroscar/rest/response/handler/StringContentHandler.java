@@ -26,7 +26,7 @@ public class StringContentHandler extends BaseContentHandler {
   
   @Override
   protected String getContent(final URLConnection connection, final InputStream source, final ModelTypeToken modelType) throws IOException {
-    return IoUtils.streamToString(source);
+    return IoUtils.streamToString(source, getBuffersPool());
   }
 
 }

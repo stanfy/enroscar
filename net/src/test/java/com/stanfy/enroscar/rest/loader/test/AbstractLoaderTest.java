@@ -11,12 +11,12 @@ import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.loader.LoaderAccess;
 import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
-import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
+import com.stanfy.enroscar.test.EnroscarNetConfig;
 
 /**
  * Base test class for loaders.
  */
-@EnroscarConfiguration(connectionEngineRequired = true)
+@EnroscarNetConfig(connectionEngineRequired = true)
 public abstract class AbstractLoaderTest extends AbstractMockServerTest {
 
   @Before
