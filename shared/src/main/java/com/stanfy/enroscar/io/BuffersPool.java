@@ -4,9 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
@@ -22,53 +19,47 @@ public class BuffersPool implements FlushableBean {
   /** Bean name. */
   public static final String BEAN_NAME = "BuffersPool";
 
-  /** Default buffer size. */
-  public static final int DEFAULT_SIZE_FOR_IMAGES = 16 * 1024;
-
-  /** Used buffers count. */
-  private final AtomicInteger usedBuffersCount = new AtomicInteger(0), buffersCount = new AtomicInteger(0);
-
-  /** Logging tag. */
-  private static final String TAG = BEAN_NAME;
-
-  /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG_IO;
+  /** Default pool configuration. */
+  private static final int[][] DESCRIPTION_DEFAULT = {
+      {4, IoUtils.DEFAULT_BUFFER_SIZE_FOR_IMAGES}, {2, IoUtils.DEFAULT_BUFFER_SIZE}
+  };
 
   /** Buffers store. */
   private final TreeMap<Integer, List<Object>> buffers = new TreeMap<Integer, List<Object>>();
 
   /** Protects {@link #buffers}. */
-  private Object lock = new Object();
+  private final Object lock = new Object();
 
-  /** Default pool configuration. */
-  private static final int[][] DESCRIPTION_DEFAULT = {
-    {4, DEFAULT_SIZE_FOR_IMAGES}, {2, IoUtils.BUF_SIZE}
-  };
+  /** Stats counter. */
+  private int usedBuffersCount, buffersCount;
 
   public BuffersPool() {
     this(DESCRIPTION_DEFAULT);
   }
 
   public BuffersPool(final int[][] initDescription) {
-    if (DEBUG) { Log.i(TAG, "Creating buffers. Types count: " + initDescription.length); }
     for (int i = initDescription.length - 1; i >= 0; i--) {
-      final int count = initDescription[i][0];
-      final int amount = initDescription[i][1];
+      int count = initDescription[i][0];
+      int amount = initDescription[i][1];
+
       for (int k = count - 1; k >= 0; k--) {
-        buffersCount.incrementAndGet();
+        buffersCount++;
         release(allocate(amount));
       }
+
     }
-    usedBuffersCount.set(0);
+    usedBuffersCount = 0;
   }
 
-  private static byte[] allocate(final int size) { return new byte[size]; }
+  private static byte[] allocate(final int size) {
+    return new byte[size];
+  }
 
   /**
    * @return buffer with default width
    */
   public byte[] get() {
-    return get(IoUtils.BUF_SIZE);
+    return get(IoUtils.DEFAULT_BUFFER_SIZE);
   }
 
   /**
@@ -76,28 +67,22 @@ public class BuffersPool implements FlushableBean {
    * @return buffer with length greater on equal than <code>minCapacity</code>
    */
   public byte[] get(final int minCapacity) {
-    if (DebugFlags.DEBUG_IO) {
-      if (minCapacity % IoUtils.BUF_SIZE != 0) {
-        Log.v(TAG, "Be careful. Buffer capacity cannot be divided into " + IoUtils.BUF_SIZE);
-      }
-    }
-    usedBuffersCount.incrementAndGet();
-    final SortedMap<Integer, List<Object>> map = buffers.tailMap(minCapacity);
-
     synchronized (lock) {
-      if (map == null || map.isEmpty()) {
-        buffersCount.incrementAndGet();
+      usedBuffersCount++;
+
+      final SortedMap<Integer, List<Object>> map = buffers.tailMap(minCapacity);
+      if (map.isEmpty()) {
+        buffersCount++;
         return allocate(minCapacity);
       }
 
       final List<Object> bList = map.get(map.firstKey());
       if (bList == null || bList.isEmpty()) {
-        buffersCount.incrementAndGet();
+        buffersCount++;
         return allocate(minCapacity);
       }
 
-      final byte[] array = (byte[])bList.remove(0);
-      return array;
+      return (byte[])bList.remove(0);
     }
   }
 
@@ -106,9 +91,14 @@ public class BuffersPool implements FlushableBean {
    * @param buffer unused buffer
    */
   public void release(final byte[] buffer) {
-    if (buffer == null) { return; }
+    if (buffer == null) {
+      return;
+    }
+
     final int capacity = buffer.length;
-    if (capacity == 0) { return; }
+    if (capacity == 0) {
+      return;
+    }
 
     synchronized (lock) {
       List<Object> bList = buffers.get(capacity);
@@ -117,10 +107,23 @@ public class BuffersPool implements FlushableBean {
         buffers.put(capacity, bList);
       }
       bList.add(buffer);
+
+      usedBuffersCount--;
     }
 
-    usedBuffersCount.decrementAndGet();
-    if (DEBUG) { Log.d(TAG, "Buffers in use: " + usedBuffersCount + "/" + buffersCount); }
+  }
+
+
+  public int getBuffersCount() {
+    synchronized (lock) {
+      return buffersCount;
+    }
+  }
+
+  public int getUsedBuffersCount() {
+    synchronized (lock) {
+      return usedBuffersCount;
+    }
   }
 
   @Override
@@ -128,7 +131,6 @@ public class BuffersPool implements FlushableBean {
     synchronized (lock) {
       if (buffers.size() > 2) {
         buffers.clear();
-        Log.i(TAG, "Buffers flushed");
       }
     }
   }
