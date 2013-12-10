@@ -4,7 +4,7 @@ import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
-import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.test.AbstractNetTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -18,7 +18,7 @@ import java.io.IOException;
  * Base test class.
  */
 @RunWith(RobolectricTestRunner.class)
-public abstract class AbstractImagesTest extends AbstractEnroscarTest {
+public abstract class AbstractImagesTest extends AbstractNetTest {
 
   /** Images manager. */
   ImagesManager manager;

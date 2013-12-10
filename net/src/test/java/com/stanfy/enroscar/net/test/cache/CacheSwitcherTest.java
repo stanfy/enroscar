@@ -19,13 +19,13 @@ import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
 import com.stanfy.enroscar.net.cache.ResponseCacheSwitcher;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
-import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
+import com.stanfy.enroscar.test.EnroscarNetConfig;
 
 /**
  * Tests for {@link com.stanfy.net.cache.ResponseCacheSwitcher}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-@EnroscarConfiguration(connectionEngineRequired = true)
+@EnroscarNetConfig(connectionEngineRequired = true)
 @Config(emulateSdk = 18)
 public class CacheSwitcherTest extends AbstractMockServerTest {
 

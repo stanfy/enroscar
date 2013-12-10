@@ -10,7 +10,7 @@ import android.graphics.Bitmap.CompressFormat;
 
 import com.stanfy.enroscar.rest.request.net.multipart.FilePart;
 import com.stanfy.enroscar.rest.request.net.multipart.PartSource;
-import com.stanfy.enroscar.utils.AppUtils;
+import com.stanfy.enroscar.utils.Bitmaps;
 
 /**
  * {@link PartSource} based on {@link Bitmap} content.
@@ -31,7 +31,7 @@ public class BitmapPart extends FilePart {
   private int compressQuality = COMPRESS_QUALITY_DEFAULT;
 
   public BitmapPart(final String name, final String fileName, final Bitmap bitmap) {
-    super(name, new BitmapSource(fileName, AppUtils.bitmapSize(bitmap)), "image/jpeg", null);
+    super(name, new BitmapSource(fileName, Bitmaps.bitmapSize(bitmap)), "image/jpeg", null);
     this.bitmap = bitmap;
   }
 

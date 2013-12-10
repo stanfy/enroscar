@@ -45,15 +45,15 @@ import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
-import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
-import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
+import com.stanfy.enroscar.test.AbstractNetTest;
+import com.stanfy.enroscar.test.EnroscarNetConfig;
 
 /**
  * Mock server test.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @RunWith(RobolectricTestRunner.class)
-public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
+public abstract class AbstractMockServerTest extends AbstractNetTest {
 
   /** Straight resolver.  */
   private static final StreamResolver STRAIGHT_RESOLVER = new StreamResolver() {
@@ -67,7 +67,7 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
   private Throwable error;
 
   /** Configuration. */
-  private EnroscarConfiguration config;
+  private EnroscarNetConfig config;
 
   /** Web server. */
   private MockWebServer webServer;
@@ -97,7 +97,7 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
    * @throws IOException if error happens
    */
   protected static String read(final URLConnection connection) throws IOException {
-    return IoUtils.streamToString(connection.getInputStream());
+    return IoUtils.streamToString(connection.getInputStream(), null);
   }
 
   @Override
@@ -131,7 +131,7 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     
     if (config == null) {
       EnroscarConnectionsEngineMode.testMode();
-      config = BeanUtils.getAnnotationFromHierarchy(getClass(), EnroscarConfiguration.class);
+      config = BeanUtils.getAnnotationFromHierarchy(getClass(), EnroscarNetConfig.class);
     }
     if (config != null && config.connectionEngineRequired()) {
       final Config config = EnroscarConnectionsEngine.config();
@@ -186,7 +186,7 @@ public abstract class AbstractMockServerTest extends AbstractEnroscarTest {
     assertThat(realConnection).isInstanceOf(HttpURLConnection.class);
 
     final HttpURLConnection http = (HttpURLConnection)realConnection;
-    final String response = IoUtils.streamToString(resolver.getStream(connection));
+    final String response = IoUtils.streamToString(resolver.getStream(connection), null);
     assertThat(response).isEqualTo(expectedResponse);
     assertThat(http.getResponseCode()).isEqualTo(cached ? -1 : HttpURLConnection.HTTP_OK);
 

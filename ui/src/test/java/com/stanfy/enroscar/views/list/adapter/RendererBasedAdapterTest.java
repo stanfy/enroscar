@@ -1,5 +1,7 @@
 package com.stanfy.enroscar.views.list.adapter;
 
+import android.os.Build;
+
 import com.stanfy.enroscar.content.UniqueObject;
 
 import org.junit.Before;
@@ -19,7 +21,7 @@ import static org.fest.reflect.core.Reflection.field;
  * Tests for ModelListAdapter.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(emulateSdk = 18)
+@Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class RendererBasedAdapterTest {
 
   /** Testing instance. */

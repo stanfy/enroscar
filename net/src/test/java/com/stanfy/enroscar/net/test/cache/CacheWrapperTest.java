@@ -20,12 +20,12 @@ import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
 import com.stanfy.enroscar.net.cache.CacheWrapper;
-import com.stanfy.enroscar.shared.test.EnroscarConfiguration;
+import com.stanfy.enroscar.test.EnroscarNetConfig;
 
 /**
  * Test for {@link CacheWrapper}.
  */
-@EnroscarConfiguration(connectionEngineRequired = true)
+@EnroscarNetConfig(connectionEngineRequired = true)
 @Config(emulateSdk = 18)
 public class CacheWrapperTest extends AbstractOneCacheTest {
 
@@ -65,7 +65,7 @@ public class CacheWrapperTest extends AbstractOneCacheTest {
       .create()
       .getInputStream();
 
-    final String response = IoUtils.streamToString(stream);
+    final String response = IoUtils.streamToString(stream, null);
     assertThat(response).isEqualTo(text);
 
     assertThat(cache.getWriteSuccessCount()).isEqualTo(1);

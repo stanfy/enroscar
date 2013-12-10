@@ -1,5 +1,7 @@
 package com.stanfy.enroscar.views.list.adapter;
 
+import android.os.Build;
+
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Before;
@@ -15,7 +17,7 @@ import java.util.Arrays;
  * Tests for ModelListAdapter.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(emulateSdk = 18)
+@Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class ModelListAdapterTest {
 
   /** Adapter under test. */

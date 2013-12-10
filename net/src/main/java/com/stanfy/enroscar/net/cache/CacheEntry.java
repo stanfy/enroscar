@@ -1,5 +1,18 @@
 package com.stanfy.enroscar.net.cache;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.jakewharton.disklrucache.DiskLruCache.Editor;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.utils.Time;
+
+import java.io.EOFException;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,19 +35,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
-
-import android.annotation.TargetApi;
-import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.jakewharton.disklrucache.DiskLruCache.Editor;
-import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.utils.AppUtils;
-import com.stanfy.enroscar.utils.Time;
 
 /** Cache entry. */
 public class CacheEntry {
@@ -148,7 +148,7 @@ public class CacheEntry {
    */
   protected void setRequestMethod(final String requestMethod) { this.requestMethod = requestMethod; }
 
-  public String getCacheKey() { return AppUtils.getMd5(uri); }
+  public String getCacheKey() { return Md5.getMd5(uri); }
 
   public boolean canBeCached() {
     return !TextUtils.isEmpty(uri) && !TextUtils.isEmpty(requestMethod) && uri.startsWith("http") && isRequestMethodCacheable();
@@ -212,8 +212,8 @@ public class CacheEntry {
    * @return next line from the stream parsed as an integer
    * @throws IOException if error i/O happens or line has bad format (int cannot be parsed)
    */
-  protected static final int readInt(final InputStream in) throws IOException {
-    final String intString = IoUtils.readAsciiLine(in);
+  protected static int readInt(final InputStream in) throws IOException {
+    final String intString = readString(in);
     try {
       return Integer.parseInt(intString);
     } catch (final NumberFormatException e) {
@@ -226,7 +226,7 @@ public class CacheEntry {
    * @throws IOException if error i/O happens or line has bad format (long cannot be parsed)
    */
   protected final long readLong(final InputStream in) throws IOException {
-    final String longString = IoUtils.readAsciiLine(in);
+    final String longString = readString(in);
     try {
       return Long.parseLong(longString);
     } catch (final NumberFormatException e) {
@@ -240,7 +240,7 @@ public class CacheEntry {
    * @param value integer value
    * @throws IOException if error happens
    */
-  protected static final void writeInt(final Writer writer, final int value) throws IOException {
+  protected static void writeInt(final Writer writer, final int value) throws IOException {
     writer.write(new StringBuilder().append(value).append('\n').toString());
   }
   /**
@@ -249,7 +249,7 @@ public class CacheEntry {
    * @param value integer value
    * @throws IOException if error happens
    */
-  protected static final void writeLong(final Writer writer, final long value) throws IOException {
+  protected static void writeLong(final Writer writer, final long value) throws IOException {
     writer.write(new StringBuilder().append(value).append('\n').toString());
   }
 
@@ -258,8 +258,25 @@ public class CacheEntry {
    * @return next line
    * @throws IOException if error happens
    */
-  protected static final String readString(final InputStream in) throws IOException {
-    return IoUtils.readAsciiLine(in);
+  protected static String readString(final InputStream in) throws IOException {
+    // TODO support UTF-8 here instead
+
+    final StringBuilder result = new StringBuilder(80);
+    while (true) {
+      final int c = in.read();
+      if (c == -1) {
+        throw new EOFException();
+      } else if (c == '\n') {
+        break;
+      }
+
+      result.append((char) c);
+    }
+    final int length = result.length();
+    if (length > 0 && result.charAt(length - 1) == '\r') {
+      result.setLength(length - 1);
+    }
+    return result.toString();
   }
 
   /**

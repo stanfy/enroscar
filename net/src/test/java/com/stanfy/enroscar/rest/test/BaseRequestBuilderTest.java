@@ -17,14 +17,14 @@ import com.stanfy.enroscar.rest.request.BaseRequestBuilder;
 import com.stanfy.enroscar.rest.request.Parameter;
 import com.stanfy.enroscar.rest.request.ParameterValue;
 import com.stanfy.enroscar.rest.request.RequestDescription;
-import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.test.AbstractNetTest;
 
 /**
  * Tests for {@link BaseRequestBuilder}.
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = 18)
-public class BaseRequestBuilderTest extends AbstractEnroscarTest {
+public class BaseRequestBuilderTest extends AbstractNetTest {
 
   @Override
   protected void configureBeansManager(final Editor editor) {
