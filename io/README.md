@@ -30,6 +30,15 @@ Supply your pool instance to stream wrappers using their constructors.
 Class `IoUtils` contains some methods for operating on streams using a buffers pool
 (like `transfer(InputStream, OutputStream, BuffersPool)`).
 
+You may also specify what buffers should be preallocated when the pool is initialized:
+```java
+BuffersPool pool = new BuffersPool(new int[][] {
+  {/*how many*/ 4, /*what size*/ 8192}, // 4 byte arrays with length 8192
+  {/*how many*/ 2, /*what size*/ 1024}  // 2 byte arrays with length 1024
+});
+System.out.println(pool.getAllocatedBuffersCount()); // output: 4
+```
+
 
 Stream wrappers with progress listeners
 ---------------------------------------
