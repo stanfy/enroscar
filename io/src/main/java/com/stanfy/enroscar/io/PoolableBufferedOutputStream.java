@@ -4,8 +4,6 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import android.util.Log;
-
 /**
  * Source is based on BufferedOutputStream.
  * @see BuffersPool
@@ -179,14 +177,6 @@ public class PoolableBufferedOutputStream extends FilterOutputStream {
     if (count > 0) {
       out.write(buf, 0, count);
       count = 0;
-    }
-  }
-
-  @Override
-  protected void finalize() throws Throwable {
-    super.finalize();
-    if (pool != null && buf != null) {
-      Log.e(PoolableBufferedInputStream.class.getSimpleName(), "stream was not closed", stack);
     }
   }
 

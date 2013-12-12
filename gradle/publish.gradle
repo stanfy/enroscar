@@ -61,6 +61,14 @@ uploadArchives {
   }
 }
 
+task javadocs(type: Javadoc) {
+  source = android.sourceSets.main.allJava
+}
+
+task javadocsJar(type: Jar, dependsOn: ['javadocs']) {
+  classifier = 'javadoc'
+  from javadocs.destinationDir
+}
 
 task sourcesJar(type: Jar) {
   from 'src/main/java'
@@ -74,6 +82,7 @@ task testsJar(type : Jar) {
 
 artifacts {
   archives sourcesJar
+  archives javadocsJar
 
 //  testCompile project.plainClassesJar
   testCompile testsJar

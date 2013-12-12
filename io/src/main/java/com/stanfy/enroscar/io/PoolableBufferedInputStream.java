@@ -4,8 +4,6 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import android.util.Log;
-
 
 /**
  * Source is based on BufferedInputStream.
@@ -391,14 +389,6 @@ public class PoolableBufferedInputStream extends FilterInputStream {
       return read;
     }
     return read + localIn.skip(amount - read);
-  }
-
-  @Override
-  protected void finalize() throws Throwable {
-    super.finalize();
-    if (pool != null && buf != null) {
-      Log.e(PoolableBufferedInputStream.class.getSimpleName(), "stream was not closed", stack);
-    }
   }
 
 }
