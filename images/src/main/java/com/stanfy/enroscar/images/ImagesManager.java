@@ -113,7 +113,7 @@ public class ImagesManager implements InitializingBean {
 
   @Override
   public void onInitializationFinished(final BeansContainer beansContainer) {
-    this.buffersPool = beansContainer.getBean(BuffersPool.BEAN_NAME, BuffersPool.class);
+    this.buffersPool = beansContainer.getBean(BuffersPool.class.getName(), BuffersPool.class);
     this.memCache = beansContainer.getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class);
     if (buffersPool == null || memCache == null) {
       throw new IllegalStateException("Buffers pool and images memory cache must be initialized before images manager.");

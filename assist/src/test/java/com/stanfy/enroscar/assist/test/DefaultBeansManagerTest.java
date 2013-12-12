@@ -2,6 +2,7 @@ package com.stanfy.enroscar.assist.test;
 
 import android.os.Build;
 
+import com.stanfy.enroscar.assist.BuffersPoolController;
 import com.stanfy.enroscar.assist.DefaultBeansManager;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.cache.ImageFileCache;
@@ -21,6 +22,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link DefaultBeansManager}.
@@ -89,6 +91,15 @@ public class DefaultBeansManagerTest {
     manager.edit().commit();
     assertThat(manager.getMainBuffersPool()).isSameAs(pool);
     assertThat(manager.getStatsManager()).isSameAs(statsManager);
+  }
+
+  @Test
+  public void buffersPoolMustBeFlushedOnLowMemory() {
+    BuffersPool pool = mock(BuffersPool.class);
+    manager.edit().put(BuffersPool.class.getName(), pool).put(BuffersPoolController.class).commit();
+
+    manager.getContainer().onLowMemory();
+    verify(pool).flush();
   }
 
 }

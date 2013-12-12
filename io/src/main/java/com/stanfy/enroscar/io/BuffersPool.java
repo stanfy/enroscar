@@ -5,19 +5,11 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.stanfy.enroscar.beans.BeansContainer;
-import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.beans.FlushableBean;
-
 /**
  * A pool of arrays that might be used to decode images or perform other IO operations.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-@EnroscarBean(BuffersPool.BEAN_NAME)
-public class BuffersPool implements FlushableBean {
-
-  /** Bean name. */
-  public static final String BEAN_NAME = "BuffersPool";
+public class BuffersPool {
 
   /** Default pool configuration. */
   private static final int[][] DESCRIPTION_DEFAULT = {
@@ -31,7 +23,7 @@ public class BuffersPool implements FlushableBean {
   private final Object lock = new Object();
 
   /** Stats counter. */
-  private int usedBuffersCount, buffersCount;
+  private int usedBuffersCount, allocatedBuffersCount;
 
   public BuffersPool() {
     this(DESCRIPTION_DEFAULT);
@@ -43,7 +35,7 @@ public class BuffersPool implements FlushableBean {
       int amount = initDescription[i][1];
 
       for (int k = count - 1; k >= 0; k--) {
-        buffersCount++;
+        allocatedBuffersCount++;
         release(allocate(amount));
       }
 
@@ -72,13 +64,13 @@ public class BuffersPool implements FlushableBean {
 
       final SortedMap<Integer, List<Object>> map = buffers.tailMap(minCapacity);
       if (map.isEmpty()) {
-        buffersCount++;
+        allocatedBuffersCount++;
         return allocate(minCapacity);
       }
 
       final List<Object> bList = map.get(map.firstKey());
       if (bList == null || bList.isEmpty()) {
-        buffersCount++;
+        allocatedBuffersCount++;
         return allocate(minCapacity);
       }
 
@@ -114,9 +106,9 @@ public class BuffersPool implements FlushableBean {
   }
 
 
-  public int getBuffersCount() {
+  public int getAllocatedBuffersCount() {
     synchronized (lock) {
-      return buffersCount;
+      return allocatedBuffersCount;
     }
   }
 
@@ -126,12 +118,20 @@ public class BuffersPool implements FlushableBean {
     }
   }
 
-  @Override
-  public void flushResources(final BeansContainer beansContainer) {
+  int getBuffersMapSize() {
     synchronized (lock) {
-      if (buffers.size() > 2) {
-        buffers.clear();
-      }
+      return buffers.size();
+    }
+  }
+
+
+  /**
+   * Clear all the retained buffers to free resources.
+   * May be used in low memory conditions.
+   */
+  public void flush() {
+    synchronized (lock) {
+      buffers.clear();
     }
   }
 

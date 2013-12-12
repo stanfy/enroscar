@@ -33,54 +33,72 @@ public class BuffersPoolTest {
 
   @Test
   public void shouldReportCorrectStatsAfterCreation() {
-    assertThat(buffersPool.getBuffersCount()).isEqualTo(3);
+    assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(3);
     assertThat(buffersPool.getUsedBuffersCount()).isZero();
   }
 
   @Test
   public void shouldBeAbleToAllocateNewBuffer() {
-    int prevCount = buffersPool.getBuffersCount();
+    int prevCount = buffersPool.getAllocatedBuffersCount();
     byte[] buffer = buffersPool.get(maxAvailableSize + 1);
     assertThat(buffer).isNotNull();
-    assertThat(buffersPool.getBuffersCount()).isEqualTo(prevCount + 1);
+    assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(prevCount + 1);
   }
 
   @Test
   public void shouldUseAvailableBuffers() {
-    int expectedBuffersCount = buffersPool.getBuffersCount();
+    int expectedBuffersCount = buffersPool.getAllocatedBuffersCount();
 
     byte[] buffer1 = buffersPool.get(maxAvailableSize / 4);
     assertThat(buffer1).isNotNull();
-    assertThat(buffersPool.getBuffersCount()).isEqualTo(expectedBuffersCount);
+    assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(expectedBuffersCount);
     assertThat(buffersPool.getUsedBuffersCount()).isEqualTo(1);
 
     byte[] buffer2 = buffersPool.get(maxAvailableSize / 2);
     assertThat(buffer2).isNotNull();
-    assertThat(buffersPool.getBuffersCount()).isEqualTo(expectedBuffersCount);
+    assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(expectedBuffersCount);
     assertThat(buffersPool.getUsedBuffersCount()).isEqualTo(2);
 
     byte[] buffer3 = buffersPool.get(maxAvailableSize);
     assertThat(buffer3).isNotNull();
-    assertThat(buffersPool.getBuffersCount()).isEqualTo(expectedBuffersCount);
+    assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(expectedBuffersCount);
     assertThat(buffersPool.getUsedBuffersCount()).isEqualTo(3);
 
     byte[] buffer4 = buffersPool.get(2);
     expectedBuffersCount++;
     assertThat(buffer4).isNotNull();
-    assertThat(buffersPool.getBuffersCount()).isEqualTo(expectedBuffersCount);
+    assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(expectedBuffersCount);
     assertThat(buffersPool.getUsedBuffersCount()).isEqualTo(4);
 
     buffersPool.release(buffer1);
     buffersPool.release(buffer2);
     buffersPool.release(buffer3);
     buffersPool.release(buffer4);
-    assertThat(buffersPool.getBuffersCount()).isEqualTo(expectedBuffersCount);
+    assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(expectedBuffersCount);
     assertThat(buffersPool.getUsedBuffersCount()).isZero();
 
     assertThat(buffersPool.get(maxAvailableSize / 3)).isNotNull();
-    assertThat(buffersPool.getBuffersCount()).isEqualTo(expectedBuffersCount);
+    assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(expectedBuffersCount);
     assertThat(buffersPool.getUsedBuffersCount()).isEqualTo(1);
   }
+
+  @Test
+  public void flushShouldClearsRetainedBuffers() {
+    byte[] buffer = buffersPool.get(maxAvailableSize);
+    int allocationsCount = buffersPool.getAllocatedBuffersCount();
+    assertThat(allocationsCount).isGreaterThan(0);
+    assertThat(buffersPool.getBuffersMapSize()).isGreaterThan(0);
+
+    buffersPool.flush();
+    assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(allocationsCount);
+    assertThat(buffersPool.getUsedBuffersCount()).isEqualTo(1);
+    assertThat(buffersPool.getBuffersMapSize()).isZero();
+
+    buffersPool.release(buffer);
+    assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(allocationsCount);
+    assertThat(buffersPool.getUsedBuffersCount()).isZero();
+  }
+
 
   @Test
   public void threadsTest() throws Exception {

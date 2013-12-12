@@ -14,7 +14,7 @@ public class BeanSetup {
   private BeanSetup() { }
 
   public static void setup(final BeansManager.Editor editor) {
-    if (!editor.hasBean(BuffersPool.BEAN_NAME)) {
+    if (!editor.hasBean(BuffersPool.class.getName())) {
       editor.put(BuffersPool.class);
     }
     editor.put(ImageFileCache.class);

@@ -32,7 +32,10 @@ public class DefaultBeansManager extends BeansManager {
 
   /** Flag that indicates that manager factory has been set. */
   private static boolean configured = false;
-  
+
+  /** Buffers pool entity name. */
+  private static final String BUFFERS_POOL_NAME = BuffersPool.class.getName();
+
   /**
    * Main constructor.
    * @param application Android application instance
@@ -64,7 +67,7 @@ public class DefaultBeansManager extends BeansManager {
   /** @return images manager instance */
   public ImagesManager getImagesManager() { return getContainer().getBean(ImagesManager.BEAN_NAME, ImagesManager.class); }
   /** @return main buffers pool instance */
-  public BuffersPool getMainBuffersPool() { return getContainer().getBean(BuffersPool.BEAN_NAME, BuffersPool.class); }
+  public BuffersPool getMainBuffersPool() { return getContainer().getBean(BUFFERS_POOL_NAME, BuffersPool.class); }
   /** @return image memory cache instance */
   public ImageMemoryCache getImageMemoryCache() { return getContainer().getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class); }
   /** @return response cache instance */
@@ -91,8 +94,9 @@ public class DefaultBeansManager extends BeansManager {
 
     {
       // set default beans
-      if (!hasBean(BuffersPool.BEAN_NAME)) {
-        put(BuffersPool.BEAN_NAME, new BuffersPool());
+      if (!hasBean(BUFFERS_POOL_NAME)) {
+        put(BUFFERS_POOL_NAME, new BuffersPool());
+        put(BuffersPoolController.class);
       }
       if (!hasBean(EmptyStatsManager.BEAN_NAME)) {
         put(EmptyStatsManager.BEAN_NAME, new EmptyStatsManager());

@@ -317,7 +317,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
 
   @Override
   public void onInitializationFinished(final BeansContainer beansContainer) {
-    this.buffersPool = beansContainer.getBean(BuffersPool.BEAN_NAME, BuffersPool.class);
+    this.buffersPool = beansContainer.getBean(BuffersPool.class.getName(), BuffersPool.class);
     if (buffersPool == null) {
       throw new IllegalStateException("Buffers pool must be initialized before the response cache");
     }

@@ -20,7 +20,6 @@ task wrapper(type: Wrapper) {
 def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 
-boolean hasCredentials = hasProperty('nexusUsername') && hasProperty('nexusPassword')
 
 subprojects {
 
@@ -30,15 +29,13 @@ subprojects {
     return
   }
 
-  apply plugin: 'android-library'
-  apply plugin: 'android-test'
-  apply plugin: 'checkstyle'
-  apply plugin: 'maven'
-  apply plugin: 'signing'
-  apply plugin: 'maven-publish'
-
   version = projectVersion
   group = 'com.stanfy.enroscar'
+
+  apply plugin: 'android-library'
+  apply from: file("$rootDir/gradle/tests.gradle")
+  apply from: file("$rootDir/gradle/publish.gradle")
+  apply plugin: 'checkstyle'
 
   checkstyle {
     configFile = checkstyleConfig
@@ -49,67 +46,6 @@ subprojects {
     mavenCentral()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
-
-  boolean snapshot = projectVersion.contains("SNAPSHOT")
-
-  if (!snapshot) {
-    signing {
-      sign configurations.archives
-    }
-  }
-
-  uploadArchives {
-    repositories {
-      mavenDeployer {
-
-        if (!snapshot) {
-          beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-        }
-
-        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-          if (hasCredentials) {
-            authentication(userName: nexusUsername, password: nexusPassword)
-          }
-        }
-        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-          if (hasCredentials) {
-            authentication(userName: nexusUsername, password: nexusPassword)
-          }
-        }
-
-        pom.project {
-          name 'Enroscar'
-          description 'Android Library'
-          url 'https://github.com/stanfy/enroscar'
-          inceptionYear '2011'
-
-          scm {
-            url 'https://github.com/stanfy/enroscar'
-            connection 'scm:git:git@github.com:stanfy/enroscar.git'
-            developerConnection 'scm:git:git@github.com:stanfy/enroscar.git'
-          }
-
-          licenses {
-            license {
-              name 'The Apache Software License, Version 2.0'
-              url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-              distribution 'repo'
-            }
-          }
-
-          developers {
-            developer {
-              id 'rmazur'
-              name 'Roman Mazur'
-              email 'rmazur@stanfy.com.ua'
-            }
-          }
-        }
-
-      }
-    }
-  }
-
 
   android {
     compileSdkVersion 19
@@ -123,62 +59,6 @@ subprojects {
       packageName getPackageName(project)
     }
   }
-
-  task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
-    from 'build/bundles/release/classes.jar'
-    into "build/libs"
-    rename { "${project.name}-${project.version}.jar" }
-  }
-
-  android.libraryVariants.all { variant ->
-    if (variant.buildType.name.equalsIgnoreCase('release')) { return }
-    tasks["test$variant.name"].configure {
-      scanForTestClasses = false
-
-      def selection = null
-      try {
-        selection = project.testSelection
-      } catch (def e) {
-        // ignore
-      }
-      if (!selection) {
-        selection = "**/*Test.class"
-      }
-
-      def debug = null
-      try {
-        debug = project.testDebug
-      } catch (def e) {
-        // ignore
-      }
-      if (debug == "yes") {
-        jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-      }
-
-      include selection
-      exclude "**/Abstract*.class"
-    }
-  }
-
-  task sourcesJar(type: Jar) {
-    from 'src/main/java'
-    classifier = 'sources'
-  }
-
-  task testsJar(type : Jar) {
-    from 'src/test/java'
-    classifier = 'tests'
-  }
-
-  artifacts {
-    // add sources to published artifacts
-    archives sourcesJar
-
-    testCompile file("$buildDir/libs/${project.name}-${project.version}.jar")
-    testCompile testsJar
-  }
-
-  assemble.dependsOn classesJar
 
   def testDeps = [
       'com.squareup:fest-android:1.0.+',
