@@ -10,7 +10,7 @@ buildscript {
 }
 
 def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').replaceAll(/enroscar/, '')}" }
-def projectVersion = "1.1"
+def projectVersion = "2.0-SNAPSHOT"
 
 task wrapper(type: Wrapper) {
   gradleVersion = '1.8'
