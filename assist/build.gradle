@@ -1,10 +1,8 @@
-dependencies(
-    project.dependOnProjects([
-        ':enroscar-beans', ':enroscar-shared', ':enroscar-sdk-dep',
-        ':enroscar-net', ':enroscar-stats', ':enroscar-images',
-        ':enroscar-ui'
-    ])
-)
+dependOnProjects([
+    ':enroscar-beans', ':enroscar-io',
+    ':enroscar-net', ':enroscar-stats', ':enroscar-images',
+    ':enroscar-ui'
+])
 
 // POM file modifications
 uploadArchives {

@@ -1,30 +1,31 @@
 package com.stanfy.enroscar.views.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-
 import android.content.Context;
+import android.os.Build;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
-import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.test.AbstractNetTest;
 import com.stanfy.enroscar.views.StateHelper;
 import com.stanfy.enroscar.views.StateHelper.StateViewCreator;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+
 /**
- * {@link com.stanfy.views.StateHelper} test.
+ * {@link com.stanfy.enroscar.views.StateHelper} test.
  * @author Vladislav Lipskiy - Stanfy (http://www.stanfy.com)
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(emulateSdk = 18)
-public class StateHelperTest extends AbstractEnroscarTest {
+@Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
+public class StateHelperTest extends AbstractNetTest {
 
   /** Test helper state. */
   private static final int STATE_TEST = 1;

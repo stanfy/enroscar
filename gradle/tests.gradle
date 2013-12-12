@@ -1,0 +1,31 @@
+apply plugin: 'android-test'
+
+android.libraryVariants.all { variant ->
+  if (variant.buildType.name.equalsIgnoreCase('release')) { return }
+  tasks["test$variant.name"].configure {
+    scanForTestClasses = false
+
+    def selection = null
+    try {
+      selection = project.testSelection
+    } catch (def e) {
+      // ignore
+    }
+    if (!selection) {
+      selection = "**/*Test.class"
+    }
+
+    def debug = null
+    try {
+      debug = project.testDebug
+    } catch (def e) {
+      // ignore
+    }
+    if (debug == "yes") {
+      jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
+    }
+
+    include selection
+    exclude "**/Abstract*.class"
+  }
+}

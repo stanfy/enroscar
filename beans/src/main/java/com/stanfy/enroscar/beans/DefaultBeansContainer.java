@@ -25,18 +25,25 @@ public class DefaultBeansContainer implements BeansContainer {
   public <T> T putEntityInstance(final Class<T> clazz, final Context context) {
     final EnroscarBean beanAnnotation = BeanUtils.getBeanInfo(clazz);
     T instance;
+    String name;
     try {
-      if (beanAnnotation.contextDependent()) {
-        if (context == null) { throw new IllegalArgumentException("Bean is context dependent but context is not supplied"); }
-        final Constructor<T> constr = clazz.getConstructor(Context.class);
-        instance = constr.newInstance(context);
+      if (beanAnnotation != null) {
+        name = beanAnnotation.value();
+        if (beanAnnotation.contextDependent()) {
+          if (context == null) { throw new IllegalArgumentException("Bean is context dependent but context is not supplied"); }
+          final Constructor<T> constr = clazz.getConstructor(Context.class);
+          instance = constr.newInstance(context);
+        } else {
+          instance = clazz.newInstance();
+        }
       } else {
         instance = clazz.newInstance();
+        name = clazz.getName();
       }
     } catch (final Exception e) {
       throw new RuntimeException("Unable to instantiate bean " + clazz + " with name " + beanAnnotation.value(), e);
     }
-    putEntityInstance(beanAnnotation.value(), instance);
+    putEntityInstance(name, instance);
     return instance;
   }
 
@@ -49,8 +56,8 @@ public class DefaultBeansContainer implements BeansContainer {
   @Override
   public <T> T getBean(final Class<T> clazz) {
     final EnroscarBean beanAnnotation = clazz.getAnnotation(EnroscarBean.class);
-    if (beanAnnotation == null) { throw new IllegalArgumentException("Bean must be annotated as @" + EnroscarBean.class.getSimpleName()); }
-    return getBean(beanAnnotation.value(), clazz);
+    String name = beanAnnotation != null ? beanAnnotation.value() : clazz.getName();
+    return getBean(name, clazz);
   }
 
   @Override
@@ -61,9 +68,8 @@ public class DefaultBeansContainer implements BeansContainer {
 
   @Override
   public void putEntityInstance(final Object instance) {
-    final EnroscarBean beanAnnotation = instance.getClass().getAnnotation(EnroscarBean.class);
-    if (beanAnnotation == null) { throw new IllegalArgumentException("Bean must be annotated as @" + EnroscarBean.class.getSimpleName()); }
-    putEntityInstance(beanAnnotation.value(), instance);
+    final EnroscarBean beanAnnotation = BeanUtils.getBeanInfo(instance.getClass());
+    putEntityInstance(beanAnnotation != null ? beanAnnotation.value() : instance.getClass().getName(), instance);
   }
 
   @Override

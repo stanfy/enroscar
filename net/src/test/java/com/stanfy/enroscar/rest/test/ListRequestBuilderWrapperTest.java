@@ -15,7 +15,7 @@ import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
-import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.test.AbstractNetTest;
 
 /**
  * Test for list wrapper.
@@ -23,7 +23,7 @@ import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = 18)
-public class ListRequestBuilderWrapperTest extends AbstractEnroscarTest {
+public class ListRequestBuilderWrapperTest extends AbstractNetTest {
 
   @Override
   protected void configureBeansManager(final Editor editor) {

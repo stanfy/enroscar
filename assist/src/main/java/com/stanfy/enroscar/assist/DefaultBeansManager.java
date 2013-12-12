@@ -18,7 +18,6 @@ import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
-import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
 import com.stanfy.enroscar.stats.EmptyStatsManager;
 import com.stanfy.enroscar.stats.StatsManager;
 import com.stanfy.enroscar.views.ImageConsumers;
@@ -33,7 +32,10 @@ public class DefaultBeansManager extends BeansManager {
 
   /** Flag that indicates that manager factory has been set. */
   private static boolean configured = false;
-  
+
+  /** Buffers pool entity name. */
+  private static final String BUFFERS_POOL_NAME = BuffersPool.class.getName();
+
   /**
    * Main constructor.
    * @param application Android application instance
@@ -65,7 +67,7 @@ public class DefaultBeansManager extends BeansManager {
   /** @return images manager instance */
   public ImagesManager getImagesManager() { return getContainer().getBean(ImagesManager.BEAN_NAME, ImagesManager.class); }
   /** @return main buffers pool instance */
-  public BuffersPool getMainBuffersPool() { return getContainer().getBean(BuffersPool.BEAN_NAME, BuffersPool.class); }
+  public BuffersPool getMainBuffersPool() { return getContainer().getBean(BUFFERS_POOL_NAME, BuffersPool.class); }
   /** @return image memory cache instance */
   public ImageMemoryCache getImageMemoryCache() { return getContainer().getBean(ImageMemoryCache.BEAN_NAME, ImageMemoryCache.class); }
   /** @return response cache instance */
@@ -76,8 +78,6 @@ public class DefaultBeansManager extends BeansManager {
   public ActivityBehaviorFactory getActivityBehaviorFactory() { return getContainer().getBean(ActivityBehaviorFactory.BEAN_NAME, ActivityBehaviorFactory.class); }
   /** @return statistics manager */
   public StatsManager getStatsManager() { return getContainer().getBean(StatsManager.BEAN_NAME, StatsManager.class); }
-  /** @return SDK dependent utilities factory */
-  public SDKDependentUtilsFactory getSdkDependentUtilsFactory() { return getContainer().getBean(SDKDependentUtilsFactory.BEAN_NAME, SDKDependentUtilsFactory.class); }
   /** @return remote server API access configuration */
   public RemoteServerApiConfiguration getRemoteServerApiConfiguration() { return getContainer().getBean(RemoteServerApiConfiguration.BEAN_NAME, RemoteServerApiConfiguration.class); }
   /** @return content handler instance */
@@ -94,11 +94,9 @@ public class DefaultBeansManager extends BeansManager {
 
     {
       // set default beans
-      if (!hasBean(SDKDependentUtilsFactory.BEAN_NAME)) {
-        put(SDKDependentUtilsFactory.BEAN_NAME, new SDKDependentUtilsFactory());
-      }
-      if (!hasBean(BuffersPool.BEAN_NAME)) {
-        put(BuffersPool.BEAN_NAME, new BuffersPool());
+      if (!hasBean(BUFFERS_POOL_NAME)) {
+        put(BUFFERS_POOL_NAME, new BuffersPool());
+        put(BuffersPoolController.class);
       }
       if (!hasBean(EmptyStatsManager.BEAN_NAME)) {
         put(EmptyStatsManager.BEAN_NAME, new EmptyStatsManager());

@@ -2,13 +2,14 @@ package com.stanfy.enroscar.views.list.adapter;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.test.AbstractNetTest;
 import com.stanfy.enroscar.views.StateHelper;
 
 import org.junit.Before;
@@ -29,8 +30,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
  *
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = "src/main/AndroidManifest.xml", emulateSdk = 18)
-public class LoaderAdapterTest extends AbstractEnroscarTest {
+@Config(manifest = "src/main/AndroidManifest.xml", emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
+public class LoaderAdapterTest extends AbstractNetTest {
 
   /** Aadapter to test. */
   private MockLoaderAdapter<CharSequence> loaderAdapter;

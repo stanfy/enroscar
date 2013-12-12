@@ -1,7 +1,4 @@
-dependencies(
-    project.dependOnProjects([':enroscar-beans', ':enroscar-shared', ':enroscar-sdk-dep', ':enroscar-net', ':enroscar-stats', ':enroscar-images'])
-)
-
+dependOnProjects([':enroscar-beans', ':enroscar-net', ':enroscar-stats', ':enroscar-images'])
 
 dependencies {
   compile 'com.android.support:support-v4:18.0.0'

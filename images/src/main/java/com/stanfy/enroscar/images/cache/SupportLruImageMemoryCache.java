@@ -9,8 +9,7 @@ import android.util.Log;
 import com.stanfy.enroscar.beans.Bean;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.sdkdep.SdkDepUtils;
-import com.stanfy.enroscar.sdkdep.SdkDependentUtils;
+import com.stanfy.enroscar.utils.Bitmaps;
 
 /**
  * Memory cache based on {@link LruCache}.
@@ -25,16 +24,11 @@ public class SupportLruImageMemoryCache implements ImageMemoryCache, Bean {
   /** LRU cache instance. */
   private final LruCache<String, Bitmap> cache;
 
-  /** SDK utilities. */
-  final SdkDependentUtils sdkUtils;
-
   public SupportLruImageMemoryCache(final Context context) {
     this(context, 0);
   }
 
   public SupportLruImageMemoryCache(final Context context, final int size) {
-    this.sdkUtils = SdkDepUtils.get(context);
-
     int cacheSize = size;
     if (cacheSize == 0) {
       int memClass = ((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
@@ -50,7 +44,7 @@ public class SupportLruImageMemoryCache implements ImageMemoryCache, Bean {
     this.cache = new LruCache<String, Bitmap>(cacheSize) {
       @Override
       protected int sizeOf(final String key, final Bitmap value) {
-        return sdkUtils.getBitmapSize(value);
+        return Bitmaps.bitmapSize(value);
       };
     };
   }

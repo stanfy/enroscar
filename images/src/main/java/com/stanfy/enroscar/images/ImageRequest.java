@@ -6,7 +6,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.FlushedInputStream;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.io.PoolableBufferedInputStream;
@@ -203,7 +202,7 @@ public class ImageRequest {
 
   private BitmapFactory.Options createBitmapOptions() {
     BitmapFactory.Options options = new BitmapFactory.Options();
-    options.inTempStorage = manager.getBuffersPool().get(BuffersPool.DEFAULT_SIZE_FOR_IMAGES);
+    options.inTempStorage = manager.getBuffersPool().get(IoUtils.DEFAULT_BUFFER_SIZE_FOR_IMAGES);
     options.inPreferredConfig = format;
     return options;
   }
@@ -215,7 +214,7 @@ public class ImageRequest {
   private InputStream prepareInputStream(final InputStream is) throws IOException {
     InputStream src = new FlushedInputStream(is);
     if (!src.markSupported()) {
-      src = new PoolableBufferedInputStream(src, BuffersPool.DEFAULT_SIZE_FOR_IMAGES, manager.getBuffersPool());
+      src = new PoolableBufferedInputStream(src, IoUtils.DEFAULT_BUFFER_SIZE_FOR_IMAGES, manager.getBuffersPool());
     }
     return src;
   }
@@ -250,7 +249,7 @@ public class ImageRequest {
   void writeBitmapToDisk(final Bitmap bitmap) throws IOException {
     EnhancedResponseCache cache = (EnhancedResponseCache) manager.getImagesResponseCache();
     OutputStream output = new FileOutputStream(cache.getLocalPath(url));
-    output = new PoolableBufferedOutputStream(output, BuffersPool.DEFAULT_SIZE_FOR_IMAGES, manager.getBuffersPool());
+    output = new PoolableBufferedOutputStream(output, IoUtils.DEFAULT_BUFFER_SIZE_FOR_IMAGES, manager.getBuffersPool());
     try {
       final int quality = 100;
       bitmap.compress(Bitmap.CompressFormat.PNG, quality, output);

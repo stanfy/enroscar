@@ -1,6 +1,4 @@
-dependencies(
-  project.dependOnProjects([':enroscar-beans', ':enroscar-shared'])
-)
+dependOnProjects([':enroscar-beans'])
 
 dependencies {
   

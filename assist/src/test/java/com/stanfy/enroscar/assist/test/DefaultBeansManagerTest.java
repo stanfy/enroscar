@@ -1,5 +1,8 @@
 package com.stanfy.enroscar.assist.test;
 
+import android.os.Build;
+
+import com.stanfy.enroscar.assist.BuffersPoolController;
 import com.stanfy.enroscar.assist.DefaultBeansManager;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.cache.ImageFileCache;
@@ -8,7 +11,6 @@ import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
-import com.stanfy.enroscar.sdkdep.SDKDependentUtilsFactory;
 import com.stanfy.enroscar.stats.StatsManager;
 import com.stanfy.enroscar.views.ImageConsumers;
 
@@ -20,12 +22,13 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link DefaultBeansManager}.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(emulateSdk = 18)
+@Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DefaultBeansManagerTest {
 
   /** Manager. */
@@ -80,17 +83,23 @@ public class DefaultBeansManagerTest {
   public void defaultBeansShouldNotBeOverridenTwice() {
     manager.edit().commit();
     BuffersPool pool = manager.getMainBuffersPool();
-    SDKDependentUtilsFactory sdkDependentUtilsFactory = manager.getSdkDependentUtilsFactory();
     StatsManager statsManager = manager.getStatsManager();
 
     assertThat(pool).isNotNull();
-    assertThat(sdkDependentUtilsFactory).isNotNull();
     assertThat(statsManager).isNotNull();
 
     manager.edit().commit();
     assertThat(manager.getMainBuffersPool()).isSameAs(pool);
-    assertThat(manager.getSdkDependentUtilsFactory()).isSameAs(sdkDependentUtilsFactory);
     assertThat(manager.getStatsManager()).isSameAs(statsManager);
+  }
+
+  @Test
+  public void buffersPoolMustBeFlushedOnLowMemory() {
+    BuffersPool pool = mock(BuffersPool.class);
+    manager.edit().put(BuffersPool.class.getName(), pool).put(BuffersPoolController.class).commit();
+
+    manager.getContainer().onLowMemory();
+    verify(pool).flush();
   }
 
 }

@@ -185,7 +185,7 @@ public class BeansManager {
     }
     public <T> Editor put(final Class<T> beanClass) {
       final EnroscarBean info = BeanUtils.getBeanInfo(beanClass);
-      editorActions.put(info.value(), new PutBean() {
+      editorActions.put(info != null ? info.value() : beanClass.getName(), new PutBean() {
         @Override
         public Object put() {
           return container.putEntityInstance(beanClass, application);
@@ -195,7 +195,7 @@ public class BeansManager {
     }
     public <T> Editor put(final T bean) {
       final EnroscarBean info = BeanUtils.getBeanInfo(bean.getClass());
-      editorActions.put(info.value(), new PutBean() {
+      editorActions.put(info != null ? info.value() : bean.getClass().getName(), new PutBean() {
         @Override
         public Object put() {
           container.putEntityInstance(bean);

@@ -1,0 +1,80 @@
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+boolean snapshot = "$project.version".contains("SNAPSHOT")
+boolean hasCredentials = hasProperty('nexusUsername') && hasProperty('nexusPassword')
+
+def RELEASES_REPO_URL = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+def SNAPSHOTS_REPO_URL = "https://oss.sonatype.org/content/repositories/snapshots/"
+
+signing {
+  required { !snapshot && gradle.taskGraph.hasTask("uploadArchives") }
+  sign configurations.archives
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: RELEASES_REPO_URL) {
+        if (hasCredentials) {
+          authentication(userName: nexusUsername, password: nexusPassword)
+        }
+      }
+      snapshotRepository(url: SNAPSHOTS_REPO_URL) {
+        if (hasCredentials) {
+          authentication(userName: nexusUsername, password: nexusPassword)
+        }
+      }
+
+      pom.project {
+        name 'Enroscar'
+        description 'Android Library'
+        url 'https://github.com/stanfy/enroscar'
+        inceptionYear '2011'
+
+        scm {
+          url 'https://github.com/stanfy/enroscar'
+          connection 'scm:git:git@github.com:stanfy/enroscar.git'
+          developerConnection 'scm:git:git@github.com:stanfy/enroscar.git'
+        }
+
+        licenses {
+          license {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            distribution 'repo'
+          }
+        }
+
+        developers {
+          developer {
+            id 'stanfy'
+            name 'Stanfy Corp.'
+          }
+        }
+      }
+
+    }
+  }
+}
+
+
+task sourcesJar(type: Jar) {
+  from 'src/main/java'
+  classifier = 'sources'
+}
+
+task testsJar(type : Jar) {
+  from 'src/test/java'
+  classifier = 'tests'
+}
+
+artifacts {
+  archives sourcesJar
+
+//  testCompile project.plainClassesJar
+  testCompile testsJar
+}

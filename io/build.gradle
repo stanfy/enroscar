@@ -1,0 +1,26 @@
+// POM file modifications
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'Enroscar IO'
+        description 'Java buffers pool implementation + some other I/O utilities.'
+      }
+    }
+  }
+}
+
+task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
+  from 'build/bundles/release/classes.jar'
+  into "build/libs"
+  rename { "${project.name}-${project.version}.jar" }
+}
+
+artifacts {
+  archives file:file("$buildDir/libs/${project.name}-${project.version}.jar"), builtBy: classesJar
+}
+
+task integrationTest(type: GradleBuild) {
+  dir = file("java-sample")
+  tasks = ["test"]
+}

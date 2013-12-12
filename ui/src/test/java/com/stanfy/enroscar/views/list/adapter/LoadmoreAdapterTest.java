@@ -1,10 +1,11 @@
 package com.stanfy.enroscar.views.list.adapter;
 
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
-import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.test.AbstractNetTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +21,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Tests for {@link LoadmoreAdapter}.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(emulateSdk = 18)
-public class LoadmoreAdapterTest extends AbstractEnroscarTest {
+@Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
+public class LoadmoreAdapterTest extends AbstractNetTest {
 
   /** Adapter to test. */
   private LoadmoreAdapter loadmoreAdapter;

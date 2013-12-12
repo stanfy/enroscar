@@ -14,7 +14,7 @@ import org.robolectric.annotation.Config;
 
 import com.stanfy.enroscar.net.cache.CacheEntry;
 import com.stanfy.enroscar.net.cache.CacheTimeRule;
-import com.stanfy.enroscar.shared.test.AbstractEnroscarTest;
+import com.stanfy.enroscar.test.AbstractNetTest;
 import com.stanfy.enroscar.utils.Time;
 
 /**
@@ -23,7 +23,7 @@ import com.stanfy.enroscar.utils.Time;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = 18)
-public class TimeRuleTest extends AbstractEnroscarTest {
+public class TimeRuleTest extends AbstractNetTest {
 
   /** Test URL. */
   private static final String URL = "/test/url/";

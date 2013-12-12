@@ -1,7 +1,5 @@
 package com.stanfy.enroscar.views;
 
-import com.stanfy.enroscar.sdkdep.SdkDepUtils;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -36,27 +34,6 @@ public class GUIUtils {
 
   /** Hidden constructor. Allows subclassing. */
   protected GUIUtils() { /* hide */ }
-
-  /**
-   * Create a very simple notification, <b>should be used for debugging only</b>.
-   * Use {@link com.stanfy.enroscar.sdkdep.SDKDependentUtils#createNotificationBuilder(Context)} for building notification.
-   * @param ctx context instance
-   * @param message message to display
-   * @param contentIntent content intent
-   * @return notification instance
-   * @see com.stanfy.enroscar.sdkdep.SDKDependentUtils#createNotificationBuilder(Context)
-   * @see com.stanfy.enroscar.sdkdep.notifications.NotificationBuilder
-   */
-  public static Notification createNotification(final Context ctx, final CharSequence message, final PendingIntent contentIntent) {
-    final ApplicationInfo appInfo = ctx.getApplicationInfo();
-    return SdkDepUtils.get(ctx).createNotificationBuilder(ctx)
-        .setSmallIcon(appInfo.icon)
-        .setTicker(message)
-        .setContentTitle(ctx.getPackageManager().getApplicationLabel(appInfo))
-        .setContentText(message)
-        .setContentIntent(contentIntent)
-        .build();
-  }
 
   /**
    * Set text view value or set its visibility to {@link View#GONE}.

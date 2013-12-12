@@ -25,3 +25,4 @@ script:
 after_success:
   - chmod +x scripts/deploy_to_maven.sh
   - ./scripts/deploy_to_maven.sh
+  - TERM=dumb ./gradlew integrationTest

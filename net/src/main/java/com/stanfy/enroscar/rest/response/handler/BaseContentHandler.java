@@ -84,7 +84,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
     );
 
     if (Utils.isDebugRestResponse(context)) {
-      final String responseString = IoUtils.streamToString(source); // source is now closed, don't worry
+      final String responseString = IoUtils.streamToString(source, buffersPool); // source is now closed, don't worry
       Log.d(TAG, responseString);
       source = new ByteArrayInputStream(responseString.getBytes(IoUtils.UTF_8_NAME));
     }
@@ -126,6 +126,10 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
 
   public void setCharset(final Charset charset) { this.charset = charset; }
   public Charset getCharset() { return charset; }
+
+  protected BuffersPool getBuffersPool() {
+    return buffersPool;
+  }
 
   @Override
   public void onInitializationFinished(final BeansContainer beansContainer) {
