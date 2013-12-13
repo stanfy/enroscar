@@ -7,12 +7,12 @@ import android.util.Log;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.io.PoolableBufferedOutputStream;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 import com.stanfy.enroscar.rest.request.binary.BinaryData;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
@@ -50,10 +50,11 @@ public class PayloadPostConverter extends PostConverter {
     ArrayList<BinaryData<?>> binaryData = getRequestDescription().getBinaryData();
     if (binaryData != null) {
       final BuffersPool buffersPool = BeansManager.get(getContext()).getContainer().getBean(BuffersPool.class);
-      final PoolableBufferedOutputStream out = new PoolableBufferedOutputStream(connection.getOutputStream(), buffersPool);
+      final OutputStream out = buffersPool.bufferize(connection.getOutputStream());
 
       try {
         int size = binaryData.size();
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < size; i++) {
           binaryData.get(i).writeContentTo(getContext(), out);
         }

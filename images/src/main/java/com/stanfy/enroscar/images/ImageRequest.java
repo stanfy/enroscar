@@ -8,8 +8,6 @@ import android.util.Log;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.FlushedInputStream;
 import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.io.PoolableBufferedInputStream;
-import com.stanfy.enroscar.io.PoolableBufferedOutputStream;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.cache.EnhancedResponseCache;
 
@@ -30,6 +28,8 @@ public class ImageRequest {
 
   /** Mark for getting bounds info. */
   private static final int BOUNDS_INFO_MARK = 65536;
+  /** Buffer size for image IO operations. */
+  private static final int IMAGES_BUFFER_SIZE = IoUtils.BUFFER_SIZE_16K;
 
   /** Images manager. */
   private final ImagesManager manager;
@@ -202,7 +202,7 @@ public class ImageRequest {
 
   private BitmapFactory.Options createBitmapOptions() {
     BitmapFactory.Options options = new BitmapFactory.Options();
-    options.inTempStorage = manager.getBuffersPool().get(IoUtils.DEFAULT_BUFFER_SIZE_FOR_IMAGES);
+    options.inTempStorage = manager.getBuffersPool().get(IMAGES_BUFFER_SIZE);
     options.inPreferredConfig = format;
     return options;
   }
@@ -214,7 +214,7 @@ public class ImageRequest {
   private InputStream prepareInputStream(final InputStream is) throws IOException {
     InputStream src = new FlushedInputStream(is);
     if (!src.markSupported()) {
-      src = new PoolableBufferedInputStream(src, IoUtils.DEFAULT_BUFFER_SIZE_FOR_IMAGES, manager.getBuffersPool());
+      src = manager.getBuffersPool().bufferize(src, IMAGES_BUFFER_SIZE);
     }
     return src;
   }
@@ -249,7 +249,7 @@ public class ImageRequest {
   void writeBitmapToDisk(final Bitmap bitmap) throws IOException {
     EnhancedResponseCache cache = (EnhancedResponseCache) manager.getImagesResponseCache();
     OutputStream output = new FileOutputStream(cache.getLocalPath(url));
-    output = new PoolableBufferedOutputStream(output, IoUtils.DEFAULT_BUFFER_SIZE_FOR_IMAGES, manager.getBuffersPool());
+    output = manager.getBuffersPool().bufferize(output, IMAGES_BUFFER_SIZE);
     try {
       final int quality = 100;
       bitmap.compress(Bitmap.CompressFormat.PNG, quality, output);

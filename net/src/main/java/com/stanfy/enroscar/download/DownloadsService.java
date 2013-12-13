@@ -1,14 +1,5 @@
 package com.stanfy.enroscar.download;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLConnection;
-import java.util.LinkedList;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -26,8 +17,16 @@ import android.util.Log;
 
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.io.PoolableBufferedInputStream;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLConnection;
+import java.util.LinkedList;
 
 /**
  * Service that can be used instead of {@link android.app.DownloadManager} on older devices.
@@ -73,7 +72,7 @@ public class DownloadsService extends Service {
   private NotificationManager notificationManager;
 
   /** @return next unique download ID */
-  public static final synchronized long nextId(final Context context) {
+  public static synchronized long nextId(final Context context) {
     final SharedPreferences counterStore = context.getSharedPreferences(PREF_NAME, 0);
     final long value = counterStore.getLong(KEY_ID, 0) + 1;
     counterStore.edit().putLong(KEY_ID, value).commit();
@@ -291,7 +290,7 @@ public class DownloadsService extends Service {
 
         destination.createNewFile();
         output = new FileOutputStream(destination);
-        input = new PoolableBufferedInputStream(urlConnection.getInputStream(), DEFAULT_BUFFER_SIZE, buffersPool);
+        input = buffersPool.bufferize(urlConnection.getInputStream());
 
         final long length = urlConnection.getContentLength();
         if (length > 0) { updateDownloadProgress(0f); }

@@ -9,7 +9,7 @@ import java.io.OutputStream;
  * @see BuffersPool
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class PoolableBufferedOutputStream extends FilterOutputStream {
+class PoolableBufferedOutputStream extends FilterOutputStream {
 
   /** Buffers pool. */
   private final BuffersPool pool;
@@ -35,7 +35,7 @@ public class PoolableBufferedOutputStream extends FilterOutputStream {
    * @param buffersPool buffers pool instance
    */
   public PoolableBufferedOutputStream(final OutputStream out, final BuffersPool buffersPool) {
-    this(out, IoUtils.DEFAULT_BUFFER_SIZE, buffersPool);
+    this(out, IoUtils.BUFFER_SIZE_8K, buffersPool);
   }
 
   /**
@@ -177,6 +177,15 @@ public class PoolableBufferedOutputStream extends FilterOutputStream {
     if (count > 0) {
       out.write(buf, 0, count);
       count = 0;
+    }
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    if (pool.strictMode && buf != null) {
+      System.err.println("WARNING: " + this + " was not closed, buffer was not released");
+      stack.printStackTrace();
     }
   }
 

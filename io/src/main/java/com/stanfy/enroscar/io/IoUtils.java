@@ -31,10 +31,10 @@ public final class IoUtils {
   /** 'deflate' string. */
   public static final String ENCODING_DEFLATE = "deflate";
 
-  /** Default buffer size. */
-  public static final int DEFAULT_BUFFER_SIZE = 8192;
-  /** Default buffer size. */
-  public static final int DEFAULT_BUFFER_SIZE_FOR_IMAGES = 16 * 1024;
+  /** 8K. */
+  public static final int BUFFER_SIZE_8K = 8192;
+  /** 16K. */
+  public static final int BUFFER_SIZE_16K = 16 * 1024;
 
   /** End of file code. */
   private static final int EOF = -1;
@@ -98,12 +98,12 @@ public final class IoUtils {
    */
   public static void transfer(final InputStream input, final OutputStream output, final BuffersPool buffersPool) throws IOException {
     final InputStream in = buffersPool == null
-        ? new BufferedInputStream(input, DEFAULT_BUFFER_SIZE)
-        : new PoolableBufferedInputStream(input, DEFAULT_BUFFER_SIZE, buffersPool);
+        ? new BufferedInputStream(input, BUFFER_SIZE_8K)
+        : new PoolableBufferedInputStream(input, BUFFER_SIZE_8K, buffersPool);
 
     final byte[] buffer = buffersPool == null
-        ? new byte[DEFAULT_BUFFER_SIZE]
-        : buffersPool.get(DEFAULT_BUFFER_SIZE);
+        ? new byte[BUFFER_SIZE_8K]
+        : buffersPool.get(BUFFER_SIZE_8K);
 
     try {
       int cnt;
@@ -130,8 +130,8 @@ public final class IoUtils {
   public static void consumeStream(final InputStream input, final BuffersPool buffersPool) throws IOException {
     // do not use skip, just use a buffer and read it all
     final byte[] buffer = buffersPool == null
-        ? new byte[DEFAULT_BUFFER_SIZE]
-        : buffersPool.get(DEFAULT_BUFFER_SIZE);
+        ? new byte[BUFFER_SIZE_8K]
+        : buffersPool.get(BUFFER_SIZE_8K);
 
     try {
       //noinspection StatementWithEmptyBody

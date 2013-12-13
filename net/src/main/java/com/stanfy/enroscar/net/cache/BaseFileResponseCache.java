@@ -1,9 +1,23 @@
 package com.stanfy.enroscar.net.cache;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.jakewharton.disklrucache.DiskLruCache;
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.DestroyingBean;
+import com.stanfy.enroscar.beans.InitializingBean;
+import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.net.cache.CacheEntry.CacheEntryListener;
+import com.stanfy.enroscar.net.cache.CacheEntry.CacheEntryRequest;
+
 import java.io.File;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.CacheRequest;
 import java.net.CacheResponse;
 import java.net.URI;
@@ -14,21 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import android.os.AsyncTask;
-import android.util.Log;
-
-import com.jakewharton.disklrucache.DiskLruCache;
-import com.stanfy.enroscar.beans.BeansContainer;
-import com.stanfy.enroscar.beans.DestroyingBean;
-import com.stanfy.enroscar.beans.InitializingBean;
-import com.stanfy.enroscar.io.BuffersPool;
-import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.io.PoolableBufferedInputStream;
-import com.stanfy.enroscar.io.PoolableBufferedOutputStream;
-import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.net.cache.CacheEntry.CacheEntryListener;
-import com.stanfy.enroscar.net.cache.CacheEntry.CacheEntryRequest;
 
 /**
  * Base class for cache implementations based on file system.
@@ -119,13 +118,13 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     final String key = requestInfo.getCacheKey();
 
     DiskLruCache.Snapshot snapshot;
-    PoolableBufferedInputStream bufferedStream = null;
+    InputStream bufferedStream = null;
     try {
       snapshot = diskCache.get(key);
       if (snapshot == null) {
         return null;
       }
-      bufferedStream = new PoolableBufferedInputStream(snapshot.getInputStream(ENTRY_METADATA), buffersPool);
+      bufferedStream = buffersPool.bufferize(snapshot.getInputStream(ENTRY_METADATA));
       entry.readFrom(bufferedStream);
     } catch (final IOException e) {
       IoUtils.closeQuietly(bufferedStream);
@@ -215,16 +214,15 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
     final String key = cacheEntry.getCacheKey();
 
     DiskLruCache.Editor editor = null;
-    PoolableBufferedOutputStream bufferedOut = null;
+    OutputStream metaOut = null;
     try {
       editor = diskCache.edit(key);
       if (editor == null) {
         return null;
       }
-      bufferedOut = new PoolableBufferedOutputStream(editor.newOutputStream(ENTRY_METADATA), this.buffersPool);
-      cacheEntry.writeTo(bufferedOut);
-      final PoolableBufferedOutputStream output = new PoolableBufferedOutputStream(editor.newOutputStream(ENTRY_BODY), this.buffersPool);
-      return cacheEntry.newCacheRequest(output, editor);
+      metaOut = buffersPool.bufferize(editor.newOutputStream(ENTRY_METADATA));
+      cacheEntry.writeTo(metaOut);
+      return cacheEntry.newCacheRequest(buffersPool.bufferize(editor.newOutputStream(ENTRY_BODY)), editor);
     } catch (final IOException e) {
       Log.w(TAG, "Cannot write cache entry", e);
       // Give up because the cache cannot be written.
@@ -237,7 +235,7 @@ public abstract class BaseFileResponseCache extends BaseSizeRestrictedCache
       }
       return null;
     } finally {
-      IoUtils.closeQuietly(bufferedOut);
+      IoUtils.closeQuietly(metaOut);
     }
 
   }

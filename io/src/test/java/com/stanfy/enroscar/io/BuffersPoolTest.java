@@ -3,10 +3,16 @@ package com.stanfy.enroscar.io;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link BuffersPool}. Absolutely useless.
@@ -97,6 +103,33 @@ public class BuffersPoolTest {
     buffersPool.release(buffer);
     assertThat(buffersPool.getAllocatedBuffersCount()).isEqualTo(allocationsCount);
     assertThat(buffersPool.getUsedBuffersCount()).isZero();
+  }
+
+  @Test
+  public void bufferizeShouldWrapInputStream() throws IOException {
+    ByteArrayInputStream input = new ByteArrayInputStream("test".getBytes());
+    buffersPool = spy(buffersPool);
+
+    InputStream bufferedInput = buffersPool.bufferize(input);
+    assertThat(bufferedInput).isNotSameAs(input);
+    assertThat(bufferedInput.markSupported()).isTrue();
+
+    bufferedInput.close();
+    verify(buffersPool).get(anyInt());
+    verify(buffersPool).release(any(byte[].class));
+  }
+
+  @Test
+  public void bufferizeShouldWrapOutputStream() throws IOException {
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    buffersPool = spy(buffersPool);
+
+    OutputStream bufferedOutput = buffersPool.bufferize(output);
+    assertThat(bufferedOutput).isNotSameAs(output);
+
+    bufferedOutput.close();
+    verify(buffersPool).get(anyInt());
+    verify(buffersPool).release(any(byte[].class));
   }
 
 
