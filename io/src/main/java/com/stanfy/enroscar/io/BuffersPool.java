@@ -1,5 +1,7 @@
 package com.stanfy.enroscar.io;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
@@ -13,7 +15,7 @@ public class BuffersPool {
 
   /** Default pool configuration. */
   private static final int[][] DESCRIPTION_DEFAULT = {
-      {4, IoUtils.DEFAULT_BUFFER_SIZE_FOR_IMAGES}, {2, IoUtils.DEFAULT_BUFFER_SIZE}
+      {4, IoUtils.BUFFER_SIZE_16K}, {2, IoUtils.BUFFER_SIZE_8K}
   };
 
   /** Buffers store. */
@@ -24,6 +26,9 @@ public class BuffersPool {
 
   /** Stats counter. */
   private int usedBuffersCount, allocatedBuffersCount;
+
+  /** Strict mode flag. */
+  boolean strictMode = true;
 
   public BuffersPool() {
     this(DESCRIPTION_DEFAULT);
@@ -51,7 +56,7 @@ public class BuffersPool {
    * @return buffer with default width
    */
   public byte[] get() {
-    return get(IoUtils.DEFAULT_BUFFER_SIZE);
+    return get(IoUtils.BUFFER_SIZE_8K);
   }
 
   /**
@@ -106,6 +111,15 @@ public class BuffersPool {
   }
 
 
+  /**
+   * In strict mode streams obtained with {@code bufferize} write warnings to {@link System#err}
+   * about unreleased buffers.
+   * @param strictMode strict mode enabled flag
+   */
+  public void setStrictMode(boolean strictMode) {
+    this.strictMode = strictMode;
+  }
+
   public int getAllocatedBuffersCount() {
     synchronized (lock) {
       return allocatedBuffersCount;
@@ -133,6 +147,45 @@ public class BuffersPool {
     synchronized (lock) {
       buffers.clear();
     }
+  }
+
+
+  /**
+   * Wrap input stream into a buffered implementation using this buffers pool.
+   * @param input input stream to wrap
+   * @return buffered input stream
+   */
+  public InputStream bufferize(final InputStream input) {
+    return bufferize(input, IoUtils.BUFFER_SIZE_8K);
+  }
+
+  /**
+   * Wrap output stream into a buffered implementation using this buffers pool.
+   * @param output output stream to wrap
+   * @return buffered output stream
+   */
+  public OutputStream bufferize(final OutputStream output) {
+    return bufferize(output, IoUtils.BUFFER_SIZE_8K);
+  }
+
+  /**
+   * Wrap input stream into a buffered implementation using this buffers pool.
+   * @param input input stream to wrap
+   * @param bufferSize buffer size
+   * @return buffered input stream
+   */
+  public InputStream bufferize(final InputStream input, final int bufferSize) {
+    return new PoolableBufferedInputStream(input, bufferSize, this);
+  }
+
+  /**
+   * Wrap output stream into a buffered implementation using this buffers pool.
+   * @param output output stream to wrap
+   * @param bufferSize buffer size
+   * @return buffered output stream
+   */
+  public OutputStream bufferize(final OutputStream output, final int bufferSize) {
+    return new PoolableBufferedOutputStream(output, bufferSize, this);
   }
 
 }

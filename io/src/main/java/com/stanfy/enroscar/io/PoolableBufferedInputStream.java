@@ -10,7 +10,7 @@ import java.io.InputStream;
  * @see BuffersPool
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class PoolableBufferedInputStream extends FilterInputStream {
+class PoolableBufferedInputStream extends FilterInputStream {
 
   /** Buffers pool. */
   private final BuffersPool pool;
@@ -38,13 +38,6 @@ public class PoolableBufferedInputStream extends FilterInputStream {
   /** Call stack. */
   private Throwable stack;
 
-  /**
-   * @param in the input stream the buffer reads from.
-   * @param pool buffers pool
-   */
-  public PoolableBufferedInputStream(final InputStream in, final BuffersPool pool) {
-    this(in, IoUtils.DEFAULT_BUFFER_SIZE, pool);
-  }
   /**
    * Constructs a new {@code PoolableBufferedInputStream} on the {@link InputStream}
    * {@code in}. The buffer size is specified by the parameter {@code size}
@@ -389,6 +382,15 @@ public class PoolableBufferedInputStream extends FilterInputStream {
       return read;
     }
     return read + localIn.skip(amount - read);
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    if (pool.strictMode && buf != null) {
+      System.err.println("WARNING: " + this + " was not closed, buffer was not released");
+      stack.printStackTrace();
+    }
   }
 
 }

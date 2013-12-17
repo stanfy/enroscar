@@ -1,5 +1,19 @@
 package com.stanfy.enroscar.rest.response.handler;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.stanfy.enroscar.beans.BeansContainer;
+import com.stanfy.enroscar.beans.InitializingBean;
+import com.stanfy.enroscar.io.BuffersPool;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.net.ContentControlUrlConnection;
+import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.Utils;
+import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.rest.response.Model;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,21 +22,6 @@ import java.net.ContentHandler;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
-
-import android.content.Context;
-import android.util.Log;
-
-import com.stanfy.enroscar.beans.BeansContainer;
-import com.stanfy.enroscar.beans.InitializingBean;
-import com.stanfy.enroscar.io.BuffersPool;
-import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.io.PoolableBufferedInputStream;
-import com.stanfy.enroscar.net.ContentControlUrlConnection;
-import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.rest.ModelTypeToken;
-import com.stanfy.enroscar.rest.Utils;
-import com.stanfy.enroscar.rest.request.RequestDescription;
-import com.stanfy.enroscar.rest.response.Model;
 
 /**
  * Base content handler. Takes care about buffers and gzip.
@@ -80,7 +79,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
 
     InputStream source = IoUtils.getUncompressedInputStream(
         connection.getContentEncoding(),
-        new PoolableBufferedInputStream(responseStream, buffersPool)
+        buffersPool.bufferize(responseStream)
     );
 
     if (Utils.isDebugRestResponse(context)) {

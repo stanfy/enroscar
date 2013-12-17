@@ -5,12 +5,12 @@ Java buffers pool implementation + some other I/O utilities.
 Buffers pool
 ------------
 
-1. Create an instance of buffers pool.
+Create an instance of buffers pool.
   ```java
     BuffersPool pool = new BuffersPool();
   ```
 
-2. Use the pool to get a temporary array instead of direct buffer allocation, and release the array when you are done:
+Use the pool to get a temporary array instead of direct buffer allocation, and release the array when you are done:
   ```java
     // get a buffer
     byte[] buffer = pool.get(1024);
@@ -24,8 +24,12 @@ Buffers pool
     pool.release(buffer);
   ```
 
-One might also use `PoolableBufferedXXXStream` instead of `BufferedXXXStream`.
-Supply your pool instance to stream wrappers using their constructors.
+Wrap your input and output streams with a buffered implementation which retrieves buffer from the pool and releases it
+when stream is closed:
+  ```java
+    InputStream input = pool.bufferize(urlConnection.getInputStream());
+    OutputStream output = pool.bufferize(new FileOutputStream("path/to/file"));
+  ```
 
 Class `IoUtils` contains some methods for operating on streams using a buffers pool
 (like `transfer(InputStream, OutputStream, BuffersPool)`).

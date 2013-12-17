@@ -6,7 +6,6 @@ import android.util.Log;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.io.PoolableBufferedOutputStream;
 import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.Parameter;
 import com.stanfy.enroscar.rest.request.ParameterValue;
@@ -18,6 +17,7 @@ import com.stanfy.enroscar.rest.request.net.multipart.StringPart;
 import org.apache.http.util.EncodingUtils;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * Multipart upload converter.
  */
 public class UploadPostConverter extends PostConverter {
 
@@ -95,7 +95,7 @@ public class UploadPostConverter extends PostConverter {
   @Override
   public void sendRequest(final URLConnection connection) throws IOException {
     final BuffersPool buffersPool = BeansManager.get(getContext()).getContainer().getBean(BuffersPool.class);
-    final PoolableBufferedOutputStream out = new PoolableBufferedOutputStream(connection.getOutputStream(), buffersPool);
+    final OutputStream out = buffersPool.bufferize(connection.getOutputStream());
 
     if (Utils.isDebugRest(getContext())) {
       Log.d(TAG, "(" + getRequestDescription().getId() + ") Parts: " + Arrays.toString(parts));
