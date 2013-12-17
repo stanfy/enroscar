@@ -3,9 +3,9 @@ def includeInt = { path, name ->
   project(":$path").name = name
 }
 
-// core
+// main modules
 
-['beans', 'io', 'net', 'assist', 'stats', 'content', 'images', 'ui'].each {
+['beans', 'io', 'goro', 'net', 'assist', 'stats', 'content', 'images', 'ui'].each {
   includeInt it, "enroscar-$it"
 }
 
