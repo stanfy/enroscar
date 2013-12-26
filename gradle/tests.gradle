@@ -2,7 +2,7 @@ apply plugin: 'android-test'
 
 android.libraryVariants.all { variant ->
   if (variant.buildType.name.equalsIgnoreCase('release')) { return }
-  tasks["test$variant.name"].configure {
+  tasks["test${variant.name.capitalize()}"].configure {
     scanForTestClasses = false
 
     def selection = null
