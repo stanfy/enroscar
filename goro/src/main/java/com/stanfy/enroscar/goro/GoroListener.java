@@ -1,14 +1,18 @@
 package com.stanfy.enroscar.goro;
 
+import java.util.concurrent.Callable;
+
 /**
  * Listener to Goro tasks.
  */
 public interface GoroListener {
 
-  void onTaskStart(Runnable task);
+  void onTaskStart(Callable<?> task);
 
-  void onTaskFinish(Runnable task);
+  void onTaskFinish(Callable<?> task);
 
-  void onTaskError(Runnable task, Throwable error);
+  void onTaskCancel(Callable<?> task);
+
+  void onTaskError(Callable<?> task, Throwable error);
 
 }

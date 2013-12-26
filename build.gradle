@@ -63,7 +63,8 @@ subprojects {
   def testDeps = [
       'com.squareup:fest-android:1.0.+',
       'com.google.mockwebserver:mockwebserver:20130706',
-      'org.easytesting:fest-reflect:1.4.1'
+      'org.easytesting:fest-reflect:1.4.1',
+      'org.mockito:mockito-all:1.9.5'
   ]
 
   dependencies {
@@ -80,7 +81,6 @@ subprojects {
     testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.easytesting:fest-util:1.2.5'
-    testCompile 'org.mockito:mockito-all:1.9.5'
   }
 
   project.ext.dependOnProjects = { list ->

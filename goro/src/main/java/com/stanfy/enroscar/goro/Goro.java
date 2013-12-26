@@ -2,7 +2,15 @@ package com.stanfy.enroscar.goro;
 
 import android.os.IBinder;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -13,11 +21,8 @@ public class Goro {
   /** Default queue name. */
   public static final String DEFAULT_QUEUE = "default";
 
-  /** Execution IDs provider. */
-  private final AtomicInteger idCounter = new AtomicInteger();
-
   /** Execution listeners. */
-  private final ArrayList<GoroListener> listeners = new ArrayList<GoroListener>();
+  final ArrayList<GoroListener> listeners = new ArrayList<GoroListener>();
 
   /** Queues. */
   private final Queues queues;
@@ -39,7 +44,9 @@ public class Goro {
    * @param listener listener instance
    */
   public void addListener(final GoroListener listener) {
-    listeners.add(listener);
+    synchronized (listeners) {
+      listeners.add(listener);
+    }
   }
 
   /**
@@ -47,47 +54,126 @@ public class Goro {
    * @param listener listener instance
    */
   public void removeListener(final GoroListener listener) {
-    if (!listeners.remove(listener)) {
-      throw new IllegalArgumentException("Listener " + listener + " is not registered");
+    synchronized (listeners) {
+      if (!listeners.remove(listener)) {
+        throw new IllegalArgumentException("Listener " + listener + " is not registered");
+      }
     }
   }
 
 
   /**
    * Add a task to the default queue.
-   * This methods returns an execution ID that may be used for further task cancellation.
+   * This methods returns a future that allows to control task execution.
    * @param task task instance
-   * @return execution identifier
-   * @see #cancel(int)
+   * @return task future instance
    */
-  public int schedule(final Runnable task) {
+  public <T> Future<T> schedule(final Callable<T> task) {
     return schedule(task, DEFAULT_QUEUE);
   }
 
   /**
    * Add a task to the specified queue.
-   * This methods returns an execution ID that may be used for further task cancellation.
+   * This methods returns a future that allows to control task execution.
+   * Queue name may be null, if you want to execute the task beyond any queue.
    * @param task task instance
-   * @param queueName name of a queue to use
-   * @return execution identifier
-   * @see #cancel(int)
+   * @param queueName name of a queue to use, may be null
+   * @return task future instance
    */
-  public int schedule(final Runnable task, final String queueName) {
+  public <T> Future<T> schedule(final Callable<T> task, final String queueName) {
     if (task == null) {
       throw new IllegalArgumentException("Task must not be null");
     }
-    int id = idCounter.incrementAndGet();
-    return id;
+    GoroFuture<T> future = new GoroFuture<T>(this, task);
+    queues.getExecutor(queueName).execute(future);
+    return future;
   }
 
   /**
-   * Cancel execution of a task with the specified ID.
-   * @param executionId execution identifier
-   * @see #schedule(Runnable, String)
+   * Future implementation.
    */
-  public void cancel(final int executionId) {
+  private static class GoroFuture<T> extends FutureTask<T> {
+
+    /** Weak reference to Goro. */
+    private final WeakReference<Goro> goroRef;
+
+    /** Task. */
+    private Callable<T> task;
+
+    GoroFuture(final Goro goro, final Callable<T> task) {
+      super(task);
+      this.task = task;
+      this.goroRef = new WeakReference<Goro>(goro);
+    }
+
+    @Override
+    public void run() {
+      Goro goro = goroRef.get();
+      // invoke onTaskStart
+      if (goro != null && !goro.listeners.isEmpty()) {
+        for (GoroListener listener : goro.listeners) {
+          listener.onTaskStart(task);
+        }
+      }
+      super.run();
+    }
+
+
+    @Override
+    protected void done() {
+      Goro goro = goroRef.get();
+      if (goro == null) {
+        return;
+      }
+
+      ArrayList<GoroListener> listeners = goro.listeners;
+      try {
+        get();
+
+        // invoke onTaskFinish
+        synchronized (goro.listeners) {
+          if (!listeners.isEmpty()) {
+            for (GoroListener listener : listeners) {
+              listener.onTaskFinish(task);
+            }
+          }
+        }
+
+      } catch (CancellationException e) {
+
+        // invoke onTaskCancel
+        synchronized (goro.listeners) {
+          if (!listeners.isEmpty()) {
+            for (GoroListener listener : listeners) {
+              listener.onTaskCancel(task);
+            }
+          }
+        }
+
+      } catch (ExecutionException e) {
+
+        // invoke onTaskError
+        synchronized (goro.listeners) {
+          if (!listeners.isEmpty()) {
+            Throwable cause = e.getCause();
+            for (GoroListener listener : listeners) {
+              listener.onTaskError(task, cause);
+            }
+          }
+        }
+
+      } catch (InterruptedException e) {
+
+        throw new RuntimeException(e);
+
+      } finally {
+
+        task = null;
+
+      }
+
+    }
 
   }
-
 
 }

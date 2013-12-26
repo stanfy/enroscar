@@ -17,9 +17,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 interface Queues {
 
-  void setThreadPool(Executor threadPool);
+  /**
+   * Set main executor used to really perform tasks.
+   * @param mainExecutor executor that tasks are delegated to
+   */
+  void setDelegateExecutor(Executor mainExecutor);
 
+  /**
+   * @param queueName queue name
+   * @return executor that performs all the tasks in a given queue
+   */
   Executor getExecutor(String queueName);
+
 
   /** Default implementation. */
   class Impl implements Queues {
@@ -53,10 +62,10 @@ interface Queues {
     private final HashMap<String, Executor> executorsMap = new HashMap<String, Executor>();
 
     /** Used threads pool. */
-    private Executor threadPool;
+    private Executor delegateExecutor;
 
     {
-      this.threadPool = defaultThreadPoolExecutor;
+      this.delegateExecutor = defaultThreadPoolExecutor;
     }
 
 
@@ -66,24 +75,27 @@ interface Queues {
     }
 
     @Override
-    public void setThreadPool(final Executor threadPool) {
-      if (threadPool == null) {
+    public void setDelegateExecutor(final Executor mainExecutor) {
+      if (mainExecutor == null) {
         throw new IllegalArgumentException("Null threads pool");
       }
       synchronized (executorsMap) {
         if (!executorsMap.isEmpty()) {
           throw new IllegalStateException("Threads poll cannot be changed after any queue is created");
         }
-        this.threadPool = threadPool;
+        this.delegateExecutor = mainExecutor;
       }
     }
 
     @Override
     public Executor getExecutor(final String queueName) {
       synchronized (executorsMap) {
+        if (queueName == null) {
+          return delegateExecutor;
+        }
         Executor exec = executorsMap.get(queueName);
         if (exec == null) {
-          exec = new TaskQueueExecutor(threadPool);
+          exec = new TaskQueueExecutor(delegateExecutor);
           executorsMap.put(queueName, exec);
         }
         return exec;

@@ -34,32 +34,39 @@ public class QueuesImplTest {
   @Test(expected = IllegalStateException.class)
   public void shouldNotAllowThreadsPoolChangeAfterQueueCreation() {
     queuesImpl.getExecutor("1");
-    queuesImpl.setThreadPool(Executors.newCachedThreadPool());
+    queuesImpl.setDelegateExecutor(Executors.newCachedThreadPool());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldNotAllowNullThreadPool() {
-    queuesImpl.setThreadPool(null);
+    queuesImpl.setDelegateExecutor(null);
   }
 
   @Test
-  public void shouldReturnExecutorsThatDelegateToThreadPool() {
-    Executor threadPool = new Executor() {
+  public void shouldReturnExecutorsThatDelegatesToTheDefinedExecutor() {
+    Executor mainExecutor = new Executor() {
       @Override
       public void execute(final Runnable command) {
         command.run();
       }
     };
-    threadPool = spy(threadPool);
+    mainExecutor = spy(mainExecutor);
     Runnable task = mock(Runnable.class);
 
-    queuesImpl.setThreadPool(threadPool);
+    queuesImpl.setDelegateExecutor(mainExecutor);
     Executor queueExecutor = queuesImpl.getExecutor("1");
-    assertThat(queueExecutor).isNotEqualTo(threadPool);
+    assertThat(queueExecutor).isNotEqualTo(mainExecutor);
     queueExecutor.execute(task);
 
-    verify(threadPool).execute(any(Runnable.class));
+    verify(mainExecutor).execute(any(Runnable.class));
     verify(task).run();
+  }
+
+  @Test
+  public void shouldReturnMainExecutorForNullQueueName() {
+    Executor mainExecutor = mock(Executor.class);
+    queuesImpl.setDelegateExecutor(mainExecutor);
+    assertThat(queuesImpl.getExecutor(null)).isSameAs(mainExecutor);
   }
 
 }
