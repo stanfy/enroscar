@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -114,6 +115,7 @@ public class BeansManager {
    * Integrate with component callbacks. It calls {@link Application#registerComponentCallbacks(android.content.ComponentCallbacks)},
    * so that it's useless on prior ICS SDKs.
    */
+  @SuppressLint("NewApi")
   void registerComponentCallbacks() {
     if (callbacksRegistered) { return; } // do it once only
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
