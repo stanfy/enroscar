@@ -80,10 +80,13 @@ task testsJar(type : Jar) {
   classifier = 'tests'
 }
 
+task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
+  from 'build/bundles/release/classes.jar'
+  into "build/libs"
+  rename { "${project.name}-${project.version}.jar" }
+}
+
 artifacts {
   archives sourcesJar
-  archives javadocsJar
-
-//  testCompile project.plainClassesJar
   testCompile testsJar
 }

@@ -10,13 +10,8 @@ uploadArchives {
   }
 }
 
-task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
-  from 'build/bundles/release/classes.jar'
-  into "build/libs"
-  rename { "${project.name}-${project.version}.jar" }
-}
-
 artifacts {
+  archives javadocsJar
   archives file:file("$buildDir/libs/${project.name}-${project.version}.jar"), builtBy: classesJar
 }
 
