@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views;
+package com.stanfy.enroscar.images.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -9,8 +9,7 @@ import android.widget.TextView;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.ImagesManager;
-
-import com.stanfy.enroscar.ui.R;
+import com.stanfy.enroscar.images.R;
 
 /**
  * Text view that can load a remote images and use it as comppound drawables.

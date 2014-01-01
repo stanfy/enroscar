@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views;
+package com.stanfy.enroscar.images.views;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;

@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views;
+package com.stanfy.enroscar.images.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,13 +10,13 @@ import android.widget.CompoundButton;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.ImagesManager;
-import com.stanfy.enroscar.ui.R;
+import com.stanfy.enroscar.images.R;
 
 /**
  * Compound button that can have a drawable to be drawn and scaled on the center.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)
  */
-public class LoadableComppoundButton extends CompoundButton {
+public class LoadableCompoundButton extends CompoundButton {
 
   /** Button resource. */
   private int buttonResource;
@@ -30,19 +30,19 @@ public class LoadableComppoundButton extends CompoundButton {
   /** Images manager. */
   private final ImagesManager imagesManager;
 
-  public LoadableComppoundButton(final Context context) {
+  public LoadableCompoundButton(final Context context) {
     this(context, null);
   }
 
-  public LoadableComppoundButton(final Context context, final AttributeSet attrs) {
+  public LoadableCompoundButton(final Context context, final AttributeSet attrs) {
     this(context, attrs, 0);
   }
 
-  public LoadableComppoundButton(final Context context, final AttributeSet attrs, final int defStyle) {
+  public LoadableCompoundButton(final Context context, final AttributeSet attrs, final int defStyle) {
     super(context, attrs, defStyle);
 
-    final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LoadableComppoundButton);
-    final Drawable d = a.getDrawable(R.styleable.LoadableComppoundButton_android_src);
+    final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LoadableCompoundButton);
+    final Drawable d = a.getDrawable(R.styleable.LoadableCompoundButton_android_src);
     a.recycle();
 
     if (d != null) { setButtonDrawable(d); }

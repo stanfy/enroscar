@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views;
+package com.stanfy.enroscar.images.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -16,7 +16,7 @@ import android.util.AttributeSet;
 
 import com.stanfy.enroscar.images.decorator.ImageDecorator;
 import com.stanfy.enroscar.images.decorator.MaskImageDecorator;
-import com.stanfy.enroscar.ui.R;
+import com.stanfy.enroscar.images.R;
 
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
