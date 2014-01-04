@@ -1,9 +1,11 @@
-package com.stanfy.enroscar.views;
+package com.stanfy.enroscar.images.views;
 
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
+
+import com.stanfy.enroscar.images.views.ImageView;
 
 /**
  * Methods that are hidden inside the ImageView Android implementation.
@@ -14,7 +16,9 @@ final class ImageViewHiddenMethods {
   /** Temp objects. */
   private static final RectF SRC_RECT = new RectF(), DST_RECT = new RectF();
 
-  private ImageViewHiddenMethods() { /* hide */ }
+  private ImageViewHiddenMethods() {
+    throw new UnsupportedOperationException("no instances");
+  }
 
   private static Matrix.ScaleToFit scaleTypeToScaleToFit(final ScaleType st)  {
     switch (st) {

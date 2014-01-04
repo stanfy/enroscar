@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <!-- ImageView custom attributes. -->
+  <declare-styleable name="ImageView">
+    <!-- Corners radius. -->
+    <attr name="android:radius" />
+  </declare-styleable>
+
+  <!-- Attributes for LoadableImageView -->
+  <declare-styleable name="LoadableImageView">
+    <attr name="skipScaleBeforeCache" format="boolean" />
+    <attr name="allowSmallImagesInCache" format="boolean" />
+    <attr name="skipLoadingImage" format="boolean" />
+    <attr name="loadingImage" format="reference" />
+    <attr name="useTransition" format="integer">
+      <enum name="no" value="0" />
+      <enum name="yes" value="1" />
+      <enum name="crossfade" value="2" />
+    </attr>
+  </declare-styleable>
+
+  <!-- Attributes for LoadableCompoundButton -->
+  <declare-styleable name="LoadableCompoundButton">
+    <attr name="android:src" />
+  </declare-styleable>
+
+  <!-- Attributes for LoadableTextView -->
+  <declare-styleable name="LoadableTextView">
+    <attr name="loadableDrawableWidth" format="dimension" />
+    <attr name="loadableDrawableHeight" format="dimension" />
+    <attr name="loadableDrawablePosition" format="integer">
+      <enum name="left" value="0" />
+      <enum name="top" value="1" />
+      <enum name="right" value="2" />
+      <enum name="bottom" value="3" />
+    </attr>
+  </declare-styleable>
+
+</resources>

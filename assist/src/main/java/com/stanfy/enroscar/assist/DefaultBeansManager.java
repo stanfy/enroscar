@@ -20,7 +20,7 @@ import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 import com.stanfy.enroscar.stats.EmptyStatsManager;
 import com.stanfy.enroscar.stats.StatsManager;
-import com.stanfy.enroscar.views.ImageConsumers;
+import com.stanfy.enroscar.images.views.ImageConsumers;
 
 import java.net.ContentHandler;
 import java.net.ResponseCache;

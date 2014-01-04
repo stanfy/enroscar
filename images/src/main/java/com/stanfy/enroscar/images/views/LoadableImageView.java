@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.views;
+package com.stanfy.enroscar.images.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,9 +10,8 @@ import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.ImagesLoadListener;
 import com.stanfy.enroscar.images.ImagesLoadListenerProvider;
 import com.stanfy.enroscar.images.ImagesManager;
+import com.stanfy.enroscar.images.R;
 import com.stanfy.enroscar.images.ViewImageConsumer;
-
-import com.stanfy.enroscar.ui.R;
 
 /**
  * Image view that can load a remote image.
