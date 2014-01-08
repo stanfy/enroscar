@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.test.ServiceTestCase;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -19,26 +21,56 @@ public class GoroServiceTest extends ServiceTestCase<GoroService> {
   private Goro goro;
 
   /** Thread pointers. */
-  private Thread currentThread, startCallThread, finishCallThread, errorCallThread;
+  private Thread currentThread, startCallThread, finishCallThread, errorCallThread,
+      cancelCallThread;
+
+  /** Invocation flag. */
+  private boolean mockTaskCalled;
+
+  /** Exception throw. */
+  private Exception testException;
+
+  /** Mock task */
+  private final Callable<?> mockTask = new Callable<Object>() {
+    @Override
+    public Object call() throws Exception {
+      mockTaskCalled = true;
+      if (testException != null) {
+        throw testException;
+      }
+      return null;
+    }
+  };
+
 
   /** Goro listener. */
   private GoroListener listener = new GoroListener() {
     @Override
-    public void onTaskStart(Runnable task) {
+    public void onTaskStart(Callable<?> task) {
+      assertThat(task).isNotNull();
       startCallThread = Thread.currentThread();
     }
 
     @Override
-    public void onTaskFinish(Runnable task) {
+    public void onTaskFinish(Callable<?> task) {
+      assertThat(task).isNotNull();
       finishCallThread = Thread.currentThread();
       sync.countDown();
     }
 
     @Override
-    public void onTaskError(Runnable task, Throwable error) {
+    public void onTaskError(Callable<?> task, Throwable error) {
+      assertThat(task).isNotNull();
       errorCallThread = Thread.currentThread();
       sync.countDown();
     }
+
+    public void onTaskCancel(Callable<?> task) {
+      assertThat(task).isNotNull();
+      cancelCallThread = Thread.currentThread();
+      sync.countDown();
+    }
+
   };
 
   /** A latch. */
@@ -54,6 +86,8 @@ public class GoroServiceTest extends ServiceTestCase<GoroService> {
 
     startCallThread = finishCallThread = errorCallThread = null;
     currentThread = Thread.currentThread();
+
+    mockTaskCalled = false;
 
     sync = new CountDownLatch(1);
 
@@ -78,30 +112,37 @@ public class GoroServiceTest extends ServiceTestCase<GoroService> {
     }
   }
 
-  public void testExecutionStartFinish() {
+  public void testExecutionStartFinish() throws Exception {
     goro.addListener(listener);
-    Runnable task = mock(Runnable.class);
 
-    goro.schedule(task);
+    goro.schedule(mockTask);
     waitForListener();
     assertThat(startCallThread).isNotNull().isNotEqualTo(currentThread).isSameAs(finishCallThread);
     assertThat(errorCallThread).isNull();
-    verify(task).run();
+    assertThat(mockTaskCalled).isTrue();
   }
 
-  public void testExecutionStartError() {
-    listener = spy(listener);
+  public void testExecutionStartError() throws Exception {
     goro.addListener(listener);
-    Runnable task = mock(Runnable.class);
-    Exception testException = new Exception("test");
-    doThrow(testException).when(task).run();
+    testException = new Exception("test");
 
-    goro.schedule(task);
+    goro.schedule(mockTask);
     waitForListener();
     assertThat(startCallThread).isNotNull().isNotEqualTo(currentThread).isSameAs(errorCallThread);
     assertThat(finishCallThread).isNull();
-    verify(task).run();
-    verify(listener).onTaskError(task, testException);
+    assertThat(mockTaskCalled).isTrue();
+  }
+
+  public void testExecutionCancel() throws Exception {
+    goro.addListener(listener);
+
+    Future<?> future = goro.schedule(mockTask);
+    assertThat(future.cancel(true)).isTrue();
+    waitForListener();
+
+    assertThat(cancelCallThread).isNotNull();
+    assertThat(errorCallThread).isNull();
+    assertThat(finishCallThread).isNull();
   }
 
 }
