@@ -2,6 +2,7 @@ package com.stanfy.enroscar.goro;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -81,7 +82,9 @@ public class GoroTest {
     Callable<?> task = mock(Callable.class);
     goro.schedule(task);
     testingQueues.executeAll();
-    verify(listener).onTaskFinish(task);
+    InOrder order = inOrder(listener);
+    order.verify(listener).onTaskStart(task);
+    order.verify(listener).onTaskFinish(task);
   }
 
   @Test
@@ -90,8 +93,8 @@ public class GoroTest {
     Callable<?> task = mock(Callable.class);
     goro.schedule(task).cancel(true);
     testingQueues.executeAll();
-    verify(listener).onTaskCancel(task);
-  }
+    verify(listener, never()).onTaskStart(task);
+    verify(listener).onTaskCancel(task);  }
 
   @Test
   public void shouldInvokeErrorOnListeners() {
@@ -105,7 +108,9 @@ public class GoroTest {
     };
     goro.schedule(task);
     testingQueues.executeAll();
-    verify(listener).onTaskError(task, error);
+    InOrder order = inOrder(listener);
+    order.verify(listener).onTaskStart(task);
+    order.verify(listener).onTaskError(task, error);
   }
 
 

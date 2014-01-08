@@ -109,12 +109,19 @@ public class Goro {
     @Override
     public void run() {
       Goro goro = goroRef.get();
+      Callable<?> task = this.task;
+
       // invoke onTaskStart
-      if (goro != null && !goro.listeners.isEmpty()) {
-        for (GoroListener listener : goro.listeners) {
-          listener.onTaskStart(task);
+      if (goro != null && task != null) {
+        synchronized (goro.listeners) {
+          if (!goro.listeners.isEmpty()) {
+            for (GoroListener listener : goro.listeners) {
+              listener.onTaskStart(task);
+            }
+          }
         }
       }
+
       super.run();
     }
 
@@ -163,13 +170,9 @@ public class Goro {
         }
 
       } catch (InterruptedException e) {
-
         throw new RuntimeException(e);
-
       } finally {
-
         task = null;
-
       }
 
     }
