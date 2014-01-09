@@ -5,9 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.Parcelable;
+import android.util.Log;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
@@ -35,11 +39,20 @@ public class GoroService extends Service {
    */
   static final String EXTRA_TASK_BUNDLE = "task_bundle";
 
+
   /** Delegate executor. */
   private static Executor delegateExecutor;
 
+
+  /** Bound users flag. */
+  boolean hasBoundUsers;
+
   /** Binder instance. */
   private GoroBinder binder;
+
+  /** Stop handler. */
+  private final StopHandler stopHandler = new StopHandler(this);
+
 
   /**
    * Set an executor instance that is used to actually perform tasks.
@@ -63,6 +76,7 @@ public class GoroService extends Service {
   public static <T extends Callable<?> & Parcelable> Intent taskIntent(final Context context,
                                                                        final T task,
                                                                        final String queueName) {
+    // XXX http://code.google.com/p/android/issues/detail?id=6822
     Bundle bundle = new Bundle();
     bundle.putParcelable(EXTRA_TASK, task);
     return new Intent(context, GoroService.class)
@@ -82,6 +96,7 @@ public class GoroService extends Service {
                                                                        final T task) {
     return taskIntent(context, task, Goro.DEFAULT_QUEUE);
   }
+
 
   private GoroBinder getBinder() {
     if (binder == null) {
@@ -110,6 +125,7 @@ public class GoroService extends Service {
     return (Callable<?>)taskArg;
   }
 
+
   @Override
   public int onStartCommand(final Intent intent, final int flags, final int startId) {
     if (intent != null) {
@@ -127,12 +143,27 @@ public class GoroService extends Service {
 
   @Override
   public IBinder onBind(final Intent intent) {
+    hasBoundUsers = true;
     return getBinder();
   }
+
+  @Override
+  public boolean onUnbind(final Intent intent) {
+    hasBoundUsers = false;
+    stopHandler.checkForStop();
+    return true;
+  }
+
+  @Override
+  public void onRebind(final Intent intent) {
+    hasBoundUsers = true;
+  }
+
 
   protected Goro createGoro() {
     return delegateExecutor != null ? new Goro(delegateExecutor) : new Goro();
   }
+
 
   /** Goro service binder. */
   static class GoroBinder extends Binder {
@@ -145,5 +176,57 @@ public class GoroService extends Service {
     }
 
   }
+
+
+  /** Internal handler for stopping service. */
+  private static class StopHandler extends Handler {
+
+    /** Check for stop message. */
+    private static final int MSG_CHECK_FOR_STOP = 1;
+    /** Stop message. */
+    private static final int MSG_STOP = 2;
+
+    /** Service instance. */
+    private final WeakReference<GoroService> serviceRef;
+
+    public StopHandler(final GoroService service) {
+      this.serviceRef = new WeakReference<GoroService>(service);
+    }
+
+    public void checkForStop() {
+      doNotStop(); // clear any existing checks
+      sendEmptyMessage(MSG_CHECK_FOR_STOP);
+    }
+
+    public void doNotStop() {
+      removeMessages(MSG_STOP);
+      removeMessages(MSG_CHECK_FOR_STOP);
+    }
+
+    @Override
+    public void handleMessage(final Message msg) {
+      final GoroService service = serviceRef.get();
+      if (service == null) { return; }
+
+      switch (msg.what) {
+        case MSG_CHECK_FOR_STOP:
+          // here we decide whether to stop the service
+          if (!service.hasBoundUsers
+              && (service.binder == null || !service.binder.goro.hasOngoingTasks())) {
+            sendEmptyMessage(MSG_STOP);
+          }
+          break;
+
+        case MSG_STOP:
+          service.stopSelf();
+          break;
+
+        default:
+          throw new IllegalArgumentException("Unexpected message " + msg);
+      }
+    }
+
+  }
+
 
 }

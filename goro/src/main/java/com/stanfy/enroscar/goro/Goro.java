@@ -88,6 +88,12 @@ public class Goro {
     return future;
   }
 
+  boolean hasOngoingTasks() {
+    // TODO
+    return false;
+  }
+
+
   /**
    * Future implementation.
    */

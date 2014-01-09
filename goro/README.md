@@ -51,8 +51,17 @@ instance. Yet this instance must also implement `Parcelable` to be able to be pa
 `Intent` extras. This way we won't need any service binding.
 
 ```java
-  context.startService(GoroService.taskIntent(context, myTask))
-  context.startService(GoroService.taskIntent(context, myTask2, "notDefaultQueue"))
+  context.startService(GoroService.taskIntent(context, myTask));
+  context.startService(GoroService.taskIntent(context, myTask2, "notDefaultQueue"));
+```
+
+Intent constructed with `GoroService.taskIntent` can also be used to obtain a `PendingIntent`
+and schedule task execution with `AlarmManager`:
+```java
+  Intent taskIntent = GoroService.taskIntent(context, myTask);
+  AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+  PendingIntent pending = PendingIntent.getService(context, 0, taskIntent, 0);
+  alarmManager.set(AlarmManager.ELAPSED_REALTIME, scheduleTime, pending);
 ```
 
 Usage
