@@ -36,4 +36,8 @@ public class TestingQueues implements Queues {
     tasks.clear();
   }
 
+  public ArrayList<Runnable> getTasks() {
+    return tasks;
+  }
+
 }

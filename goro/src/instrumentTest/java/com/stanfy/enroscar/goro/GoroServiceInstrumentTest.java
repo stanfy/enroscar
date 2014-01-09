@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
 /**
  * Tests for {@link com.stanfy.enroscar.goro.Goro}.
  */
-public class GoroServiceTest extends ServiceTestCase<GoroService> {
+public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
 
   /** Instance under the test. */
   private Goro goro;
@@ -76,7 +76,7 @@ public class GoroServiceTest extends ServiceTestCase<GoroService> {
   /** A latch. */
   private CountDownLatch sync;
 
-  public GoroServiceTest() {
+  public GoroServiceInstrumentTest() {
     super(GoroService.class);
   }
 
