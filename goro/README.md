@@ -110,4 +110,4 @@ own pool manually with configuration similar to what is used in `AsyncTask`.
 
 You may also specify different actual executor for Goro either with
 `GoroService.setDelegateExecutor(myThreadPool)` or with `new Goro(myThreadPool)` depending on how
-use Goro.
+you use Goro.
