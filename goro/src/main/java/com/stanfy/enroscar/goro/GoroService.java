@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.os.Parcelable;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 
 /**
  * Service that handles tasks in multiple queues.
@@ -33,8 +34,19 @@ public class GoroService extends Service {
    */
   static final String EXTRA_TASK_BUNDLE = "task_bundle";
 
+  /** Delegate executor. */
+  private static Executor delegateExecutor;
+
   /** Binder instance. */
   private GoroBinder binder;
+
+  /**
+   * Set an executor instance that is used to actually perform tasks.
+   * @param delegateExecutor executor instance
+   */
+  public static void setDelegateExecutor(final Executor delegateExecutor) {
+    GoroService.delegateExecutor = delegateExecutor;
+  }
 
   private GoroBinder getBinder() {
     if (binder == null) {
@@ -77,7 +89,11 @@ public class GoroService extends Service {
   }
 
   protected Goro createGoro() {
-    return new Goro(new Queues.Impl());
+    Queues queues = new Queues.Impl();
+    if (delegateExecutor != null) {
+      queues.setDelegateExecutor(delegateExecutor);
+    }
+    return new Goro(queues);
   }
 
   /** Goro service binder. */

@@ -81,7 +81,7 @@ interface Queues {
       }
       synchronized (executorsMap) {
         if (!executorsMap.isEmpty()) {
-          throw new IllegalStateException("Threads poll cannot be changed after any queue is created");
+          throw new IllegalStateException("Delegate executor cannot be changed after any queue is created");
         }
         this.delegateExecutor = mainExecutor;
       }
