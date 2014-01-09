@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.goro;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
@@ -48,6 +49,38 @@ public class GoroService extends Service {
     GoroService.delegateExecutor = delegateExecutor;
   }
 
+  /**
+   * Create an intent that contains a task that should be scheduled
+   * on a defined queue.
+   * Intent can be used as an argument for
+   * {@link android.content.Context#startService(android.content.Intent)}.
+   *
+   * @param context context instance
+   * @param task task instance
+   * @param queueName queue name
+   * @param <T> task type
+   */
+  public static <T extends Callable<?> & Parcelable> Intent taskIntent(final Context context,
+                                                                       final T task,
+                                                                       final String queueName) {
+    return new Intent(context, GoroService.class)
+        .putExtra(EXTRA_TASK, task)
+        .putExtra(EXTRA_QUEUE_NAME, queueName);
+  }
+
+  /**
+   * Create an intent that contains a task that should be scheduled
+   * on a default queue.
+   * @param context context instance
+   * @param task task instance
+   * @param <T> task type
+   * @see #taskIntent(android.content.Context, java.util.concurrent.Callable, String)
+   */
+  public static <T extends Callable<?> & Parcelable> Intent taskIntent(final Context context,
+                                                                       final T task) {
+    return taskIntent(context, task, Goro.DEFAULT_QUEUE);
+  }
+
   private GoroBinder getBinder() {
     if (binder == null) {
       binder = new GoroBinder(createGoro());
@@ -89,11 +122,7 @@ public class GoroService extends Service {
   }
 
   protected Goro createGoro() {
-    Queues queues = new Queues.Impl();
-    if (delegateExecutor != null) {
-      queues.setDelegateExecutor(delegateExecutor);
-    }
-    return new Goro(queues);
+    return delegateExecutor != null ? new Goro(delegateExecutor) : new Goro();
   }
 
   /** Goro service binder. */

@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
@@ -23,7 +24,15 @@ public class Goro {
   /** Queues. */
   private final Queues queues;
 
-  // There is no public constructor for Goro.
+  public Goro(final Executor delegateExecutor) {
+    this();
+    this.queues.setDelegateExecutor(delegateExecutor);
+  }
+
+  public Goro() {
+    this(new Queues.Impl());
+  }
+
   Goro(final Queues queues) {
     this.queues = queues;
   }
