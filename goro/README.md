@@ -13,7 +13,10 @@ All the operations you ask Goro to perform are put in a queue and executed one b
 Goro allows you to organize multiple queues. You can specify what queue a task should be sent to
 with the second argument of `schedule` method:
 ```
-  goro.schedule(myOperations, "queue1");
+  goro.schedule(myOperations1, "firstQueue");
+  goro.schedule(myOperations2, "secondQueue");
+  goro.schedule(myOperations3, "firstQueue");
+  goro.schedule(myOperations4, "secondQueue");
 ```
 
 Queue is defined with a name. Goro does not limit number of your queues and lazily creates a new
