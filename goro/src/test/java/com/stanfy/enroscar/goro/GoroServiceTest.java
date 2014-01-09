@@ -9,6 +9,7 @@ import android.os.Parcelable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -61,6 +62,13 @@ public class GoroServiceTest {
     Intent command = new Intent();
     command.putExtra(GoroService.EXTRA_TASK, task);
     service.onStartCommand(command, 0, 1);
+    queues.executeAll();
+    assertThat(executed).isTrue();
+  }
+
+  @Test
+  public void shouldScheduleTasksCreatedWithFactoryMethod() {
+    service.onStartCommand(GoroService.taskIntent(Robolectric.application, task), 0, 1);
     queues.executeAll();
     assertThat(executed).isTrue();
   }

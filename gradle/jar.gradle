@@ -1,0 +1,6 @@
+// add a simple JAR to artifacts
+
+artifacts {
+  archives javadocsJar
+  archives file:file("$buildDir/libs/${project.name}-${project.version}.jar"), builtBy: classesJar
+}

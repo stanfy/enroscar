@@ -31,7 +31,7 @@ public class GoroService extends Service {
   public static final String EXTRA_QUEUE_NAME = "queue_name";
 
   /**
-   * Used for a workaround described in TODO
+   * Used as a workaround for http://code.google.com/p/android/issues/detail?id=6822
    */
   static final String EXTRA_TASK_BUNDLE = "task_bundle";
 
@@ -63,8 +63,10 @@ public class GoroService extends Service {
   public static <T extends Callable<?> & Parcelable> Intent taskIntent(final Context context,
                                                                        final T task,
                                                                        final String queueName) {
+    Bundle bundle = new Bundle();
+    bundle.putParcelable(EXTRA_TASK, task);
     return new Intent(context, GoroService.class)
-        .putExtra(EXTRA_TASK, task)
+        .putExtra(EXTRA_TASK_BUNDLE, bundle)
         .putExtra(EXTRA_QUEUE_NAME, queueName);
   }
 
@@ -88,30 +90,37 @@ public class GoroService extends Service {
     return binder;
   }
 
+  protected static Callable<?> getTaskFromExtras(final Intent intent) {
+    if (!intent.hasExtra(EXTRA_TASK) && !intent.hasExtra(EXTRA_TASK_BUNDLE)) {
+      return null;
+    }
+
+    Parcelable taskArg = intent.getParcelableExtra(EXTRA_TASK);
+    if (taskArg == null) {
+      Bundle bundle = intent.getBundleExtra(EXTRA_TASK_BUNDLE);
+      if (bundle != null) {
+        taskArg = bundle.getParcelable(EXTRA_TASK);
+      }
+    }
+
+    if (!(taskArg instanceof Callable)) {
+      throw new IllegalArgumentException("Task " + taskArg + " is not a Callable");
+    }
+
+    return (Callable<?>)taskArg;
+  }
+
   @Override
   public int onStartCommand(final Intent intent, final int flags, final int startId) {
     if (intent != null) {
-      if (!intent.hasExtra(EXTRA_TASK) && !intent.hasExtra(EXTRA_TASK_BUNDLE)) {
-        throw new IllegalArgumentException("Task is not defined");
-      }
-      Parcelable taskArg = intent.getParcelableExtra(EXTRA_TASK);
-      if (taskArg == null) {
-        Bundle bundle = intent.getBundleExtra(EXTRA_TASK_BUNDLE);
-        if (bundle != null) {
-          taskArg = bundle.getParcelable(EXTRA_TASK);
-        }
-      }
+      Callable<?> task = getTaskFromExtras(intent);
+      if (task != null) {
+        String queueName = intent.hasExtra(EXTRA_QUEUE_NAME)
+            ? intent.getStringExtra(EXTRA_QUEUE_NAME)
+            : Goro.DEFAULT_QUEUE;
 
-      if (!(taskArg instanceof Callable)) {
-        throw new IllegalArgumentException("Task " + taskArg + " is not a Callable");
+        getBinder().goro.schedule(task, queueName);
       }
-      Callable<?> task = (Callable<?>) taskArg;
-
-      String queueName = intent.hasExtra(EXTRA_QUEUE_NAME)
-          ? intent.getStringExtra(EXTRA_QUEUE_NAME)
-          : Goro.DEFAULT_QUEUE;
-
-      getBinder().goro.schedule(task, queueName);
     }
     return START_STICKY;
   }
