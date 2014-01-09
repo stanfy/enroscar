@@ -2,6 +2,8 @@ package com.stanfy.enroscar.goro;
 
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
+import android.os.Looper;
 import android.test.ServiceTestCase;
 
 import java.util.concurrent.Callable;
@@ -10,7 +12,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link com.stanfy.enroscar.goro.Goro}.
@@ -52,7 +53,7 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
     }
 
     @Override
-    public void onTaskFinish(Callable<?> task) {
+    public void onTaskFinish(Callable<?> task, Object result) {
       assertThat(task).isNotNull();
       finishCallThread = Thread.currentThread();
       sync.countDown();
@@ -112,9 +113,17 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
     }
   }
 
-  public void testExecutionStartFinish() throws Exception {
-    goro.addListener(listener);
+  private void addListener() {
+    new Handler(Looper.getMainLooper()).post(new Runnable() {
+      @Override
+      public void run() {
+        goro.addListener(listener);
+      }
+    });
+  }
 
+  public void testExecutionStartFinish() throws Exception {
+    addListener();
     goro.schedule(mockTask);
     waitForListener();
     assertThat(startCallThread).isNotNull().isNotEqualTo(currentThread).isSameAs(finishCallThread);
@@ -123,7 +132,7 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
   }
 
   public void testExecutionStartError() throws Exception {
-    goro.addListener(listener);
+    addListener();
     testException = new Exception("test");
 
     goro.schedule(mockTask);
@@ -134,7 +143,7 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
   }
 
   public void testExecutionCancel() throws Exception {
-    goro.addListener(listener);
+    addListener();
 
     Future<?> future = goro.schedule(mockTask);
     assertThat(future.cancel(true)).isTrue();

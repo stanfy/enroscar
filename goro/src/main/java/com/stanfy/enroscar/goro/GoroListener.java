@@ -9,7 +9,7 @@ public interface GoroListener {
 
   void onTaskStart(Callable<?> task);
 
-  void onTaskFinish(Callable<?> task);
+  void onTaskFinish(Callable<?> task, Object result);
 
   void onTaskCancel(Callable<?> task);
 

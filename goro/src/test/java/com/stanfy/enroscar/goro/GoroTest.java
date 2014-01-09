@@ -1,8 +1,13 @@
 package com.stanfy.enroscar.goro;
 
+import android.os.Build;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InOrder;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -13,6 +18,8 @@ import static org.mockito.Mockito.*;
 /**
  * Tests for {@link com.stanfy.enroscar.goro.Goro}.
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class GoroTest {
 
   /** Goro instance. */
@@ -77,14 +84,19 @@ public class GoroTest {
   }
 
   @Test
-  public void shouldInvokeFinishOnListeners() {
+  public void shouldInvokeFinishOnListeners() throws Exception {
     goro.addListener(listener);
     Callable<?> task = mock(Callable.class);
+    Object result = new Object();
+    doReturn(result).when(task).call();
+
     goro.schedule(task);
+
     testingQueues.executeAll();
+
     InOrder order = inOrder(listener);
     order.verify(listener).onTaskStart(task);
-    order.verify(listener).onTaskFinish(task);
+    order.verify(listener).onTaskFinish(task, result);
   }
 
   @Test
@@ -93,6 +105,7 @@ public class GoroTest {
     Callable<?> task = mock(Callable.class);
     goro.schedule(task).cancel(true);
     testingQueues.executeAll();
+
     verify(listener, never()).onTaskStart(task);
     verify(listener).onTaskCancel(task);  }
 
@@ -108,6 +121,7 @@ public class GoroTest {
     };
     goro.schedule(task);
     testingQueues.executeAll();
+
     InOrder order = inOrder(listener);
     order.verify(listener).onTaskStart(task);
     order.verify(listener).onTaskError(task, error);

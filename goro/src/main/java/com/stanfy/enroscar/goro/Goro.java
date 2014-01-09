@@ -3,15 +3,11 @@ package com.stanfy.enroscar.goro;
 import android.os.IBinder;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Service that handles tasks in multiple queues.
@@ -21,8 +17,8 @@ public class Goro {
   /** Default queue name. */
   public static final String DEFAULT_QUEUE = "default";
 
-  /** Execution listeners. */
-  final ArrayList<GoroListener> listeners = new ArrayList<GoroListener>();
+  /** Listeners handler. */
+  final ListenersHandler listenersHandler = new ListenersHandler();
 
   /** Queues. */
   private final Queues queues;
@@ -44,9 +40,7 @@ public class Goro {
    * @param listener listener instance
    */
   public void addListener(final GoroListener listener) {
-    synchronized (listeners) {
-      listeners.add(listener);
-    }
+    listenersHandler.addListener(listener);
   }
 
   /**
@@ -54,11 +48,7 @@ public class Goro {
    * @param listener listener instance
    */
   public void removeListener(final GoroListener listener) {
-    synchronized (listeners) {
-      if (!listeners.remove(listener)) {
-        throw new IllegalArgumentException("Listener " + listener + " is not registered");
-      }
-    }
+    listenersHandler.removeListener(listener);
   }
 
 
@@ -111,15 +101,11 @@ public class Goro {
       Goro goro = goroRef.get();
       Callable<?> task = this.task;
 
+      // if task is null, it's already canceled
+
       // invoke onTaskStart
       if (goro != null && task != null) {
-        synchronized (goro.listeners) {
-          if (!goro.listeners.isEmpty()) {
-            for (GoroListener listener : goro.listeners) {
-              listener.onTaskStart(task);
-            }
-          }
-        }
+        goro.listenersHandler.postStart(task);
       }
 
       super.run();
@@ -133,42 +119,16 @@ public class Goro {
         return;
       }
 
-      ArrayList<GoroListener> listeners = goro.listeners;
       try {
-        get();
-
+        Object result = get();
         // invoke onTaskFinish
-        synchronized (goro.listeners) {
-          if (!listeners.isEmpty()) {
-            for (GoroListener listener : listeners) {
-              listener.onTaskFinish(task);
-            }
-          }
-        }
-
+        goro.listenersHandler.postFinish(task, result);
       } catch (CancellationException e) {
-
         // invoke onTaskCancel
-        synchronized (goro.listeners) {
-          if (!listeners.isEmpty()) {
-            for (GoroListener listener : listeners) {
-              listener.onTaskCancel(task);
-            }
-          }
-        }
-
+        goro.listenersHandler.postCancel(task);
       } catch (ExecutionException e) {
-
         // invoke onTaskError
-        synchronized (goro.listeners) {
-          if (!listeners.isEmpty()) {
-            Throwable cause = e.getCause();
-            for (GoroListener listener : listeners) {
-              listener.onTaskError(task, cause);
-            }
-          }
-        }
-
+        goro.listenersHandler.postError(task, e.getCause());
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       } finally {
