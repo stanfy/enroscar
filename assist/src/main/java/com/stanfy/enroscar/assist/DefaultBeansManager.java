@@ -46,12 +46,12 @@ public class DefaultBeansManager extends BeansManager {
   }
 
   /**
-   * Creates an instance of {@link DefaultBeansManager} and configures
-   * the method {@link BeansManager#get(Context)} to return this instance.
-   * @param context application context
-   * @return newly create beans manager instance
+   * Configures {@link com.stanfy.enroscar.beans.BeansManager} by setting
+   * appropriate {@link com.stanfy.enroscar.beans.BeansManager.Factory} instance.
+   * <br/>
+   * Multiple calls to this method makes no effect.
    */
-  public static DefaultBeansManager get(final Context context) {
+  public static synchronized void configure() {
     if (!configured) {
       setFactory(new Factory() {
         @Override
@@ -61,6 +61,16 @@ public class DefaultBeansManager extends BeansManager {
       });
       configured = true;
     }
+  }
+
+  /**
+   * Creates an instance of {@link DefaultBeansManager} and configures
+   * the method {@link BeansManager#get(Context)} to return this instance.
+   * @param context application context
+   * @return newly create beans manager instance
+   */
+  public static DefaultBeansManager get(final Context context) {
+    configure();
     return (DefaultBeansManager) BeansManager.get(context);
   }
   
