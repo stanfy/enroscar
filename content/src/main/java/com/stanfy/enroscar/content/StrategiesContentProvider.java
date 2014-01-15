@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.content;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
@@ -22,7 +23,8 @@ import android.util.SparseArray;
  *
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
-public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper> extends ContentProvider {
+public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper>
+    extends ContentProvider {
 
   /** URI matcher. */
   private StrategyMatcher<T> strategyMatcher;
@@ -43,7 +45,8 @@ public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper> exte
    *   Example:
    *   <pre>
    *     matcher.registerStrategy("com.example.authority", "/path/#", new SimpleStrategy() {
-   *         public Cursor query(SQLiteOpenHelper dbManager, Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+   *         public Cursor query(SQLiteOpenHelper dbManager, Uri uri, String[] projection,
+   *                             String selection, String[] selectionArgs, String sortOrder) {
    *           return dbManager.getReadableDatabase().rawQuery("select * from example", null);
    *         }
    *     });
@@ -60,9 +63,11 @@ public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper> exte
   protected abstract T getDatabaseManager(final Context context);
   
   @Override
-  public Cursor query(final Uri uri, final String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
+  public Cursor query(final Uri uri, final String[] projection, final String selection,
+                      final String[] selectionArgs, final String sortOrder) {
     final Strategy<T> strategy = strategyMatcher.choose(uri);
-    return strategy != null ? strategy.query(getDatabaseManager(getContext()), uri, projection, selection, selectionArgs, sortOrder) : null;
+    return strategy != null ? strategy.query(getDatabaseManager(getContext()), uri, projection,
+        selection, selectionArgs, sortOrder) : null;
   }
 
   @Override
@@ -80,17 +85,23 @@ public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper> exte
   @Override
   public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
     final Strategy<T> strategy = strategyMatcher.choose(uri);
-    return strategy != null ? strategy.delete(getDatabaseManager(getContext()), uri, selection, selectionArgs) : 0;
+    return strategy != null
+        ? strategy.delete(getDatabaseManager(getContext()), uri, selection, selectionArgs)
+        : 0;
   }
 
   @Override
-  public int update(final Uri uri, final ContentValues values, final String selection, final String[] selectionArgs) {
+  public int update(final Uri uri, final ContentValues values, final String selection,
+                    final String[] selectionArgs) {
     final Strategy<T> strategy = strategyMatcher.choose(uri);
-    return strategy != null ? strategy.update(getDatabaseManager(getContext()), uri, values, selection, selectionArgs) : 0;
+    return strategy != null
+        ? strategy.update(getDatabaseManager(getContext()), uri, values, selection, selectionArgs)
+        : 0;
   }
 
   /**
-   * A utility class that allows to register different content provider strategies for different URLs.
+   * A utility class that allows to register different content provider strategies
+   * for different URLs.
    * @see android.content.UriMatcher
    * @param <T> type of used SQLiteOpenHelper
    */
@@ -114,7 +125,8 @@ public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper> exte
       this.defaultStrategy = defaultStrategy;
     }
 
-    public void registerStrategy(final String authority, final String path, final Strategy<T> strategy) {
+    public void registerStrategy(final String authority, final String path,
+                                 final Strategy<T> strategy) {
       ++counter;
       idsMatcher.addURI(authority, path, counter);
       strategiesRegister.put(counter, strategy);
@@ -137,7 +149,8 @@ public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper> exte
     /**
      * @see android.content.ContentProvider#query(Uri, String[], String, String[], String)
      */
-    Cursor query(final T appDbManager, final Uri uri, final String[] projection, final String selection, final String[] selectionArgs, final String sortOrder);
+    Cursor query(final T appDbManager, final Uri uri, final String[] projection,
+                 final String selection, final String[] selectionArgs, final String sortOrder);
 
     /**
      * @see android.content.ContentProvider#getType(Uri)
@@ -152,22 +165,26 @@ public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper> exte
     /**
      * @see android.content.ContentProvider#delete(Uri, String, String[])
      */
-    int delete(final T appDbManager, final Uri uri, final String selection, final String[] selectionArgs);
+    int delete(final T appDbManager, final Uri uri, final String selection,
+               final String[] selectionArgs);
 
     /**
      * @see android.content.ContentProvider#update(Uri, ContentValues, String, String[])
      */
-    int update(final T appDbManager, final Uri uri, final ContentValues values, final String selection, final String[] selectionArgs);
+    int update(final T appDbManager, final Uri uri, final ContentValues values,
+               final String selection, final String[] selectionArgs);
   }
 
   /**
-   * Simple strategy, use it when you do not want to implement all the methods of {@link Strategy}.
+   * Empty strategy, use it when you do not want to implement all the methods of {@link Strategy}.
    * @param <T> type of SQLiteOpenHelper
    */
   public static class SimpleStrategy<T extends SQLiteOpenHelper> implements Strategy<T> {
 
     @Override
-    public Cursor query(final T appDbManager, final Uri uri, final String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
+    public Cursor query(final T appDbManager, final Uri uri, final String[] projection,
+                        final String selection, final String[] selectionArgs,
+                        final String sortOrder) {
       return null;
     }
 
@@ -182,13 +199,63 @@ public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper> exte
     }
 
     @Override
-    public int delete(final T appDbManager, final Uri uri, final String selection, final String[] selectionArgs) {
+    public int delete(final T appDbManager, final Uri uri, final String selection,
+                      final String[] selectionArgs) {
       return 0;
     }
 
     @Override
-    public int update(final T appDbManager, final Uri uri, final ContentValues values, final String selection, final String[] selectionArgs) {
+    public int update(final T appDbManager, final Uri uri, final ContentValues values,
+                      final String selection, final String[] selectionArgs) {
       return 0;
+    }
+
+  }
+
+  /**
+   * Simple strategy that delegates all the calls to corresponding
+   * insert, update, delete methods of SQLiteDatabase.
+   * @param <T> db open helper type
+   */
+  @SuppressWarnings("ConstantConditions")
+  public static class TableStrategy<T extends SQLiteOpenHelper> implements Strategy<T> {
+
+    /** Table name. */
+    private final String tableName;
+
+    public TableStrategy(final String tableName) {
+      this.tableName = tableName;
+    }
+
+    @Override
+    public Cursor query(final T appDbManager, final Uri uri, final String[] projection,
+                        final String selection, final String[] selectionArgs,
+                        final String sortOrder) {
+      return appDbManager.getWritableDatabase().query(tableName, projection, selection,
+          selectionArgs, null, null, sortOrder);
+    }
+
+    @Override
+    public String getType(final T appDbManager, final Uri uri) {
+      return null;
+    }
+
+    @Override
+    public Uri insert(final T appDbManager, final Uri uri, final ContentValues values) {
+      long id = appDbManager.getWritableDatabase().insert(tableName, null, values);
+      return ContentUris.withAppendedId(uri, id);
+    }
+
+    @Override
+    public int delete(final T appDbManager, final Uri uri, final String selection,
+                      final String[] selectionArgs) {
+      return appDbManager.getWritableDatabase().delete(tableName, selection, selectionArgs);
+    }
+
+    @Override
+    public int update(final T appDbManager, final Uri uri, final ContentValues values,
+                      final String selection, final String[] selectionArgs) {
+      return appDbManager.getReadableDatabase().update(tableName, values, selection, selectionArgs);
     }
 
   }
