@@ -20,14 +20,12 @@ task wrapper(type: Wrapper) {
 def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 
+def libraryModules = [
+    'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui',
+    'sherlock-integration'
+].collect { project(":enroscar-$it") }
 
-subprojects {
-
-  // XXX change me
-  def checkDir = "$project.projectDir"
-  if (checkDir.contains("/integration") && !checkDir.endsWith("sherlock-integration")) {
-    return
-  }
+configure(libraryModules) {
 
   version = projectVersion
   group = 'com.stanfy.enroscar'
@@ -57,6 +55,11 @@ subprojects {
       versionName projectVersion
       minSdkVersion 8
       packageName getPackageName(project)
+    }
+
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_1_7
+      targetCompatibility JavaVersion.VERSION_1_7
     }
   }
 
