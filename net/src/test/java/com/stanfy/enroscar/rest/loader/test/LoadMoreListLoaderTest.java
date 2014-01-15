@@ -67,17 +67,18 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
       .<String, List<String>>asLoadMoreList("o", "l");
   }
 
-  private void makeAsyncAssert(final Loader<ResponseData<List<String>>> loader, final String response, final Asserter<List<String>> asserter) throws Throwable {
-    waitAndAssertForLoader(loader, new Asserter<ResponseData<List<String>>>() {
+  private void makeAssert(final Loader<ResponseData<List<String>>> loader, final String response, final Asserter<List<String>> asserter) throws Throwable {
+    assertWithLoader(loader, new Asserter<ResponseData<List<String>>>() {
       @Override
-      public void makeAssertions(final ResponseData<List<String>> data) throws Exception {
-        if (data == null) { throw new IllegalStateException("null data"); }
+      public void makeAssertions(ResponseData<List<String>> data) throws Exception {
         System.out.println(data.getModel());
         assertThat(data.isSuccessful()).isTrue();
         assertThat(data.getModel().get(data.getModel().size() - 1)).isEqualTo(response);
-
-        asserter.makeAssertions(data.getModel());
-
+        try {
+          asserter.makeAssertions(data.getModel());
+        } catch (Exception e) {
+          throw new AssertionError(e);
+        }
       }
     });
   }
@@ -89,7 +90,7 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
     final Loader<ResponseData<List<String>>> loader = createListRb().getLoader();
 
     loader.startLoading();
-    makeAsyncAssert(loader, "L1", new Asserter<List<String>>() {
+    makeAssert(loader, "L1", new Asserter<List<String>>() {
       @Override
       public void makeAssertions(final List<String> data) throws Exception {
         final RecordedRequest request = getWebServer().takeRequest();
@@ -107,7 +108,7 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
     final Loader<ResponseData<List<String>>> loader = createListRb().setLimit(2).setOffset(1).getLoader();
 
     loader.startLoading();
-    makeAsyncAssert(loader, "LCustom", new Asserter<List<String>>() {
+    makeAssert(loader, "LCustom", new Asserter<List<String>>() {
       @Override
       public void makeAssertions(final List<String> data) throws Exception {
         final RecordedRequest request = getWebServer().takeRequest();
@@ -130,7 +131,7 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
     
     getWebServer().enqueue(new MockResponse().setBody("LNext"));
     loader.forceLoadMore();
-    makeAsyncAssert(loader, "LNext", new Asserter<List<String>>() {
+    makeAssert(loader, "LNext", new Asserter<List<String>>() {
       @Override
       public void makeAssertions(final List<String> data) throws Exception {
         final RecordedRequest request = getWebServer().takeRequest();
@@ -170,7 +171,7 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
     
     getWebServer().enqueue(new MockResponse().setBody("LNextCustom"));
     loader.forceLoadMore();
-    makeAsyncAssert(loader, "LNextCustom", new Asserter<List<String>>() {
+    makeAssert(loader, "LNextCustom", new Asserter<List<String>>() {
       @Override
       public void makeAssertions(final List<String> data) throws Exception {
         final RecordedRequest request = getWebServer().takeRequest();

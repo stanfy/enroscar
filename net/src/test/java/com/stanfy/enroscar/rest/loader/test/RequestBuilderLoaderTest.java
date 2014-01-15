@@ -39,7 +39,7 @@ public class RequestBuilderLoaderTest extends AbstractLoaderTest {
 
     loader.startLoading();
 
-    waitAndAssertForLoader(loader, new Asserter<ResponseData<String>>() {
+    assertWithLoader(loader, new Asserter<ResponseData<String>>() {
       @Override
       public void makeAssertions(final ResponseData<String> data) throws Exception {
         assertThat(data).isNotNull();
@@ -62,7 +62,7 @@ public class RequestBuilderLoaderTest extends AbstractLoaderTest {
 
     loader.startLoading();
 
-    waitAndAssertForLoader(loader, new Asserter<ResponseData<String>>() {
+    assertWithLoader(loader, new Asserter<ResponseData<String>>() {
       @Override
       public void makeAssertions(final ResponseData<String> data) throws Exception {
         RecordedRequest request = getWebServer().takeRequest();
