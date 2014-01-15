@@ -12,6 +12,10 @@ uploadArchives {
         name 'Enroscar Assist'
         description 'Helper module that gives easy access to standard Android modules and makes it easy to configure all the Enroscar stuff together.'
       }
+      pom.whenConfigured {
+        it.dependencies = []
+      }
     }
   }
 }
+
