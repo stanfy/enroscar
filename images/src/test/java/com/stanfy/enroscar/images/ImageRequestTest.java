@@ -3,6 +3,7 @@ package com.stanfy.enroscar.images;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Base64;
 
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.io.IoUtils;
@@ -86,6 +87,19 @@ public class ImageRequestTest extends AbstractImagesTest {
   }
 
   @Test
+  public void shouldDecodeBase64Image() throws IOException {
+    ImageRequest request = new ImageRequest(manager, "data:image/gif;base64," + Base64.encodeToString(new byte[1], Base64.DEFAULT), -1);
+    request.setRequiredHeight(TEST_BITMAP_SIZE);
+    request.setRequiredWidth(TEST_BITMAP_SIZE);
+    ImageResult result = request.readImage();
+    assertThat(result).isNotNull();
+    assertThat(result.getBitmap()).isNotNull();
+    assertThat(result.getType()).isSameAs(ImageSourceType.NETWORK);
+    assertThat(result.getBitmap()).hasWidth(TEST_BITMAP_SIZE);
+    assertThat(result.getBitmap()).hasHeight(TEST_BITMAP_SIZE);
+  }
+
+  @Test
   public void shouldIndicateWhenImageIsLoadedFromCache() throws Exception {
     putCachedContent(manager, defaultUrl);
     ImageRequest request = new ImageRequest(manager, defaultUrl, 1);
@@ -143,7 +157,7 @@ public class ImageRequestTest extends AbstractImagesTest {
   public void storeToDiskShouldNotDecodeImageIfAllowedSizeIsNotSpecified() throws IOException {
     ImageRequest request = spy(new ImageRequest(manager, defaultUrl, -1));
     request.storeToDisk();
-    verify(request).newConnection();
+    verify(request).newUrlConnection();
     verify(request, times(0)).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
   }
 
@@ -152,7 +166,7 @@ public class ImageRequestTest extends AbstractImagesTest {
     putCachedContent(manager, defaultUrl);
     ImageRequest request = spy(new ImageRequest(manager, defaultUrl, -1));
     request.storeToDisk();
-    verify(request, times(0)).newConnection();
+    verify(request, times(0)).newUrlConnection();
   }
 
   @Test
@@ -160,7 +174,7 @@ public class ImageRequestTest extends AbstractImagesTest {
     final float small = 0.05f;
     final ImageRequest request = spy(new ImageRequest(manager, defaultUrl, small));
     request.storeToDisk();
-    verify(request).newConnection();
+    verify(request).newUrlConnection();
     verify(request, times(2)).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
 
     int factor = ImagesManager.calculateSampleFactor(TEST_BITMAP_SIZE, TEST_BITMAP_SIZE,
@@ -187,7 +201,7 @@ public class ImageRequestTest extends AbstractImagesTest {
   public void storeToDiskShouldNotFullyDecodeIfScaleFactorIsOne() throws Exception {
     final ImageRequest request = spy(new ImageRequest(manager, defaultUrl, 1));
     request.storeToDisk();
-    verify(request).newConnection();
+    verify(request).newUrlConnection();
     verify(request, times(1)).doStreamDecode(any(InputStream.class), any(BitmapFactory.Options.class));
     verify(request, times(0)).writeBitmapToDisk(any(Bitmap.class));
   }

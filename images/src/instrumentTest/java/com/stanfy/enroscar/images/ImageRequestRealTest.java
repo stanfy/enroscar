@@ -3,12 +3,14 @@ package com.stanfy.enroscar.images;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Base64;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.IoUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,6 +122,27 @@ public class ImageRequestRealTest extends BaseTest {
     String url = server.getUrl("/image").toString();
 
     ImageRequest request = new ImageRequest(imagesManager, url, 1);
+    ImageResult result = request.readImage();
+    assertThat(result.getType()).isSameAs(ImageSourceType.NETWORK);
+
+    final Bitmap resultBitmap = result.getBitmap();
+    assertThat(resultBitmap).isNotNull();
+  }
+
+  public void testRealBase64Image() throws IOException {
+    // 5x5 red dot
+    final String base64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+    final String url = "data:image/png;base64," + base64;
+
+    ImageRequest request = new ImageRequest(imagesManager, url, 1);
+
+    assertThat(request.getRemoteInputStream()).isInstanceOf(ByteArrayInputStream.class);
+
+    final ByteArrayInputStream bytes = (ByteArrayInputStream) request.getRemoteInputStream();
+    final byte[] buffer = new byte[bytes.available()];
+    bytes.read(buffer);
+    assertThat(buffer).isEqualTo(Base64.decode(base64, Base64.DEFAULT));
+
     ImageResult result = request.readImage();
     assertThat(result.getType()).isSameAs(ImageSourceType.NETWORK);
 
