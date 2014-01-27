@@ -117,7 +117,7 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
       public void run() {
-        goro.addListener(listener);
+        goro.addTaskListener(listener);
       }
     });
   }

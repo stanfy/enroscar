@@ -7,10 +7,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link com.stanfy.enroscar.goro.Queues.Impl}.

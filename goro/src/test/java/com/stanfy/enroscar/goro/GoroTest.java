@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -42,22 +43,22 @@ public class GoroTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void removeListenerShouldThrowOnUnknownListener() {
-    goro.removeListener(mock(GoroListener.class));
+    goro.removeTaskListener(mock(GoroListener.class));
   }
 
   @Test
   public void shouldBeAbleToAddAndRemoveListeners() {
     GoroListener listener = mock(GoroListener.class);
-    goro.addListener(listener);
-    goro.removeListener(listener);
+    goro.addTaskListener(listener);
+    goro.removeTaskListener(listener);
   }
 
   @Test
   public void scheduleShouldReturnFuture() {
     Callable<?> task = mock(Callable.class);
-    Future future1 = goro.schedule(task, "1");
+    Future future1 = goro.schedule("1", task);
     assertThat(future1).isNotNull();
-    Future future2 = goro.schedule(task, "2");
+    Future future2 = goro.schedule("2", task);
     assertThat(future2).isNotNull().isNotEqualTo(future1);
   }
 
@@ -65,18 +66,18 @@ public class GoroTest {
   public void shouldScheduleOnDefaultQueue() {
     goro = spy(goro);
     goro.schedule(mock(Callable.class));
-    verify(goro).schedule(any(Callable.class), eq(Goro.DEFAULT_QUEUE));
+    verify(goro).schedule(eq(Goro.DEFAULT_QUEUE), any(Callable.class));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void scheduleShouldThrowWhenTaskIsNull() {
-    goro.schedule(null, "1");
+    goro.schedule("1", null);
   }
 
 
   @Test
   public void shouldInvokeStartOnListeners() {
-    goro.addListener(listener);
+    goro.addTaskListener(listener);
     Callable<?> task = mock(Callable.class);
     goro.schedule(task);
     testingQueues.executeAll();
@@ -85,7 +86,7 @@ public class GoroTest {
 
   @Test
   public void shouldInvokeFinishOnListeners() throws Exception {
-    goro.addListener(listener);
+    goro.addTaskListener(listener);
     Callable<?> task = mock(Callable.class);
     Object result = new Object();
     doReturn(result).when(task).call();
@@ -101,7 +102,7 @@ public class GoroTest {
 
   @Test
   public void shouldInvokeCancelOnListeners() {
-    goro.addListener(listener);
+    goro.addTaskListener(listener);
     Callable<?> task = mock(Callable.class);
     goro.schedule(task).cancel(true);
     testingQueues.executeAll();
@@ -111,7 +112,7 @@ public class GoroTest {
 
   @Test
   public void shouldInvokeErrorOnListeners() {
-    goro.addListener(listener);
+    goro.addTaskListener(listener);
     final Exception error = new Exception();
     Callable<?> task = new Callable<Object>() {
       @Override
@@ -126,6 +127,5 @@ public class GoroTest {
     order.verify(listener).onTaskStart(task);
     order.verify(listener).onTaskError(task, error);
   }
-
 
 }

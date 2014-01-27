@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 public class TestingQueues implements Queues {
 
   /** Scheduled tasks. */
-  private final ArrayList<Runnable> tasks = new ArrayList<Runnable>();
+  private final ArrayList<Runnable> tasks = new ArrayList<>();
 
   /** Direct executor. */
   private Executor directExecutor = new Executor() {
@@ -34,10 +34,6 @@ public class TestingQueues implements Queues {
       command.run();
     }
     tasks.clear();
-  }
-
-  public ArrayList<Runnable> getTasks() {
-    return tasks;
   }
 
 }

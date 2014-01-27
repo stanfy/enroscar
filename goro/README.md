@@ -97,7 +97,7 @@ Goro listeners
 You may add listeners that will be notified when each task starts, finishes, fails,
 or is canceled.
 ```java
-  goro.addListener(myListener);
+  goro.addTaskListener(myListener);
 ```
 
 All the listener callbacks are invoked in the main thread. Listener can be added or removed in

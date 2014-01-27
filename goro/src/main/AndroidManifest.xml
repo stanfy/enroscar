@@ -7,7 +7,7 @@
   <application tools:ignore="AllowBackup">
 
     <service
-        android:name=".GoroService"
+        android:name="com.stanfy.enroscar.goro.GoroService"
         android:exported="false" />
 
   </application>

@@ -48,16 +48,16 @@ public class Goro {
    * Adds a task execution listener.
    * @param listener listener instance
    */
-  public void addListener(final GoroListener listener) {
-    listenersHandler.addListener(listener);
+  public void addTaskListener(final GoroListener listener) {
+    listenersHandler.addTaskListener(listener);
   }
 
   /**
    * Removes a task execution listener.
    * @param listener listener instance
    */
-  public void removeListener(final GoroListener listener) {
-    listenersHandler.removeListener(listener);
+  public void removeTaskListener(final GoroListener listener) {
+    listenersHandler.removeTaskListener(listener);
   }
 
 
@@ -68,22 +68,22 @@ public class Goro {
    * @return task future instance
    */
   public <T> Future<T> schedule(final Callable<T> task) {
-    return schedule(task, DEFAULT_QUEUE);
+    return schedule(DEFAULT_QUEUE, task);
   }
 
   /**
    * Add a task to the specified queue.
    * This methods returns a future that allows to control task execution.
    * Queue name may be null, if you want to execute the task beyond any queue.
-   * @param task task instance
    * @param queueName name of a queue to use, may be null
+   * @param task task instance
    * @return task future instance
    */
-  public <T> Future<T> schedule(final Callable<T> task, final String queueName) {
+  public <T> Future<T> schedule(final String queueName, final Callable<T> task) {
     if (task == null) {
       throw new IllegalArgumentException("Task must not be null");
     }
-    GoroFuture<T> future = new GoroFuture<T>(this, task);
+    GoroFuture<T> future = new GoroFuture<>(this, task);
     queues.getExecutor(queueName).execute(future);
     return future;
   }
@@ -108,7 +108,7 @@ public class Goro {
     GoroFuture(final Goro goro, final Callable<T> task) {
       super(task);
       this.task = task;
-      this.goroRef = new WeakReference<Goro>(goro);
+      this.goroRef = new WeakReference<>(goro);
     }
 
     @Override

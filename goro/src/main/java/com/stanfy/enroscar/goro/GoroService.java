@@ -3,13 +3,13 @@ package com.stanfy.enroscar.goro;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
@@ -74,8 +74,8 @@ public class GoroService extends Service {
    * @param <T> task type
    */
   public static <T extends Callable<?> & Parcelable> Intent taskIntent(final Context context,
-                                                                       final T task,
-                                                                       final String queueName) {
+                                                                       final String queueName,
+                                                                       final T task) {
     // XXX http://code.google.com/p/android/issues/detail?id=6822
     Bundle bundle = new Bundle();
     bundle.putParcelable(EXTRA_TASK, task);
@@ -90,13 +90,35 @@ public class GoroService extends Service {
    * @param context context instance
    * @param task task instance
    * @param <T> task type
-   * @see #taskIntent(android.content.Context, java.util.concurrent.Callable, String)
+   * @see #taskIntent(android.content.Context, String, java.util.concurrent.Callable)
    */
   public static <T extends Callable<?> & Parcelable> Intent taskIntent(final Context context,
                                                                        final T task) {
-    return taskIntent(context, task, Goro.DEFAULT_QUEUE);
+    return taskIntent(context, Goro.DEFAULT_QUEUE, task);
   }
 
+  /**
+   * Bind to Goro service. This method will start the service and then bind to it.
+   * @param context context that is binding to the service
+   * @param connection service connection callbacks
+   * @throws RuntimeException when service is not declared in the application manifest
+   */
+  public static void bind(final Context context, final ServiceConnection connection) {
+    Intent serviceIntent = new Intent(context, GoroService.class);
+    if (context.startService(serviceIntent) == null) {
+      throw new RuntimeException("Service " + GoroService.class + " does not seem to be included to your manifest file");
+    }
+    context.bindService(serviceIntent, connection, 0);
+  }
+
+  /**
+   * Unbind from Goro service.
+   * @param context context that is unbinding from the service
+   * @param connection service connection callbacks
+   */
+  public static void unbind(final Context context, final ServiceConnection connection) {
+    context.unbindService(connection);
+  }
 
   private GoroBinder getBinder() {
     if (binder == null) {
@@ -135,7 +157,7 @@ public class GoroService extends Service {
             ? intent.getStringExtra(EXTRA_QUEUE_NAME)
             : Goro.DEFAULT_QUEUE;
 
-        getBinder().goro.schedule(task, queueName);
+        getBinder().goro.schedule(queueName, task);
       }
     }
     return START_STICKY;
@@ -190,7 +212,7 @@ public class GoroService extends Service {
     private final WeakReference<GoroService> serviceRef;
 
     public StopHandler(final GoroService service) {
-      this.serviceRef = new WeakReference<GoroService>(service);
+      this.serviceRef = new WeakReference<>(service);
     }
 
     public void checkForStop() {
