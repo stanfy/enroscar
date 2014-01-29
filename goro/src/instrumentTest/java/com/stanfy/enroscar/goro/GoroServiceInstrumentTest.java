@@ -23,7 +23,7 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
 
   /** Thread pointers. */
   private Thread currentThread, startCallThread, finishCallThread, errorCallThread,
-      cancelCallThread;
+      cancelCallThread, scheduleCallThread;
 
   /** Invocation flag. */
   private boolean mockTaskCalled;
@@ -46,6 +46,12 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
 
   /** Goro listener. */
   private GoroListener listener = new GoroListener() {
+    @Override
+    public void onTaskSchedule(Callable<?> task, String queue) {
+      assertThat(task).isNotNull();
+      scheduleCallThread = Thread.currentThread();
+    }
+
     @Override
     public void onTaskStart(Callable<?> task) {
       assertThat(task).isNotNull();
@@ -126,7 +132,8 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
     addListener();
     goro.schedule(mockTask);
     waitForListener();
-    assertThat(startCallThread).isNotNull().isNotEqualTo(currentThread).isSameAs(finishCallThread);
+    assertThat(startCallThread).isNotNull().isNotEqualTo(currentThread)
+        .isSameAs(finishCallThread).isSameAs(scheduleCallThread);
     assertThat(errorCallThread).isNull();
     assertThat(mockTaskCalled).isTrue();
   }
@@ -137,7 +144,8 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
 
     goro.schedule(mockTask);
     waitForListener();
-    assertThat(startCallThread).isNotNull().isNotEqualTo(currentThread).isSameAs(errorCallThread);
+    assertThat(startCallThread).isNotNull().isNotEqualTo(currentThread)
+        .isSameAs(errorCallThread).isSameAs(scheduleCallThread);
     assertThat(finishCallThread).isNull();
     assertThat(mockTaskCalled).isTrue();
   }
@@ -149,6 +157,7 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
     assertThat(future.cancel(true)).isTrue();
     waitForListener();
 
+    assertThat(scheduleCallThread).isNotNull();
     assertThat(cancelCallThread).isNotNull();
     assertThat(errorCallThread).isNull();
     assertThat(finishCallThread).isNull();

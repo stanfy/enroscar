@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
@@ -19,6 +20,9 @@ import java.util.concurrent.Executor;
  * Service that handles tasks in multiple queues.
  */
 public class GoroService extends Service {
+
+  /** Internal debug flag. */
+  private static final boolean DEBUG = true;
 
   /**
    * Used as a {@link android.os.Parcelable} field in service command intent to pass
@@ -52,7 +56,6 @@ public class GoroService extends Service {
 
   /** Stop handler. */
   private final StopHandler stopHandler = new StopHandler(this);
-
 
   /**
    * Set an executor instance that is used to actually perform tasks.
@@ -122,7 +125,7 @@ public class GoroService extends Service {
 
   private GoroBinder getBinder() {
     if (binder == null) {
-      binder = new GoroBinder(createGoro());
+      binder = new GoroBinder(createGoro(), new GoroTasksListener());
     }
     return binder;
   }
@@ -165,12 +168,19 @@ public class GoroService extends Service {
 
   @Override
   public IBinder onBind(final Intent intent) {
+    if (DEBUG) {
+      Log.w("Goro", "bind");
+    }
     hasBoundUsers = true;
+    stopHandler.doNotStop();
     return getBinder();
   }
 
   @Override
   public boolean onUnbind(final Intent intent) {
+    if (DEBUG) {
+      Log.w("Goro", "unbind");
+    }
     hasBoundUsers = false;
     stopHandler.checkForStop();
     return true;
@@ -178,7 +188,11 @@ public class GoroService extends Service {
 
   @Override
   public void onRebind(final Intent intent) {
+    if (DEBUG) {
+      Log.w("Goro", "rebind");
+    }
     hasBoundUsers = true;
+    stopHandler.doNotStop();
   }
 
 
@@ -193,12 +207,51 @@ public class GoroService extends Service {
     /** Goro instance. */
     final Goro goro;
 
-    public GoroBinder(final Goro goro) {
+    /** Listener. */
+    final GoroTasksListener listener;
+
+    GoroBinder(final Goro goro, final GoroTasksListener listener) {
       this.goro = goro;
+      this.listener = listener;
+      goro.addTaskListener(listener);
     }
 
   }
 
+  /** Listens to task events. */
+  private class GoroTasksListener implements GoroListener {
+
+    int activeTasksCount;
+
+    @Override
+    public void onTaskSchedule(final Callable<?> task, final String queue) {
+      stopHandler.doNotStop();
+      activeTasksCount++;
+    }
+
+    @Override
+    public void onTaskStart(Callable<?> task) { }
+
+    private void taskFinish() {
+      activeTasksCount--;
+      stopHandler.checkForStop();
+    }
+
+    @Override
+    public void onTaskFinish(Callable<?> task, Object result) {
+      taskFinish();
+    }
+
+    @Override
+    public void onTaskCancel(Callable<?> task) {
+      taskFinish();
+    }
+
+    @Override
+    public void onTaskError(Callable<?> task, Throwable error) {
+      taskFinish();
+    }
+  }
 
   /** Internal handler for stopping service. */
   private static class StopHandler extends Handler {
@@ -216,13 +269,27 @@ public class GoroService extends Service {
     }
 
     public void checkForStop() {
+      if (DEBUG) {
+        Log.w("Goro", "send check for stop");
+      }
       doNotStop(); // clear any existing checks
       sendEmptyMessage(MSG_CHECK_FOR_STOP);
     }
 
     public void doNotStop() {
+      if (DEBUG) {
+        Log.w("Goro", "do not stop now");
+      }
       removeMessages(MSG_STOP);
       removeMessages(MSG_CHECK_FOR_STOP);
+    }
+
+    private static boolean isServiceActive(final GoroService service) {
+      boolean tasksRunning = service.binder != null && service.binder.listener.activeTasksCount > 0;
+      if (DEBUG) {
+        Log.w("Goro", "isServiceActive: " + service.hasBoundUsers + ", " + tasksRunning);
+      }
+      return service.hasBoundUsers || tasksRunning;
     }
 
     @Override
@@ -232,14 +299,18 @@ public class GoroService extends Service {
 
       switch (msg.what) {
         case MSG_CHECK_FOR_STOP:
-          // here we decide whether to stop the service
-          if (!service.hasBoundUsers
-              && (service.binder == null || !service.binder.goro.hasOngoingTasks())) {
+          if (!isServiceActive(service)) {
+            if (DEBUG) {
+              Log.w("Goro", "send stop");
+            }
             sendEmptyMessage(MSG_STOP);
           }
           break;
 
         case MSG_STOP:
+          if (DEBUG) {
+            Log.w("Goro", "do stop");
+          }
           service.stopSelf();
           break;
 

@@ -102,6 +102,7 @@ public class GoroActivity extends Activity {
   @Override
   protected void onStop() {
     super.onStop();
+    goro.removeTaskListener(observer);
     GoroService.unbind(this, serviceConnection);
     goro = null;
     setupButtons();
