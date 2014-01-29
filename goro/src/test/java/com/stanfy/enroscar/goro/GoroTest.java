@@ -124,8 +124,17 @@ public class GoroTest {
     testingQueues.executeAll();
 
     InOrder order = inOrder(listener);
+    order.verify(listener).onTaskSchedule(task, Goro.DEFAULT_QUEUE);
     order.verify(listener).onTaskStart(task);
     order.verify(listener).onTaskError(task, error);
+  }
+
+  @Test
+  public void shouldInvokeScheduleOnListeners() {
+    goro.addTaskListener(listener);
+    Callable task = mock(Callable.class);
+    goro.schedule(task);
+    verify(listener).onTaskSchedule(task, Goro.DEFAULT_QUEUE);
   }
 
 }

@@ -7,6 +7,8 @@ import java.util.concurrent.Callable;
  */
 public interface GoroListener {
 
+  void onTaskSchedule(Callable<?> task, String queue);
+
   void onTaskStart(Callable<?> task);
 
   void onTaskFinish(Callable<?> task, Object result);

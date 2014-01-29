@@ -84,6 +84,7 @@ public class Goro {
       throw new IllegalArgumentException("Task must not be null");
     }
     GoroFuture<T> future = new GoroFuture<>(this, task);
+    listenersHandler.postSchedule(task, queueName);
     queues.getExecutor(queueName).execute(future);
     return future;
   }

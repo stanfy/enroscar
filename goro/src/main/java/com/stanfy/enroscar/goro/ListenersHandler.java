@@ -13,7 +13,8 @@ import java.util.concurrent.Callable;
 class ListenersHandler extends Handler {
 
   /** Message code. */
-  private static final int MSG_START = 1, MSG_FINISH = 2, MSG_ERROR = 3, MSG_CANCEL = 4;
+  private static final int MSG_START = 1, MSG_FINISH = 2, MSG_ERROR = 3, MSG_CANCEL = 4,
+                           MSG_SCHEDULE = 5;
 
   /** Task listeners collection. */
   private final ArrayList<GoroListener> taskListeners = new ArrayList<>();
@@ -38,6 +39,12 @@ class ListenersHandler extends Handler {
     if (!taskListeners.remove(listener)) {
       throw new IllegalArgumentException("Listener " + listener + " is not registered");
     }
+  }
+
+  public void postSchedule(final Callable<?> task, final String queue) {
+    Message msg = obtainMessage(MSG_SCHEDULE);
+    msg.obj = new MessageData(task, null, queue);
+    sendMessage(msg);
   }
 
   public void postStart(final Callable<?> task) {
@@ -76,6 +83,12 @@ class ListenersHandler extends Handler {
     }
 
     switch (msg.what) {
+      case MSG_SCHEDULE:
+        for (GoroListener listener : taskListeners) {
+          listener.onTaskSchedule(data.task, data.queue);
+        }
+        break;
+
       case MSG_START:
         for (GoroListener listener : taskListeners) {
           listener.onTaskStart(data.task);
