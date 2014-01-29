@@ -237,6 +237,9 @@ public final class EnroscarConnectionsEngine {
       if (isContentResolverScheme(protocol)) {
         return new ContentUriStreamHandler(context.getContentResolver());
       }
+      if (DataStreamHandler.PROTOCOL.equals(protocol)) {
+        return new DataStreamHandler();
+      }
       return null;
     }
 
