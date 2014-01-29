@@ -13,10 +13,10 @@ All the operations you ask Goro to perform are put in a queue and executed one b
 Goro allows you to organize multiple queues. You can specify what queue a task should be sent to
 with the second argument of `schedule` method:
 ```
-  goro.schedule(myOperations1, "firstQueue");
-  goro.schedule(myOperations2, "secondQueue");
-  goro.schedule(myOperations3, "firstQueue");
-  goro.schedule(myOperations4, "secondQueue");
+  goro.schedule("firstQueue", myOperations1);
+  goro.schedule("secondQueue", myOperations2);
+  goro.schedule("firstQueue", myOperations3);
+  goro.schedule("secondQueue", myOperations4);
 ```
 
 Queue is defined with a name. Goro does not limit number of your queues and lazily creates a new
@@ -39,13 +39,15 @@ Such a service is `GoroService`. We can bind to it and get Goro instance from th
 
 ```java
   public void bindToGoroService() {
-    Intent serviceIntent = new Intent(context, GoroService.class);
-    context.startService(serviceIntent);
-    context.bindService(serviceIntent, this /* implements ServiceConnection */, 0);
+    GoroService.bind(context, this /* implements ServiceConnection */);
   }
 
   public void onServiceConnected(ComponentName name, IBinder service) {
     this.goro = Goro.from(service);
+  }
+
+  public void unbindFromGoroService() {
+    GoroService.unbind(context, this /* implements ServiceConnection */);
   }
 ```
 
@@ -55,16 +57,19 @@ instance. Yet this instance must also implement `Parcelable` to be able to be pa
 
 ```java
   context.startService(GoroService.taskIntent(context, myTask));
-  context.startService(GoroService.taskIntent(context, myTask2, "notDefaultQueue"));
+  context.startService(GoroService.taskIntent(context, "notDefaultQueue", myTask2));
 ```
 
 Intent constructed with `GoroService.taskIntent` can also be used to obtain a `PendingIntent`
-and schedule task execution with `AlarmManager`:
+and schedule task execution with `AlarmManager` or `Notification`:
 ```java
   Intent taskIntent = GoroService.taskIntent(context, myTask);
-  AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
   PendingIntent pending = PendingIntent.getService(context, 0, taskIntent, 0);
+
+  AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
   alarmManager.set(AlarmManager.ELAPSED_REALTIME, scheduleTime, pending);
+
+  new Notification.Builder(context).setContentIntent(pending);
 ```
 
 Usage
