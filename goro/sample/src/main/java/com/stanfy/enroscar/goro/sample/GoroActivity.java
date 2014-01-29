@@ -1,7 +1,6 @@
 package com.stanfy.enroscar.goro.sample;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -16,13 +15,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.stanfy.enroscar.goro.Goro;
-import com.stanfy.enroscar.goro.GoroListener;
 import com.stanfy.enroscar.goro.GoroService;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -42,18 +36,16 @@ public class GoroActivity extends Activity {
   /** Goro instance. */
   private Goro goro;
 
-  private GoroView goroView;
+  private GoroStateObserver observer;
+
   private View restButton;
   private View dbButton;
-
-  /** Tasks data. */
-  private LinkedHashMap<String, List<Integer>> data = new LinkedHashMap<>();
 
   private final ServiceConnection serviceConnection = new ServiceConnection() {
     @Override
     public void onServiceConnected(final ComponentName name, final IBinder service) {
       goro = Goro.from(service);
-      goro.addTaskListener(listener);
+      goro.addTaskListener(observer);
       setupButtons();
     }
 
@@ -62,33 +54,17 @@ public class GoroActivity extends Activity {
     }
   };
 
-  /** Goro tasks listener. */
-  private final GoroListener listener = new GoroListener() {
-    @Override
-    public void onTaskStart(Callable<?> task) { }
-
-    @Override
-    public void onTaskFinish(Callable<?> task, Object result) {
-      int n = ((SimpleTask) task).getNumber();
-      for (Map.Entry<String, List<Integer>> entry : data.entrySet()) {
-        entry.getValue().remove(Integer.valueOf(n));
-      }
-      update();
-    }
-
-    @Override
-    public void onTaskCancel(Callable<?> task) { }
-
-    @Override
-    public void onTaskError(Callable<?> task, Throwable error) { }
-  };
-
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.goro);
 
-    goroView = (GoroView) findViewById(R.id.goro);
+    if (savedInstanceState != null) {
+      counter = savedInstanceState.getInt("counter");
+    }
+
+    GoroView goroView = (GoroView) findViewById(R.id.goro);
+    observer = new GoroStateObserver(goroView, savedInstanceState);
 
     restButton = findViewById(R.id.button_post_rest);
     restButton.setOnClickListener(new Clicker(QUEUE_REST));
@@ -98,16 +74,8 @@ public class GoroActivity extends Activity {
     findViewById(R.id.button_post_notification).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(final View v) {
-        List<Integer> tasks = data.get(QUEUE_REST);
-        if (tasks == null) {
-          tasks = new LinkedList<>();
-          data.put(QUEUE_REST, tasks);
-        }
-        tasks.add(counter);
-        update();
-
         Intent intent = GoroService.taskIntent(GoroActivity.this, QUEUE_REST,
-            new PendingTask(counter++));
+            new PendingTask(counter++, QUEUE_REST));
         PendingIntent pendingIntent = PendingIntent.getService(GoroActivity.this, 0, intent,
             PendingIntent.FLAG_UPDATE_CURRENT);
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
@@ -144,8 +112,11 @@ public class GoroActivity extends Activity {
     dbButton.setEnabled(goro != null);
   }
 
-  private void update() {
-    goroView.setData(new LinkedHashMap<>(data));
+  @Override
+  protected void onSaveInstanceState(final Bundle outState) {
+    super.onSaveInstanceState(outState);
+    observer.save(outState);
+    outState.putInt("counter", counter);
   }
 
   /** Schedules tasks. */
@@ -158,23 +129,18 @@ public class GoroActivity extends Activity {
 
     @Override
     public void onClick(View v) {
-      List<Integer> tasks = data.get(queue);
-      if (tasks == null) {
-        tasks = new LinkedList<>();
-        data.put(queue, tasks);
-      }
-      tasks.add(counter);
-      update();
-      goro.schedule(queue, new SimpleTask(counter++));
+      goro.schedule(queue, new SimpleTask(counter++, queue));
     }
   }
 
   /** Stub task. */
   public static class SimpleTask implements Callable<Integer> {
     final int number;
+    final String queue;
 
-    private SimpleTask(int number) {
+    private SimpleTask(int number, String queue) {
       this.number = number;
+      this.queue = queue;
     }
 
     public int getNumber() {
@@ -200,8 +166,7 @@ public class GoroActivity extends Activity {
     public static final Creator<PendingTask> CREATOR = new Creator<PendingTask>() {
       @Override
       public PendingTask createFromParcel(final Parcel source) {
-        int number = source.readInt();
-        return new PendingTask(number);
+        return new PendingTask(source.readInt(), source.readString());
       }
 
       @Override
@@ -210,8 +175,8 @@ public class GoroActivity extends Activity {
       }
     };
 
-    private PendingTask(int number) {
-      super(number);
+    private PendingTask(int number, String queue) {
+      super(number, queue);
     }
 
     @Override
@@ -222,6 +187,7 @@ public class GoroActivity extends Activity {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
       dest.writeInt(number);
+      dest.writeString(queue);
     }
   }
 
