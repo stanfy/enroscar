@@ -69,6 +69,14 @@ import static android.content.ContentResolver.*;
  */
 public final class EnroscarConnectionsEngine {
 
+  /** Config factory instance. */
+  private static ConfigFactory configFactory = new ConfigFactory() {
+    @Override
+    public Config create() {
+      return new Config();
+    }
+  };
+
   /** Engine instance. */
   static EnroscarConnectionsEngine engineInstance;
 
@@ -91,13 +99,25 @@ public final class EnroscarConnectionsEngine {
     return new EnroscarContentHandlerFactory();
   }
 
+  public static void setConfigFactory(final ConfigFactory configFactory) {
+    if (configFactory == null) {
+      throw new IllegalArgumentException("config factory cannot be null");
+    }
+    EnroscarConnectionsEngine.configFactory = configFactory;
+  }
+
   /** @return configurator instance */
   public static Config config() {
-    return new Config();
+    return configFactory.create();
   }
 
   static EnroscarConnectionsEngine get() {
     return engineInstance;
+  }
+
+  /** Creates a config instance. */
+  public interface ConfigFactory {
+    Config create();
   }
 
   /**
@@ -120,7 +140,7 @@ public final class EnroscarConnectionsEngine {
     /** Engine instance. */
     private EnroscarConnectionsEngine engine;
 
-    Config() { /* nothing */ }
+    protected Config() { /* nothing */ }
 
     /** Whether to install custom {@link java.net.URLStreamHandlerFactory}. */
     public Config withStreamHandlers(final boolean flag) {

@@ -36,25 +36,15 @@ public class DefaultBeansManagerTest {
 
   @Before
   public void useDefaultBeansManager() {
-    manager = new DefaultBeansManager(Robolectric.application) {
+    manager = new DefaultBeansManager(Robolectric.application);
+    EnroscarConnectionsEngine.setConfigFactory(new EnroscarConnectionsEngine.ConfigFactory() {
       @Override
-      public Editor edit() {
-        return new Editor() {
-          @Override
-          public Editor images(final EnroscarConnectionsEngine.Config config) {
-            config.treatFileScheme(false);
-            return super.images(config);
-          }
-
-          @Override
-          public Editor remoteServerApi(final EnroscarConnectionsEngine.Config config,
-                                        final String... formats) {
-            config.treatFileScheme(false);
-            return super.remoteServerApi(config, formats);
-          }
+      public EnroscarConnectionsEngine.Config create() {
+        return new EnroscarConnectionsEngine.Config() {
+          { treatFileScheme(false); }
         };
       }
-    };
+    });
   }
   
   @Test
