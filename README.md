@@ -184,7 +184,7 @@ compile 'com.stanfy.enroscar:enroscar-assist:1.0'
 License
 -------
 
-     Copyright 2013 Stanfy Corp.
+     Copyright 2014 Stanfy Corp.
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
