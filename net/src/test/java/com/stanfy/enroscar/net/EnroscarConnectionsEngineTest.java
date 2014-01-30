@@ -1,6 +1,9 @@
 package com.stanfy.enroscar.net;
 
-import org.junit.After;
+import android.os.Build.VERSION_CODES;
+
+import com.stanfy.enroscar.io.IoUtils;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,10 +14,7 @@ import org.robolectric.annotation.Config;
 import java.net.ResponseCache;
 import java.net.URL;
 import java.net.URLConnection;
-
-import android.os.Build.VERSION_CODES;
-
-import com.stanfy.enroscar.io.IoUtils;
+import java.net.URLEncoder;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -41,14 +41,49 @@ public class EnroscarConnectionsEngineTest {
   }
 
   @Test
-  public void shouldBeAbleToSetupDataSchemeHandling() throws Exception {
-    // very custom data
-    URLConnection connection = new URL("data:text/html;plain,hello").openConnection();
+  public void dataSchemeShouldBeTreated() throws Exception {
+    URLConnection connection = new URL("data:text/html;enc,hello").openConnection();
     assertThat(connection).isNotNull();
+    assertThat(connection.getContentType()).isEqualTo("text/html");
+    assertThat(connection.getContentEncoding()).isEqualTo("enc");
     assertThat(IoUtils.streamToString(connection.getInputStream(), null)).isEqualTo("hello");
+  }
 
-    // and something from RFC
-    connection = new URL("data:image/gif;base64,R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAw"
+  @Test
+  public void dataSchemeShouldAllowOptionalEncoding() throws Exception {
+    URLConnection connection = new URL("data:text/xml,<hello/>").openConnection();
+    assertThat(connection).isNotNull();
+    assertThat(connection.getContentType()).isEqualTo("text/xml");
+    assertThat(connection.getContentEncoding()).isNull();
+    assertThat(IoUtils.streamToString(connection.getInputStream(), null)).isEqualTo("<hello/>");
+  }
+
+  @Test
+  public void dataSchemeShouldAllowContentTypeParameters() throws Exception {
+    URLConnection connection = new URL("data:text/xml;encoding=utf-8;base64,aGVsbG8gd29ybGQ=")
+        .openConnection();
+    assertThat(connection).isNotNull();
+    assertThat(connection.getContentType()).isEqualTo("text/xml;encoding=utf-8");
+    assertThat(connection.getContentEncoding()).isNull();
+    assertThat(IoUtils.streamToString(connection.getInputStream(), null))
+        .isEqualTo("hello world");
+  }
+
+  @Test
+  public void dataSchemeShouldAllowGenericText() throws Exception {
+    URLConnection connection = new URL("data:A%20brief%20note").openConnection();
+    assertThat(connection).isNotNull();
+    assertThat(IoUtils.streamToString(connection.getInputStream(), null)).isEqualTo("A brief note");
+    assertThat(connection.getContentType()).isNull();
+    assertThat(connection.getContentEncoding()).isNull();
+
+    connection = new URL("data:" + URLEncoder.encode("Вася Пупкін", "UTF-8")).openConnection();
+    assertThat(IoUtils.streamToString(connection.getInputStream(), null)).isEqualTo("Вася Пупкін");
+  }
+
+  @Test
+  public void dataSchemeShouldAllowImageData() throws Exception {
+    URLConnection connection = new URL("data:image/gif;base64,R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAw"
         + "AAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapyuvUUlvONmOZtfzgFz"
         + "ByTB10QgxOR0TqBQejhRNzOfkVJ+5YiUqrXF5Y5lKh/DeuNcP5yLWGsEbtLiOSp"
         + "a/TPg7JpJHxyendzWTBfX0cxOnKPjgBzi4diinWGdkF8kjdfnycQZXZeYGejmJl"
@@ -57,6 +92,14 @@ public class EnroscarConnectionsEngineTest {
         + "hhx4dbgYKAAA7").openConnection();
     assertThat(connection).isNotNull();
     assertThat(IoUtils.streamToString(connection.getInputStream(), null)).isNotEmpty();
+    assertThat(connection.getContentType()).isEqualTo("image/gif");
+  }
+
+  @Test
+  public void dataSchemeShouldDecodeBase64() throws Exception {
+    URLConnection connection = new URL("data:text/plain;base64,aGVsbG8gd29ybGQ=").openConnection();
+    assertThat(connection.getContentEncoding()).isNull();
+    assertThat(IoUtils.streamToString(connection.getInputStream(), null)).isEqualTo("hello world");
   }
 
 }

@@ -1,13 +1,18 @@
 package com.stanfy.enroscar.net;
 
+import android.util.Base64;
+import android.util.Base64InputStream;
+
 import com.stanfy.enroscar.io.IoUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.net.URLStreamHandler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,8 +25,11 @@ class DataStreamHandler extends URLStreamHandler {
   /** Scheme. */
   public static final String PROTOCOL = "data";
 
+  /** Encoding constsant. */
+  private static final String BASE64 = "base64";
+
   /** Data URI pattern. */
-  private static final Pattern URI_PATTERN = Pattern.compile("^data:([^;]+);(\\w+),(.+)$");
+  private static final Pattern URI_PATTERN = Pattern.compile("^data:((.+?)(;(\\w+))?,)?(.+)$");
 
   @Override
   protected URLConnection openConnection(final URL u) throws IOException {
@@ -34,9 +42,18 @@ class DataStreamHandler extends URLStreamHandler {
     if (!m.matches()) {
       throw new RuntimeException("Cannot parse url " + spec);
     }
-    String contentType = m.group(1);
-    String encoding = m.group(2);
-    String data = m.group(3);
+    final int contentTypeGroup = 2, encodingGroup = 4, dataGroup = 5;
+
+    String contentType = m.group(contentTypeGroup);
+    String encoding = m.group(encodingGroup);
+    String data = m.group(dataGroup);
+    if (!BASE64.equals(encoding)) {
+      try {
+        data = URLDecoder.decode(data, IoUtils.UTF_8_NAME);
+      } catch (UnsupportedEncodingException e) {
+        throw new AssertionError(e);
+      }
+    }
     setURL(url, PROTOCOL, PROTOCOL, 0, contentType, encoding, data, null, null);
   }
 
@@ -51,17 +68,26 @@ class DataStreamHandler extends URLStreamHandler {
 
     @Override
     public void connect() throws IOException {
-      data = url.getPath().getBytes(IoUtils.US_ASCII);
+      data = url.getPath().getBytes(IoUtils.UTF_8_NAME);
       connected = true;
+    }
+
+    private String contentType() {
+      return url.getAuthority();
+    }
+
+    private String encoding() {
+      return url.getUserInfo();
     }
 
     @Override
     public String getHeaderField(final String key) {
-      if ("Content-Type".equals(key)) {
-        return url.getAuthority();
+      if ("Content-Type".equalsIgnoreCase(key)) {
+        return contentType();
       }
-      if ("Content-Encoding".equals(key)) {
-        return url.getUserInfo();
+      if ("Content-Encoding".equalsIgnoreCase(key)) {
+        String enc = encoding();
+        return BASE64.equals(enc) ? null : enc;
       }
       return null;
     }
@@ -71,7 +97,11 @@ class DataStreamHandler extends URLStreamHandler {
       if (!connected) {
         connect();
       }
-      return new ByteArrayInputStream(data);
+      InputStream stream = new ByteArrayInputStream(data);
+      if (BASE64.equals(encoding())) {
+        stream = new Base64InputStream(stream, Base64.DEFAULT);
+      }
+      return stream;
     }
 
     @Override
