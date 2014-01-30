@@ -145,7 +145,7 @@ public final class EnroscarConnectionsEngine {
 
     /** Whether to resolve {@code file} scheme using {@link android.content.ContentResolver}. */
     public Config treatFileScheme(final boolean flag) {
-      this.treatFileScheme = true;
+      this.treatFileScheme = flag;
       return this;
     }
 

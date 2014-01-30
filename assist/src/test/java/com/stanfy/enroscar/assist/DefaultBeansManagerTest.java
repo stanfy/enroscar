@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.assist.test;
+package com.stanfy.enroscar.assist;
 
 import android.os.Build;
 
@@ -33,14 +33,33 @@ public class DefaultBeansManagerTest {
 
   /** Manager. */
   private DefaultBeansManager manager;
-  
+
   @Before
   public void useDefaultBeansManager() {
-    manager = DefaultBeansManager.get(Robolectric.application);
+    manager = new DefaultBeansManager(Robolectric.application) {
+      @Override
+      public Editor edit() {
+        return new Editor() {
+          @Override
+          public Editor images(final EnroscarConnectionsEngine.Config config) {
+            config.treatFileScheme(false);
+            return super.images(config);
+          }
+
+          @Override
+          public Editor remoteServerApi(final EnroscarConnectionsEngine.Config config,
+                                        final String... formats) {
+            config.treatFileScheme(false);
+            return super.remoteServerApi(config, formats);
+          }
+        };
+      }
+    };
   }
   
   @Test
   public void afterGetCalledBeansManagerGetShouldReturnDefaultOne() {
+    DefaultBeansManager.get(Robolectric.application);
     assertThat(BeansManager.get(Robolectric.application)).isInstanceOf(DefaultBeansManager.class);
   }
   
@@ -49,13 +68,11 @@ public class DefaultBeansManagerTest {
     manager.edit().commit();
     assertThat(manager.getMainBuffersPool()).isNotNull();
   }
-  
+
   @Test
   public void remoteServerApi() {
     DefaultBeansManager.Editor editor = manager.edit().remoteServerApi("xml", "json", "string");
     editor.commit();
-
-    assertThat(EnroscarConnectionsEngine.isInstalled()).isTrue();
 
     assertThat(manager.getRemoteServerApiConfiguration()).isNotNull();
 
@@ -67,6 +84,7 @@ public class DefaultBeansManagerTest {
   @Test
   public void images() {
     manager.edit().images().commit();
+
     assertThat(manager.getImageMemoryCache()).isNotNull();
     assertThat(manager.getImagesManager()).isNotNull();
     assertThat(manager.getContainer().getBean(ImageFileCache.class)).isNotNull();
