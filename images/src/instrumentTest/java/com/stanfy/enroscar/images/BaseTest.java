@@ -13,7 +13,7 @@ public abstract class BaseTest extends AndroidTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    EnroscarConnectionsEngine.config().install(getContext());
+    EnroscarConnectionsEngine.config().setup(getContext());
     BeansManager.Editor editor = BeansManager.get(getContext()).edit();
     BeanSetup.setup(editor);
     editor.commit();

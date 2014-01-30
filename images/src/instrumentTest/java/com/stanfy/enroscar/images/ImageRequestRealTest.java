@@ -3,6 +3,7 @@ package com.stanfy.enroscar.images;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.util.Base64;
 
 import com.google.mockwebserver.MockResponse;
@@ -85,7 +86,9 @@ public class ImageRequestRealTest extends BaseTest {
     MockWebServer server = prepareServer();
     String url = server.getUrl("/image").toString();
 
-    float smallRatio = (float)testBitmap.getWidth() / getContext().getResources().getDisplayMetrics().widthPixels;
+    //noinspection ConstantConditions
+    float smallRatio = (float)testBitmap.getWidth()
+        / getContext().getResources().getDisplayMetrics().widthPixels;
     ImageRequest request = new ImageRequest(imagesManager, url, smallRatio / 2);
 
     assertThat(imagesManager.isPresentOnDisk(url)).isFalse();
@@ -131,22 +134,20 @@ public class ImageRequestRealTest extends BaseTest {
 
   public void testRealBase64Image() throws IOException {
     // 5x5 red dot
-    final String base64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+    final String base64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GI"
+        +"AXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
     final String url = "data:image/png;base64," + base64;
+    final int size = 5;
 
     ImageRequest request = new ImageRequest(imagesManager, url, 1);
-
-    assertThat(request.getRemoteInputStream()).isInstanceOf(ByteArrayInputStream.class);
-
-    final ByteArrayInputStream bytes = (ByteArrayInputStream) request.getRemoteInputStream();
-    final byte[] buffer = new byte[bytes.available()];
-    bytes.read(buffer);
-    assertThat(buffer).isEqualTo(Base64.decode(base64, Base64.DEFAULT));
 
     ImageResult result = request.readImage();
     assertThat(result.getType()).isSameAs(ImageSourceType.NETWORK);
 
     final Bitmap resultBitmap = result.getBitmap();
     assertThat(resultBitmap).isNotNull();
+    assertThat(resultBitmap).hasWidth(size);
+    assertThat(resultBitmap).hasHeight(size);
+    assertThat(resultBitmap.getPixel(1, 1)).isEqualTo(Color.RED); // :) red dot
   }
 }
