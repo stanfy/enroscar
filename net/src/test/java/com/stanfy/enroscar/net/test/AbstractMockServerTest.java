@@ -1,22 +1,5 @@
 package com.stanfy.enroscar.net.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.net.HttpURLConnection;
-import java.net.URLConnection;
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.shadows.ShadowApplication;
-import org.robolectric.shadows.ShadowLog;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +14,6 @@ import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine.Config;
-import com.stanfy.enroscar.net.EnroscarConnectionsEngineMode;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
@@ -47,6 +29,23 @@ import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.test.AbstractNetTest;
 import com.stanfy.enroscar.test.EnroscarNetConfig;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.shadows.ShadowApplication;
+import org.robolectric.shadows.ShadowLog;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.HttpURLConnection;
+import java.net.URLConnection;
+import java.util.List;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * Mock server test.
@@ -130,13 +129,13 @@ public abstract class AbstractMockServerTest extends AbstractNetTest {
     });
     
     if (config == null) {
-      EnroscarConnectionsEngineMode.testMode();
       config = BeanUtils.getAnnotationFromHierarchy(getClass(), EnroscarNetConfig.class);
     }
     if (config != null && config.connectionEngineRequired()) {
       final Config config = EnroscarConnectionsEngine.config();
       configureConnectionsEngine(config);
-      config.install(Robolectric.application);
+      config.treatFileScheme(false);
+      config.setup(Robolectric.application);
     }
 
     configureServiceBind();
@@ -162,7 +161,7 @@ public abstract class AbstractMockServerTest extends AbstractNetTest {
 
   @After
   public final void shudownConnectionsEngine() {
-    EnroscarConnectionsEngine.uninstall();
+    EnroscarConnectionsEngine.config().withNothing().setup(Robolectric.application);
   }
   
   @Before

@@ -9,6 +9,7 @@ import com.stanfy.enroscar.beans.BeanUtils;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.ImagesManager;
 import com.stanfy.enroscar.images.cache.ImageMemoryCache;
+import com.stanfy.enroscar.images.views.ImageConsumers;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
@@ -20,7 +21,6 @@ import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 import com.stanfy.enroscar.stats.EmptyStatsManager;
 import com.stanfy.enroscar.stats.StatsManager;
-import com.stanfy.enroscar.images.views.ImageConsumers;
 
 import java.net.ContentHandler;
 import java.net.ResponseCache;
@@ -111,7 +111,7 @@ public class DefaultBeansManager extends BeansManager {
         @Override
         public Object put() {
           // install connections engine
-          config.install(getApplication());
+          config.setup(getApplication());
           return null;
         }
       });
@@ -160,7 +160,7 @@ public class DefaultBeansManager extends BeansManager {
             .setDefaultContentHandlerName(mainContentHandlerName);
 
             // install connections engine
-            config.install(getApplication());
+            config.setup(getApplication());
 
             return null;
           }

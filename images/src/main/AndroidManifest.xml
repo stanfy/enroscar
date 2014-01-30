@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.stanfy.enroscar.images"
-    android:versionCode="9"
-    android:versionName="0.9" >
+    package="com.stanfy.enroscar.images" >
 
   <application tools:ignore="AllowBackup" />
 

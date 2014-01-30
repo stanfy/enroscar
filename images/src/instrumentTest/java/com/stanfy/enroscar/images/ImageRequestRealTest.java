@@ -3,12 +3,15 @@ package com.stanfy.enroscar.images;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.util.Base64;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.IoUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,7 +86,9 @@ public class ImageRequestRealTest extends BaseTest {
     MockWebServer server = prepareServer();
     String url = server.getUrl("/image").toString();
 
-    float smallRatio = (float)testBitmap.getWidth() / getContext().getResources().getDisplayMetrics().widthPixels;
+    //noinspection ConstantConditions
+    float smallRatio = (float)testBitmap.getWidth()
+        / getContext().getResources().getDisplayMetrics().widthPixels;
     ImageRequest request = new ImageRequest(imagesManager, url, smallRatio / 2);
 
     assertThat(imagesManager.isPresentOnDisk(url)).isFalse();
@@ -125,5 +130,24 @@ public class ImageRequestRealTest extends BaseTest {
 
     final Bitmap resultBitmap = result.getBitmap();
     assertThat(resultBitmap).isNotNull();
+  }
+
+  public void testRealBase64Image() throws IOException {
+    // 5x5 red dot
+    final String base64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GI"
+        +"AXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+    final String url = "data:image/png;base64," + base64;
+    final int size = 5;
+
+    ImageRequest request = new ImageRequest(imagesManager, url, 1);
+
+    ImageResult result = request.readImage();
+    assertThat(result.getType()).isSameAs(ImageSourceType.NETWORK);
+
+    final Bitmap resultBitmap = result.getBitmap();
+    assertThat(resultBitmap).isNotNull();
+    assertThat(resultBitmap).hasWidth(size);
+    assertThat(resultBitmap).hasHeight(size);
+    assertThat(resultBitmap.getPixel(1, 1)).isEqualTo(Color.RED); // :) red dot
   }
 }

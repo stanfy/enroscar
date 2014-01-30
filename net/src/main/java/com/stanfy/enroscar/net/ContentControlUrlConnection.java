@@ -40,11 +40,11 @@ public class ContentControlUrlConnection extends UrlConnectionWrapper {
 
   @Override
   public Object getContent() throws IOException {
-    ContentHandlerFactory factory = EnroscarConnectionsEngine.getContentHandlerFactory();
-    if (factory == null) {
+    EnroscarConnectionsEngine engine = EnroscarConnectionsEngine.get();
+    if (engine == null) {
       throw new IllegalStateException("EnroscarConnectionsEngine seems to be not configured. Have you called EnroscarConnectionsEngine.config().install()?");
     }
-    final ContentHandler handler = factory.createContentHandler("");
+    final ContentHandler handler = engine.contentHandlerFactory.createContentHandler("");
     return handler != null ? handler.getContent(this) : super.getContent();
   }
 

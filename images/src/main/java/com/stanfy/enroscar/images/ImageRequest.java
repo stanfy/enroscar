@@ -123,11 +123,11 @@ public class ImageRequest {
     }
 
     if (!hasAllowedSize()) {
-      IoUtils.consumeStream(newConnection().getInputStream(), manager.getBuffersPool());
+      IoUtils.consumeStream(getRemoteInputStream(), manager.getBuffersPool());
       return;
     }
 
-    ImageResult result = decodeStream(newConnection().getInputStream(), true);
+    ImageResult result = decodeStream(getRemoteInputStream(), true);
     if (result.getType() == ImageSourceType.NETWORK && result.getBitmap() != null) {
       // image was scaled
       writeBitmapToDisk(result.getBitmap());
@@ -139,10 +139,14 @@ public class ImageRequest {
    * @throws IOException if error happens
    */
   public ImageResult readImage() throws IOException {
-    return decodeStream(newConnection().getInputStream(), false);
+    return decodeStream(getRemoteInputStream(), false);
   }
 
-  URLConnection newConnection() throws IOException {
+  private InputStream getRemoteInputStream() throws IOException {
+    return newUrlConnection().getInputStream();
+  }
+
+  URLConnection newUrlConnection() throws IOException {
     UrlConnectionBuilderFactory builderFactory =
         BeansManager.get(manager.getContext())
             .getContainer()

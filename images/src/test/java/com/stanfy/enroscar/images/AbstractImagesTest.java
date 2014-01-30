@@ -47,7 +47,7 @@ public abstract class AbstractImagesTest extends AbstractNetTest {
   @Override
   protected void whenBeansConfigured() {
     super.whenBeansConfigured();
-    EnroscarConnectionsEngine.config().install(Robolectric.application);
+    EnroscarConnectionsEngine.config().treatFileScheme(false).setup(Robolectric.application);
     manager = BeansManager.get(Robolectric.application).getContainer().getBean(ImagesManager.class);
     manager.setDebug(true);
   }
