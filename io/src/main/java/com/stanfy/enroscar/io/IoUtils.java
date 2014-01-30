@@ -18,13 +18,16 @@ import java.util.zip.InflaterInputStream;
  */
 public final class IoUtils {
 
-  /** UTF-8 character set. */
-  public static final Charset UTF_8 = Charset.forName("UTF-8");
-  /** ASCII character set. */
-  public static final Charset US_ASCII = Charset.forName("US-ASCII");
-
   /** UTF-8 name. */
-  public static final String UTF_8_NAME = UTF_8.name();
+  public static final String UTF_8_NAME = "UTF-8";
+  /** ASCII name. */
+  public static final String US_ASCII_NAME = "US-ASCII";
+
+  /** UTF-8 character set. */
+  public static final Charset UTF_8 = Charset.forName(UTF_8_NAME);
+  /** ASCII character set. */
+  public static final Charset US_ASCII = Charset.forName(US_ASCII_NAME);
+
 
   /** 'gzip' string. */
   public static final String ENCODING_GZIP = "gzip";

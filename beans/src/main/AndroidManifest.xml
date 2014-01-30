@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest 
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.stanfy.enroscar.beans"
-    android:versionCode="9"
-    android:versionName="0.9" >
-    
-  <application />
+<manifest
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.stanfy.enroscar.beans" >
+
+  <application tools:ignore="AllowBackup" />
 
 </manifest>
