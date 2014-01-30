@@ -29,7 +29,8 @@ class DataStreamHandler extends URLStreamHandler {
   private static final String BASE64 = "base64";
 
   /** Data URI pattern. */
-  private static final Pattern URI_PATTERN = Pattern.compile("^data:((.+?)(;(\\w+))?,)?(.+)$");
+  private static final Pattern URI_PATTERN =
+      Pattern.compile("^data:((.+?)(;(\\w+))?,)?(.+)$", Pattern.DOTALL);
 
   @Override
   protected URLConnection openConnection(final URL u) throws IOException {

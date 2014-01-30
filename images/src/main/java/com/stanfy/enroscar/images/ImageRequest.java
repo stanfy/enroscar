@@ -142,12 +142,8 @@ public class ImageRequest {
     return decodeStream(getRemoteInputStream(), false);
   }
 
-  InputStream getRemoteInputStream() throws IOException {
-    // check if it's data URI
-    InputStream stream = Base64ImageHelper.decodeIfSupported(url);
-    // fallback to URL connection
-    if (stream == null) { stream = newUrlConnection().getInputStream(); }
-    return stream;
+  private InputStream getRemoteInputStream() throws IOException {
+    return newUrlConnection().getInputStream();
   }
 
   URLConnection newUrlConnection() throws IOException {

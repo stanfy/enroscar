@@ -88,7 +88,8 @@ public class ImageRequestTest extends AbstractImagesTest {
 
   @Test
   public void shouldDecodeBase64Image() throws IOException {
-    ImageRequest request = new ImageRequest(manager, "data:image/gif;base64," + Base64.encodeToString(new byte[1], Base64.DEFAULT), -1);
+    ImageRequest request = new ImageRequest(manager, "data:image/gif;base64,"
+        + Base64.encodeToString("fake image".getBytes(IoUtils.US_ASCII_NAME), Base64.DEFAULT), -1);
     request.setRequiredHeight(TEST_BITMAP_SIZE);
     request.setRequiredWidth(TEST_BITMAP_SIZE);
     ImageResult result = request.readImage();
