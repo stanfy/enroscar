@@ -4,7 +4,7 @@ buildscript {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.7.+'
+    classpath 'com.android.tools.build:gradle:0.8.+'
     classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
   }
 }
@@ -20,14 +20,12 @@ task wrapper(type: Wrapper) {
 def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 
+def libraryModules = [
+    'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui',
+    'sherlock-integration'
+].collect { project(":enroscar-$it") }
 
-subprojects {
-
-  // XXX change me
-  def checkDir = "$project.projectDir"
-  if (checkDir.contains("/integration") && !checkDir.endsWith("sherlock-integration")) {
-    return
-  }
+configure(libraryModules) {
 
   version = projectVersion
   group = 'com.stanfy.enroscar'
@@ -51,7 +49,7 @@ subprojects {
   android {
     compileSdkVersion 19
 
-    buildToolsVersion '19'
+    buildToolsVersion '19.0.1'
 
     defaultConfig {
       versionCode 10
@@ -59,12 +57,18 @@ subprojects {
       minSdkVersion 8
       packageName getPackageName(project)
     }
+
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_1_7
+      targetCompatibility JavaVersion.VERSION_1_7
+    }
   }
 
   def testDeps = [
       'com.squareup:fest-android:1.0.+',
       'com.google.mockwebserver:mockwebserver:20130706',
-      'org.easytesting:fest-reflect:1.4.1'
+      'org.easytesting:fest-reflect:1.4.1',
+      'org.mockito:mockito-all:1.9.5'
   ]
 
   dependencies {
@@ -81,7 +85,6 @@ subprojects {
     testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.easytesting:fest-util:1.2.5'
-    testCompile 'org.mockito:mockito-all:1.9.5'
   }
 
   project.ext.dependOnProjects = { list ->

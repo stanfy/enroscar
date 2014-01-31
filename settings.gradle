@@ -3,12 +3,21 @@ def includeInt = { path, name ->
   project(":$path").name = name
 }
 
-// core
+// main modules
 
-['beans', 'io', 'net', 'assist', 'stats', 'content', 'images', 'ui'].each {
+['beans', 'io', 'goro', 'net', 'assist', 'stats', 'content', 'images', 'ui'].each {
   includeInt it, "enroscar-$it"
 }
 
+
 // integration
 
-includeInt 'integration:actionbarsherlock:enroscar-sherlock-integration', 'enroscar-sherlock-integration'
+include 'enroscar-sherlock-integration'
+project(':enroscar-sherlock-integration').projectDir =
+    new File(rootDir, 'integration/actionbarsherlock/enroscar-sherlock-integration')
+
+
+// goro sample
+
+include 'goro-sample'
+project(':goro-sample').projectDir = new File(rootDir, 'goro/sample')

@@ -10,10 +10,7 @@ uploadArchives {
   }
 }
 
-artifacts {
-  archives javadocsJar
-  archives file:file("$buildDir/libs/${project.name}-${project.version}.jar"), builtBy: classesJar
-}
+apply from: file("$rootProject.projectDir/gradle/jar.gradle")
 
 task integrationTest(type: GradleBuild) {
   dir = file("java-sample")
