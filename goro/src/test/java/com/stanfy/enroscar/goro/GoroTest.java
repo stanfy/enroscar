@@ -149,4 +149,10 @@ public class GoroTest {
     verify(task).run();
   }
 
+  @Test
+  public void shouldPassNullQueueNameWhenAsked() {
+    goro.schedule(null, mock(Callable.class));
+    assertThat(testingQueues.getLastQueueName()).isNull();
+  }
+
 }

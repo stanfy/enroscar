@@ -11,8 +11,8 @@ public class TestingQueues implements Queues {
   /** Scheduled tasks. */
   private final ArrayList<Runnable> tasks = new ArrayList<>();
 
-  /** Direct executor. */
-  private Executor directExecutor = new Executor() {
+  /** Delegate executor. */
+  private Executor delegateExecutor = new Executor() {
     @Override
     public void execute(@SuppressWarnings("NullableProblems") final Runnable command) {
       tasks.add(command);
@@ -23,14 +23,14 @@ public class TestingQueues implements Queues {
   private String lastQueueName;
 
   @Override
-  public void setDelegateExecutor(final Executor threadPool) {
-    directExecutor = threadPool;
+  public void setDelegateExecutor(final Executor delegate) {
+    delegateExecutor = delegate;
   }
 
   @Override
   public Executor getExecutor(String queueName) {
     lastQueueName = queueName;
-    return new TaskQueueExecutor(directExecutor);
+    return new TaskQueueExecutor(delegateExecutor);
   }
 
   public String getLastQueueName() {
