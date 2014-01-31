@@ -95,6 +95,15 @@ dependencies {
 ```
 
 You may also simply grab a [JAR](http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.stanfy.enroscar&a=enroscar-goro&v=LATEST&e=jar).
+Or use it with Maven:
+or with Maven:
+```xml
+  <dependency>
+    <groupId>com.stanfy.enroscar</groupId>
+    <artifactId>enroscar-goro</artifactId>
+    <version>1.+</version>
+  </dependency>
+```
 
 
 Goro listeners

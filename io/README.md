@@ -71,13 +71,13 @@ Library usage
 Grab the [JAR](http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.stanfy.enroscar&a=enroscar-io&v=LATEST&e=jar)
 or use with Gradle:
 ```groovy
-  compile 'com.stanfy.enroscar:enroscar-io:1.1'
+  compile 'com.stanfy.enroscar:enroscar-io:1.+'
 ```
 or with Maven:
 ```xml
   <dependency>
     <groupId>com.stanfy.enroscar</groupId>
     <artifactId>enroscar-io</artifactId>
-    <version>1.1</version>
+    <version>1.+</version>
   </dependency>
 ```
