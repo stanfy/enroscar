@@ -1,14 +1,23 @@
-dependOnProjects([':enroscar-beans', ':enroscar-io', ':enroscar-content'])
+def depProjects = [
+    ':enroscar-beans', ':enroscar-io', ':enroscar-content', ':enroscar-goro'
+].collect { project(it) }
 
 dependencies {
-  
+
+  compile depProjects
+
   compile 'com.jakewharton:disklrucache:2.0.2'
+
   compile 'com.google.code.gson:gson:2.2.4'
   compile('com.stanfy:gson-xml-java:0.1.+') {
-    exclude group: 'xmlpull', module: 'xmlpull'
+    exclude group: 'xmlpull', module: 'xmlpull' // we do not need this on Android
   }
 
+  // xml parser implementation for tests
   testCompile 'net.sf.kxml:kxml2:2.3.0'
+
+  // get test classes from content module
+  testCompile project(path: ':enroscar-content', configuration: 'testCompile')
 }
 
 android {
@@ -24,6 +33,7 @@ android {
 
 }
 
+// FIXME Hack IDE
 //dependencies {
 //  instrumentTestCompile 'junit:junit:4.11', 'org.robolectric:robolectric:2.3-SNAPSHOT'
 //}
@@ -34,7 +44,7 @@ uploadArchives {
     mavenDeployer {
       pom.project {
         name 'Enroscar Net'
-        description 'Tools for building REST clients in top of Android services'
+        description 'Networking tool for Android based on URLConnection'
       }
     }
   }
