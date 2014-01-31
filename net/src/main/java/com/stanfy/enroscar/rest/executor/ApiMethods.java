@@ -24,7 +24,7 @@ import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.DirectRequestExecutor;
 import com.stanfy.enroscar.rest.DirectRequestExecutorHooks;
 import com.stanfy.enroscar.rest.RequestMethod;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Implementation for {@link ApiMethods}.

@@ -24,7 +24,7 @@ import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
 import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
 import com.stanfy.enroscar.rest.request.ListRequestBuilderWrapper;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.test.AbstractNetTest;

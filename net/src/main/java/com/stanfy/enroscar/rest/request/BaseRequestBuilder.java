@@ -10,9 +10,10 @@ import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.rest.RequestExecutor;
+import com.stanfy.enroscar.net.operation.executor.RequestExecutor;
 import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
 import com.stanfy.enroscar.rest.request.binary.AssetFdBinaryData;

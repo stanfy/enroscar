@@ -5,7 +5,7 @@ import android.support.v4.content.Loader;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.EntityTypeToken;
-import com.stanfy.enroscar.rest.RequestExecutor;
+import com.stanfy.enroscar.net.operation.executor.RequestExecutor;
 
 /**
  * Request builder interface.

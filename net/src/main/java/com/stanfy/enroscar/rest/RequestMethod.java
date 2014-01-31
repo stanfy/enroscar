@@ -9,7 +9,7 @@ import android.support.v4.net.TrafficStatsCompat;
 import android.util.Log;
 
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Works with the server API method. Prepares HTTP request (URL and body),

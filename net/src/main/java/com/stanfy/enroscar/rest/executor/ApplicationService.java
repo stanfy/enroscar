@@ -12,7 +12,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.utils.Time;
 
 /**

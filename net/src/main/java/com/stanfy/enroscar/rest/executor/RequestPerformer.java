@@ -7,9 +7,9 @@ import android.content.Context;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.stanfy.enroscar.rest.RequestExecutor;
+import com.stanfy.enroscar.net.operation.executor.RequestExecutor;
 import com.stanfy.enroscar.rest.executor.ApplicationService.ApiMethodsBinder;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)

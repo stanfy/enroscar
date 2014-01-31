@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.ErrorCodes;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * A class that takes responsibility of binding to application service and invoking remote API related methods.

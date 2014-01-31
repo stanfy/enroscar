@@ -11,7 +11,7 @@ import com.stanfy.enroscar.net.ContentControlUrlConnection;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.rest.Utils;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.response.Model;
 
 import java.io.ByteArrayInputStream;

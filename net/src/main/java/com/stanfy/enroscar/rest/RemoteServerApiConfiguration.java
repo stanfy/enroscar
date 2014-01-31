@@ -5,7 +5,7 @@ import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.enroscar.beans.InitializingBean;
 import com.stanfy.enroscar.beans.ManagerAwareBean;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.response.DefaultResponseModelConverter;
 import com.stanfy.enroscar.rest.response.ResponseModelConverter;
 

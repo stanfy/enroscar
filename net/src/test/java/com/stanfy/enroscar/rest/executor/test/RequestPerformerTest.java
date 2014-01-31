@@ -17,7 +17,7 @@ import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.executor.ApiMethodCallback;
 import com.stanfy.enroscar.rest.executor.ApiMethodsSupport;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.test.EnroscarNetConfig;

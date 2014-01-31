@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.executor.ApiMethodsSupport.ApiSupportRequestCallback;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Chain of callbacks.

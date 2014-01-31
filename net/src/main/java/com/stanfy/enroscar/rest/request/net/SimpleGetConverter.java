@@ -5,7 +5,7 @@ import java.net.URLConnection;
 
 import android.content.Context;
 
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * @author Roman Mazur (Stanfy - http://stanfy.com)

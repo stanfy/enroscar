@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.stanfy.enroscar.rest.RequestExecutor;
+import com.stanfy.enroscar.net.operation.executor.RequestExecutor;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Requests performer that sends {@link RequestDescription} to the service as an {@link Intent}.

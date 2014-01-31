@@ -9,7 +9,7 @@ import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.Parameter;
 import com.stanfy.enroscar.rest.request.ParameterValue;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.request.binary.BinaryData;
 import com.stanfy.enroscar.rest.request.net.multipart.Part;
 import com.stanfy.enroscar.rest.request.net.multipart.StringPart;

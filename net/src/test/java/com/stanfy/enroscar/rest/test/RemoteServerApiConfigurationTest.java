@@ -12,9 +12,9 @@ import org.robolectric.annotation.Config;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.net.test.cache.DummyResponseCache;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.rest.RequestExecutor;
+import com.stanfy.enroscar.net.operation.executor.RequestExecutor;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 

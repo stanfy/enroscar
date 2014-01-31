@@ -1,7 +1,7 @@
 package com.stanfy.enroscar.rest;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Hooks for {@link DirectRequestExecutor}.

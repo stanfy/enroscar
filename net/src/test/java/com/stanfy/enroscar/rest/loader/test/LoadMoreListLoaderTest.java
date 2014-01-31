@@ -23,7 +23,7 @@ import com.stanfy.enroscar.rest.RequestMethod.RequestMethodException;
 import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
 import com.stanfy.enroscar.rest.loader.LoadMoreListLoader.ValueIncrementor;
 import com.stanfy.enroscar.rest.request.ListRequestBuilderWrapper;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.response.ContentAnalyzer;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 

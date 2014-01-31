@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.rest.request;
+package com.stanfy.enroscar.net.operation;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -13,6 +13,10 @@ import android.util.SparseArray;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.rest.EntityTypeToken;
+import com.stanfy.enroscar.rest.request.OperationType;
+import com.stanfy.enroscar.rest.request.Parameter;
+import com.stanfy.enroscar.rest.request.ParameterValue;
+import com.stanfy.enroscar.rest.request.ParametersGroup;
 import com.stanfy.enroscar.rest.request.binary.BinaryData;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter.ConverterFactory;
@@ -52,7 +56,7 @@ public class RequestDescription implements Parcelable {
   };
 
   /** Converters to {@link URLConnection}. */
-  private static final SparseArray<ConverterFactory> CONVERTER_FACTORIES = new SparseArray<ConverterFactory>(3);
+  private static final SparseArray<ConverterFactory> CONVERTER_FACTORIES = new SparseArray<>(3);
   static {
     registerConverterFactory(OperationType.SIMPLE_GET, SimpleGetConverter.FACTORY);
     registerConverterFactory(OperationType.SIMPLE_POST, SimplePostConverter.FACTORY);
@@ -148,7 +152,7 @@ public class RequestDescription implements Parcelable {
     // binary content fields
     final Parcelable[] binary = source.readParcelableArray(cl);
     if (binary != null) {
-      this.binaryData = new ArrayList<BinaryData<?>>(binary.length);
+      this.binaryData = new ArrayList<>(binary.length);
       for (Parcelable b : binary) {
         this.binaryData.add((BinaryData<?>) b);
       }

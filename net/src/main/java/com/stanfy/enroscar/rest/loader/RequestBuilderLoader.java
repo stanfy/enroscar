@@ -8,7 +8,7 @@ import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.executor.ApiMethodsSupport;
 import com.stanfy.enroscar.rest.executor.ApiMethodsSupport.ApiSupportRequestCallback;
 import com.stanfy.enroscar.rest.request.RequestBuilder;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;

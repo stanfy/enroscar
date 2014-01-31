@@ -11,7 +11,7 @@ import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.net.cache.CacheControlUrlConnection;
 import com.stanfy.enroscar.rest.ErrorCodes;
 import com.stanfy.enroscar.rest.RequestMethod.RequestMethodException;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Default converter.

@@ -14,8 +14,8 @@ import android.net.Uri;
 
 /**
  * URL connection that deals with content resolver schemes:
- * {@link ContentResolver#SCHEME_CONTENT}, {@link ContentResolver#SCHEME_FILE}, {@link ContentResolver#SCHEME_ANDROID_RESOURCE}.
- * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * {@link ContentResolver#SCHEME_CONTENT}, {@link ContentResolver#SCHEME_FILE},
+ * {@link ContentResolver#SCHEME_ANDROID_RESOURCE}.
  */
 public class ContentUriConnection extends URLConnection {
 

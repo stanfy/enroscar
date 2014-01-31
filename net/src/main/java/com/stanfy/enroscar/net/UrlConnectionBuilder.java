@@ -40,6 +40,7 @@ public class UrlConnectionBuilder {
   private int readTimeout = TIMEOUT_READ_DEFAULT;
 
   /** Cache manager name. */
+  // TODO replace with direct instance
   private String cacheManagerName;
   /** Content handler. */
   private ContentHandler contentHandler;

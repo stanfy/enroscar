@@ -11,10 +11,10 @@ import android.util.Log;
 
 /**
  * Stream handler that deals with content resolver schemes:
- * {@link ContentResolver#SCHEME_CONTENT}, {@link ContentResolver#SCHEME_FILE}, {@link ContentResolver#SCHEME_ANDROID_RESOURCE}.
- * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * {@link ContentResolver#SCHEME_CONTENT}, {@link ContentResolver#SCHEME_FILE},
+ * {@link ContentResolver#SCHEME_ANDROID_RESOURCE}.
  */
-public class ContentUriStreamHandler extends URLStreamHandler {
+class ContentUriStreamHandler extends URLStreamHandler {
 
   /** Logging tag. */
   private static final String TAG = ContentUriStreamHandler.class.getSimpleName();

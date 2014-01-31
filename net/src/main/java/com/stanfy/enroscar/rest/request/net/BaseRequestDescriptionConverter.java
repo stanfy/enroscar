@@ -12,7 +12,7 @@ import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.request.OperationType;
 import com.stanfy.enroscar.rest.request.Parameter;
 import com.stanfy.enroscar.rest.request.ParameterValue;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 import java.io.IOException;
 import java.net.ContentHandler;
