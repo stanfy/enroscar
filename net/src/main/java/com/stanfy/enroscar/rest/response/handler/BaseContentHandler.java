@@ -50,7 +50,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
   
   @Override
   public final Object getContent(final URLConnection uConn) throws IOException {
-    final ContentControlUrlConnection connection = UrlConnectionWrapper.getWrapper(uConn, ContentControlUrlConnection.class);
+    final ContentControlUrlConnection connection = ContentControlUrlConnection.from(uConn);
     if (connection == null) {
       throw new IllegalArgumentException("Connection is not wrapped with " + ContentControlUrlConnection.class);
     }
@@ -89,7 +89,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
     }
 
     try {
-      return getContent(connection, source, connection.getModelType());
+      return getContent(connection, source, connection.getEntityType());
     } finally {
       // do not forget to close the source
       IoUtils.closeQuietly(source);

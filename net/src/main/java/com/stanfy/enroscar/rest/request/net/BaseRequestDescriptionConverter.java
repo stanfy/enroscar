@@ -15,6 +15,7 @@ import com.stanfy.enroscar.rest.request.ParameterValue;
 import com.stanfy.enroscar.rest.request.RequestDescription;
 
 import java.io.IOException;
+import java.net.ContentHandler;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
@@ -72,10 +73,12 @@ public abstract class BaseRequestDescriptionConverter {
     if (factory == null) {
       throw new IllegalStateException("UrlConnectionBuilderFactory bean is not defined.");
     }
+    final String contentHandlerName = requestDescription.getContentHandler();
     return factory.newUrlConnectionBuilder()
         .setCacheManagerName(requestDescription.getCacheName())
-        .setContentHandlerName(requestDescription.getContentHandler())
-        .setModelType(requestDescription.getModelType());
+        .setContentHandler(BeansManager.get(context).getContainer()
+            .getBean(contentHandlerName, ContentHandler.class))
+        .setEntityTypeToken(requestDescription.getModelType());
   }
 
   /**

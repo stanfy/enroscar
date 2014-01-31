@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.net;
 
 import java.io.IOException;
+import java.net.ContentHandler;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
@@ -40,10 +41,10 @@ public class UrlConnectionBuilder {
 
   /** Cache manager name. */
   private String cacheManagerName;
-  /** Content handler name. */
-  private String contentHandlerName;
+  /** Content handler. */
+  private ContentHandler contentHandler;
   /** Model type. */
-  private EntityTypeToken modelType;
+  private EntityTypeToken entityTypeToken;
 
   /** SSL socket factory. */
   private SSLSocketFactory sslSF;
@@ -114,22 +115,22 @@ public class UrlConnectionBuilder {
     return cacheManagerName;
   }
 
-  public UrlConnectionBuilder setContentHandlerName(final String contentHandlerName) {
-    this.contentHandlerName = contentHandlerName;
+  public UrlConnectionBuilder setContentHandler(final ContentHandler contentHandler) {
+    this.contentHandler = contentHandler;
     return this;
   }
 
-  public String getContentHandlerName() {
-    return contentHandlerName;
+  public ContentHandler getContentHandler() {
+    return contentHandler;
   }
 
-  public UrlConnectionBuilder setModelType(final EntityTypeToken modelType) {
-    this.modelType = modelType;
+  public UrlConnectionBuilder setEntityTypeToken(final EntityTypeToken entityTypeToken) {
+    this.entityTypeToken = entityTypeToken;
     return this;
   }
 
-  public EntityTypeToken getModelType() {
-    return modelType;
+  public EntityTypeToken getEntityTypeToken() {
+    return entityTypeToken;
   }
 
   public UrlConnectionBuilder setSslSocketFactory(final SSLSocketFactory factory) {
@@ -202,11 +203,8 @@ public class UrlConnectionBuilder {
     connection = prepareCache(connection);
 
     // content handler
-    if (contentHandlerName != null || modelType != null) {
-      final ContentControlUrlConnection control = new ContentControlUrlConnection(connection);
-      control.setModelType(modelType);
-      control.setContentHandlerName(contentHandlerName);
-      connection = control;
+    if (contentHandler != null) {
+      connection = new ContentControlUrlConnection(connection, contentHandler, entityTypeToken);
     }
 
     // timeouts
