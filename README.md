@@ -9,7 +9,7 @@ Well, this repo contains pretty much code, smelling in some parts.
 But the general idea is that there are several independent modules. Each of them contains
 a tool with a specific purpose. These modules can be smoothly integrated using the `assist` module.
 
-*Definitely worth to check out now:*
+**Definitely worth to check out now:**
 * [Goro](goro) - a generic tool for organizing asynchronous tasks in queues and Android service
 * [Enroscar IO](io) - a buffers pool implementation along with some other i/o utilities
 
