@@ -20,7 +20,8 @@ with the second argument of `schedule` method:
 ```
 
 Queue is defined with a name. Goro does not limit number of your queues and lazily creates a new
-queue when a new name is passed.
+queue when a new name is passed. Controlling number of queues (actually number of different strings
+you pass to Goro) is your responsibility.
 
 While operations scheduled for the same queue are guaranteed to be executed sequentially,
 operations in different queues may be executed in parallel.
@@ -32,6 +33,38 @@ to cancel your task or wait for its finishing synchronously.
   Future<?> taskFuture = goro.schedule(task);
   taskFuture.cancel(true);
 ```
+
+You may also get an
+[`Executor`](https://developer.android.com/reference/java/util/concurrent/Executor.html) instance
+for a particular queue and integrate Goro with such frameworks as RxJava or Bolts:
+```java
+// --- RxJava ---
+// Perform actions in "actions queue"
+Observable.from([1, 2, 3])
+    .subscribeOn(Schedulers.executor(goro.getExecutor("actions queue")))
+// Subscribe to scheduled task result
+Observable.from(goro.schedule(myTask)).subscribe(...);
+
+// --- Bolts ---
+// Fetch something and post database write operation to a dedicated queue
+fetchAsync(object).continueWith(new Continuation<ParseObject, Long>() {
+  public Long then(ParseObject object) throws Exception {
+    return database.storeUser(object.get("name"), object.get("age"));
+  }
+}, goro.getExecutor("database"));
+```
+
+Goro Motivation
+---------------
+Developing Android apps you'll find out that it's a good practice to ensure sequential order of
+some of your asynchronous operations, like remote backend interactions or writing to the local
+database. Actually this is perhaps one of the main reasons why Android `AsyncTask` executes its
+tasks one by one. However often you want to go beyond one global queue: e. g. you want to have
+*separate* series of networking and local database operations. And here Goro helps.
+
+
+Service
+-------
 
 Usually we run Goro within a `Service` context to tell Android system that there are ongoing tasks
 and ensure that our process is not the first candidate for termination.
@@ -128,3 +161,7 @@ own pool manually with configuration similar to what is used in `AsyncTask`.
 You may also specify different actual executor for Goro either with
 `GoroService.setDelegateExecutor(myThreadPool)` or with `new Goro(myThreadPool)` depending on how
 you use Goro.
+
+Sample
+------
+In this repository you'll also find [a sample](sample) demonstrating what Goro does.

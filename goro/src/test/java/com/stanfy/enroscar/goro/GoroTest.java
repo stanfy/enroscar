@@ -11,6 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -135,6 +136,23 @@ public class GoroTest {
     Callable task = mock(Callable.class);
     goro.schedule(task);
     verify(listener).onTaskSchedule(task, Goro.DEFAULT_QUEUE);
+  }
+
+  @Test
+  public void getExecutorShouldReturnSerialExecutor() {
+    Executor executor = goro.getExecutor(null);
+    assertThat(testingQueues.getLastQueueName()).isEqualTo(Goro.DEFAULT_QUEUE);
+    Runnable task = mock(Runnable.class);
+    executor.execute(task);
+    verify(task, never()).run();
+    testingQueues.executeAll();
+    verify(task).run();
+  }
+
+  @Test
+  public void shouldPassNullQueueNameWhenAsked() {
+    goro.schedule(null, mock(Callable.class));
+    assertThat(testingQueues.getLastQueueName()).isNull();
   }
 
 }

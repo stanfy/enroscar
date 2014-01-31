@@ -83,10 +83,21 @@ public class Goro {
     if (task == null) {
       throw new IllegalArgumentException("Task must not be null");
     }
+
     GoroFuture<T> future = new GoroFuture<>(this, task);
     listenersHandler.postSchedule(task, queueName);
     queues.getExecutor(queueName).execute(future);
     return future;
+  }
+
+  /**
+   * Returns an executor for performing tasks in a specified queue. If queue name is null,
+   * {@link #DEFAULT_QUEUE} is used.
+   * @param queueName queue name
+   * @return executor instance that performs tasks serially in a specified queue
+   */
+  public Executor getExecutor(final String queueName) {
+    return queues.getExecutor(queueName == null ? DEFAULT_QUEUE : queueName);
   }
 
 
