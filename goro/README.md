@@ -63,8 +63,8 @@ tasks one by one. However often you want to go beyond one global queue: e. g. yo
 *separate* series of networking and local database operations. And here Goro helps.
 
 
-Android Service
----------------
+Service
+-------
 
 Usually we run Goro within a `Service` context to tell Android system that there are ongoing tasks
 and ensure that our process is not the first candidate for termination.
@@ -161,3 +161,7 @@ own pool manually with configuration similar to what is used in `AsyncTask`.
 You may also specify different actual executor for Goro either with
 `GoroService.setDelegateExecutor(myThreadPool)` or with `new Goro(myThreadPool)` depending on how
 you use Goro.
+
+Sample
+------
+In this repository you'll also find [a sample](sample) demonstrating what Goro does.
