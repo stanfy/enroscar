@@ -33,6 +33,25 @@ to cancel your task or wait for its finishing synchronously.
   taskFuture.cancel(true);
 ```
 
+You may also get an
+[`Executor`](https://developer.android.com/reference/java/util/concurrent/Executor.html) instance
+for a particular queue and integrate Goro with such frameworks as RxJava or Bolts:
+```java
+// RxJava
+Observable.from([1, 2, 3])
+    .subscribeOn(Schedulers.executor(goro.getExecutor("my queue")))
+
+// Bolts
+fetchAsync(object).continueWith(new Continuation<ParseObject, Long>() {
+  public Long then(ParseObject object) throws Exception {
+    return database.storeUser(object.get("name"), object.get("age"));
+  }
+}, goro.getExecutor("database"));
+```
+
+Android Service
+---------------
+
 Usually we run Goro within a `Service` context to tell Android system that there are ongoing tasks
 and ensure that our process is not the first candidate for termination.
 Such a service is `GoroService`. We can bind to it and get Goro instance from the service:

@@ -19,6 +19,9 @@ public class TestingQueues implements Queues {
     }
   };
 
+  /** Last queue name. */
+  private String lastQueueName;
+
   @Override
   public void setDelegateExecutor(final Executor threadPool) {
     directExecutor = threadPool;
@@ -26,7 +29,12 @@ public class TestingQueues implements Queues {
 
   @Override
   public Executor getExecutor(String queueName) {
+    lastQueueName = queueName;
     return new TaskQueueExecutor(directExecutor);
+  }
+
+  public String getLastQueueName() {
+    return lastQueueName;
   }
 
   public void executeAll() {
