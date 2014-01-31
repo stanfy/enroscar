@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v4.content.Loader;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.rest.RequestExecutor;
 
 /**
@@ -36,6 +36,6 @@ public interface RequestBuilder<MT> {
   /**
    * @return type token of the expected model
    */
-  ModelTypeToken getExpectedModelType();
+  EntityTypeToken getExpectedModelType();
 
 }

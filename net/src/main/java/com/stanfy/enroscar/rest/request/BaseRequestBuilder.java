@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.RequestExecutor;
 import com.stanfy.enroscar.rest.Utils;
@@ -56,7 +56,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   private final Context context;
 
   /** Class of the expected model. */
-  private final ModelTypeToken expectedModelType;
+  private final EntityTypeToken expectedModelType;
 
   /** Performer. */
   private RequestExecutor executor;
@@ -74,7 +74,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
     result.simpleParameters.name = "stub";
     result.contentLanguage = Locale.getDefault().getLanguage();
 
-    this.expectedModelType = ModelTypeToken.fromRequestBuilderClass(getClass());
+    this.expectedModelType = EntityTypeToken.fromClassParameter(getClass());
     result.modelType = this.expectedModelType;
   }
 
@@ -107,7 +107,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
    * @param type type token describing the data type for the request
    */
   protected void setModelType(final Type type) {
-    result.modelType = ModelTypeToken.fromModelType(type);
+    result.modelType = EntityTypeToken.fromEntityType(type);
   }
 
   @Override
@@ -349,7 +349,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   }
 
   @Override
-  public ModelTypeToken getExpectedModelType() { return expectedModelType; }
+  public EntityTypeToken getExpectedModelType() { return expectedModelType; }
 
   @Override
   public int execute() {

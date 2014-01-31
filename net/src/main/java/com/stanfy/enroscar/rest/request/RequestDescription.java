@@ -12,7 +12,7 @@ import android.util.SparseArray;
 
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.rest.request.binary.BinaryData;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter.ConverterFactory;
@@ -90,7 +90,7 @@ public class RequestDescription implements Parcelable {
   volatile boolean canceled = false;
 
   /** Model class. */
-  ModelTypeToken modelType;
+  EntityTypeToken modelType;
   /** Content handler name. */
   String contentHandler;
   /** Content analyzer. */
@@ -258,9 +258,9 @@ public class RequestDescription implements Parcelable {
   public Charset getEncoding() { return encoding; }
 
   /** @param typeToken type token the response model */
-  public void setModelType(final ModelTypeToken typeToken) { this.modelType = typeToken; }
+  public void setModelType(final EntityTypeToken typeToken) { this.modelType = typeToken; }
   /** @return type token the response model */
-  public ModelTypeToken getModelType() { return modelType; }
+  public EntityTypeToken getModelType() { return modelType; }
 
   private void checkBeanExists(final String name) {
     if (name != null && !BeansManager.get(null).getContainer().containsBean(name)) {

@@ -8,7 +8,7 @@ import android.content.Context;
 
 import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 
 
 /**
@@ -25,7 +25,7 @@ public class StringContentHandler extends BaseContentHandler {
   }
   
   @Override
-  protected String getContent(final URLConnection connection, final InputStream source, final ModelTypeToken modelType) throws IOException {
+  protected String getContent(final URLConnection connection, final InputStream source, final EntityTypeToken modelType) throws IOException {
     return IoUtils.streamToString(source, getBuffersPool());
   }
 

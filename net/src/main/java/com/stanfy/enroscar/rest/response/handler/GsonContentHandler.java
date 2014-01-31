@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 
 /**
  * Implementation of {@link java.net.ContentHandler} that uses
@@ -39,7 +39,7 @@ public class GsonContentHandler extends BaseContentHandler {
   }
 
   @Override
-  protected Object getContent(final URLConnection connection, final InputStream source, final ModelTypeToken modelType) throws IOException {
+  protected Object getContent(final URLConnection connection, final InputStream source, final EntityTypeToken modelType) throws IOException {
     if (gson == null) {
       throw new IllegalStateException("Gson object is not created");
     }

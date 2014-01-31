@@ -6,7 +6,7 @@ import android.content.Context;
 import android.support.v4.content.Loader;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.rest.RequestExecutor;
 import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
 
@@ -27,7 +27,7 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
   private final BaseRequestBuilder<LT> core;
 
   /** Expected type token. */
-  private final ModelTypeToken expectedTypeToken;
+  private final EntityTypeToken expectedTypeToken;
 
   /** Parameter name. */
   private String offsetName = PARAM_OFFSET, limitName = PARAM_LIMIT;
@@ -40,7 +40,7 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public ListRequestBuilderWrapper(final BaseRequestBuilder core) {
     this.core = core;
-    this.expectedTypeToken = ModelTypeToken.fromRequestBuilderClass(getClass());
+    this.expectedTypeToken = EntityTypeToken.fromClassParameter(getClass());
   }
 
   @Override
@@ -107,7 +107,7 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
   }
 
   @Override
-  public ModelTypeToken getExpectedModelType() { return expectedTypeToken; }
+  public EntityTypeToken getExpectedModelType() { return expectedTypeToken; }
 
   @Override
   public String toString() {

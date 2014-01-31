@@ -2,14 +2,15 @@ package com.stanfy.enroscar.net;
 
 import java.io.IOException;
 import java.net.ContentHandler;
-import java.net.ContentHandlerFactory;
 import java.net.URLConnection;
 
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 
 
 /**
- * URL connection that controls what content handler will be created.
+ * URL connection wrapper that contains information about what handler should be used
+ * to parse the received content. Also contains {@link com.stanfy.enroscar.rest.EntityTypeToken} that might be used
+ * by the handler to process the stream.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 public class ContentControlUrlConnection extends UrlConnectionWrapper {
@@ -18,7 +19,7 @@ public class ContentControlUrlConnection extends UrlConnectionWrapper {
   private String contentHandlerName;
 
   /** Model type. */
-  private ModelTypeToken modelType;
+  private EntityTypeToken modelType;
 
   public ContentControlUrlConnection(final URLConnection urlConnection) {
     super(urlConnection);
@@ -31,10 +32,10 @@ public class ContentControlUrlConnection extends UrlConnectionWrapper {
     this.contentHandlerName = contentHandlerName;
   }
 
-  public void setModelType(final ModelTypeToken modelType) {
+  public void setModelType(final EntityTypeToken modelType) {
     this.modelType = modelType;
   }
-  public ModelTypeToken getModelType() {
+  public EntityTypeToken getModelType() {
     return modelType;
   }
 

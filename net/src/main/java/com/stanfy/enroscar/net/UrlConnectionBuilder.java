@@ -12,7 +12,7 @@ import javax.net.ssl.SSLSocketFactory;
 import android.net.Uri;
 
 import com.stanfy.enroscar.net.cache.CacheControlUrlConnection;
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.utils.Time;
 
 /**
@@ -43,7 +43,7 @@ public class UrlConnectionBuilder {
   /** Content handler name. */
   private String contentHandlerName;
   /** Model type. */
-  private ModelTypeToken modelType;
+  private EntityTypeToken modelType;
 
   /** SSL socket factory. */
   private SSLSocketFactory sslSF;
@@ -123,12 +123,12 @@ public class UrlConnectionBuilder {
     return contentHandlerName;
   }
 
-  public UrlConnectionBuilder setModelType(final ModelTypeToken modelType) {
+  public UrlConnectionBuilder setModelType(final EntityTypeToken modelType) {
     this.modelType = modelType;
     return this;
   }
 
-  public ModelTypeToken getModelType() {
+  public EntityTypeToken getModelType() {
     return modelType;
   }
 
