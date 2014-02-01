@@ -6,3 +6,5 @@ Activity contains two buttons for posting mock tasks (that make their thread sle
 random period) to corresponding queues (REST and DB).
 There is also a button that makes a notification with content intent that sends a task directly
 to the service.
+
+![Sample Screenshot](sample.png "Sample Screenshot")

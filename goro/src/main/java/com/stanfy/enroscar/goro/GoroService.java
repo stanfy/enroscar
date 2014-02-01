@@ -22,7 +22,7 @@ import java.util.concurrent.Executor;
 public class GoroService extends Service {
 
   /** Internal debug flag. */
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = BuildConfig.DEBUG;
 
   /**
    * Used as a {@link android.os.Parcelable} field in service command intent to pass
