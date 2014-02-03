@@ -6,7 +6,7 @@ import java.util.List;
 import android.content.Context;
 
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.rest.RequestMethod.RequestMethodException;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 
@@ -28,8 +28,8 @@ public class ItemToListTransformer<T> implements ContentAnalyzer<T, List<T>> {
     final ResponseData<List<T>> result = new ResponseData<List<T>>(responseData);
     if (result.isSuccessful()) {
       final ArrayList<T> list = new ArrayList<T>(1);
-      list.add(responseData.getModel());
-      result.setModel(list);
+      list.add(responseData.getEntity());
+      result.setEntity(list);
     }
     return result;
   }

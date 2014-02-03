@@ -6,7 +6,7 @@ import java.net.URLConnection;
 
 import android.os.Build;
 
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.net.cache.CacheControlUrlConnection;
 import com.stanfy.enroscar.rest.ErrorCodes;

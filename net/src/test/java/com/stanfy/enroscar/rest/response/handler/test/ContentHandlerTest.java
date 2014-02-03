@@ -10,7 +10,7 @@ import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.rest.request.OperationType;
+import com.stanfy.enroscar.net.operation.OperationType;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.response.handler.BaseContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;

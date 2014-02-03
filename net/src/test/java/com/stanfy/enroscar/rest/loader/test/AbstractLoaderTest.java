@@ -6,7 +6,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import android.support.v4.content.Loader;
 
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.loader.LoaderAccess;
 import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;

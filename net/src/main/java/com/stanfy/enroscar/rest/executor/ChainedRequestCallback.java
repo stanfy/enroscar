@@ -2,7 +2,7 @@ package com.stanfy.enroscar.rest.executor;
 
 import java.util.ArrayList;
 
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.rest.executor.ApiMethodsSupport.ApiSupportRequestCallback;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 

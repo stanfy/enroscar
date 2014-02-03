@@ -5,7 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.net.operation.executor.RequestPerformer;
 import com.stanfy.enroscar.rest.ErrorCodes;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 

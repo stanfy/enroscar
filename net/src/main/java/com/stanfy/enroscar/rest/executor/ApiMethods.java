@@ -20,9 +20,9 @@ import android.os.Build;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.rest.DirectRequestExecutor;
-import com.stanfy.enroscar.rest.DirectRequestExecutorHooks;
+import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.net.operation.executor.DirectRequestExecutor;
+import com.stanfy.enroscar.net.operation.executor.DirectRequestExecutorHooks;
 import com.stanfy.enroscar.rest.RequestMethod;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 

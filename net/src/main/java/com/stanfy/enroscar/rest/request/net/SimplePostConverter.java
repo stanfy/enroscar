@@ -5,8 +5,8 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.stanfy.enroscar.rest.Utils;
-import com.stanfy.enroscar.rest.request.Parameter;
-import com.stanfy.enroscar.rest.request.ParameterValue;
+import com.stanfy.enroscar.net.operation.Parameter;
+import com.stanfy.enroscar.net.operation.ParameterValue;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 
 import java.io.IOException;

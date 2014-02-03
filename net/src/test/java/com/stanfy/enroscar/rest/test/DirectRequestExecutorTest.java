@@ -8,7 +8,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import com.stanfy.enroscar.rest.DirectRequestExecutor;
+import com.stanfy.enroscar.net.operation.executor.DirectRequestExecutor;
 
 /**
  * Direct request executor test.

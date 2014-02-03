@@ -13,17 +13,17 @@ import org.robolectric.annotation.Config;
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.executor.ApiMethodCallback;
 import com.stanfy.enroscar.rest.executor.ApiMethodsSupport;
 import com.stanfy.enroscar.net.operation.RequestDescription;
-import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.test.EnroscarNetConfig;
 
 /**
- * Tests for {@link com.stanfy.enroscar.rest.executor.RequestPerformer}.
+ * Tests for {@link com.stanfy.enroscar.net.operation.executor.RequestPerformer}.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @Config(emulateSdk = 18)

@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.stanfy.enroscar.content.ResponseData;
+
 /**
  * Loads data via content provider.
  */

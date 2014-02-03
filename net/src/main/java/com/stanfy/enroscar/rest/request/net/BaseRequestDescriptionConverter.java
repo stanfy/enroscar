@@ -9,9 +9,9 @@ import com.stanfy.enroscar.net.UrlConnectionBuilder;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.rest.Utils;
-import com.stanfy.enroscar.rest.request.OperationType;
-import com.stanfy.enroscar.rest.request.Parameter;
-import com.stanfy.enroscar.rest.request.ParameterValue;
+import com.stanfy.enroscar.net.operation.OperationType;
+import com.stanfy.enroscar.net.operation.Parameter;
+import com.stanfy.enroscar.net.operation.ParameterValue;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 
 import java.io.IOException;

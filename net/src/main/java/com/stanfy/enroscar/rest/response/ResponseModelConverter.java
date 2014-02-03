@@ -2,7 +2,7 @@ package com.stanfy.enroscar.rest.response;
 
 import java.net.URLConnection;
 
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.rest.RequestMethod.RequestMethodException;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 

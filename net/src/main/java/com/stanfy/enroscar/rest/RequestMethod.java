@@ -112,36 +112,4 @@ public class RequestMethod {
     public URLConnection getConnection() { return connection; }
   }
 
-  /**
-   * Request method exception.
-   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
-   */
-  public static class RequestMethodException extends Exception {
-
-    /** serialVersionUID. */
-    private static final long serialVersionUID = 3234117139338549788L;
-
-    /** Connection error flag. */
-    private boolean connectionError;
-
-    public RequestMethodException(final IOException e) {
-      super("Connection error", e);
-      connectionError = true;
-    }
-
-    public RequestMethodException(final String message) {
-      super(message);
-      connectionError = false;
-    }
-
-    public RequestMethodException(final RuntimeException e) {
-      super("Response parsing exception", e);
-      connectionError = false;
-    }
-
-    /** @return the connectionError */
-    public boolean isConnectionError() { return connectionError; }
-
-  }
-
 }

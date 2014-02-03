@@ -13,9 +13,9 @@ import org.robolectric.annotation.Config;
 
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.rest.request.BaseRequestBuilder;
-import com.stanfy.enroscar.rest.request.Parameter;
-import com.stanfy.enroscar.rest.request.ParameterValue;
+import com.stanfy.enroscar.net.operation.BaseRequestBuilder;
+import com.stanfy.enroscar.net.operation.Parameter;
+import com.stanfy.enroscar.net.operation.ParameterValue;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.test.AbstractNetTest;
 
