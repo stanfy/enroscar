@@ -21,14 +21,6 @@
       android:enabled="false"
       android:text="@string/post_to_db" />
 
-  <Button
-      android:id="@+id/button_post_notification"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_toRightOf="@id/button_post_db"
-      android:layout_marginLeft="10dp"
-      android:text="@string/post_notification" />
-
   <com.stanfy.enroscar.goro.sample.GoroView
       android:id="@+id/goro"
       android:layout_below="@id/button_post_rest"

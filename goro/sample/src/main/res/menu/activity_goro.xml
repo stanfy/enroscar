@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+      android:id="@+id/action_notification"
+      android:showAsAction="always"
+      android:title="@string/post_notification"
+      />
+</menu>

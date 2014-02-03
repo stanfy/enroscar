@@ -12,6 +12,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.stanfy.enroscar.goro.Goro;
@@ -51,6 +53,11 @@ public class GoroActivity extends Activity {
 
     @Override
     public void onServiceDisconnected(final ComponentName name) {
+      // Goro service lives in the same process, so that it should not eventually disconnect
+      // until we are bound to it or there are any scheduled tasks
+      if (goro != null) {
+        throw new IllegalStateException("Disconnected without explicit action");
+      }
     }
   };
 
@@ -70,27 +77,6 @@ public class GoroActivity extends Activity {
     restButton.setOnClickListener(new Clicker(QUEUE_REST));
     dbButton = findViewById(R.id.button_post_db);
     dbButton.setOnClickListener(new Clicker(QUEUE_DB));
-
-    findViewById(R.id.button_post_notification).setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(final View v) {
-        Intent intent = GoroService.taskIntent(GoroActivity.this, QUEUE_REST,
-            new PendingTask(counter++, QUEUE_REST));
-        PendingIntent pendingIntent = PendingIntent.getService(GoroActivity.this, 0, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT);
-        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
-            1,
-            new NotificationCompat.Builder(GoroActivity.this)
-                .setTicker("Click to post to REST")
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setAutoCancel(true)
-                .setContentTitle("Click to post to REST")
-                .setContentText("Intent will be sent to the service")
-                .setContentIntent(pendingIntent)
-                .build()
-        );
-      }
-    });
   }
 
   @Override
@@ -111,6 +97,41 @@ public class GoroActivity extends Activity {
   private void setupButtons() {
     restButton.setEnabled(goro != null);
     dbButton.setEnabled(goro != null);
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(final Menu menu) {
+    getMenuInflater().inflate(R.menu.activity_goro, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(final MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_notification:
+        notificationSample();
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+  }
+
+  private void notificationSample() {
+    Intent intent = GoroService.taskIntent(GoroActivity.this, QUEUE_REST,
+        new PendingTask(counter++, QUEUE_REST));
+    PendingIntent pendingIntent = PendingIntent.getService(GoroActivity.this, 0, intent,
+        PendingIntent.FLAG_UPDATE_CURRENT);
+    ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+        1,
+        new NotificationCompat.Builder(GoroActivity.this)
+            .setTicker("Click to post to REST")
+            .setSmallIcon(R.drawable.ic_launcher)
+            .setAutoCancel(true)
+            .setContentTitle("Click to post to REST")
+            .setContentText("Intent will be sent to the service")
+            .setContentIntent(pendingIntent)
+            .build()
+    );
   }
 
   @Override
