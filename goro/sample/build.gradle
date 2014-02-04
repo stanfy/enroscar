@@ -16,11 +16,30 @@ android {
   defaultConfig {
     minSdkVersion 14
     targetSdkVersion 19
+    versionCode 2
+    versionName "1.0"
   }
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_7
     targetCompatibility JavaVersion.VERSION_1_7
+  }
+
+  signingConfigs {
+    roman {
+      def baseDir = new File("${System.env.HOME}/dev/keystore")
+      def pass = new File(baseDir, "pass").text.trim()
+      storeFile file("$baseDir/roman.keystore")
+      storePassword pass
+      keyAlias "roman-key"
+      keyPassword pass
+    }
+  }
+
+  buildTypes {
+    release {
+      signingConfig signingConfigs.roman
+    }
   }
 }
 
