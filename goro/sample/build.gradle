@@ -25,22 +25,6 @@ android {
     targetCompatibility JavaVersion.VERSION_1_7
   }
 
-  signingConfigs {
-    roman {
-      def baseDir = new File("${System.env.HOME}/dev/keystore")
-      def pass = new File(baseDir, "pass").text.trim()
-      storeFile file("$baseDir/roman.keystore")
-      storePassword pass
-      keyAlias "roman-key"
-      keyPassword pass
-    }
-  }
-
-  buildTypes {
-    release {
-      signingConfig signingConfigs.roman
-    }
-  }
 }
 
 dependencies {
