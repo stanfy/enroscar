@@ -352,7 +352,7 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   public EntityTypeToken getExpectedModelType() { return expectedModelType; }
 
   @Override
-  public int execute() {
+  public void execute() {
     if (result.url == null) {
       throw new IllegalStateException("URL is not specified!");
     }
@@ -374,10 +374,9 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
     result.setCanceled(false);
 
     if (executor != null) {
-      return executor.performRequest(result);
+      executor.performRequest(result);
     } else {
       Log.w(TAG, "Don't know how to perform operation " + result.getUrl());
-      return INVALID_REQUEST_IDENTIFIER;
     }
   }
 

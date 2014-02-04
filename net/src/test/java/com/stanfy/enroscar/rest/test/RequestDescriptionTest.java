@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.ResponseCache;
 import java.net.URLConnection;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -27,6 +28,7 @@ import com.stanfy.enroscar.net.operation.RequestDescription;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = 18)
+@Ignore
 public class RequestDescriptionTest extends AbstractMockServerTest {
 
 //  @Test

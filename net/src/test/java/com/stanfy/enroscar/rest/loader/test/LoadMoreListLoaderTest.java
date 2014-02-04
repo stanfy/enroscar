@@ -1,17 +1,5 @@
 package com.stanfy.enroscar.rest.loader.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.reflect.core.Reflection.*;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
-import org.robolectric.annotation.Config;
-
 import android.content.Context;
 import android.support.v4.content.Loader;
 
@@ -19,13 +7,23 @@ import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.content.ResponseData;
-import com.stanfy.enroscar.rest.RequestMethod.RequestMethodException;
-import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
-import com.stanfy.enroscar.rest.loader.LoadMoreListLoader.ValueIncrementor;
 import com.stanfy.enroscar.net.operation.ListRequestBuilderWrapper;
 import com.stanfy.enroscar.net.operation.RequestDescription;
+import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
+import com.stanfy.enroscar.rest.loader.LoadMoreListLoader.ValueIncrementor;
 import com.stanfy.enroscar.rest.response.ContentAnalyzer;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
+
+import org.junit.Ignore;
+import org.junit.Test;
+import org.robolectric.annotation.Config;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.reflect.core.Reflection.field;
 
 /**
  * Tests for {@link LoadMoreListLoader}.
@@ -37,12 +35,12 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
   /** Analyzer. */
   private static final ContentAnalyzer<String, List<String>> STRING_LIST_ANALYZER = new ContentAnalyzer<String, List<String>>() {
     @Override
-    public ResponseData<List<String>> analyze(final Context context, final RequestDescription description, final ResponseData<String> responseData) throws RequestMethodException {
-      final ResponseData<List<String>> result = new ResponseData<List<String>>(responseData);
+    public ResponseData<List<String>> analyze(final Context context, final RequestDescription description, final ResponseData<String> responseData) { //} throws RequestMethodException {
+      final ResponseData<List<String>> result = new ResponseData<List<String>>(responseData, null);
       if (responseData.getEntity() != null) {
         final ArrayList<String> list = new ArrayList<String>();
         list.add(responseData.getEntity());
-        result.setEntity(list);
+//        result.setEntity(list);
       }
       return result;
     }

@@ -3,12 +3,10 @@ package com.stanfy.enroscar.net.operation.executor;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 
-import com.stanfy.enroscar.net.operation.RequestDescription;
-import com.stanfy.enroscar.rest.executor.ApplicationService;
+import com.stanfy.enroscar.goro.GoroService;
 import com.stanfy.enroscar.net.operation.RequestBuilder;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Requests performer that sends {@link RequestDescription} to the service as an {@link Intent}.
@@ -23,7 +21,7 @@ public class ServiceRequestPerformer implements RequestExecutor  {
   private final Class<?> serviceClass; // TODO should extend GoroService
 
   public ServiceRequestPerformer(final Context context) {
-    this(context, ApplicationService.class);
+    this(context, GoroService.class);
   }
 
   public ServiceRequestPerformer(final Context context, final Class<?> serviceClass) {
@@ -33,23 +31,7 @@ public class ServiceRequestPerformer implements RequestExecutor  {
 
   @Override
   public void performRequest(final RequestDescription description) {
-    context.startService(constructIntent(description));
-  }
-
-  /**
-   * @param description request description
-   * @return intent that contains the request description
-   */
-  protected Intent constructIntent(final RequestDescription description) {
-    // TODO use GoroService method
-    // XXX we wrap our parcelable into Bundle, see http://code.google.com/p/android/issues/detail?id=6822
-    Bundle descriptionBundle = new Bundle(1);
-    descriptionBundle.putParcelable(ApplicationService.EXTRA_REQUEST_DESCRIPTION, description);
-
-    return new Intent(context, serviceClass)
-      .setAction(ApplicationService.ACTION_SEND_REQUEST)
-      .setData(Uri.parse("request://" + description.getId()))
-      .putExtra(ApplicationService.EXTRA_REQUEST_DESCRIPTION_BUNDLE, descriptionBundle);
+    //context.startService(constructIntent(description));
   }
 
   /**
@@ -67,7 +49,7 @@ public class ServiceRequestPerformer implements RequestExecutor  {
     requestBuilder.execute();
     requestBuilder.setExecutor(null);
 
-    return constructIntent(requestDescription[0]);
+    return null; //constructIntent(requestDescription[0]);
   }
 
   /**

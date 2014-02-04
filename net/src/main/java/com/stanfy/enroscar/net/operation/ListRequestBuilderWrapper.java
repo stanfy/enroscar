@@ -87,7 +87,7 @@ public abstract class ListRequestBuilderWrapper<LT extends List<MT>, MT> impleme
   public Context getContext() { return core.getContext(); }
 
   @Override
-  public int execute() { return core.execute(); }
+  public void execute() { core.execute(); }
 
   @Override
   public ListRequestBuilderWrapper<LT, MT> setExecutor(final RequestExecutor executor) {

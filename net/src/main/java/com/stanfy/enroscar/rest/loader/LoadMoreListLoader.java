@@ -99,7 +99,7 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
 
       stopLoadMore = true;
       if (itemsList != null) {
-        data.setEntity(itemsList);
+        //data.setEntity(itemsList);
       }
 
     } else {

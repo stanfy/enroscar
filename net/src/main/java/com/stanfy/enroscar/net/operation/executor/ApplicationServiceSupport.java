@@ -1,15 +1,15 @@
 package com.stanfy.enroscar.net.operation.executor;
 
-import java.lang.ref.WeakReference;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.goro.GoroService;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.rest.executor.ApplicationService;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Base class for helpers that can bind to application service.
@@ -21,7 +21,7 @@ public abstract class ApplicationServiceSupport<T> implements ServiceConnection 
   /** Logging tag. */
   private static final String TAG = "ServiceSupport";
   /** Debug flag. */
-  private static final boolean DEBUG = DebugFlags.DEBUG, DEBUG_CALLS = false;
+  private static final boolean DEBUG = false, DEBUG_CALLS = false;
 
   /** Context instance. */
   final WeakReference<Context> contextRef;
@@ -48,7 +48,7 @@ public abstract class ApplicationServiceSupport<T> implements ServiceConnection 
     final Context context = contextRef.get();
     if (context == null) { return; }
     // TODO make it configurable
-    final Intent intent = new Intent(context, ApplicationService.class);
+    final Intent intent = new Intent(context, GoroService.class);
     intent.setAction(getInterfaceClass().getName());
     if (DEBUG_CALLS) {
       Log.v(TAG, "Attempt to bind to service " + this + "/" + context, new RuntimeException());

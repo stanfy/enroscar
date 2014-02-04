@@ -45,9 +45,8 @@ public class RemoteServerApiConfigurationTest {
     final RequestDescription[] rd = new RequestDescription[1];
     rb.setExecutor(new RequestExecutor() {
       @Override
-      public int performRequest(final RequestDescription d) {
+      public void performRequest(final RequestDescription d) {
         rd[0] = d;
-        return 0;
       }
     });
     rb.execute();

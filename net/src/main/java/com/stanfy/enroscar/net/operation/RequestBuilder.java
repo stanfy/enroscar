@@ -23,9 +23,8 @@ public interface RequestBuilder<MT> {
 
   /**
    * Send request.
-   * @return request identifier
    */
-  int execute();
+  void execute();
 
   /**
    * @param executor request performer instance

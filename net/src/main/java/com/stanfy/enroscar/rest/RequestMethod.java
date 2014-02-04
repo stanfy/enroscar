@@ -24,10 +24,9 @@ public class RequestMethod {
   /**
    * @param systemContext system context
    * @param description request description
-   * @throws RequestMethodException if ever
    * @return parsed object
    */
-  public RequestResult perform(final Context systemContext, final RequestDescription description) throws RequestMethodException {
+  public RequestResult perform(final Context systemContext, final RequestDescription description) { // throws RequestMethodException {
     final long startTime = System.currentTimeMillis();
 
     before(systemContext, description);
@@ -50,9 +49,9 @@ public class RequestMethod {
       return new RequestResult(model, connection);
 
     } catch (final IOException e) {
-      throw new RequestMethodException(e);
+//      throw new RequestMethodException(e);
     } catch (final RuntimeException e) {
-      throw new RequestMethodException(e);
+//      throw new RequestMethodException(e);
     } finally {
 
       after(systemContext, description);
@@ -65,6 +64,8 @@ public class RequestMethod {
         Log.d(TAG, "Request time: " + (System.currentTimeMillis() - startTime) + " ms");
       }
     }
+
+    return null;
   }
 
   /**

@@ -1,8 +1,6 @@
 package com.stanfy.enroscar.net.test;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.content.Loader;
 
 import com.google.mockwebserver.MockWebServer;
@@ -16,16 +14,14 @@ import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine.Config;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.rest.RequestMethod;
-import com.stanfy.enroscar.rest.executor.ApiMethods;
-import com.stanfy.enroscar.rest.executor.ApplicationService;
-import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
-import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
 import com.stanfy.enroscar.net.operation.ListRequestBuilderWrapper;
 import com.stanfy.enroscar.net.operation.RequestBuilder;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.rest.RequestMethod;
+import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
+import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.test.AbstractNetTest;
 import com.stanfy.enroscar.test.EnroscarNetConfig;
@@ -35,7 +31,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLog;
 
 import java.io.IOException;
@@ -142,13 +137,6 @@ public abstract class AbstractMockServerTest extends AbstractNetTest {
   }
 
   private void configureServiceBind() {
-    ShadowApplication app = Robolectric.shadowOf(getApplication());
-    ApplicationService service = new ApplicationService();
-    service.onCreate();
-    app.setComponentNameAndServiceForBindService(
-        new ComponentName(ApplicationService.class.getPackage().getName(), ApplicationService.class.getSimpleName()),
-        service.onBind(new Intent().setAction(ApiMethods.class.getName()))
-    );
   }
   
   /**

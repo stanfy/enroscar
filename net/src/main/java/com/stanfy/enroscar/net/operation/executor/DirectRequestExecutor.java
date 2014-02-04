@@ -8,11 +8,9 @@ import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.RequestMethod;
-import com.stanfy.enroscar.rest.RequestMethod.RequestMethodException;
 import com.stanfy.enroscar.rest.RequestMethod.RequestResult;
 import com.stanfy.enroscar.rest.Utils;
 import com.stanfy.enroscar.rest.response.ContentAnalyzer;
-import com.stanfy.enroscar.rest.response.ResponseModelConverter;
 
 /**
  * Performs request synchronously.
@@ -51,7 +49,7 @@ public class DirectRequestExecutor implements RequestExecutor {
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private static ResponseData<?> analyze(final Context context, final ContentAnalyzer analyzer, final ResponseData<?> responseData,
-      final RequestDescription description) throws RequestMethodException {
+      final RequestDescription description) { // throws RequestMethodException {
     final ResponseData data = responseData;
     return analyzer.analyze(context, description, data);
   }
@@ -59,7 +57,7 @@ public class DirectRequestExecutor implements RequestExecutor {
   @Override
   public void performRequest(final RequestDescription description) {
     final RequestMethod requestMethod = config.getRequestMethod(description);
-    final ResponseModelConverter converter = config.getResponseModelConverter(description);
+//    final ResponseModelConverter converter = config.getResponseModelConverter(description);
 
     ContentAnalyzer<?, ?> analyzer = null;
 
@@ -88,8 +86,8 @@ public class DirectRequestExecutor implements RequestExecutor {
       }
 
       // process results
-      ResponseData<?> response
-          = converter.toResponseData(description, res.getConnection(), res.getModel());
+      ResponseData<?> response = null;
+//          = converter.toResponseData(description, res.getConnection(), res.getModel());
 
       // check for cancel
       if (description.isCanceled()) {
@@ -114,19 +112,19 @@ public class DirectRequestExecutor implements RequestExecutor {
         hooks.onRequestError(description, response);
       }
 
-    } catch (final RequestMethodException e) {
+    } catch (final Exception e) { //RequestMethodException e) {
 
       Log.e(TAG, "Request method error while processing " + description, e);
-      ResponseData<?> data = converter.toResponseData(description, e);
+      ResponseData<?> data = null; //converter.toResponseData(description, e);
 
       if (analyzer != null && !passedToAnalyzer) {
-        try {
-          data = analyze(context, analyzer, data, description);
-        } catch (RequestMethodException analyzerException) {
-          Log.e(TAG, "Analyzer exception analyzerName=" + analyzerBeanName + " for " + description, analyzerException);
-          // repack data to use the current exception
-          data = converter.toResponseData(description, analyzerException);
-        }
+//        try {
+//          data = analyze(context, analyzer, data, description);
+//        } catch (RequestMethodException analyzerException) {
+//          Log.e(TAG, "Analyzer exception analyzerName=" + analyzerBeanName + " for " + description, analyzerException);
+//          // repack data to use the current exception
+//          data = converter.toResponseData(description, analyzerException);
+//        }
       }
 
       hooks.onRequestError(description, data);
