@@ -78,6 +78,6 @@ or with Maven:
   <dependency>
     <groupId>com.stanfy.enroscar</groupId>
     <artifactId>enroscar-io</artifactId>
-    <version>1.+</version>
+    <version>$latestVersion</version>
   </dependency>
 ```
