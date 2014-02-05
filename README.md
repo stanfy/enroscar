@@ -14,7 +14,7 @@ a tool with a specific purpose. These modules can be smoothly integrated using t
 * [Enroscar IO](io) - a buffers pool implementation along with some other i/o utilities
 
 In our continuous dev stack:
-* [Enroscar Net](net) - Android networking library based on `URLConnection`
+* [Enroscar Net](net) - do more with `URLConnection` class
 * content
 * images
 * ui
