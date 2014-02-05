@@ -2,7 +2,7 @@ Enroscar Net
 ============
 
 This Android library broadens what you can do with `URLConnection` adding support
-for `content`, `android.resource`, and 'data' schemes.
+for `content`, `android.resource`, and `data` schemes.
 
 After setting things up (TODO) you are able to use code like:
 ```java
@@ -32,7 +32,7 @@ new URL("file:///android_assets/myDbFile.db").openConnection()
 So what is the benefit, you ask? Actually it unifies how you access different sources of data,
 making it possible to describe these different sources with a URI.
 And power of this approach can be seen in
-[integration with Retrofit library](#Retrofit-Integration).
+[integration with Retrofit library](#retrofit-integration).
 
 Retrofit Integration
 --------------------
