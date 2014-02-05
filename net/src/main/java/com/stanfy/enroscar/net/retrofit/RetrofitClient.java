@@ -51,10 +51,21 @@ public class RetrofitClient implements Client {
   @Override
   public Response execute(final Request request) throws IOException {
     URLConnection connection = connectionBuilderFactory.newUrlConnectionBuilder()
-        .setUrl(request.getUrl())
+        .setUrl(getUrl(request))
         .create();
     prepareRequest(connection, request);
     return readResponse(connection);
+  }
+
+  private String getUrl(final Request request) {
+    String url = request.getUrl();
+    if (url.startsWith("data:")) {
+      int throwPlace = url.indexOf('?');
+      if (throwPlace != -1) {
+        url = url.substring(0, throwPlace);
+      }
+    }
+    return url;
   }
 
   private void prepareRequest(final URLConnection connection, final Request request)
@@ -67,7 +78,7 @@ public class RetrofitClient implements Client {
         try {
           methodField.set(connection, request.getMethod());
         } catch (IllegalAccessException e1) {
-          throw RetrofitError.unexpectedError(request.getUrl(), e1);
+          throw RetrofitError.unexpectedError(getUrl(request), e1);
         }
       }
     }

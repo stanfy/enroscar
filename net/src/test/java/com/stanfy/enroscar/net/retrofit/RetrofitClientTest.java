@@ -137,6 +137,12 @@ public class RetrofitClientTest {
     verify(mockResolver).openAssetFileDescriptor(uri, "r");
   }
 
+  // data
+  @Test
+  public void shouldWorkForDataScheme() throws Exception {
+    fetchAndTest(getRestAdapter("data:application/json," + Uri.encode(mockResponse) + "?"));
+  }
+
   /** Test service. */
   interface ExampleService {
     @GET("/thing")
