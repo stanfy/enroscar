@@ -9,19 +9,18 @@ import com.google.gson.Gson;
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.net.ContentUriConnection;
+import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -61,6 +60,8 @@ public class RetrofitClientTest {
 
   @Before
   public void init() throws Exception {
+    EnroscarConnectionsEngine.config().treatFileScheme(false).setup(Robolectric.application);
+
     testThing = new Thing();
     testThing.name = "foo!";
     mockResponse = new Gson().toJson(testThing);
@@ -131,7 +132,7 @@ public class RetrofitClientTest {
     String baseUri = "content://test.authority";
     RestAdapter adapter = getRestAdapter(baseUri);
     fetchAndTest(adapter);
-    Uri uri = Uri.parse(baseUri + "/thing");
+    Uri uri = Uri.parse(baseUri + "/thing?name=test");
     verify(mockResolver).getType(uri);
     verify(mockResolver).openAssetFileDescriptor(uri, "r");
   }
