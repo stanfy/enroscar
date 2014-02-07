@@ -112,7 +112,7 @@ Goro is an Android library packaged as AAR and available in Maven Central.
 Add this dependency to your Android project in `build.gradle`:
 ```groovy
 dependencies {
-  compile 'com.stanfy.enroscar:enroscar-goro:1.+'
+  compile 'com.stanfy.enroscar:enroscar-goro:1.+@aar'
 }
 ```
 
@@ -123,7 +123,7 @@ If you do not plan to use `GoroService` as it is provided, change your dependenc
 to fetch a JAR instead of AAR:
 ```groovy
 dependencies {
-  compile 'com.stanfy.enroscar:enroscar-goro:1.+@jar'
+  compile 'com.stanfy.enroscar:enroscar-goro:1.+'
 }
 ```
 
