@@ -6,9 +6,9 @@ dependOnProjects([
 
 android {
   // FIXME Hack IDE
-  sourceSets {
-    instrumentTest.setRoot('src/test')
-  }
+//  sourceSets {
+//    instrumentTest.setRoot('src/test')
+//  }
 }
 
 // POM file modifications
