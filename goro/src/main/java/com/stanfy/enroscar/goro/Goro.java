@@ -24,11 +24,22 @@ public class Goro {
   /** Queues. */
   private final Queues queues;
 
+  /**
+   * This constructor will be removed in 2.0 version.
+   * @param delegateExecutor executor Goro delegates tasks to
+   * @deprecated use {@link #createWithDelegate(Executor)} factory method instead
+   */
+  @Deprecated
   public Goro(final Executor delegateExecutor) {
     this();
     this.queues.setDelegateExecutor(delegateExecutor);
   }
 
+  /**
+   * This constructor will be removed in 2.0 version.
+   * @deprecated use {@link #create()} factory method instead
+   */
+  @Deprecated
   public Goro() {
     this(new Queues.Impl());
   }
@@ -42,6 +53,25 @@ public class Goro {
       return ((GoroService.GoroBinder) binder).goro;
     }
     throw new IllegalArgumentException("Cannot get Goro from " + binder);
+  }
+
+  /**
+   * Creates a new Goro instance which uses {@link android.os.AsyncTask#THREAD_POOL_EXECUTOR}
+   * to delegate tasks on Post-Honeycomb devices or create a separate thread pool on earlier
+   * Android versions.
+   * @return instance of Goro
+   */
+  public static Goro create() {
+    return new Goro();
+  }
+
+  /**
+   * Creates a new Goro instance which uses the specified executor to delegate tasks.
+   * @param delegateExecutor executor Goro delegates tasks to
+   * @return instance of Goro
+   */
+  public static Goro createWithDelegate(final Executor delegateExecutor) {
+    return new Goro(delegateExecutor);
   }
 
   /**
