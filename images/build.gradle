@@ -2,7 +2,7 @@ dependOnProjects([':enroscar-beans', ':enroscar-io', ':enroscar-net'])
 
 android {
   defaultConfig {
-    testPackageName "com.stanfy.enroscar.images"
+    testPackageName "com.stanfy.enroscar.images.test"
     testInstrumentationRunner "android.test.InstrumentationTestRunner"
   }
 }

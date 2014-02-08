@@ -19,6 +19,8 @@ import java.io.InputStream;
 import static org.fest.assertions.api.ANDROID.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import com.stanfy.enroscar.images.test.R;
+
 /**
  * Tests for ImageRequest.
  */
@@ -35,9 +37,9 @@ public class ImageRequestRealTest extends BaseTest {
     super.setUp();
     @SuppressWarnings("ConstantConditions")
     Resources res = getContext().getResources();
-    int id = android.R.drawable.ic_delete;
+    int id = R.drawable.test_image;
     testBitmap = BitmapFactory.decodeResource(res, id);
-    testBitmapUrl = "android.resource://android/" + id;
+    testBitmapUrl = "android.resource://com.stanfy.enroscar.images.test/" + id;
   }
 
   @Override
