@@ -24,9 +24,9 @@ android {
 
 }
 
-dependencies {
-  instrumentTestCompile 'junit:junit:4.11', 'org.robolectric:robolectric:2.3-SNAPSHOT'
-}
+//dependencies {
+//  instrumentTestCompile 'junit:junit:4.11', 'org.robolectric:robolectric:2.3-SNAPSHOT'
+//}
 
 // POM file modifications
 uploadArchives {
