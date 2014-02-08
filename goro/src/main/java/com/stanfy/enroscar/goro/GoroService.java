@@ -22,7 +22,8 @@ import java.util.concurrent.Executor;
 public class GoroService extends Service {
 
   /** Internal debug flag. */
-  private static final boolean DEBUG = BuildConfig.DEBUG;
+  // FIXME should be BuildConfig.DEBUG but current gradle plugin makes something strange with this for tests
+  private static final boolean DEBUG = false;
 
   /**
    * Used as a {@link android.os.Parcelable} field in service command intent to pass

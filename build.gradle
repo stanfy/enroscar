@@ -62,6 +62,7 @@ configure(libraryModules) {
       sourceCompatibility JavaVersion.VERSION_1_7
       targetCompatibility JavaVersion.VERSION_1_7
     }
+
   }
 
   def testDeps = [
@@ -92,6 +93,14 @@ configure(libraryModules) {
       list.each {
         compile project(it)
         testCompile project(path : it, configuration : 'testCompile')
+      }
+    }
+  }
+
+  android {
+    if (project.hasProperty('preDex')) {
+      dexOptions {
+        preDexLibraries = Boolean.valueOf("$project.preDex")
       }
     }
   }

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
- * Tests for {@link com.stanfy.enroscar.goro.Goro}.
+ * Tests for {@link Goro}.
  */
 public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
 
@@ -98,8 +98,16 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
 
     sync = new CountDownLatch(1);
 
-    goro = Goro.from(bindService(new Intent()));
-    assertThat(goro).isNotNull();
+    final CountDownLatch bindSyc = new CountDownLatch(1);
+    onMainThread(new Runnable() {
+      @Override
+      public void run() {
+        goro = Goro.from(bindService(new Intent()));
+        assertThat(goro).isNotNull();
+        bindSyc.countDown();
+      }
+    });
+    bindSyc.await();
   }
 
   private void waitForListener() {
@@ -119,8 +127,12 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
     }
   }
 
+  private void onMainThread(final Runnable action) {
+    new Handler(Looper.getMainLooper()).post(action);
+  }
+
   private void addListener() {
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
+    onMainThread(new Runnable() {
       @Override
       public void run() {
         goro.addTaskListener(listener);
