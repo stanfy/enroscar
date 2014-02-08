@@ -1,15 +1,9 @@
 #!/bin/sh
 
 sudo apt-get update -q
-
-cd $HOME
 if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq libstdc++6:i386 lib32z1; fi
-wget -O android-sdk.tgz http://dl.google.com/android/android-sdk_r22.3-linux.tgz
-tar xzf android-sdk.tgz
-cd -
 
-sudo apt-get install expect
+COMPONENTS=build-tools-19.0.1,extra-android-support,android-19,extra-android-m2repository,sysimg-19
+curl -L https://raw.github.com/embarkmobile/android-sdk-installer/version-1/android-sdk-installer | bash /dev/stdin --install=$COMPONENTS
 
-INSTALL_COMPONENTS_SCRIPT="./scripts/install_android_sdk_components.sh"
-chmod +x ${INSTALL_COMPONENTS_SCRIPT}
-${INSTALL_COMPONENTS_SCRIPT}
+source $HOME/.android-sdk-installer/env

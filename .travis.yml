@@ -1,28 +1,26 @@
 language: java
 
-cache:
-  apt: true
-  directories:
-    - $HOME/.gradle
-
 env:
   global:
-    - ANDROID_HOME=$HOME/android-sdk-linux
-    - PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
     - secure: "VgzgkHpv8GQtVighZP+Fnkeaj08Abk8c+HJePEkO+0c1aoeL0Lwt6yUwXrMlPhgBndLi9foDZV1PH1xVxLlnj5u5GA8hNoNY4cOxjvEpD3E9MQ0gsdKmclMsoodJpY6YQ67FMexW6IVOHxkHcbEFm7ylcobmhyyX+MHujir980s="
     - secure: "GdbZFkBJYt7nuAg8VJytyFFwW/HPpH/kcXXtdjH7Dw5dF/rw1QlBkMCrzVPYv1QgaBW6eprdWQ1OeSi8A4puK/jMGyAxcLVjmop1167MUQjt1C9HuY1HjMiwCrTpbdHchPSQd37cg++sbJ9AXaKdfRxLZ/knMKLtcH/p8d8DHWQ="
 
 before_install:
+  - export TERM=dumb
   - chmod +x scripts/install_android_sdk.sh
   - ./scripts/install_android_sdk.sh
+  - echo no | android create avd --force -n test -t android-19
+  - emulator -avd test -no-skin -no-audio -no-window &
 
 install:
-  - TERM=dumb ./gradlew -q assembleRelease
+  - ./gradlew -q assemble
 
 script:
-  - TERM=dumb ./gradlew check
+  - ./gradlew check
+  - wait_for_emulator
+  - ./gradlew connectedCheck
 
 after_success:
   - chmod +x scripts/deploy_to_maven.sh
   - ./scripts/deploy_to_maven.sh
-  - TERM=dumb ./gradlew integrationTest
+  - ./gradlew integrationTest
