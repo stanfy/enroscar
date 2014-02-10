@@ -11,4 +11,3 @@ uploadArchives {
 }
 
 apply from: file("$rootProject.projectDir/gradle/jar.gradle")
-

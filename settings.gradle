@@ -1,3 +1,22 @@
+// === Goro ===
+
+include 'enroscar-goro'
+project(':enroscar-goro').projectDir = new File(rootDir, "goro/core")
+
+include 'enroscar-goro-compiler'
+project(':enroscar-goro-compiler').projectDir = new File(rootDir, "goro/compiler")
+
+include 'goro-sample'
+project(':goro-sample').projectDir = new File(rootDir, 'goro/sample')
+
+// === Enroscar IO ===
+
+include 'enroscar-io'
+project(':enroscar-io').projectDir = new File(rootDir, "io")
+
+
+// -----------------
+
 def includeInt = { path, name ->
   include path
   project(":$path").name = name
@@ -5,19 +24,12 @@ def includeInt = { path, name ->
 
 // main modules
 
-['beans', 'io', 'goro', 'net', 'assist', 'stats', 'content', 'images', 'ui'].each {
+['beans', 'net', 'assist', 'stats', 'content', 'images', 'ui'].each {
   includeInt it, "enroscar-$it"
 }
-
 
 // integration
 
 include 'enroscar-sherlock-integration'
 project(':enroscar-sherlock-integration').projectDir =
     new File(rootDir, 'integration/actionbarsherlock/enroscar-sherlock-integration')
-
-
-// goro sample
-
-include 'goro-sample'
-project(':goro-sample').projectDir = new File(rootDir, 'goro/sample')
