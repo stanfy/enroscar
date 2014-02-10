@@ -472,9 +472,11 @@ public class ImagesManager implements InitializingBean {
   }
 
   static int calculateSampleFactor(final int inW, final int inH, final int width, final int height) {
-    if (inW <= width && inH <= height) { return 1; }
+    if (inW <= width && inH <= height) {
+      return 1;
+    }
     if (width == 0 && height == 0) {
-      throw new IllegalArgumentException("Absolutely undefined size");
+      return 1;
     }
 
     final int factor;

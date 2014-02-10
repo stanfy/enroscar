@@ -54,7 +54,7 @@ public class ImageRequestRealTest extends BaseTest {
   }
 
   public void testDecodeResource() throws Exception {
-    ImageRequest request = new ImageRequest(imagesManager, testBitmapUrl, 1);
+    ImageRequest request = new ImageRequest(imagesManager, testBitmapUrl, -1);
     ImageResult result = request.readImage();
     checkBitmap(result);
     assertThat(result.getType()).isSameAs(ImageSourceType.DISK);
@@ -73,11 +73,11 @@ public class ImageRequestRealTest extends BaseTest {
     MockWebServer server = prepareServer();
     String url = server.getUrl("/image").toString();
 
-    ImageResult result = new ImageRequest(imagesManager, url, 1).readImage();
+    ImageResult result = new ImageRequest(imagesManager, url, -1).readImage();
     checkBitmap(result);
     assertThat(result.getType()).isSameAs(ImageSourceType.NETWORK);
 
-    ImageResult result2 = new ImageRequest(imagesManager, url, 1).readImage();
+    ImageResult result2 = new ImageRequest(imagesManager, url, -1).readImage();
     checkBitmap(result2);
     assertThat(result2.getType()).isSameAs(ImageSourceType.DISK);
 
