@@ -56,14 +56,11 @@ public class ImageRequestTest extends AbstractImagesTest {
   }
 
   @Test
-  public void shouldThrowIfUndefinedRequiredSize() throws IOException {
-    try {
-      ImageRequest request = new ImageRequest(manager, defaultUrl, -1);
-      request.readImage();
-      fail("Exception expected");
-    } catch (IllegalArgumentException e) {
-      assertThat(e).hasMessage("Absolutely undefined size");
-    }
+  public void shouldNotThrowIfUndefinedRequiredSize() throws IOException {
+    ImageRequest request = new ImageRequest(manager, defaultUrl, -1);
+    ImageResult result = request.readImage();
+    assertThat(result).isNotNull();
+    assertThat(result.getBitmap()).isNotNull();
   }
 
   @Test
