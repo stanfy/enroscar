@@ -11,7 +11,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 /**
- * Service that handles tasks in multiple queues.
+ * Handles tasks in multiple queues.
  */
 public class Goro {
 
