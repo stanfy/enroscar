@@ -1,52 +1,19 @@
 package com.stanfy.enroscar.goro;
 
+import android.content.Context;
 import android.os.IBinder;
 
-import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 /**
  * Handles tasks in multiple queues.
  */
-public class Goro {
+public abstract class Goro {
 
   /** Default queue name. */
   public static final String DEFAULT_QUEUE = "default";
-
-  /** Listeners handler. */
-  final ListenersHandler listenersHandler = new ListenersHandler();
-
-  /** Queues. */
-  private final Queues queues;
-
-  /**
-   * This constructor will be removed in 2.0 version.
-   * @param delegateExecutor executor Goro delegates tasks to
-   * @deprecated use {@link #createWithDelegate(Executor)} factory method instead
-   */
-  @Deprecated
-  public Goro(final Executor delegateExecutor) {
-    this();
-    this.queues.setDelegateExecutor(delegateExecutor);
-  }
-
-  /**
-   * This constructor will be removed in 2.0 version.
-   * @deprecated use {@link #create()} factory method instead
-   */
-  @Deprecated
-  public Goro() {
-    this(new Queues.Impl());
-  }
-
-  Goro(final Queues queues) {
-    this.queues = queues;
-  }
 
   public static Goro from(final IBinder binder) {
     if (binder instanceof GoroService.GoroBinder) {
@@ -62,7 +29,7 @@ public class Goro {
    * @return instance of Goro
    */
   public static Goro create() {
-    return new Goro();
+    return new GoroImpl();
   }
 
   /**
@@ -71,24 +38,32 @@ public class Goro {
    * @return instance of Goro
    */
   public static Goro createWithDelegate(final Executor delegateExecutor) {
-    return new Goro(delegateExecutor);
+    GoroImpl goro = new GoroImpl();
+    goro.queues.setDelegateExecutor(delegateExecutor);
+    return goro;
   }
 
   /**
-   * Adds a task execution listener.
-   * @param listener listener instance
+   * Creates a Goro implementation that binds to {@link com.stanfy.enroscar.goro.GoroService}
+   * in order to run scheduled tasks in service context.
+   * @param context context that will bind to the service
+   * @return Goro implementation that binds to {@link com.stanfy.enroscar.goro.GoroService}.
    */
-  public void addTaskListener(final GoroListener listener) {
-    listenersHandler.addTaskListener(listener);
+  public static Goro bindWith(final Context context) {
+    return new BoundGoro(context);
   }
 
   /**
-   * Removes a task execution listener.
+   * Adds a task execution listener. Must be called from the main thread.
    * @param listener listener instance
    */
-  public void removeTaskListener(final GoroListener listener) {
-    listenersHandler.removeTaskListener(listener);
-  }
+  public abstract void addTaskListener(final GoroListener listener);
+
+  /**
+   * Removes a task execution listener. Must be called from the main thread.
+   * @param listener listener instance
+   */
+  public abstract void removeTaskListener(final GoroListener listener);
 
 
   /**
@@ -97,9 +72,7 @@ public class Goro {
    * @param task task instance
    * @return task future instance
    */
-  public <T> Future<T> schedule(final Callable<T> task) {
-    return schedule(DEFAULT_QUEUE, task);
-  }
+  public abstract <T> Future<T> schedule(final Callable<T> task);
 
   /**
    * Add a task to the specified queue.
@@ -109,16 +82,7 @@ public class Goro {
    * @param task task instance
    * @return task future instance
    */
-  public <T> Future<T> schedule(final String queueName, final Callable<T> task) {
-    if (task == null) {
-      throw new IllegalArgumentException("Task must not be null");
-    }
-
-    GoroFuture<T> future = new GoroFuture<>(this, task);
-    listenersHandler.postSchedule(task, queueName);
-    queues.getExecutor(queueName).execute(future);
-    return future;
-  }
+  public abstract <T> Future<T> schedule(final String queueName, final Callable<T> task);
 
   /**
    * Returns an executor for performing tasks in a specified queue. If queue name is null,
@@ -126,69 +90,56 @@ public class Goro {
    * @param queueName queue name
    * @return executor instance that performs tasks serially in a specified queue
    */
-  public Executor getExecutor(final String queueName) {
-    return queues.getExecutor(queueName == null ? DEFAULT_QUEUE : queueName);
-  }
+  public abstract Executor getExecutor(final String queueName);
 
 
-  /**
-   * Future implementation.
-   */
-  private static class GoroFuture<T> extends FutureTask<T> {
+  /** Main implementation. */
+  static class GoroImpl extends Goro {
+    /** Listeners handler. */
+    final ListenersHandler listenersHandler = new ListenersHandler();
 
-    /** Weak reference to Goro. */
-    private final WeakReference<Goro> goroRef;
+    /** Queues. */
+    private final Queues queues;
 
-    /** Task. */
-    private Callable<T> task;
+    GoroImpl() {
+      this(new Queues.Impl());
+    }
 
-    GoroFuture(final Goro goro, final Callable<T> task) {
-      super(task);
-      this.task = task;
-      this.goroRef = new WeakReference<>(goro);
+    GoroImpl(final Queues queues) {
+      this.queues = queues;
     }
 
     @Override
-    public void run() {
-      Goro goro = goroRef.get();
-      Callable<?> task = this.task;
-
-      // if task is null, it's already canceled
-
-      // invoke onTaskStart
-      if (goro != null && task != null) {
-        goro.listenersHandler.postStart(task);
-      }
-
-      super.run();
+    public void addTaskListener(final GoroListener listener) {
+      listenersHandler.addTaskListener(listener);
     }
-
 
     @Override
-    protected void done() {
-      Goro goro = goroRef.get();
-      if (goro == null) {
-        return;
-      }
-
-      try {
-        Object result = get();
-        // invoke onTaskFinish
-        goro.listenersHandler.postFinish(task, result);
-      } catch (CancellationException e) {
-        // invoke onTaskCancel
-        goro.listenersHandler.postCancel(task);
-      } catch (ExecutionException e) {
-        // invoke onTaskError
-        goro.listenersHandler.postError(task, e.getCause());
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      } finally {
-        task = null;
-      }
-
+    public void removeTaskListener(final GoroListener listener) {
+      listenersHandler.removeTaskListener(listener);
     }
 
+    @Override
+    public <T> Future<T> schedule(final Callable<T> task) {
+      return schedule(DEFAULT_QUEUE, task);
+    }
+
+    @Override
+    public <T> Future<T> schedule(final String queueName, final Callable<T> task) {
+      if (task == null) {
+        throw new IllegalArgumentException("Task must not be null");
+      }
+
+      GoroFuture<T> future = new GoroFuture<>(this, task);
+      listenersHandler.postSchedule(task, queueName);
+      queues.getExecutor(queueName).execute(future);
+      return future;
+    }
+
+    @Override
+    public Executor getExecutor(final String queueName) {
+      return queues.getExecutor(queueName == null ? DEFAULT_QUEUE : queueName);
+    }
   }
 
 }

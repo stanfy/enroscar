@@ -1,0 +1,16 @@
+// FIXME IDE hack
+// TODO monitor next two URLs for better solution
+// https://groups.google.com/forum/#!msg/adt-dev/v0AluPBcoy0/B0r-hGVMMMkJ
+// https://github.com/JakeWharton/gradle-android-test-plugin/issues/4
+
+android {
+  sourceSets {
+    instrumentTest.setRoot('src/test')
+  }
+}
+
+dependencies {
+  instrumentTestCompile 'junit:junit:4.11'
+  instrumentTestCompile 'org.robolectric:robolectric:2.3-SNAPSHOT'
+  instrumentTestCompile 'org.mockito:mockito-all:1.9.5'
+}

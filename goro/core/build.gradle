@@ -9,5 +9,7 @@ uploadArchives {
     }
   }
 }
+apply from: file("$rootDir/gradle/jar.gradle")
 
-apply from: file("$rootProject.projectDir/gradle/jar.gradle")
+// FIXME: IDE hack
+apply from: file("$rootDir/gradle/tests-ide-hack.gradle")

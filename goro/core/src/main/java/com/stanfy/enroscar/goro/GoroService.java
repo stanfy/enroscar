@@ -16,6 +16,9 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
+import static com.stanfy.enroscar.goro.Goro.create;
+import static com.stanfy.enroscar.goro.Goro.createWithDelegate;
+
 /**
  * Service that handles tasks in multiple queues.
  */
@@ -105,14 +108,19 @@ public class GoroService extends Service {
    * Bind to Goro service. This method will start the service and then bind to it.
    * @param context context that is binding to the service
    * @param connection service connection callbacks
-   * @throws RuntimeException when service is not declared in the application manifest
+   * @throws GoroException when service is not declared in the application manifest
    */
   public static void bind(final Context context, final ServiceConnection connection) {
     Intent serviceIntent = new Intent(context, GoroService.class);
     if (context.startService(serviceIntent) == null) {
-      throw new RuntimeException("Service " + GoroService.class + " does not seem to be included to your manifest file");
+      throw new GoroException("Service " + GoroService.class
+          + " does not seem to be included to your manifest file");
     }
-    context.bindService(serviceIntent, connection, 0);
+    boolean bound = context.bindService(serviceIntent, connection, 0);
+    if (!bound) {
+      throw new GoroException("Cannot bind to GoroService though this component seems to "
+          + "be registered in the app manifest");
+    }
   }
 
   /**
@@ -198,7 +206,7 @@ public class GoroService extends Service {
 
 
   protected Goro createGoro() {
-    return delegateExecutor != null ? new Goro(delegateExecutor) : new Goro();
+    return delegateExecutor != null ? createWithDelegate(delegateExecutor) : create();
   }
 
 

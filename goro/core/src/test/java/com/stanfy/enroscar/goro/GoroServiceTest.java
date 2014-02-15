@@ -42,7 +42,7 @@ public class GoroServiceTest {
     service = new GoroService() {
       @Override
       protected Goro createGoro() {
-        return new Goro(queues);
+        return new Goro.GoroImpl(queues);
       }
     };
     service.onCreate();

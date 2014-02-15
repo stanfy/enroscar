@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.goro.sample;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -10,7 +11,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -123,14 +123,14 @@ public class GoroActivity extends Activity {
         PendingIntent.FLAG_UPDATE_CURRENT);
     ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
         1,
-        new NotificationCompat.Builder(GoroActivity.this)
+        new Notification.Builder(GoroActivity.this)
             .setTicker("Click to post to REST")
             .setSmallIcon(R.drawable.ic_launcher)
             .setAutoCancel(true)
             .setContentTitle("Click to post to REST")
             .setContentText("Intent will be sent to the service")
             .setContentIntent(pendingIntent)
-            .build()
+            .getNotification()
     );
   }
 
