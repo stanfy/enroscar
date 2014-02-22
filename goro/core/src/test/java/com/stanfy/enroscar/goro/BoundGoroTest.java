@@ -9,12 +9,14 @@ import android.os.IBinder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 
 import static org.mockito.Mockito.*;
@@ -103,6 +105,66 @@ public class BoundGoroTest {
   public void scheduleShouldReturnFuture() {
     Future<?> future = goro.schedule(mock(Callable.class));
     assertThat(future).isNotNull();
+  }
+
+  @Test
+  public void cancelFutureBeforeBindingShouldRemoveRecordedTask() {
+    Future<?> future = goro.schedule(mock(Callable.class));
+    future.cancel(true);
+    goro.bind();
+    assertBinding();
+    verify(serviceInstance, never()).schedule(anyString(), any(Callable.class));
+  }
+
+  @Test
+  public void scheduleShouldRequestQueueName() {
+    Callable<?> task = mock(Callable.class);
+    goro.schedule("1", task);
+    goro.bind();
+    assertBinding();
+    verify(serviceInstance).schedule("1", task);
+  }
+
+  @Test
+  public void afterBindingAddRemoveListenerShouldBeDelegated() {
+    goro.bind();
+    GoroListener listener = mock(GoroListener.class);
+    goro.addTaskListener(listener);
+    goro.removeTaskListener(listener);
+    InOrder order = inOrder(serviceInstance);
+    order.verify(serviceInstance).addTaskListener(listener);
+    order.verify(serviceInstance).removeTaskListener(listener);
+  }
+
+  @Test
+  public void afterBindingScheduleShouldBeDelegated() {
+    goro.bind();
+    Callable<?> task = mock(Callable.class);
+    Future<?> future = mock(Future.class);
+    doReturn(future).when(serviceInstance).schedule("2", task);
+    assertThat((Object) goro.schedule("2", task)).isSameAs(future);
+  }
+
+  @Test
+  public void getExecutorShouldReturnExecutorWrapper() {
+    Executor executor = goro.getExecutor("q");
+    assertThat(executor).isNotNull();
+    Runnable task = mock(Runnable.class);
+    executor.execute(task);
+    verify(task, never()).run();
+
+    //noinspection NullableProblems
+    Executor direct = new Executor() {
+      @Override
+      public void execute(Runnable command) {
+        command.run();
+      }
+    };
+    doReturn(direct).when(serviceInstance).getExecutor(anyString());
+
+    goro.bind();
+
+    verify(task).run();
   }
 
 }

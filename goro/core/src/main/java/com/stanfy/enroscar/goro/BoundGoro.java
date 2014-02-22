@@ -7,8 +7,11 @@ import android.os.IBinder;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Implementation that binds to GoroService.
@@ -19,10 +22,10 @@ class BoundGoro extends Goro implements ServiceConnection {
   private final Context context;
 
   /** Temporal array of listeners that must be added after getting service connection. */
-  private BaseListenersHandler scheduledListeners = new BaseListenersHandler(2);
+  private final BaseListenersHandler scheduledListeners = new BaseListenersHandler(2);
 
-  /** Scheduled tasks. */
-  private final ArrayList<TaskInfo> scheduledTasks = new ArrayList<>();
+  /** Postponed data. */
+  private final ArrayList<Postponed> postponed = new ArrayList<>(7);
 
   /** Protects service instance. */
   private final Object lock = new Object();
@@ -55,12 +58,18 @@ class BoundGoro extends Goro implements ServiceConnection {
       }
 
       // delegate tasks
-      if (!scheduledTasks.isEmpty()) {
-        for (TaskInfo info : scheduledTasks) {
-          service.schedule(info.queue, info.task);
+      if (!postponed.isEmpty()) {
+        for (Postponed p : postponed) {
+          p.act(service);
         }
-        scheduledTasks.clear();
+        postponed.clear();
       }
+    }
+  }
+
+  boolean cancelPostponed(final Postponed p) {
+    synchronized (lock) {
+      return postponed.remove(p);
     }
   }
 
@@ -89,7 +98,7 @@ class BoundGoro extends Goro implements ServiceConnection {
     // main thread => no sync
     Goro service = this.service;
     if (service != null) {
-      service.addTaskListener(listener);
+      service.removeTaskListener(listener);
     } else {
       scheduledListeners.removeTaskListener(listener);
     }
@@ -97,37 +106,139 @@ class BoundGoro extends Goro implements ServiceConnection {
 
   @Override
   public <T> Future<T> schedule(final Callable<T> task) {
+    return schedule(DEFAULT_QUEUE, task);
+  }
+
+  @Override
+  public <T> Future<T> schedule(String queueName, Callable<T> task) {
     synchronized (lock) {
       if (service != null) {
-        return service.schedule(task);
+        return service.schedule(queueName, task);
       } else {
-        scheduledTasks.add(new TaskInfo(DEFAULT_QUEUE, task));
-        // TODO: return good future
-        return null;
+        BoundFuture<T> future = new BoundFuture<>(queueName, task);
+        postponed.add(future);
+        return future;
       }
     }
   }
 
   @Override
-  public <T> Future<T> schedule(String queueName, Callable<T> task) {
-    return null;
+  public Executor getExecutor(final String queueName) {
+    synchronized (lock) {
+      if (service != null) {
+        return service.getExecutor(queueName);
+      }
+      return new PostponeExecutor(queueName);
+    }
   }
 
-  @Override
-  public Executor getExecutor(String queueName) {
-    return null;
+  /** Some postponed action. */
+  private interface Postponed {
+    void act(Goro goro);
   }
 
   /** Recorded task info. */
-  private static class TaskInfo {
+  private static final class RunnableData implements Postponed {
+    /** Queue name. */
+    final String queue;
+    /** Runnable action. */
+    final Runnable command;
+
+    RunnableData(final String queue, final Runnable command) {
+      this.queue = queue;
+      this.command = command;
+    }
+
+    @Override
+    public void act(final Goro goro) {
+      goro.getExecutor(queue).execute(command);
+    }
+  }
+
+  /** Executor implementation. */
+  private final class PostponeExecutor implements Executor {
+
+    /** Queue name. */
+    private final String queueName;
+
+    private PostponeExecutor(final String queueName) {
+      this.queueName = queueName;
+    }
+
+    @Override
+    public void execute(@SuppressWarnings("NullableProblems") final Runnable command) {
+      synchronized (lock) {
+        if (service != null) {
+          service.getExecutor(queueName).execute(command);
+        } else {
+          postponed.add(new RunnableData(queueName, command));
+        }
+      }
+    }
+  }
+
+  /** Postponed scheduled future. */
+  private final class BoundFuture<T> implements Future<T>, Postponed {
+
     /** Queue name. */
     final String queue;
     /** Task instance. */
-    final Callable<?> task;
+    final Callable<T> task;
 
-    TaskInfo(final String queue, final Callable<?> task) {
+    /** Attached Goro future. */
+    private Future<T> goroFuture;
+
+    /** Cancel flag. */
+    private boolean canceled;
+
+    private BoundFuture(final String queue, final Callable<T> task) {
       this.queue = queue;
       this.task = task;
+    }
+
+    @Override
+    public synchronized void act(final Goro goro) {
+      goroFuture = goro.schedule(queue, task);
+    }
+
+    @Override
+    public synchronized boolean cancel(boolean mayInterruptIfRunning) {
+      if (goroFuture != null) {
+        return goroFuture.cancel(mayInterruptIfRunning);
+      }
+      if (canceled) {
+        return true;
+      }
+      canceled = cancelPostponed(this);
+      return canceled;
+    }
+
+    @Override
+    public synchronized boolean isCancelled() {
+      if (goroFuture != null) {
+        return goroFuture.isCancelled();
+      }
+      return canceled;
+    }
+
+    @Override
+    public synchronized boolean isDone() {
+      return goroFuture != null && goroFuture.isDone();
+    }
+
+    @Override
+    public synchronized T get() throws InterruptedException, ExecutionException {
+      if (goroFuture != null) {
+        return goroFuture.get();
+      }
+      // TODO
+      return null;
+    }
+
+    @Override
+    public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+      // TODO
+      return null;
     }
   }
 
