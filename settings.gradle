@@ -3,9 +3,6 @@
 include 'enroscar-goro'
 project(':enroscar-goro').projectDir = new File(rootDir, "goro/core")
 
-include 'enroscar-goro-compiler'
-project(':enroscar-goro-compiler').projectDir = new File(rootDir, "goro/compiler")
-
 include 'goro-sample'
 project(':goro-sample').projectDir = new File(rootDir, 'goro/sample')
 
@@ -30,6 +27,6 @@ def includeInt = { path, name ->
 
 // integration
 
-include 'enroscar-sherlock-integration'
-project(':enroscar-sherlock-integration').projectDir =
-    new File(rootDir, 'integration/actionbarsherlock/enroscar-sherlock-integration')
+//include 'enroscar-sherlock-integration'
+//project(':enroscar-sherlock-integration').projectDir =
+//    new File(rootDir, 'integration/actionbarsherlock/enroscar-sherlock-integration')

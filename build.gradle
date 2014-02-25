@@ -21,8 +21,8 @@ def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 
 def libraryModules = [
-    'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui',
-    'sherlock-integration'
+    'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui'
+    //'sherlock-integration'
 ].collect { project(":enroscar-$it") }
 
 configure(libraryModules) {
