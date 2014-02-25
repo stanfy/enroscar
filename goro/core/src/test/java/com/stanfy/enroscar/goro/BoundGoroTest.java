@@ -47,7 +47,7 @@ public class BoundGoroTest {
   public void create() {
     context = Robolectric.setupActivity(Activity.class);
     shadowContext = Robolectric.shadowOf(context);
-    goro = (BoundGoro) Goro.bindWith(context);
+    goro = Goro.bindWith(context);
     goro = spy(goro);
 
     serviceInstance = mock(Goro.class);

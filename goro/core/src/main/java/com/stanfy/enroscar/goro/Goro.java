@@ -7,6 +7,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 
+import static com.stanfy.enroscar.goro.BoundGoro.BoundGoroImpl;
+
 /**
  * Handles tasks in multiple queues.
  */
@@ -49,8 +51,8 @@ public abstract class Goro {
    * @param context context that will bind to the service
    * @return Goro implementation that binds to {@link com.stanfy.enroscar.goro.GoroService}.
    */
-  public static Goro bindWith(final Context context) {
-    return new BoundGoro(context);
+  public static BoundGoro bindWith(final Context context) {
+    return new BoundGoroImpl(context);
   }
 
   /**
