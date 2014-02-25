@@ -1,8 +1,6 @@
-dependOnProjects([':enroscar-beans'])
-
 dependencies {
 
-  compile 'com.android.support:support-v4:18.0.0'
+  compile 'com.android.support:support-v4:19.0.1'
   
 }
 
