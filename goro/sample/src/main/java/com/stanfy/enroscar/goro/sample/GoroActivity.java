@@ -4,11 +4,8 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -16,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.stanfy.enroscar.goro.BoundGoro;
 import com.stanfy.enroscar.goro.Goro;
 import com.stanfy.enroscar.goro.GoroService;
 
@@ -36,30 +34,9 @@ public class GoroActivity extends Activity {
   private int counter = 1;
 
   /** Goro instance. */
-  private Goro goro;
+  private final BoundGoro goro = Goro.bindWith(this);
 
   private GoroStateObserver observer;
-
-  private View restButton;
-  private View dbButton;
-
-  private final ServiceConnection serviceConnection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(final ComponentName name, final IBinder service) {
-      goro = Goro.from(service);
-      goro.addTaskListener(observer);
-      setupButtons();
-    }
-
-    @Override
-    public void onServiceDisconnected(final ComponentName name) {
-      // Goro service lives in the same process, so that it should not eventually disconnect
-      // until we are bound to it or there are any scheduled tasks
-      if (goro != null) {
-        throw new IllegalStateException("Disconnected without explicit action");
-      }
-    }
-  };
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -73,30 +50,24 @@ public class GoroActivity extends Activity {
     GoroView goroView = (GoroView) findViewById(R.id.goro);
     observer = new GoroStateObserver(goroView, savedInstanceState);
 
-    restButton = findViewById(R.id.button_post_rest);
+    View restButton = findViewById(R.id.button_post_rest);
     restButton.setOnClickListener(new Clicker(QUEUE_REST));
-    dbButton = findViewById(R.id.button_post_db);
+    View dbButton = findViewById(R.id.button_post_db);
     dbButton.setOnClickListener(new Clicker(QUEUE_DB));
   }
 
   @Override
   protected void onStart() {
     super.onStart();
-    GoroService.bind(this, serviceConnection);
+    goro.addTaskListener(observer);
+    goro.bind();
   }
 
   @Override
   protected void onStop() {
     super.onStop();
     goro.removeTaskListener(observer);
-    GoroService.unbind(this, serviceConnection);
-    goro = null;
-    setupButtons();
-  }
-
-  private void setupButtons() {
-    restButton.setEnabled(goro != null);
-    dbButton.setEnabled(goro != null);
+    goro.unbind();
   }
 
   @Override
