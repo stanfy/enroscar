@@ -10,7 +10,7 @@ before_install:
   - chmod +x scripts/install_android_sdk.sh
   - ./scripts/install_android_sdk.sh
   - source ~/.android-sdk-installer/env
-  - echo no | android create avd --force -n test -t android-19
+  - echo no | android create avd --force -n test -t android-19 --abi x86
   - emulator -avd test -no-skin -no-audio -no-window &
 
 install:
