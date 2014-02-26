@@ -49,7 +49,7 @@ configure(libraryModules) {
   android {
     compileSdkVersion 19
 
-    buildToolsVersion '19.0.1'
+    buildToolsVersion '19.0.2'
 
     defaultConfig {
       versionCode 10
