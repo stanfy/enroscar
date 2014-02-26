@@ -7,7 +7,6 @@
   <com.stanfy.enroscar.images.views.LoadableImageView
       android:layout_width="75dp"
       android:layout_height="75dp"
-      enroscar:sourceDensity="160"
       enroscar:loadingImage="@drawable/no_image"
       enroscar:useTransition="yes"
       android:id="@+id/tweet_image"

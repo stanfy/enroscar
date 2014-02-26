@@ -23,7 +23,7 @@ def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 def libraryModules = [
     'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui'
     //'sherlock-integration'
-].collect { project(":enroscar-$it") }
+].collect { project(":$it") }
 
 configure(libraryModules) {
 
@@ -39,6 +39,8 @@ configure(libraryModules) {
 //    configFile = checkstyleConfig
 //    configProperties['basedir'] = project.projectDir
 //  }
+
+  archivesBaseName = "enroscar-${project.name}"
 
   repositories {
     mavenLocal()

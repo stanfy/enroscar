@@ -4,16 +4,11 @@ import android.app.Application;
 import android.content.Context;
 
 import com.stanfy.enroscar.assist.DefaultBeansManager;
-import com.stanfy.enroscar.rest.ModelTypeToken;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 import com.stanfy.enroscar.sample.model.Rss;
 import com.stanfy.gsonxml.GsonXml;
 import com.stanfy.gsonxml.GsonXmlBuilder;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
 
 /**
  * Sample application.

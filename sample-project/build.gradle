@@ -9,27 +9,10 @@ buildscript {
 
 apply plugin: 'android'
 
-repositories {
-  maven {
-    url 'https://oss.sonatype.org/content/repositories/snapshots/'
-  }
-  mavenCentral()
-}
-
-
-dependencies {
-  //def enroscarVersion = '2.0-SNAPSHOT'
-  def enrsocarModules = ['assist', 'net', 'stats', 'ui', 'beans', 'content', 'images', 'io', 'goro']
-  enrsocarModules.each {
-    //compile "com.stanfy.enroscar:enroscar-$it:$enroscarVersion"
-    compile project(":enroscar-$it")
-  }
-}
-
 android {
   compileSdkVersion 19
 
-  buildToolsVersion '19.0.1'
+  buildToolsVersion '19.0.2'
 
   defaultConfig {
     minSdkVersion 8
@@ -40,3 +23,15 @@ android {
     versionName '2.0'
   }
 }
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile project(":net")
+  compile project(":images")
+  compile project(":ui")
+  compile project(":assist")
+}
+

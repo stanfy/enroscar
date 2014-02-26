@@ -1,5 +1,5 @@
 def depProjects = [
-    ':enroscar-beans', ':enroscar-io', ':enroscar-content', ':enroscar-goro'
+    ':beans', ':io', ':content', ':goro'
 ].collect { project(it) }
 
 dependencies {
@@ -20,7 +20,7 @@ dependencies {
   testCompile 'net.sf.kxml:kxml2:2.3.0'
 
   // get test classes from content module
-  testCompile project(path: ':enroscar-content', configuration: 'testCompile')
+  testCompile project(path: ':content', configuration: 'testCompile')
 }
 
 android {

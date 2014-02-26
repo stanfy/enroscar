@@ -35,9 +35,6 @@
     <!-- Pending request demo -->
     <activity android:name=".other.PendingRequestExample" />
     
-    <!-- Main application service. Deals with remote server API. -->
-    <service android:name="com.stanfy.enroscar.rest.executor.ApplicationService" />
-    
   </application>
 
 </manifest>

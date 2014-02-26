@@ -1,4 +1,4 @@
-dependOnProjects([':enroscar-beans'])
+dependOnProjects([':beans'])
 
 dependencies {
   

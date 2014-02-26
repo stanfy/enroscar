@@ -8,8 +8,8 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.widget.TextView;
 
-import com.stanfy.enroscar.rest.executor.ServiceRequestPerformer;
-import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
+import com.stanfy.enroscar.net.operation.executor.ServiceRequestPerformer;
 import com.stanfy.enroscar.utils.Time;
 
 

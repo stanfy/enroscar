@@ -1,4 +1,4 @@
-dependOnProjects([':enroscar-beans', ':enroscar-io', ':enroscar-net'])
+dependOnProjects([':beans', ':io', ':net'])
 
 android {
   defaultConfig {

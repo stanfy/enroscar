@@ -11,11 +11,11 @@ import android.widget.Adapter;
 import android.widget.TextView;
 
 import com.stanfy.enroscar.fragments.RequestBuilderListFragment;
-import com.stanfy.enroscar.rest.request.RequestBuilder;
-import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.images.views.LoadableImageView;
+import com.stanfy.enroscar.net.operation.RequestBuilder;
 import com.stanfy.enroscar.sample.model.Rss;
-import com.stanfy.enroscar.views.LoadableImageView;
-import com.stanfy.enroscar.views.list.ModelListAdapter;
+import com.stanfy.enroscar.views.list.adapter.ElementRenderer;
+import com.stanfy.enroscar.views.list.adapter.RendererBasedAdapter;
 
 /**
  * Fragment that displays tweets of Twitter API.
@@ -29,7 +29,7 @@ public class FlickrFragment extends RequestBuilderListFragment<Rss.Item, Rss.Rss
   }
 
   /** Post renderer. */
-  private static ModelListAdapter.ElementRenderer<Rss.Item> RENDERER = new ModelListAdapter.ElementRenderer<Rss.Item>(R.layout.row_tweet) {
+  private static ElementRenderer<Rss.Item> RENDERER = new ElementRenderer<Rss.Item>(R.layout.row_tweet) {
     @Override
     public void render(final Adapter adapter, final ViewGroup parent, final Rss.Item element, final View view, final Object holder, final int position) {
       final FlickrViewHolder h = (FlickrViewHolder)holder;
@@ -45,15 +45,25 @@ public class FlickrFragment extends RequestBuilderListFragment<Rss.Item, Rss.Rss
     }
   };
 
-  @Override
-  protected ModelListAdapter.ElementRenderer<Rss.Item> createRenderer() { return RENDERER; }
+//  @Override
+//  protected ElementRenderer<Rss.Item> createRenderer() { return RENDERER; }
+//
+//  @Override
+//  protected RequestBuilder<Rss.RssItemsList> createRequestBuilder() {
+//    return new SimpleRequestBuilder<Rss.RssItemsList>(getActivity()) {}
+//        .setUrl("http://ycpi.api.flickr.com/services/feeds/photos_public.gne")
+//        .addParam("format", "rss2")
+//        .setFormat("xml");
+//  }
 
   @Override
   protected RequestBuilder<Rss.RssItemsList> createRequestBuilder() {
-    return new SimpleRequestBuilder<Rss.RssItemsList>(getActivity()) {}
-        .setUrl("http://ycpi.api.flickr.com/services/feeds/photos_public.gne")
-        .addParam("format", "rss2")
-        .setFormat("xml");
+    return null;
+  }
+
+  @Override
+  protected RendererBasedAdapter<Rss.Item> createAdapter() {
+    return null;
   }
 
   @Override

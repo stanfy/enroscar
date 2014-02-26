@@ -5,10 +5,9 @@ import android.net.Uri;
 
 import com.google.gson.annotations.SerializedName;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.content.UniqueObject;
 import com.stanfy.enroscar.content.ResponseData;
-import com.stanfy.enroscar.rest.RequestMethod;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.content.UniqueObject;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.response.ContentAnalyzer;
 import com.stanfy.enroscar.rest.response.Model;
 
@@ -147,16 +146,16 @@ public class Rss {
 
     @Override
     public ResponseData<RssItemsList> analyze(final Context context, final RequestDescription requestDescription,
-                                              final ResponseData<Rss> rssResponseData)
-        throws RequestMethod.RequestMethodException {
-      ResponseData<RssItemsList> result = new ResponseData<RssItemsList>();
-      result.setErrorCode(rssResponseData.getErrorCode());
-      result.setMessage(rssResponseData.getMessage());
-
-      Rss rss = rssResponseData.getEntity();
-      if (rss == null) { return result; }
-      result.setEntity(rss.getChannel().getItems());
-      return result;
+                                              final ResponseData<Rss> rssResponseData) {
+//      ResponseData<RssItemsList> result = new ResponseData<RssItemsList>();
+//      result.setErrorCode(rssResponseData.getErrorCode());
+//      result.setMessage(rssResponseData.getMessage());
+//
+//      Rss rss = rssResponseData.getEntity();
+//      if (rss == null) { return result; }
+//      result.setEntity(rss.getChannel().getItems());
+//      return result;
+      return null;
     }
   }
 

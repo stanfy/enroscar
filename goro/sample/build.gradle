@@ -28,5 +28,5 @@ android {
 }
 
 dependencies {
-  compile project(':enroscar-goro')
+  compile project(':goro')
 }

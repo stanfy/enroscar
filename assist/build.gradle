@@ -1,7 +1,7 @@
 dependOnProjects([
-    ':enroscar-beans', ':enroscar-io',
-    ':enroscar-net', ':enroscar-stats', ':enroscar-images',
-    ':enroscar-ui'
+    ':beans', ':io',
+    ':net', ':stats', ':images',
+    ':ui'
 ])
 
 android {
