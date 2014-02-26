@@ -21,8 +21,8 @@ def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 
 def libraryModules = [
-    'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui',
-    'sherlock-integration'
+    'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui'
+    //'sherlock-integration'
 ].collect { project(":enroscar-$it") }
 
 configure(libraryModules) {
@@ -33,12 +33,12 @@ configure(libraryModules) {
   apply plugin: 'android-library'
   apply from: file("$rootDir/gradle/tests.gradle")
   apply from: file("$rootDir/gradle/publish.gradle")
-  apply plugin: 'checkstyle'
+  //apply plugin: 'checkstyle'
 
-  checkstyle {
-    configFile = checkstyleConfig
-    configProperties['basedir'] = project.projectDir
-  }
+//  checkstyle {
+//    configFile = checkstyleConfig
+//    configProperties['basedir'] = project.projectDir
+//  }
 
   repositories {
     mavenLocal()
@@ -49,7 +49,7 @@ configure(libraryModules) {
   android {
     compileSdkVersion 19
 
-    buildToolsVersion '19.0.1'
+    buildToolsVersion '19.0.2'
 
     defaultConfig {
       versionCode 10

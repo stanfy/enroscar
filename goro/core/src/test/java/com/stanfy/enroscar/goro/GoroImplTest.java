@@ -17,15 +17,17 @@ import java.util.concurrent.Future;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+import com.stanfy.enroscar.goro.Goro.GoroImpl;
+
 /**
- * Tests for {@link com.stanfy.enroscar.goro.Goro}.
+ * Tests for {@link com.stanfy.enroscar.goro.Goro.GoroImpl}.
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class GoroTest {
+public class GoroImplTest {
 
   /** Goro instance. */
-  private Goro goro;
+  private GoroImpl goro;
 
   /** Listener. */
   private GoroListener listener;
@@ -38,11 +40,11 @@ public class GoroTest {
     testingQueues = new TestingQueues();
     // this is not public API, yet the simplest way to get an instance
     // and it suits our test needs
-    goro = new Goro(testingQueues);
+    goro = new GoroImpl(testingQueues);
     listener = mock(GoroListener.class);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = GoroException.class)
   public void removeListenerShouldThrowOnUnknownListener() {
     goro.removeTaskListener(mock(GoroListener.class));
   }
