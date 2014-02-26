@@ -6,8 +6,8 @@ import android.util.Log;
 
 import com.stanfy.enroscar.content.OffsetInfoProvider;
 import com.stanfy.enroscar.content.loader.LoadmoreLoader;
-import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.rest.request.ListRequestBuilder;
+import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.net.operation.ListRequestBuilder;
 
 /**
  * Request builder loader that can load more data.
@@ -81,7 +81,7 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
 
   @Override
   protected ResponseData<LT> onAcceptData(final ResponseData<LT> oldData, final ResponseData<LT> data) {
-    final LT list = data.getModel();
+    final LT list = data.getEntity();
     if (!data.isSuccessful() || list == null) {
 
       if (data.isSuccessful() && list == null) {
@@ -99,7 +99,7 @@ public class LoadMoreListLoader<MT, LT extends List<MT>> extends RequestBuilderL
 
       stopLoadMore = true;
       if (itemsList != null) {
-        data.setModel(itemsList);
+        //data.setEntity(itemsList);
       }
 
     } else {

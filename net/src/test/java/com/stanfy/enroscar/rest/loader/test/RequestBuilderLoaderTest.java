@@ -5,7 +5,7 @@ import android.support.v4.content.Loader;
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
 import org.junit.Ignore;
@@ -44,7 +44,7 @@ public class RequestBuilderLoaderTest extends AbstractLoaderTest {
       @Override
       public void makeAssertions(final ResponseData<String> data) throws Exception {
         assertThat(data).isNotNull();
-        assertThat(data.getModel()).isEqualTo(text);
+        assertThat(data.getEntity()).isEqualTo(text);
       }
     });
   }

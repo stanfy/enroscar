@@ -9,11 +9,11 @@ import android.view.ViewGroup;
 
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.fragments.RequestBuilderListFragment;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
-import com.stanfy.enroscar.rest.request.RequestBuilder;
-import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.net.operation.RequestBuilder;
+import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.views.list.adapter.RendererBasedAdapter;
 

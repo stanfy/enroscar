@@ -34,3 +34,7 @@ def includeInt = { path, name ->
 //include 'enroscar-sherlock-integration'
 //project(':enroscar-sherlock-integration').projectDir =
 //    new File(rootDir, 'integration/actionbarsherlock/enroscar-sherlock-integration')
+
+
+// sample project
+//include 'sample-project'

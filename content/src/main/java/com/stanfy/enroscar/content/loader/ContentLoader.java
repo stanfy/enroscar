@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.stanfy.enroscar.content.ResponseData;
+
 /**
  * Loads data via content provider.
  */
@@ -64,17 +66,13 @@ public class ContentLoader<T> extends BaseAsyncTaskLoader<ResponseData<T>> {
       if (postProcessor != null) {
         data = postProcessor.process(getContext(), data);
       }
-      return new ResponseData<T>(data);
+      return new ResponseData<>(data);
 
     } catch (SQLiteException e) {
 
       this.error = e;
 
-      ResponseData<T> result = new ResponseData<T>();
-      result.setErrorCode(params.errorCode);
-      result.setMessage(params.errorMessage);
-      return result;
-
+      return new ResponseData<>(params.errorCode, params.errorMessage);
     } finally {
       cursor.close();
     }

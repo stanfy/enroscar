@@ -39,10 +39,8 @@ class Md5 {
 
       return result.toString();
 
-    } catch (final NoSuchAlgorithmException e) {
-      throw new RuntimeException(e);
-    } catch (final UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
+    } catch (final NoSuchAlgorithmException|UnsupportedEncodingException e) {
+      throw new AssertionError(e);
     }
   }
 

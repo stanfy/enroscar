@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.stanfy.enroscar.sample" >
+
+  <!-- It's obvious. -->
+  <uses-permission android:name="android.permission.INTERNET" />
+  <!-- We try to store cached images on SD card. -->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />  
+  
+  <!-- Application description -->
+  <application
+      android:name=".SampleApplication"
+      android:icon="@drawable/ic_launcher"
+      android:label="@string/app_name"
+      android:theme="@android:style/Theme.Light" 
+      >
+    
+    <!-- Our first activity. -->
+    <activity
+        android:name=".SampleActivity"
+        >
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    
+    <!-- Quick actions demo -->
+    <activity 
+        android:name=".other.QuickActionsSampleActivity"
+        android:theme="@style/Theme.Activity" 
+        />
+    <!-- Gallery demo -->
+    <!-- Pending request demo -->
+    <activity android:name=".other.PendingRequestExample" />
+    
+    <!-- Main application service. Deals with remote server API. -->
+    <service android:name="com.stanfy.enroscar.rest.executor.ApplicationService" />
+    
+  </application>
+
+</manifest>

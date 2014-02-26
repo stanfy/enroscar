@@ -22,7 +22,7 @@ import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.content.loader.LoaderSet;
 import com.stanfy.enroscar.content.loader.LoaderSetAccess;
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
 /**
@@ -122,9 +122,9 @@ public class LoaderSetTest extends AbstractLoaderTest {
       @Override
       public void makeAssertions(final Object[] data) throws Exception {
         assertThat(data.length).isEqualTo(3);
-        assertThat(((ResponseData<String>)data[0]).getModel()).isEqualTo("R1");
-        assertThat(((ResponseData<String>)data[1]).getModel()).isEqualTo("R2");
-        assertThat(((ResponseData<String>)data[2]).getModel()).isEqualTo("R3");
+        assertThat(((ResponseData<String>)data[0]).getEntity()).isEqualTo("R1");
+        assertThat(((ResponseData<String>)data[1]).getEntity()).isEqualTo("R2");
+        assertThat(((ResponseData<String>)data[2]).getEntity()).isEqualTo("R3");
       }
     });
 

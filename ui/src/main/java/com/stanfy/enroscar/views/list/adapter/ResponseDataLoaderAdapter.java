@@ -2,10 +2,9 @@ package com.stanfy.enroscar.views.list.adapter;
 
 import android.content.Context;
 
-import com.stanfy.enroscar.content.loader.ResponseData;
+import com.stanfy.enroscar.content.ResponseData;
 import com.stanfy.enroscar.views.StateHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,13 +30,13 @@ public class ResponseDataLoaderAdapter<T, LT extends List<T>> extends LoaderAdap
   protected boolean isResponseSuccessful(final ResponseData<LT> data) { return data.isSuccessful(); }
   @Override
   protected boolean isResponseEmpty(final ResponseData<LT> data) {
-    final LT list = data.getModel();
+    final LT list = data.getEntity();
     return list == null || list.isEmpty();
   }
 
   @Override
   protected void replaceDataInCore(final ResponseData<LT> data) {
-    getCore().replace(data.getModel());
+    getCore().replace(data.getEntity());
   }
 
 }

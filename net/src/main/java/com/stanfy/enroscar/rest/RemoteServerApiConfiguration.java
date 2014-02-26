@@ -5,9 +5,7 @@ import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.enroscar.beans.InitializingBean;
 import com.stanfy.enroscar.beans.ManagerAwareBean;
-import com.stanfy.enroscar.rest.request.RequestDescription;
-import com.stanfy.enroscar.rest.response.DefaultResponseModelConverter;
-import com.stanfy.enroscar.rest.response.ResponseModelConverter;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Configures remote server API access classes.
@@ -24,8 +22,6 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
 
   /** Request method. */
   private RequestMethod defaultRequestMethod;
-  /** Response model converter. */
-  private ResponseModelConverter defaultResponseModelConverter;
 
   /** Default content handler name. */
   private String defaultContentHandlerName;
@@ -42,13 +38,9 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   public void setDefaultRequestMethod(final RequestMethod requestMethod) {
     this.defaultRequestMethod = requestMethod;
   }
-  public void setDefaultResponseModelConverter(final ResponseModelConverter responseModelConverter) {
-    this.defaultResponseModelConverter = responseModelConverter;
-  }
 
 
   public RequestMethod getRequestMethod(final RequestDescription requestDescription) { return defaultRequestMethod; }
-  public ResponseModelConverter getResponseModelConverter(final RequestDescription requestDescription) { return defaultResponseModelConverter; }
 
   public String getDefaultContentHandlerName() { return defaultContentHandlerName; }
   public void setDefaultContentHandlerName(final String defaultContentHandlerName) {
@@ -85,9 +77,6 @@ public class RemoteServerApiConfiguration implements InitializingBean, ManagerAw
   public void onInitializationFinished(final BeansContainer beansContainer) {
     if (this.defaultRequestMethod == null) {
       this.defaultRequestMethod = new RequestMethod();
-    }
-    if (this.defaultResponseModelConverter == null) {
-      this.defaultResponseModelConverter = new DefaultResponseModelConverter();
     }
   }
 

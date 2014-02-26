@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.ResponseCache;
 import java.net.URLConnection;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -18,8 +19,8 @@ import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.rest.request.OperationType;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.OperationType;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Tests for {@link com.stanfy.serverapi.request.RequestDescription}.
@@ -27,6 +28,7 @@ import com.stanfy.enroscar.rest.request.RequestDescription;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = 18)
+@Ignore
 public class RequestDescriptionTest extends AbstractMockServerTest {
 
 //  @Test

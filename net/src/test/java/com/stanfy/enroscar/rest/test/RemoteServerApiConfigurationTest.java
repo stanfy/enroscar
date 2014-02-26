@@ -12,10 +12,10 @@ import org.robolectric.annotation.Config;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.net.test.cache.DummyResponseCache;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.rest.RequestExecutor;
-import com.stanfy.enroscar.rest.request.RequestBuilder;
-import com.stanfy.enroscar.rest.request.RequestDescription;
-import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.net.operation.executor.RequestExecutor;
+import com.stanfy.enroscar.net.operation.RequestBuilder;
+import com.stanfy.enroscar.net.operation.RequestDescription;
+import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
 /**
@@ -45,9 +45,8 @@ public class RemoteServerApiConfigurationTest {
     final RequestDescription[] rd = new RequestDescription[1];
     rb.setExecutor(new RequestExecutor() {
       @Override
-      public int performRequest(final RequestDescription d) {
+      public void performRequest(final RequestDescription d) {
         rd[0] = d;
-        return 0;
       }
     });
     rb.execute();

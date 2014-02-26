@@ -3,7 +3,7 @@ package com.stanfy.enroscar.rest.request.net;
 import android.content.Context;
 
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

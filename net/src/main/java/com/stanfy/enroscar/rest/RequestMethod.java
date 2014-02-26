@@ -9,7 +9,7 @@ import android.support.v4.net.TrafficStatsCompat;
 import android.util.Log;
 
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Works with the server API method. Prepares HTTP request (URL and body),
@@ -24,10 +24,9 @@ public class RequestMethod {
   /**
    * @param systemContext system context
    * @param description request description
-   * @throws RequestMethodException if ever
    * @return parsed object
    */
-  public RequestResult perform(final Context systemContext, final RequestDescription description) throws RequestMethodException {
+  public RequestResult perform(final Context systemContext, final RequestDescription description) { // throws RequestMethodException {
     final long startTime = System.currentTimeMillis();
 
     before(systemContext, description);
@@ -50,9 +49,9 @@ public class RequestMethod {
       return new RequestResult(model, connection);
 
     } catch (final IOException e) {
-      throw new RequestMethodException(e);
+//      throw new RequestMethodException(e);
     } catch (final RuntimeException e) {
-      throw new RequestMethodException(e);
+//      throw new RequestMethodException(e);
     } finally {
 
       after(systemContext, description);
@@ -65,6 +64,8 @@ public class RequestMethod {
         Log.d(TAG, "Request time: " + (System.currentTimeMillis() - startTime) + " ms");
       }
     }
+
+    return null;
   }
 
   /**
@@ -110,38 +111,6 @@ public class RequestMethod {
 
     public Object getModel() { return model; }
     public URLConnection getConnection() { return connection; }
-  }
-
-  /**
-   * Request method exception.
-   * @author Roman Mazur - Stanfy (http://www.stanfy.com)
-   */
-  public static class RequestMethodException extends Exception {
-
-    /** serialVersionUID. */
-    private static final long serialVersionUID = 3234117139338549788L;
-
-    /** Connection error flag. */
-    private boolean connectionError;
-
-    public RequestMethodException(final IOException e) {
-      super("Connection error", e);
-      connectionError = true;
-    }
-
-    public RequestMethodException(final String message) {
-      super(message);
-      connectionError = false;
-    }
-
-    public RequestMethodException(final RuntimeException e) {
-      super("Response parsing exception", e);
-      connectionError = false;
-    }
-
-    /** @return the connectionError */
-    public boolean isConnectionError() { return connectionError; }
-
   }
 
 }

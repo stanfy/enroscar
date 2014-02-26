@@ -14,8 +14,8 @@ import android.net.Uri;
 
 /**
  * URL connection that deals with content resolver schemes:
- * {@link ContentResolver#SCHEME_CONTENT}, {@link ContentResolver#SCHEME_FILE}, {@link ContentResolver#SCHEME_ANDROID_RESOURCE}.
- * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * {@link ContentResolver#SCHEME_CONTENT}, {@link ContentResolver#SCHEME_FILE},
+ * {@link ContentResolver#SCHEME_ANDROID_RESOURCE}.
  */
 public class ContentUriConnection extends URLConnection {
 
@@ -36,6 +36,11 @@ public class ContentUriConnection extends URLConnection {
   /** Content length value. */
   private int contentLength = -1;
 
+  /** Content type value. */
+  private String contentType;
+  /** Flag indicating that content type request has already been done. */
+  private boolean contentTypeRequested;
+
   /** Close state flags for input and output streams. */
   boolean inputClosed, outputClosed;
 
@@ -53,7 +58,7 @@ public class ContentUriConnection extends URLConnection {
 
     final StringBuilder mode = new StringBuilder(3);
     if (doInput) { mode.append('r'); }
-    if (doOutput) { mode.append("wt"); }
+    if (doOutput) { mode.append('w'); }
 
     fd = contentResolver.openAssetFileDescriptor(resolverUri, mode.toString());
 
@@ -107,8 +112,20 @@ public class ContentUriConnection extends URLConnection {
   }
 
   @Override
+  public String getHeaderField(final String name) {
+    if ("content-type".equalsIgnoreCase(name)) {
+      return getContentType();
+    }
+    return super.getHeaderField(name);
+  }
+
+  @Override
   public String getContentType() {
-    return contentResolver.getType(resolverUri);
+    if (!contentTypeRequested) {
+      contentTypeRequested = true;
+      contentType = contentResolver.getType(resolverUri);
+    }
+    return contentType;
   }
 
   @Override

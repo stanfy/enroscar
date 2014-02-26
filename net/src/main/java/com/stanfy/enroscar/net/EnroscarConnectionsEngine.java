@@ -4,11 +4,8 @@ import android.content.Context;
 
 import com.stanfy.enroscar.net.cache.ResponseCacheSwitcher;
 
-import java.net.ContentHandler;
-import java.net.ContentHandlerFactory;
 import java.net.ResponseCache;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
@@ -16,17 +13,12 @@ import static android.content.ContentResolver.*;
 
 /**
  * <p>
- *   Engine consists of three ingredients:
+ *   Engine consists of two ingredients:
  *   <ol>
  *     <li>
  *       Stream handler factory which uses Android {@link android.content.ContentResolver} to treat
  *       such schemes as {@code content}, {@code android.resource}, and optionally {@code file}.
  *       Also adds support of {@code data} scheme.
- *     </li>
- *     <li>
- *       Content handler factory which creates content handlers depending on extra information
- *       associated with {@link java.net.URLConnection}.
- *       See {@link com.stanfy.enroscar.net.ContentControlUrlConnection}.
  *     </li>
  *     <li>
  *       Cache switcher that delegates cache control to different {@link java.net.ResponseCache}
@@ -43,14 +35,12 @@ import static android.content.ContentResolver.*;
  *     EnroscarConnectionsEngine.config()
  *         .withStreamHandlers(true) // add support for content:// scheme
  *         .treatFileScheme(false) // do not use ContentResolver for file:// URLs
- *         .withContentHandlers(true) // create content handler as specified in ContentControlUrlConnection
  *         .withCacheSwitcher(false) // do not setup cache switcher
  *         .setup(context); // apply configuration
  *   </pre>
  *   By default all the flags are set to {@code true}. After {@code setup} is called,
- *   engine sets default stream handler and content handler factories with
- *   {@link java.net.URL#setURLStreamHandlerFactory(java.net.URLStreamHandlerFactory)} and
- *   {@link java.net.URLConnection#setContentHandlerFactory(java.net.ContentHandlerFactory)}.
+ *   engine sets default stream handler factory with
+ *   {@link java.net.URL#setURLStreamHandlerFactory(java.net.URLStreamHandlerFactory)}.
  * </p>
  *
  * <p>
@@ -62,9 +52,9 @@ import static android.content.ContentResolver.*;
  * </p>
  *
  * <p>
- *   If you need your custom factories, you may create Enroscar factories with
- *   {@link #createStreamHandlerFactory(android.content.Context)} and
- *   {@link #createContentHandlerFactory()} and use the directly, wrapping e.g.
+ *   If you need your custom factory, you may create Enroscar factory with
+ *   {@link #createStreamHandlerFactory(android.content.Context)} and use the directly,
+ *   wrapping e.g.
  * </p>
  */
 public final class EnroscarConnectionsEngine {
@@ -83,20 +73,12 @@ public final class EnroscarConnectionsEngine {
   /** Stream handler factory. */
   final EnroscarStreamHandlerFactory streamHandlerFactory;
 
-  /** Content handler factory. */
-  final EnroscarContentHandlerFactory contentHandlerFactory;
-
   EnroscarConnectionsEngine(final Context context) {
     streamHandlerFactory = new EnroscarStreamHandlerFactory(context);
-    contentHandlerFactory = new EnroscarContentHandlerFactory();
   }
 
   public static URLStreamHandlerFactory createStreamHandlerFactory(final Context context) {
     return new EnroscarStreamHandlerFactory(context);
-  }
-
-  public static ContentHandlerFactory createContentHandlerFactory() {
-    return new EnroscarContentHandlerFactory();
   }
 
   public static void setConfigFactory(final ConfigFactory configFactory) {
@@ -133,7 +115,6 @@ public final class EnroscarConnectionsEngine {
 
     /** Configuration flag. */
     private boolean useStreamHandlers = true,
-                    useContentHandlers = true,
                     useCacheSwitcher = true,
                     treatFileScheme = true;
 
@@ -145,12 +126,6 @@ public final class EnroscarConnectionsEngine {
     /** Whether to install custom {@link java.net.URLStreamHandlerFactory}. */
     public Config withStreamHandlers(final boolean flag) {
       this.useStreamHandlers = flag;
-      return this;
-    }
-
-    /** Whether to install custom {@link java.net.ContentHandlerFactory}. */
-    public Config withContentHandlers(final boolean flag) {
-      this.useContentHandlers = flag;
       return this;
     }
 
@@ -173,7 +148,6 @@ public final class EnroscarConnectionsEngine {
     public Config withNothing() {
       useStreamHandlers = false;
       useCacheSwitcher = false;
-      useContentHandlers = false;
       return this;
     }
 
@@ -183,13 +157,6 @@ public final class EnroscarConnectionsEngine {
         URL.setURLStreamHandlerFactory(engine.streamHandlerFactory);
       }
       engine.streamHandlerFactory.treatFileScheme = treatFileScheme;
-    }
-
-    private void configureContentHandler() {
-      if (useContentHandlers && !contentHandlerInstalled) {
-        contentHandlerInstalled = true;
-        URLConnection.setContentHandlerFactory(engine.contentHandlerFactory);
-      }
     }
 
     /**
@@ -211,9 +178,6 @@ public final class EnroscarConnectionsEngine {
 
         // stream handler
         configureStreamHandler();
-
-        // content handler
-        configureContentHandler();
 
         // cache switcher
         if (useCacheSwitcher) {
@@ -265,15 +229,4 @@ public final class EnroscarConnectionsEngine {
 
   }
 
-  /**
-   * Content handler factory implementation.
-   */
-  static class EnroscarContentHandlerFactory implements ContentHandlerFactory {
-
-    @Override
-    public ContentHandler createContentHandler(final String contentType) {
-      return new ContentHandlerSwitcher();
-    }
-
-  }
 }

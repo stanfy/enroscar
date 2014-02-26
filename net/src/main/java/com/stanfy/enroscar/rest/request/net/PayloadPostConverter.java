@@ -8,7 +8,7 @@ import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.request.binary.BinaryData;
 
 import java.io.IOException;

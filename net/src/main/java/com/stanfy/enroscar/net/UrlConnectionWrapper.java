@@ -10,14 +10,14 @@ import java.util.Map;
 
 /**
  * URL connection wrapper.
- * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * Delegates all the method calls to the wrapped instance.
  */
-public class UrlConnectionWrapper extends URLConnection {
+public abstract class UrlConnectionWrapper extends URLConnection {
 
   /** Core connection instance. */
   private URLConnection core;
 
-  public UrlConnectionWrapper(final URLConnection urlConnection) {
+  protected UrlConnectionWrapper(final URLConnection urlConnection) {
     super(urlConnection.getURL());
     this.core = urlConnection;
   }
@@ -29,7 +29,9 @@ public class UrlConnectionWrapper extends URLConnection {
     }
     return result;
   }
-  public static <T extends UrlConnectionWrapper> T getWrapper(final URLConnection connection, final Class<T> clazz) {
+
+  public static <T extends UrlConnectionWrapper> T getWrapper(final URLConnection connection,
+                                                              final Class<T> clazz) {
     URLConnection result = connection;
     if (!(result instanceof UrlConnectionWrapper)) { return null; }
     boolean found = false;

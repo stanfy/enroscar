@@ -14,7 +14,7 @@ import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.rest.request.SimpleRequestBuilder;
+import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;

@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.net;
 
 import java.io.IOException;
+import java.net.ContentHandler;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
@@ -12,7 +13,7 @@ import javax.net.ssl.SSLSocketFactory;
 import android.net.Uri;
 
 import com.stanfy.enroscar.net.cache.CacheControlUrlConnection;
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.utils.Time;
 
 /**
@@ -39,11 +40,12 @@ public class UrlConnectionBuilder {
   private int readTimeout = TIMEOUT_READ_DEFAULT;
 
   /** Cache manager name. */
+  // TODO replace with direct instance
   private String cacheManagerName;
-  /** Content handler name. */
-  private String contentHandlerName;
+  /** Content handler. */
+  private ContentHandler contentHandler;
   /** Model type. */
-  private ModelTypeToken modelType;
+  private EntityTypeToken entityTypeToken;
 
   /** SSL socket factory. */
   private SSLSocketFactory sslSF;
@@ -114,22 +116,22 @@ public class UrlConnectionBuilder {
     return cacheManagerName;
   }
 
-  public UrlConnectionBuilder setContentHandlerName(final String contentHandlerName) {
-    this.contentHandlerName = contentHandlerName;
+  public UrlConnectionBuilder setContentHandler(final ContentHandler contentHandler) {
+    this.contentHandler = contentHandler;
     return this;
   }
 
-  public String getContentHandlerName() {
-    return contentHandlerName;
+  public ContentHandler getContentHandler() {
+    return contentHandler;
   }
 
-  public UrlConnectionBuilder setModelType(final ModelTypeToken modelType) {
-    this.modelType = modelType;
+  public UrlConnectionBuilder setEntityTypeToken(final EntityTypeToken entityTypeToken) {
+    this.entityTypeToken = entityTypeToken;
     return this;
   }
 
-  public ModelTypeToken getModelType() {
-    return modelType;
+  public EntityTypeToken getEntityTypeToken() {
+    return entityTypeToken;
   }
 
   public UrlConnectionBuilder setSslSocketFactory(final SSLSocketFactory factory) {
@@ -202,11 +204,8 @@ public class UrlConnectionBuilder {
     connection = prepareCache(connection);
 
     // content handler
-    if (contentHandlerName != null || modelType != null) {
-      final ContentControlUrlConnection control = new ContentControlUrlConnection(connection);
-      control.setModelType(modelType);
-      control.setContentHandlerName(contentHandlerName);
-      connection = control;
+    if (contentHandler != null) {
+      connection = new ContentControlUrlConnection(connection, contentHandler, entityTypeToken);
     }
 
     // timeouts

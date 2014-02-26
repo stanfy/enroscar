@@ -17,7 +17,7 @@ import android.content.Context;
 import com.google.gson.GsonBuilder;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.gsonxml.GsonXml;
 import com.stanfy.gsonxml.GsonXmlBuilder;
 import com.stanfy.gsonxml.XmlParserCreator;
@@ -61,7 +61,7 @@ public class XmlGsonContentHandler extends BaseContentHandler {
   }
 
   @Override
-  protected Object getContent(final URLConnection connection, final InputStream source, final ModelTypeToken modelType) throws IOException {
+  protected Object getContent(final URLConnection connection, final InputStream source, final EntityTypeToken modelType) throws IOException {
     if (gsonXml == null) {
       throw new IllegalStateException("Gson object is not created");
     }

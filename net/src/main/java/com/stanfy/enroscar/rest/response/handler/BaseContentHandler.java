@@ -9,9 +9,9 @@ import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.ContentControlUrlConnection;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.rest.ModelTypeToken;
+import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.rest.Utils;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.response.Model;
 
 import java.io.ByteArrayInputStream;
@@ -50,7 +50,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
   
   @Override
   public final Object getContent(final URLConnection uConn) throws IOException {
-    final ContentControlUrlConnection connection = UrlConnectionWrapper.getWrapper(uConn, ContentControlUrlConnection.class);
+    final ContentControlUrlConnection connection = ContentControlUrlConnection.from(uConn);
     if (connection == null) {
       throw new IllegalArgumentException("Connection is not wrapped with " + ContentControlUrlConnection.class);
     }
@@ -89,7 +89,7 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
     }
 
     try {
-      return getContent(connection, source, connection.getModelType());
+      return getContent(connection, source, connection.getEntityType());
     } finally {
       // do not forget to close the source
       IoUtils.closeQuietly(source);
@@ -98,21 +98,21 @@ public abstract class BaseContentHandler extends ContentHandler implements Initi
 
   /**
    * Implementation must read the input stream and return an object of type specified by the token.
-   * In order to get a Java type from the model type token, method {@link #getModelType(ModelTypeToken)} may be used.
+   * In order to get a Java type from the model type token, method {@link #getModelType(com.stanfy.enroscar.rest.EntityTypeToken)} may be used.
    * @param connection connection instance
    * @param source input stream for the connection
    * @param modelType model type token
    * @return object of type described by the model type token
    * @throws IOException if an I/O error happpens
    */
-  protected abstract Object getContent(final URLConnection connection, final InputStream source, final ModelTypeToken modelType) throws IOException;
+  protected abstract Object getContent(final URLConnection connection, final InputStream source, final EntityTypeToken modelType) throws IOException;
 
   /**
    * Checks the raw type provided by the token an presence of {@link Model} annotation on it.
    * @param modelType model type token
    * @return Java type
    */
-  protected Type getModelType(final ModelTypeToken modelType) {
+  protected Type getModelType(final EntityTypeToken modelType) {
     final Class<?> modelClass = modelType.getRawClass();
 
     // check for wrappers

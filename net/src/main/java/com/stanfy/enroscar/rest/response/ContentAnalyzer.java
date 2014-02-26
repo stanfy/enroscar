@@ -2,9 +2,8 @@ package com.stanfy.enroscar.rest.response;
 
 import android.content.Context;
 
-import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.rest.RequestMethod.RequestMethodException;
-import com.stanfy.enroscar.rest.request.RequestDescription;
+import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.net.operation.RequestDescription;
 
 /**
  * Can analyze recieved content on the service side.
@@ -14,6 +13,6 @@ import com.stanfy.enroscar.rest.request.RequestDescription;
  */
 public interface ContentAnalyzer<T, RT> {
 
-  ResponseData<RT> analyze(final Context context, final RequestDescription description, final ResponseData<T> responseData) throws RequestMethodException;
+  ResponseData<RT> analyze(final Context context, final RequestDescription description, final ResponseData<T> responseData); // throws RequestMethodException;
 
 }

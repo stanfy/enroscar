@@ -1,16 +1,6 @@
 package com.stanfy.enroscar.rest.response.handler.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.ResponseCache;
-import java.net.URLConnection;
-
-import org.junit.Test;
-import org.robolectric.Robolectric;
-
-import org.robolectric.annotation.Config;
+import android.os.Build;
 
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager;
@@ -20,16 +10,27 @@ import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.rest.request.OperationType;
+import com.stanfy.enroscar.net.operation.OperationType;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.response.handler.BaseContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
+
+import org.junit.Test;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.ResponseCache;
+import java.net.URLConnection;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 
 /**
  * Test for content handlers.
  */
-@Config(emulateSdk = 18)
+@Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class ContentHandlerTest extends AbstractMockServerTest {
 
   @Override
@@ -74,7 +75,9 @@ public class ContentHandlerTest extends AbstractMockServerTest {
 
     // send request once more
     connection = makeConnection(
-        new MyRequestBuilder<String>(Robolectric.application) { }
+        new MyRequestBuilder<String>(Robolectric.application) {
+          { setRequestContentHandler(StringContentHandler.BEAN_NAME); }
+        }
           .setUrl(getWebServer().getUrl("/error").toString())
           .setOperationType(OperationType.SIMPLE_GET)
     );

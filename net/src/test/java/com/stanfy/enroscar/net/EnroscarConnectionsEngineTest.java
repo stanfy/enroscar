@@ -1,5 +1,6 @@
 package com.stanfy.enroscar.net;
 
+import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 
 import com.stanfy.enroscar.io.IoUtils;
@@ -14,7 +15,6 @@ import org.robolectric.annotation.Config;
 import java.net.ResponseCache;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -27,7 +27,7 @@ public class EnroscarConnectionsEngineTest {
 
   @Before
   public void init() {
-    EnroscarConnectionsEngine.config().setup(Robolectric.application);
+    EnroscarConnectionsEngine.config().treatFileScheme(false).setup(Robolectric.application);
   }
 
   @Test
@@ -77,7 +77,7 @@ public class EnroscarConnectionsEngineTest {
     assertThat(connection.getContentType()).isNull();
     assertThat(connection.getContentEncoding()).isNull();
 
-    connection = new URL("data:" + URLEncoder.encode("Вася Пупкін", "UTF-8")).openConnection();
+    connection = new URL("data:" + Uri.encode("Вася Пупкін")).openConnection();
     assertThat(IoUtils.streamToString(connection.getInputStream(), null)).isEqualTo("Вася Пупкін");
   }
 
