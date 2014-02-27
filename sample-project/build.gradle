@@ -29,6 +29,13 @@ repositories {
 }
 
 dependencies {
+  compile project(":goro")
+  compile 'com.netflix.rxjava:rxjava-android:0.17.0-RC1'
+  compile 'com.squareup.retrofit:retrofit:1.4.1'
+
+  compile 'com.squareup.dagger:dagger:1.2.1'
+  provided 'com.squareup.dagger:dagger-compiler:1.2.1'
+
   compile project(":net")
   compile project(":images")
   compile project(":ui")

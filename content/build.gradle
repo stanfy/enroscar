@@ -4,6 +4,9 @@ dependencies {
   
 }
 
+// FIXME: IDE hack
+apply from: file("$rootDir/gradle/tests-ide-hack.gradle")
+
 // POM file modifications
 uploadArchives {
   repositories {
