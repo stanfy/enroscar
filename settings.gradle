@@ -1,6 +1,11 @@
-['io', 'content', 'net', 'beans', 'stats', 'images', 'ui', 'assist'].each {
-  include it
-}
+include 'io'
+include 'content'
+include 'net'
+include 'beans'
+include 'stats'
+include 'images'
+include 'ui'
+include 'assist'
 
 // === Goro ===
 
@@ -10,12 +15,11 @@ project(':goro').projectDir = new File(rootDir, "goro/core")
 include ':goro-sample'
 project(':goro-sample').projectDir = new File(rootDir, "goro/sample")
 
+// === Sample ===
+include 'sample-project'
+
 // integration
 
 //include 'enroscar-sherlock-integration'
 //project(':enroscar-sherlock-integration').projectDir =
 //    new File(rootDir, 'integration/actionbarsherlock/enroscar-sherlock-integration')
-
-
-// sample project
-include 'sample-project'
