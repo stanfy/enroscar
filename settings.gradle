@@ -1,11 +1,17 @@
 include 'io'
-include 'content'
 include 'net'
 include 'beans'
 include 'stats'
 include 'images'
 include 'ui'
 include 'assist'
+
+// === Content ===
+include ':content'
+project(':content').projectDir = new File(rootDir, "content/providers")
+include ':async-compiler'
+project(':async-compiler').projectDir = new File(rootDir, "content/async-compiler")
+
 
 // === Goro ===
 

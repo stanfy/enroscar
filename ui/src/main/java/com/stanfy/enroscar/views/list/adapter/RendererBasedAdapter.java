@@ -6,8 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.stanfy.enroscar.content.UniqueObject;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

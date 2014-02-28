@@ -12,4 +12,6 @@ public interface AsyncExecutor<D> {
 
   Context provideContext();
 
+  void releaseData(D data);
+
 }

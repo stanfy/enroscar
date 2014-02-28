@@ -6,8 +6,6 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ListAdapter;
 
-import com.stanfy.enroscar.content.UniqueObject;
-
 /**
  * Model element renderer.
  * @author Roman Mazur - Stanfy (http://www.stanfy.com)

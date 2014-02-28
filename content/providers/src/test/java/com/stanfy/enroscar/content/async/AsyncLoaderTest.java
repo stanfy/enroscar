@@ -37,6 +37,9 @@ public class AsyncLoaderTest {
   /** Invocation flag. */
   private boolean cancelInvoked;
 
+  /** Releases data. */
+  private String releasedData;
+
   @Before
   public void init() {
     executor = new AsyncExecutor<String>() {
@@ -48,6 +51,14 @@ public class AsyncLoaderTest {
       @Override
       public Context provideContext() {
         return Robolectric.application;
+      }
+
+      @Override
+      public void releaseData(final String data) {
+        if (data == null) {
+          throw new NullPointerException();
+        }
+        releasedData = data;
       }
     };
     executor = spy(executor);
@@ -64,8 +75,9 @@ public class AsyncLoaderTest {
     };
     registeredObserver = null;
     cancelInvoked = false;
+    releasedData = null;
 
-    loader = spy(new AsyncLoader<>(executor));
+    loader = new AsyncLoader<>(executor);
   }
 
   @Test
@@ -94,14 +106,14 @@ public class AsyncLoaderTest {
     //noinspection unchecked
     OnLoadCompleteListener<Result<String>> listener = mock(OnLoadCompleteListener.class);
     loader.registerListener(1, listener);
-    loader.forceLoad();
+    loader.startLoading();
     registeredObserver.onResult("ok");
     verify(listener).onLoadComplete(loader, new Result<>("ok", null));
   }
 
   @Test
-  public void startLoadingShouldDeliverResult() {
-    loader.forceLoad();
+  public void startLoadingShouldDeliverPreviousResult() {
+    loader.startLoading();
     registeredObserver.onResult("ok");
     //noinspection unchecked
     OnLoadCompleteListener<Result<String>> listener = mock(OnLoadCompleteListener.class);
@@ -112,18 +124,25 @@ public class AsyncLoaderTest {
 
   @Test
   public void resetShouldReleaseData() {
-    loader.forceLoad();
+    loader.startLoading();
     registeredObserver.onResult("ok");
     loader.reset();
-    verify(loader).onReleaseData(new Result<>("ok", null));
+    assertThat(releasedData).isEqualTo("ok");
   }
 
   @Test
   public void oldDataShouldBeReleased() {
-    loader.forceLoad();
+    loader.startLoading();
     registeredObserver.onResult("ok");
     registeredObserver.onResult("ok2");
-    verify(loader).onReleaseData(new Result<>("ok", null));
+    assertThat(releasedData).isEqualTo("ok");
+  }
+
+  @Test
+  public void stopLoadingShouldCancelAsyncResult() {
+    loader.startLoading();
+    loader.stopLoading();
+    assertThat(cancelInvoked).isTrue();
   }
 
 }

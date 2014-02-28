@@ -10,7 +10,7 @@ import android.support.v4.content.Loader;
  *
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
-class AsyncLoader<D> extends Loader<AsyncLoader.Result<D>> {
+final class AsyncLoader<D> extends Loader<AsyncLoader.Result<D>> {
 
   /** Main thread handler. */
   private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
@@ -42,7 +42,7 @@ class AsyncLoader<D> extends Loader<AsyncLoader.Result<D>> {
   }
 
   @Override
-  protected final void onForceLoad() {
+  protected void onForceLoad() {
     if (async != null) {
       async.cancel();
     }
@@ -51,7 +51,7 @@ class AsyncLoader<D> extends Loader<AsyncLoader.Result<D>> {
   }
 
   @Override
-  protected final void onStartLoading() {
+  protected void onStartLoading() {
     if (result != null) {
       deliverResult(result);
     }
@@ -61,7 +61,7 @@ class AsyncLoader<D> extends Loader<AsyncLoader.Result<D>> {
   }
 
   @Override
-  public final void deliverResult(final Result<D> data) {
+  public void deliverResult(final Result<D> data) {
     if (isReset()) {
       onReleaseData(data);
       return;
@@ -80,14 +80,24 @@ class AsyncLoader<D> extends Loader<AsyncLoader.Result<D>> {
   }
 
   @Override
-  protected final void onReset() {
+  protected void onStopLoading() {
+    if (async != null) {
+      async.cancel();
+      async = null;
+    }
+  }
+
+  @Override
+  protected void onReset() {
     if (result != null) {
       onReleaseData(result);
     }
   }
 
-  protected void onReleaseData(final Result<D> data) {
-    // TODO
+  private void onReleaseData(final Result<D> result) {
+    if (result.data != null) {
+      executor.releaseData(result.data);
+    }
   }
 
   private void post(final Result<D> result) {

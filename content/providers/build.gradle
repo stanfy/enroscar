@@ -1,3 +1,5 @@
+apply from: file("$rootDir/gradle/jar.gradle")
+
 dependencies {
 
   compile 'com.android.support:support-v4:19.0.1'
