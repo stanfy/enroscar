@@ -1,8 +1,10 @@
-package com.stanfy.enroscar.content.async;
+package com.stanfy.enroscar.content.async.internal;
 
 import android.content.Context;
 
-import com.stanfy.enroscar.content.async.AsyncLoader.Result;
+import com.stanfy.enroscar.content.async.Async;
+import com.stanfy.enroscar.content.async.AsyncObserver;
+import com.stanfy.enroscar.content.async.internal.WrapAsyncLoader.Result;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,17 +18,17 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests for {@link com.stanfy.enroscar.content.async.AsyncLoader}
+ * Tests for {@link com.stanfy.enroscar.content.async.internal.WrapAsyncLoader}
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class AsyncLoaderTest {
+public class WrapAsyncLoaderTest {
 
   /** Loader instance. */
-  private AsyncLoader<String> loader;
+  private WrapAsyncLoader<String> loader;
 
   /** Executor. */
-  private AsyncExecutor<String> executor;
+  private AsyncContext<String> executor;
 
   /** Mock result. */
   private Async<String> mockResult;
@@ -42,9 +44,9 @@ public class AsyncLoaderTest {
 
   @Before
   public void init() {
-    executor = new AsyncExecutor<String>() {
+    executor = new AsyncContext<String>() {
       @Override
-      public Async<String> startExecution() {
+      public Async<String> provideAsync() {
         return mockResult;
       }
 
@@ -77,13 +79,13 @@ public class AsyncLoaderTest {
     cancelInvoked = false;
     releasedData = null;
 
-    loader = new AsyncLoader<>(executor);
+    loader = new WrapAsyncLoader<>(executor);
   }
 
   @Test
   public void forceLoadShouldTriggerExecutor() {
     loader.forceLoad();
-    verify(executor).startExecution();
+    verify(executor).provideAsync();
     assertThat(registeredObserver).isNotNull();
   }
 
@@ -98,7 +100,7 @@ public class AsyncLoaderTest {
   @Test
   public void startLoadingShouldForceLoading() {
     loader.startLoading();
-    verify(executor).startExecution();
+    verify(executor).provideAsync();
   }
 
   @Test
@@ -115,7 +117,7 @@ public class AsyncLoaderTest {
   public void startLoadingShouldDeliverPreviousResult() {
     loader.startLoading();
     registeredObserver.onResult("ok");
-    //noinspection unchecked
+    @SuppressWarnings("unchecked")
     OnLoadCompleteListener<Result<String>> listener = mock(OnLoadCompleteListener.class);
     loader.registerListener(1, listener);
     loader.startLoading();

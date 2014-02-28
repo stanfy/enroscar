@@ -1,14 +1,19 @@
 package com.stanfy.enroscar.content.async;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
+
+import com.stanfy.enroscar.content.async.internal.AsyncContext;
+import com.stanfy.enroscar.content.async.internal.LoadAsync;
 
 /**
  * Activity that uses Async.
  */
-class AsyncUserActivity extends Activity {
+class AsyncUserActivity extends FragmentActivity {
 
   /** Text view. */
   TextView textView;
@@ -22,7 +27,7 @@ class AsyncUserActivity extends Activity {
     textView = new TextView(this);
     setContentView(textView);
 
-    new Data().thing().subscribe(new AsyncObserver<Thing>() {
+    new DataGenerated(this).thing().subscribe(new AsyncObserver<Thing>() {
       @Override
       public void onError(final Throwable e) {
         throw new AssertionError(e);
@@ -57,7 +62,7 @@ class AsyncUserActivity extends Activity {
       }
     };
 
-    @Load Async<Thing> thing() {
+    Async<Thing> thing() {
       return new Async<Thing>() {
         @Override
         public void subscribe(final AsyncObserver<Thing> observer) {
@@ -76,6 +81,55 @@ class AsyncUserActivity extends Activity {
     }
 
   }
+
+  static final class DataGenerated extends Data {
+
+    private final AsyncUserActivity activity;
+
+    public DataGenerated(final AsyncUserActivity activity) {
+      this.activity = activity;
+    }
+
+    @Override
+    Async<Thing> thing() {
+      AsyncContextImpl context = new AsyncContextImpl(activity, super.thing());
+      return new LoadAsync<>(activity.getSupportLoaderManager(), context, 1);
+    }
+
+    static final class AsyncContextImpl implements AsyncContext<Thing> {
+
+      /** App context. */
+      private final Context context;
+
+      /** Async. */
+      private final Async<Thing> async;
+
+      /** For recording and tests. */
+      Thing releasedThing;
+
+      public AsyncContextImpl(final Activity activity, final Async<Thing> async) {
+        context = activity.getApplicationContext();
+        this.async = async;
+      }
+
+      @Override
+      public Async<Thing> provideAsync() {
+        return async;
+      }
+
+      @Override
+      public Context provideContext() {
+        return context;
+      }
+
+      @Override
+      public void releaseData(final Thing data) {
+        releasedThing = data;
+      }
+    }
+
+  }
+
 
   /** Something that is loaded. */
   static class Thing {

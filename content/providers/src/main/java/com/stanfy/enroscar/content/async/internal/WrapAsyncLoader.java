@@ -1,22 +1,25 @@
-package com.stanfy.enroscar.content.async;
+package com.stanfy.enroscar.content.async.internal;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.Loader;
 
+import com.stanfy.enroscar.content.async.Async;
+import com.stanfy.enroscar.content.async.AsyncObserver;
+
 /**
- * Loader that backs {@link Async} result.
+ * Loader that backs {@link com.stanfy.enroscar.content.async.Async} result.
  * @param <D> data type
  *
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
-final class AsyncLoader<D> extends Loader<AsyncLoader.Result<D>> {
+final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
 
   /** Main thread handler. */
   private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
   /** Executor. */
-  private final AsyncExecutor<D> executor;
+  private final AsyncContext<D> executor;
 
   /** Pending result. */
   private Async<D> async;
@@ -36,7 +39,7 @@ final class AsyncLoader<D> extends Loader<AsyncLoader.Result<D>> {
     }
   };
 
-  public AsyncLoader(final AsyncExecutor<D> executor) {
+  public WrapAsyncLoader(final AsyncContext<D> executor) {
     super(executor.provideContext());
     this.executor = executor;
   }
@@ -46,7 +49,7 @@ final class AsyncLoader<D> extends Loader<AsyncLoader.Result<D>> {
     if (async != null) {
       async.cancel();
     }
-    async = executor.startExecution();
+    async = executor.provideAsync();
     async.subscribe(observer);
   }
 
@@ -130,11 +133,17 @@ final class AsyncLoader<D> extends Loader<AsyncLoader.Result<D>> {
       }
       @SuppressWarnings("unchecked")
       Result<D> r = (Result<D>) o;
+      if (data == null && error == null) {
+        return r.data == null && r.error == null;
+      }
       return data != null ? data.equals(r.data) : error.equals(r.error);
     }
 
     @Override
     public int hashCode() {
+      if (data == null && error == null) {
+        return 0;
+      }
       return data != null ? data.hashCode() : error.hashCode();
     }
   }
