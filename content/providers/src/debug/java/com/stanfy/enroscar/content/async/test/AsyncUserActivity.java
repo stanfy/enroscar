@@ -1,25 +1,30 @@
-package com.stanfy.enroscar.content.async;
+package com.stanfy.enroscar.content.async.test;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
 
+import com.stanfy.enroscar.content.async.Async;
+import com.stanfy.enroscar.content.async.AsyncObserver;
 import com.stanfy.enroscar.content.async.internal.AsyncContext;
 import com.stanfy.enroscar.content.async.internal.LoadAsync;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Activity that uses Async.
  */
-class AsyncUserActivity extends FragmentActivity {
+public final class AsyncUserActivity extends FragmentActivity {
 
   /** Text view. */
   TextView textView;
 
   /** A thing. */
   Thing thing;
+
+  final CountDownLatch loadSync = new CountDownLatch(1);
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -36,6 +41,7 @@ class AsyncUserActivity extends FragmentActivity {
       public void onResult(final Thing data) {
         thing = data;
         textView.setText(data.toString());
+        loadSync.countDown();
       }
     });
   }
@@ -82,9 +88,21 @@ class AsyncUserActivity extends FragmentActivity {
 
   }
 
+  /** Something that is loaded. */
+  static class Thing {
+    @Override
+    public String toString() {
+      return "a thing";
+    }
+  }
+
+  // -------------- GENERATED CODE ----------------
+
   static final class DataGenerated extends Data {
 
     private final AsyncUserActivity activity;
+
+    AsyncContextImpl lastCreatedContext;
 
     public DataGenerated(final AsyncUserActivity activity) {
       this.activity = activity;
@@ -93,33 +111,17 @@ class AsyncUserActivity extends FragmentActivity {
     @Override
     Async<Thing> thing() {
       AsyncContextImpl context = new AsyncContextImpl(activity, super.thing());
+      lastCreatedContext = context;
       return new LoadAsync<>(activity.getSupportLoaderManager(), context, 1);
     }
 
-    static final class AsyncContextImpl implements AsyncContext<Thing> {
-
-      /** App context. */
-      private final Context context;
-
-      /** Async. */
-      private final Async<Thing> async;
+    static final class AsyncContextImpl extends AsyncContext<Thing> {
 
       /** For recording and tests. */
       Thing releasedThing;
 
       public AsyncContextImpl(final Activity activity, final Async<Thing> async) {
-        context = activity.getApplicationContext();
-        this.async = async;
-      }
-
-      @Override
-      public Async<Thing> provideAsync() {
-        return async;
-      }
-
-      @Override
-      public Context provideContext() {
-        return context;
+        super(async, activity);
       }
 
       @Override
@@ -128,15 +130,6 @@ class AsyncUserActivity extends FragmentActivity {
       }
     }
 
-  }
-
-
-  /** Something that is loaded. */
-  static class Thing {
-    @Override
-    public String toString() {
-      return "a thing";
-    }
   }
 
 }

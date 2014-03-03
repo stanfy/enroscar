@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -18,14 +19,26 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
-import static com.stanfy.enroscar.content.async.internal.Utils.getReturnType;
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PRIVATE;
 
 /**
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
 final class LoaderGenerator {
+
+  /** Start value for loader ID. */
+  static final int LOADER_ID_START = 3000;
+
+  private static final String ANDROID_CONTEXT = "android.content.Context";
+  private static final String LOADER_MANAGER = "android.support.v4.app.LoaderManager";
+
+  /** Loader id counter. */
+  private final AtomicInteger loaderId = new AtomicInteger(LOADER_ID_START);
 
   /** Generated class name suffix. */
   private static final String SUFFIX = "$Loader";
@@ -70,22 +83,53 @@ final class LoaderGenerator {
         new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
     w.emitPackage(packageName);
 
-    w.emitImports(Async.class);
+    w.emitImports(ANDROID_CONTEXT);
+    w.emitImports(LOADER_MANAGER);
+    w.emitImports(Async.class, AsyncContext.class, LoadAsync.class);
     w.emitEmptyLine();
 
     w.beginType(className, "class", modifiers(baseClass), baseClass.getSimpleName().toString());
+    w.emitEmptyLine();
+
+    w.emitField(ANDROID_CONTEXT, "context", EnumSet.of(PRIVATE, FINAL));
+    w.emitField(LOADER_MANAGER, "loaderManager", EnumSet.of(PRIVATE, FINAL));
+    w.emitEmptyLine();
+
+    w.beginConstructor(modifiers(baseClass), ANDROID_CONTEXT, "context", LOADER_MANAGER, "loaderManager");
+    w.emitStatement("this.context = context");
+    w.emitStatement("this.loaderManager = loaderManager");
+    w.endConstructor();
     w.emitEmptyLine();
 
     for (ExecutableElement method : methods) {
       w.emitAnnotation(Override.class);
       w.beginMethod(Utils.getReturnType(method), method.getSimpleName().toString(),
           modifiers(method), parameters(w, method), null);
-      callSuper(w, method);
+      w.emitStatement(loadBody(method, w));
       w.endMethod();
       w.emitEmptyLine();
     }
 
     w.endType();
+  }
+
+  // TODO: release method support
+  private String loadBody(final ExecutableElement method, final JavaWriter w)
+      throws IOException {
+    StringBuilder result = new StringBuilder();
+    ExecutableType execType = (ExecutableType) method.asType();
+    DeclaredType returnType = (DeclaredType) execType.getReturnType();
+    TypeMirror dataType = returnType.getTypeArguments().get(0);
+    String dataTypeName = w.compressType(dataType.toString());
+    result.append("return new ")
+        .append(w.compressType(LoadAsync.class.getCanonicalName()))
+        .append("<").append(dataTypeName).append(">(")
+        .append("loaderManager, ")
+        .append("new AsyncContext<").append(dataTypeName).append(">(")
+        .append(callSuper(method)).append(", context), ")
+        .append(loaderId.getAndIncrement())
+        .append(")");
+    return result.toString();
   }
 
   private List<String> parameters(final JavaWriter w, final ExecutableElement method) {
@@ -98,10 +142,9 @@ final class LoaderGenerator {
     return res;
   }
 
-  private static void callSuper(final JavaWriter w, final ExecutableElement method)
-      throws IOException {
+  private static String callSuper(final ExecutableElement method) {
     StringBuilder stmt = new StringBuilder()
-        .append("return super.").append(method.getSimpleName()).append("(");
+        .append("super.").append(method.getSimpleName()).append("(");
     if (!method.getParameters().isEmpty()) {
       for (VariableElement arg : method.getParameters()) {
         stmt.append(arg.getSimpleName().toString()).append(", ");
@@ -109,7 +152,7 @@ final class LoaderGenerator {
       stmt.delete(stmt.length() - 2, stmt.length());
     }
     stmt.append(")");
-    w.emitStatement(stmt.toString());
+    return stmt.toString();
   }
 
   private static Set<Modifier> modifiers(final Element e) {

@@ -18,13 +18,8 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
   /** Main thread handler. */
   private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
-  /** Executor. */
-  private final AsyncContext<D> executor;
-
-  /** Pending result. */
+  private final AsyncContext<D> context;
   private Async<D> async;
-
-  /** Received result. */
   private Result<D> result;
 
   /** Data observer. */
@@ -39,9 +34,9 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
     }
   };
 
-  public WrapAsyncLoader(final AsyncContext<D> executor) {
-    super(executor.provideContext());
-    this.executor = executor;
+  public WrapAsyncLoader(final AsyncContext<D> context) {
+    super(context.applicationContext);
+    this.context = context;
   }
 
   @Override
@@ -49,7 +44,7 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
     if (async != null) {
       async.cancel();
     }
-    async = executor.provideAsync();
+    async = context.async;
     async.subscribe(observer);
   }
 
@@ -99,7 +94,7 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
 
   private void onReleaseData(final Result<D> result) {
     if (result.data != null) {
-      executor.releaseData(result.data);
+      context.releaseData(result.data);
     }
   }
 

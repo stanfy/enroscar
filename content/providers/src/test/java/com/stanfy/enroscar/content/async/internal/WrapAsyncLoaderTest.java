@@ -1,7 +1,5 @@
 package com.stanfy.enroscar.content.async.internal;
 
-import android.content.Context;
-
 import com.stanfy.enroscar.content.async.Async;
 import com.stanfy.enroscar.content.async.AsyncObserver;
 import com.stanfy.enroscar.content.async.internal.WrapAsyncLoader.Result;
@@ -27,11 +25,8 @@ public class WrapAsyncLoaderTest {
   /** Loader instance. */
   private WrapAsyncLoader<String> loader;
 
-  /** Executor. */
-  private AsyncContext<String> executor;
-
   /** Mock result. */
-  private Async<String> mockResult;
+  private Async<String> mockAsync;
 
   /** Registered observer. */
   private AsyncObserver<String> registeredObserver;
@@ -44,27 +39,7 @@ public class WrapAsyncLoaderTest {
 
   @Before
   public void init() {
-    executor = new AsyncContext<String>() {
-      @Override
-      public Async<String> provideAsync() {
-        return mockResult;
-      }
-
-      @Override
-      public Context provideContext() {
-        return Robolectric.application;
-      }
-
-      @Override
-      public void releaseData(final String data) {
-        if (data == null) {
-          throw new NullPointerException();
-        }
-        releasedData = data;
-      }
-    };
-    executor = spy(executor);
-    mockResult = new Async<String>() {
+    mockAsync = new Async<String>() {
       @Override
       public void subscribe(final AsyncObserver<String> observer) {
         registeredObserver = observer;
@@ -79,13 +54,22 @@ public class WrapAsyncLoaderTest {
     cancelInvoked = false;
     releasedData = null;
 
-    loader = new WrapAsyncLoader<>(executor);
+    AsyncContext<String> context = new AsyncContext<String>(mockAsync, Robolectric.application) {
+      @Override
+      public void releaseData(final String data) {
+        if (data == null) {
+          throw new NullPointerException();
+        }
+        releasedData = data;
+      }
+    };
+    loader = new WrapAsyncLoader<>(context);
   }
 
   @Test
   public void forceLoadShouldTriggerExecutor() {
+    assertThat(registeredObserver).isNull();
     loader.forceLoad();
-    verify(executor).provideAsync();
     assertThat(registeredObserver).isNotNull();
   }
 
@@ -99,8 +83,9 @@ public class WrapAsyncLoaderTest {
 
   @Test
   public void startLoadingShouldForceLoading() {
+    assertThat(registeredObserver).isNull();
     loader.startLoading();
-    verify(executor).provideAsync();
+    assertThat(registeredObserver).isNotNull();
   }
 
   @Test

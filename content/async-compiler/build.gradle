@@ -2,6 +2,12 @@ apply plugin: 'java'
 
 repositories {
   mavenCentral()
+  maven {
+    url "file://${System.env['ANDROID_HOME']}/extras/android/m2repository/"
+  }
+  maven {
+    url 'https://oss.sonatype.org/content/repositories/snapshots'
+  }
 }
 
 dependencies {
@@ -14,7 +20,14 @@ dependencies {
   testCompile 'com.google.guava:guava:15.0'
   testCompile 'org.truth0:truth:0.13'
 
+  testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
   testRuntime files("${System.properties['java.home']}/../lib/tools.jar")
+  testRuntime files("${System.env['ANDROID_HOME']}/platforms/android-19/android.jar")
+}
+
+tasks.withType(Test) {
+  scanForTestClasses = false
+  include "**/*Test.class"
 }
 
 task debug << {

@@ -5,15 +5,25 @@ import android.content.Context;
 import com.stanfy.enroscar.content.async.Async;
 
 /**
+ * This class may be extended in generated code to provide implementation
+ * of {@link #releaseData(Object)}.
+ *
  * @param <D> data type
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
-public interface AsyncContext<D> {
+public class AsyncContext<D> {
 
-  Async<D> provideAsync();
+  /** Our core. */
+  final Async<D> async;
 
-  Context provideContext();
+  /** Application context. */
+  final Context applicationContext;
 
-  void releaseData(D data);
+  public AsyncContext(final Async<D> async, final Context context) {
+    this.async = async;
+    this.applicationContext = context.getApplicationContext();
+  }
+
+  protected void releaseData(D data) { }
 
 }
