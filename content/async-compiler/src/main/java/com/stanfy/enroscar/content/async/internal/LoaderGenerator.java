@@ -23,8 +23,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
-import static javax.lang.model.element.Modifier.FINAL;
-import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.*;
 
 /**
  * @author Roman Mazur - Stanfy (http://stanfy.com)
@@ -40,9 +39,6 @@ final class LoaderGenerator {
   /** Loader id counter. */
   private final AtomicInteger loaderId = new AtomicInteger(LOADER_ID_START);
 
-  /** Generated class name suffix. */
-  private static final String SUFFIX = "$Loader";
-
   /** Class name. */
   private final String className;
   /** Package name. */
@@ -54,19 +50,12 @@ final class LoaderGenerator {
   /** Methods. */
   private final List<ExecutableElement> methods;
 
-  /** Environment. */
-  private final ProcessingEnvironment env;
-
   public LoaderGenerator(final ProcessingEnvironment env, final TypeElement type,
                          final List<ExecutableElement> methods) {
     this.baseClass = type;
     this.packageName = env.getElementUtils().getPackageOf(type).getQualifiedName().toString();
-    String name = type.getQualifiedName().toString();
-    this.className = packageName.length() > 0
-        ? name.substring(packageName.length() + 1) + SUFFIX
-        : name + SUFFIX;
+    this.className = Utils.getGeneratedClassName(packageName, type.getQualifiedName().toString());
     this.methods = methods;
-    this.env = env;
   }
 
   public String getFqcn() {
@@ -95,7 +84,8 @@ final class LoaderGenerator {
     w.emitField(LOADER_MANAGER, "loaderManager", EnumSet.of(PRIVATE, FINAL));
     w.emitEmptyLine();
 
-    w.beginConstructor(modifiers(baseClass), ANDROID_CONTEXT, "context", LOADER_MANAGER, "loaderManager");
+    w.beginConstructor(constructorModifiers(),
+        ANDROID_CONTEXT, "context", LOADER_MANAGER, "loaderManager");
     w.emitStatement("this.context = context");
     w.emitStatement("this.loaderManager = loaderManager");
     w.endConstructor();
@@ -103,7 +93,7 @@ final class LoaderGenerator {
 
     for (ExecutableElement method : methods) {
       w.emitAnnotation(Override.class);
-      w.beginMethod(Utils.getReturnType(method), method.getSimpleName().toString(),
+      w.beginMethod(GenUtils.getReturnType(method), method.getSimpleName().toString(),
           modifiers(method), parameters(w, method), null);
       w.emitStatement(loadBody(method, w));
       w.endMethod();
@@ -133,7 +123,7 @@ final class LoaderGenerator {
   }
 
   private List<String> parameters(final JavaWriter w, final ExecutableElement method) {
-    ArrayList<String> res = new ArrayList<>(method.getParameters().size());
+    ArrayList<String> res = new ArrayList<String>(method.getParameters().size());
     for (VariableElement arg : method.getParameters()) {
       TypeMirror type = arg.asType();
       res.add(w.compressType(type.toString()));
@@ -164,6 +154,11 @@ final class LoaderGenerator {
       return EnumSet.noneOf(Modifier.class);
     }
     return EnumSet.copyOf(modifiers);
+  }
+
+  private Set<Modifier> constructorModifiers() {
+    Set<Modifier> m = modifiers(baseClass);
+    return m.contains(PUBLIC) ? EnumSet.of(PUBLIC) : EnumSet.noneOf(Modifier.class);
   }
 
 }

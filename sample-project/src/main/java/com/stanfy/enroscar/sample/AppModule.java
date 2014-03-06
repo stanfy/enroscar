@@ -15,7 +15,8 @@ import static retrofit.RestAdapter.LogLevel.NONE;
  * Application module.
  */
 @Module(injects = {
-    SampleApplication.class
+    SampleApplication.class,
+    TwitterApi.class
 })
 class AppModule {
 

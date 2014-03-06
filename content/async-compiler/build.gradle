@@ -1,4 +1,8 @@
 apply plugin: 'java'
+apply plugin: 'maven'
+
+version = '1.0-SNAPSHOT'
+group = 'com.stanfy.enroscar'
 
 repositories {
   mavenCentral()
@@ -32,4 +36,8 @@ tasks.withType(Test) {
 
 task debug << {
   configurations.testRuntime.each { println it }
+}
+
+install.repositories.mavenInstaller.pom.whenConfigured { pom ->
+  pom.dependencies.removeAll { it.groupId == project.group }
 }

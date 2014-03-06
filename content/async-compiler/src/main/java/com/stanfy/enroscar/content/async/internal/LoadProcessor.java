@@ -18,12 +18,11 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
-import static com.stanfy.enroscar.content.async.internal.Utils.getReturnType;
 import static javax.lang.model.element.Modifier.ABSTRACT;
 import static javax.lang.model.element.Modifier.FINAL;
+import static javax.tools.Diagnostic.Kind.ERROR;
 
 /**
  * @author Roman Mazur - Stanfy (http://stanfy.com)
@@ -43,7 +42,8 @@ public final class LoadProcessor extends AbstractProcessor {
   @Override
   public boolean process(final Set<? extends TypeElement> annotations,
                          final RoundEnvironment roundEnv) {
-    Map<TypeElement, List<ExecutableElement>> classMethods = new LinkedHashMap<>();
+    Map<TypeElement, List<ExecutableElement>> classMethods =
+        new LinkedHashMap<>();
     for (Element m : roundEnv.getElementsAnnotatedWith(Load.class)) {
       if (!(m instanceof ExecutableElement)) {
         throw new IllegalStateException(m + " annotated with @Load");
@@ -70,7 +70,7 @@ public final class LoadProcessor extends AbstractProcessor {
       }
 
       String expectedReturn = Async.class.getCanonicalName();
-      if (!Utils.getReturnType(method).startsWith(expectedReturn)) {
+      if (!GenUtils.getReturnType(method).startsWith(expectedReturn)) {
         error(method, "Method annotated with @Load must return " + expectedReturn);
         continue;
       }
@@ -87,7 +87,7 @@ public final class LoadProcessor extends AbstractProcessor {
       generateLoader(e.getKey(), e.getValue());
     }
 
-    return true;
+    return false;
   }
 
   private void generateLoader(final TypeElement baseType, final List<ExecutableElement> methods) {
@@ -96,7 +96,7 @@ public final class LoadProcessor extends AbstractProcessor {
     try {
       JavaFileObject jfo = processingEnv.getFiler().createSourceFile(gen.getFqcn(), baseType);
       out = jfo.openWriter();
-      Utils.generate(gen, out);
+      GenUtils.generate(gen, out);
       out.flush();
     } catch (IOException e) {
       error(baseType, "Cannot generate loader for base class " + baseType + ": " + e.getMessage());
@@ -112,7 +112,7 @@ public final class LoadProcessor extends AbstractProcessor {
   }
 
   private void error(final Element element, final String message) {
-    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, element);
+    processingEnv.getMessager().printMessage(ERROR, message, element);
   }
 
 }

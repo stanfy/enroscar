@@ -10,7 +10,7 @@ import javax.lang.model.type.ExecutableType;
 /**
  * Tools.
  */
-final class Utils {
+final class GenUtils {
 
   static boolean debug = false;
 

@@ -4,12 +4,9 @@ import com.google.common.base.Joiner;
 import com.google.testing.compile.JavaFileObjects;
 import com.stanfy.enroscar.content.async.Async;
 import com.stanfy.enroscar.content.async.AsyncObserver;
-import com.stanfy.enroscar.content.async.internal.LoadProcessor;
-import com.stanfy.enroscar.content.async.internal.Utils;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -27,7 +24,7 @@ import static org.truth0.Truth.ASSERT;
 public class LoadProcessorTest {
 
   static {
-    Utils.debug = true;
+    GenUtils.debug = true;
   }
 
   /** Processor. */
