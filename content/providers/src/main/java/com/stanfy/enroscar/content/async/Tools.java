@@ -27,6 +27,11 @@ public class Tools {
     return new TaskAsync<>(task);
   }
 
+  // TODO: release mechanism
+  public static CursorAsyncBuilder asyncCursor(final Context context) {
+    return new CursorAsyncBuilder(context);
+  }
+
   public static <T> T loading(final Class<T> dataLoaderClass, final Fragment fragment) {
     Constructor<T> constructor = getConstructor(getClass(dataLoaderClass));
     try {
