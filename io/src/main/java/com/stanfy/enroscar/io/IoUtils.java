@@ -96,7 +96,7 @@ public final class IoUtils {
    *
    * @param input input stream
    * @param output output stream
-   * @param buffersPool buffers pool used to obtain a temporal bytes buffer, may be nil
+   * @param buffersPool buffers pool used to obtain a temporal bytes buffer, may be null
    * @throws IOException if an error happens
    */
   public static void transfer(final InputStream input, final OutputStream output, final BuffersPool buffersPool) throws IOException {
