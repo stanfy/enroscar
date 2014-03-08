@@ -4,7 +4,7 @@ buildscript {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.8.+'
+    classpath 'com.android.tools.build:gradle:0.9.+'
     classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
   }
 }
@@ -51,7 +51,7 @@ configure(libraryModules) {
   android {
     compileSdkVersion 19
 
-    buildToolsVersion '19.0.2'
+    buildToolsVersion '19.0.3'
 
     defaultConfig {
       versionCode 10
@@ -82,7 +82,7 @@ configure(libraryModules) {
 
     testDeps.each {
       testCompile it
-      instrumentTestCompile it
+      androidTestCompile it
     }
 
     testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
