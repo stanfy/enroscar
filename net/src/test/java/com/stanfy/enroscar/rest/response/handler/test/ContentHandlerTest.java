@@ -16,6 +16,7 @@ import com.stanfy.enroscar.rest.response.handler.BaseContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -31,6 +32,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Test for content handlers.
  */
 @Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
+@Ignore
 public class ContentHandlerTest extends AbstractMockServerTest {
 
   @Override
