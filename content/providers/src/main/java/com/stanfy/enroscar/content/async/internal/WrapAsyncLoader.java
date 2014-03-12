@@ -45,6 +45,7 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
       async.cancel();
     }
     async = context.async;
+
     async.subscribe(observer);
   }
 
