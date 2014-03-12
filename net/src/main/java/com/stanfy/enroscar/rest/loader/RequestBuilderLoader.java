@@ -4,7 +4,7 @@ import android.os.SystemClock;
 import android.support.v4.content.Loader;
 import android.util.Log;
 
-import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.net.operation.RequestBuilder;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 
@@ -329,7 +329,7 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   ResponseData<MT> castResponseData(final RequestDescription requestDescription, final ResponseData<?> responseData) {
     if (responseData == null) { return null; }
-    final Object model = responseData.getEntity();
+    final Object model = responseData.getModel();
     if (model == null || requestBuilder.getExpectedModelType().getRawClass().isInstance(model)) {
       final ResponseData result = responseData;
       return result;

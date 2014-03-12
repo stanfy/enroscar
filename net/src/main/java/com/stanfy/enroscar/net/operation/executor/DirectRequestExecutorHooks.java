@@ -1,6 +1,6 @@
 package com.stanfy.enroscar.net.operation.executor;
 
-import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.RequestMethod;
 

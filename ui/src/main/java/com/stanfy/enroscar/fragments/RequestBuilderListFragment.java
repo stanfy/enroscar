@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.stanfy.enroscar.activities.CrucialGUIOperationManager;
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.net.operation.RequestBuilder;
 import com.stanfy.enroscar.views.list.FetchableListView;
 import com.stanfy.enroscar.views.list.FetchableView;

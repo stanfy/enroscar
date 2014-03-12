@@ -5,7 +5,7 @@ import java.util.List;
 import android.content.Context;
 import android.support.v4.content.Loader;
 
-import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.net.operation.executor.RequestExecutor;
 import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;

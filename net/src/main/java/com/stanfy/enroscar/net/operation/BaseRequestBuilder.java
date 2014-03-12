@@ -9,7 +9,7 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.EntityTypeToken;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.net.operation.executor.RequestExecutor;

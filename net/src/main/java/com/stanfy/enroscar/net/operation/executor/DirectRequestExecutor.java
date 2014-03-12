@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.RequestMethod;

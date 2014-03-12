@@ -6,7 +6,7 @@ import android.support.v4.content.Loader;
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.RecordedRequest;
 import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.net.operation.ListRequestBuilderWrapper;
 import com.stanfy.enroscar.net.operation.RequestDescription;
 import com.stanfy.enroscar.rest.loader.LoadMoreListLoader;
@@ -37,9 +37,9 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
     @Override
     public ResponseData<List<String>> analyze(final Context context, final RequestDescription description, final ResponseData<String> responseData) { //} throws RequestMethodException {
       final ResponseData<List<String>> result = new ResponseData<List<String>>(responseData, null);
-      if (responseData.getEntity() != null) {
+      if (responseData.getModel() != null) {
         final ArrayList<String> list = new ArrayList<String>();
-        list.add(responseData.getEntity());
+        list.add(responseData.getModel());
 //        result.setEntity(list);
       }
       return result;
@@ -70,11 +70,11 @@ public class LoadMoreListLoaderTest extends AbstractLoaderTest {
     assertWithLoader(loader, new Asserter<ResponseData<List<String>>>() {
       @Override
       public void makeAssertions(ResponseData<List<String>> data) throws Exception {
-        System.out.println(data.getEntity());
+        System.out.println(data.getModel());
         assertThat(data.isSuccessful()).isTrue();
-        assertThat(data.getEntity().get(data.getEntity().size() - 1)).isEqualTo(response);
+        assertThat(data.getModel().get(data.getModel().size() - 1)).isEqualTo(response);
         try {
-          asserter.makeAssertions(data.getEntity());
+          asserter.makeAssertions(data.getModel());
         } catch (Exception e) {
           throw new AssertionError(e);
         }

@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.content;
+package com.stanfy.enroscar.content.loader;
 
 
 /**
@@ -17,7 +17,7 @@ public class ResponseData<T>  {
   /** Message. */
   private final String message;
   /** Result object. */
-  private final T entity;
+  private final T model;
 
   public ResponseData(final int errorCode) {
     this(errorCode, null);
@@ -27,23 +27,23 @@ public class ResponseData<T>  {
     this(errorCode, message, null);
   }
 
-  public ResponseData(final T entity) {
-    this(0, null, entity);
+  public ResponseData(final T model) {
+    this(0, null, model);
   }
 
-  public ResponseData(final ResponseData<?> response, final T entity) {
-    this(response.getErrorCode(), response.getMessage(), entity);
+  public ResponseData(final ResponseData<?> response, final T model) {
+    this(response.getErrorCode(), response.getMessage(), model);
   }
 
-  public ResponseData(final int errorCode, final String message, final T entity) {
+  public ResponseData(final int errorCode, final String message, final T model) {
     this.errorCode = errorCode;
     this.message = message;
-    this.entity = entity;
+    this.model = model;
   }
 
-  /** @return response entity object */
-  public T getEntity() {
-    return entity;
+  /** @return response model object */
+  public T getModel() {
+    return model;
   }
 
   /** @return the errorCode */
@@ -63,7 +63,7 @@ public class ResponseData<T>  {
 
   @Override
   public String toString() {
-    return "ResponseData{errorCode=" + errorCode + ", message='" + message + "', entity="
-        + (entity == null ? "<null>" : entity.getClass()) + "}";
+    return "ResponseData{errorCode=" + errorCode + ", message='" + message + "', model="
+        + (model == null ? "<null>" : model.getClass()) + "}";
   }
 }

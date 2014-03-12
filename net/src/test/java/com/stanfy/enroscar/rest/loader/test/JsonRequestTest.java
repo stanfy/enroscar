@@ -14,7 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
-import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 
 /**
@@ -69,7 +69,7 @@ public class JsonRequestTest extends AbstractLoaderTest {
       @Override
       public void makeAssertions(ResponseData<MyModel> data) throws Exception {
         assertThat(data.isSuccessful()).isTrue();
-        assertThat(data.getEntity()).isEqualTo(model);
+        assertThat(data.getModel()).isEqualTo(model);
       }
     });
 

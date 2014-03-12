@@ -4,10 +4,8 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
-import com.stanfy.enroscar.content.ResponseData;
-
 /**
- * Callbacks for that deal with {@link com.stanfy.enroscar.content.ResponseData}.
+ * Callbacks for that deal with {@link ResponseData}.
  * @param <D> data type
  * @see LoaderCallbacks
  */

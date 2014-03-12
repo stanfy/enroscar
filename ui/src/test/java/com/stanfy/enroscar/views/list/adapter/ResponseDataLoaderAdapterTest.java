@@ -4,7 +4,7 @@ import android.database.DataSetObserver;
 import android.os.Build;
 
 import com.stanfy.enroscar.content.UniqueObject;
-import com.stanfy.enroscar.content.ResponseData;
+import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.test.AbstractNetTest;
 
 import org.junit.Test;
