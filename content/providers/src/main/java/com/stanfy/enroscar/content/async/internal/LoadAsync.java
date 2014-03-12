@@ -21,11 +21,15 @@ public final class LoadAsync<D> extends BaseAsync<D> implements LoaderCallbacks<
   /** Loader ID. */
   private final int loaderId;
 
+  /** If we should destroy loader after it finishes. */
+  private final boolean destroyLoaderAfterFinish;
+
   public LoadAsync(final LoaderManager loaderManager, final AsyncContext<D> asyncContext,
-                   final int loaderId) {
+                   final int loaderId, boolean destroyLoaderAfterFinish) {
     this.loaderManager = loaderManager;
     this.asyncContext = asyncContext;
     this.loaderId = loaderId;
+    this.destroyLoaderAfterFinish = destroyLoaderAfterFinish;
   }
 
   // === Async adapter ===
@@ -57,6 +61,10 @@ public final class LoadAsync<D> extends BaseAsync<D> implements LoaderCallbacks<
 
   @Override
   public void onLoadFinished(final Loader<Result<D>> loader, final Result<D> result) {
+    if (destroyLoaderAfterFinish) {
+      loaderManager.destroyLoader(loaderId);
+    }
+
     if (result.error != null) {
       postError(result.error);
     } else {
