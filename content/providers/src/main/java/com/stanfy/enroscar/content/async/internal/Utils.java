@@ -6,7 +6,7 @@ package com.stanfy.enroscar.content.async.internal;
 public final class Utils {
 
   /** Generated class name suffix. */
-  private static final String SUFFIX = "$Loader";
+  private static final String SUFFIX = "$$Loader";
 
   public static String getGeneratedClassName(final String packageName, final String baseClassName) {
     String base = baseClassName;
