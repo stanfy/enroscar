@@ -77,7 +77,7 @@ final class LoaderGenerator {
     w.emitImports(Async.class, AsyncContext.class, LoadAsync.class);
     w.emitEmptyLine();
 
-    w.beginType(className, "class", modifiers(baseClass), baseClass.getSimpleName().toString());
+    w.beginType(className, "class", modifiers(baseClass), getExtendsType());
     w.emitEmptyLine();
 
     w.emitField(ANDROID_CONTEXT, "context", EnumSet.of(PRIVATE, FINAL));
@@ -101,6 +101,10 @@ final class LoaderGenerator {
     }
 
     w.endType();
+  }
+
+  private String getExtendsType() {
+    return baseClass.getQualifiedName().toString();
   }
 
   // TODO: release method support
@@ -153,7 +157,9 @@ final class LoaderGenerator {
     if (modifiers.isEmpty()) {
       return EnumSet.noneOf(Modifier.class);
     }
-    return EnumSet.copyOf(modifiers);
+    final EnumSet<Modifier> resultSet = EnumSet.copyOf(modifiers);
+    resultSet.remove(STATIC);
+    return resultSet;
   }
 
   private Set<Modifier> constructorModifiers() {

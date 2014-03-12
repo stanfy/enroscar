@@ -76,7 +76,37 @@ public class LoadProcessorTest {
         "  @Load Async<String> one(int a1, String a2) { return new AsyncStub(); }",
         "}"));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("Generated$Loader",
+    JavaFileObject expectedSource = expectedSource("Generated", "Generated");
+
+    ASSERT.about(javaSource())
+        .that(file).processedWith(processor)
+        .compilesWithoutError().and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testInnerClassSupport() throws Exception {
+    JavaFileObject file = JavaFileObjects.forSourceString("Generated", Joiner.on("\n").join(
+        "import com.stanfy.enroscar.content.async.Load;",
+        "import com.stanfy.enroscar.content.async.Async;",
+        "import " + AsyncStub.class.getCanonicalName() + ";",
+        "class Outer {",
+        "  static class Inner {",
+        "    @Load Async<String> one(int a1, String a2) { return new AsyncStub(); }",
+        "  }",
+        "}"));
+
+    JavaFileObject expectedSource = expectedSource("Outer.Inner", "OuterInner");
+
+    ASSERT.about(javaSource())
+        .that(file).processedWith(processor)
+        .compilesWithoutError().and()
+        .generatesSources(expectedSource);
+
+  }
+
+  private JavaFileObject expectedSource(final String baseClassName, final String className) {
+    return JavaFileObjects.forSourceString(className + "$$Loader",
         Joiner.on('\n').join(
             "import android.content.Context;",
             "import android.support.v4.app.LoaderManager;",
@@ -84,12 +114,13 @@ public class LoadProcessorTest {
             "import com.stanfy.enroscar.content.async.internal.AsyncContext;",
             "import com.stanfy.enroscar.content.async.internal.LoadAsync;",
 
-            "class Generated$Loader extends Generated {",
+            "class " + className + "$$Loader extends " +
+                baseClassName + " {",
 
             "  private final Context context;",
             "  private final LoaderManager loaderManager;",
 
-            "  Generated$Loader(Context context, LoaderManager loaderManager) {",
+            "  " + className + "$$Loader(Context context, LoaderManager loaderManager) {",
             "    this.context = context;",
             "    this.loaderManager = loaderManager;",
             "  }",
@@ -100,12 +131,8 @@ public class LoadProcessorTest {
             "  }",
 
             "}"
-        ));
-
-    ASSERT.about(javaSource())
-        .that(file).processedWith(processor)
-        .compilesWithoutError().and()
-        .generatesSources(expectedSource);
+        )
+    );
   }
 
   // TODO: loader IDs, multiple methods, release methods

@@ -20,6 +20,10 @@ public class AsyncContext<D> {
   final Context applicationContext;
 
   public AsyncContext(final Async<D> async, final Context context) {
+    if (async == null) {
+      throw new IllegalArgumentException("Async can't be null. Have you implemented @Load method?");
+    }
+
     this.async = async;
     this.applicationContext = context.getApplicationContext();
   }
