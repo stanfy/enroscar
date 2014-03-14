@@ -30,7 +30,31 @@ public class AsyncUserActivityTest extends ActivityInstrumentationTestCase2<Asyn
     runTestOnUiThread(new Runnable() {
       @Override
       public void run() {
-        assertThat(activity.textView).isNotEmpty();
+        assertThat(activity.thing).isNotNull();
+        assertThat(activity.textView).hasTextString(activity.thing.toString());
+      }
+    });
+  }
+
+  public void testSendThing() throws Throwable {
+    assertThat(activity.loadSync.await(1, TimeUnit.SECONDS)).isTrue();
+    final AsyncUserActivity.Thing lastThing = activity.thing;
+
+    runTestOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        activity.textView.performClick();
+      }
+    });
+
+    assertThat(activity.sendSync.await(1, TimeUnit.SECONDS)).isTrue();
+    runTestOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        assertThat(activity.thing).isNotSameAs(lastThing).isNotNull();
+        assertThat(activity.textView).hasTextString(
+            lastThing.toString() + "Send result: " + activity.thing
+        );
       }
     });
   }

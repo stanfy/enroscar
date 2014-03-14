@@ -11,6 +11,7 @@ import com.stanfy.enroscar.content.async.AsyncObserver;
 import com.stanfy.enroscar.content.async.Tools;
 import com.stanfy.enroscar.content.async.internal.AsyncContext;
 import com.stanfy.enroscar.content.async.internal.LoadAsync;
+import com.stanfy.enroscar.content.async.internal.SendAsync;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -27,6 +28,7 @@ public final class AsyncUserActivity extends FragmentActivity {
   Thing thing;
 
   final CountDownLatch loadSync = new CountDownLatch(1);
+  final CountDownLatch sendSync = new CountDownLatch(1);
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -47,8 +49,8 @@ public final class AsyncUserActivity extends FragmentActivity {
           @Override
           public void onResult(final Thing data) {
             thing = data;
-            textView.setText(data.toString());
-            loadSync.countDown();
+            textView.setText(textView.getText() + "Send result: " + data.toString());
+            sendSync.countDown();
           }
         });
       }
@@ -63,7 +65,7 @@ public final class AsyncUserActivity extends FragmentActivity {
       @Override
       public void onResult(final Thing data) {
         thing = data;
-        textView.setText(data.toString());
+        textView.setText(textView.getText() + data.toString());
         loadSync.countDown();
       }
     });
@@ -91,7 +93,7 @@ public final class AsyncUserActivity extends FragmentActivity {
   }
 
   /** Something that is loaded. */
-  static class Thing {
+  public static class Thing {
     @Override
     public String toString() {
       return "a getThing";
@@ -104,24 +106,23 @@ public final class AsyncUserActivity extends FragmentActivity {
 
     private final AsyncUserActivity activity;
 
-    AsyncContextImpl lastCreatedContext;
+    private final SendAsync<Thing> sendThingAsync;
 
     public DataGenerated(final AsyncUserActivity activity) {
       this.activity = activity;
+      AsyncContextImpl context = new AsyncContextImpl(activity, super.sendThing());
+      sendThingAsync = new SendAsync<>(activity.getSupportLoaderManager(), context, 1);
     }
 
     @Override
     Async<Thing> getThing() {
       AsyncContextImpl context = new AsyncContextImpl(activity, super.getThing());
-      lastCreatedContext = context;
-      return new LoadAsync<>(activity.getSupportLoaderManager(), context, 1, false);
+      return new LoadAsync<>(activity.getSupportLoaderManager(), context, 2);
     }
 
     @Override
     Async<Thing> sendThing() {
-      AsyncContextImpl context = new AsyncContextImpl(activity, super.getThing());
-      lastCreatedContext = context;
-      return new LoadAsync<>(activity.getSupportLoaderManager(), context, 1, true);
+      return sendThingAsync;
     }
 
     static final class AsyncContextImpl extends AsyncContext<Thing> {
