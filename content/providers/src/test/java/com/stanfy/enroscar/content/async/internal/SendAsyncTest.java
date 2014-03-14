@@ -12,10 +12,9 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import static com.stanfy.enroscar.content.async.internal.AsyncContext.DirectContext;
 import static com.stanfy.enroscar.content.async.internal.WrapAsyncLoader.Result;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.robolectric.Robolectric.application;
 
 /**
@@ -37,7 +36,7 @@ public class SendAsyncTest {
   @Before
   public void init() {
     loaderManager = mock(LoaderManager.class);
-    context = new AsyncContext<Thing>(mock(Async.class), application);
+    context = new DirectContext<Thing>(mock(Async.class), application);
   }
 
   @Test

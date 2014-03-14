@@ -2,6 +2,8 @@ package com.stanfy.enroscar.content.async.internal;
 
 import com.squareup.javawriter.JavaWriter;
 import com.stanfy.enroscar.content.async.Async;
+import com.stanfy.enroscar.content.async.Load;
+import com.stanfy.enroscar.content.async.Send;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -17,6 +19,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
@@ -29,6 +32,8 @@ import static javax.lang.model.element.Modifier.*;
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
 final class LoaderGenerator {
+
+  // TODO: release method support
 
   /** Start value for loader ID. */
   static final int LOADER_ID_START = 3000;
@@ -74,7 +79,11 @@ final class LoaderGenerator {
 
     w.emitImports(ANDROID_CONTEXT);
     w.emitImports(LOADER_MANAGER);
-    w.emitImports(Async.class, AsyncContext.class, LoadAsync.class);
+    w.emitImports(
+        Async.class, AsyncContext.class,
+        AsyncProvider.class,
+        LoadAsync.class, SendAsync.class
+    );
     w.emitEmptyLine();
 
     w.beginType(className, "class", modifiers(baseClass), getExtendsType());
@@ -82,12 +91,14 @@ final class LoaderGenerator {
 
     w.emitField(ANDROID_CONTEXT, "context", EnumSet.of(PRIVATE, FINAL));
     w.emitField(LOADER_MANAGER, "loaderManager", EnumSet.of(PRIVATE, FINAL));
+    sendAsyncInFields(w);
     w.emitEmptyLine();
 
     w.beginConstructor(constructorModifiers(),
         ANDROID_CONTEXT, "context", LOADER_MANAGER, "loaderManager");
     w.emitStatement("this.context = context");
     w.emitStatement("this.loaderManager = loaderManager");
+    sendAsyncInConstructor(w);
     w.endConstructor();
     w.emitEmptyLine();
 
@@ -95,7 +106,10 @@ final class LoaderGenerator {
       w.emitAnnotation(Override.class);
       w.beginMethod(GenUtils.getReturnType(method), method.getSimpleName().toString(),
           modifiers(method), parameters(w, method), null);
-      w.emitStatement(loadBody(method, w));
+      String body = method.getAnnotation(Load.class) != null
+          ? loadBody(method, w)
+          : sendBody(method, w);
+      w.emitStatement(body);
       w.endMethod();
       w.emitEmptyLine();
     }
@@ -107,30 +121,79 @@ final class LoaderGenerator {
     return baseClass.getQualifiedName().toString();
   }
 
-  // TODO: release method support
+  private void sendAsyncInConstructor(final JavaWriter w)
+      throws IOException {
+    for (ExecutableElement m : methods) {
+      if (m.getAnnotation(Send.class) == null) {
+        continue;
+      }
+      w.emitEmptyLine();
+      String base = m.getSimpleName().toString();
+      String dataType = w.compressType(getDataType(m).toString());
+      w.emitStatement("this.%sContext = new AsyncContext.DelegatedContext<%s>(context)",
+          base, dataType);
+      w.emitStatement("this.%sAsync = new SendAsync<%s>(loaderManager, this.%sContext, %d)",
+          base, dataType, base, loaderId.getAndIncrement());
+    }
+  }
+
+  private void sendAsyncInFields(final JavaWriter w)
+      throws IOException {
+    for (ExecutableElement m : methods) {
+      if (m.getAnnotation(Send.class) == null) {
+        continue;
+      }
+      w.emitEmptyLine();
+      String base = m.getSimpleName().toString();
+      String dataType = w.compressType(getDataType(m).toString());
+      w.emitField("AsyncContext.DelegatedContext<" + dataType + ">", base + "Context",
+          EnumSet.of(PRIVATE, FINAL));
+      w.emitField(Async.class.getSimpleName() + "<" + dataType + ">", base + "Async",
+          EnumSet.of(PRIVATE, FINAL));
+    }
+  }
+
   private String loadBody(final ExecutableElement method, final JavaWriter w)
       throws IOException {
     StringBuilder result = new StringBuilder();
-    ExecutableType execType = (ExecutableType) method.asType();
-    DeclaredType returnType = (DeclaredType) execType.getReturnType();
-    TypeMirror dataType = returnType.getTypeArguments().get(0);
+    TypeMirror dataType = getDataType(method);
     String dataTypeName = w.compressType(dataType.toString());
     result.append("return new ")
         .append(w.compressType(LoadAsync.class.getCanonicalName()))
         .append("<").append(dataTypeName).append(">(")
         .append("loaderManager, ")
-        .append("new AsyncContext<").append(dataTypeName).append(">(")
+        .append("new AsyncContext.DirectContext<").append(dataTypeName).append(">(")
         .append(callSuper(method)).append(", context), ")
         .append(loaderId.getAndIncrement())
         .append(")");
     return result.toString();
   }
 
+  private String sendBody(ExecutableElement method, JavaWriter w) {
+    StringBuilder result = new StringBuilder();
+    String dataType = w.compressType(getDataType(method).toString());
+    Name base = method.getSimpleName();
+    result.append("this.").append(base).append("Context.setDelegate(new ")
+        .append(AsyncProvider.class.getSimpleName()).append("<").append(dataType).append(">() {")
+        .append("@Override public ").append(Async.class.getSimpleName())
+        .append("<").append(dataType).append("> provideAsync() {")
+        .append("return ").append(className).append(".").append(callSuper(method)).append(";")
+        .append("}});");
+    result.append("return this.").append(base).append("Async");
+    return result.toString();
+  }
+
+  private static TypeMirror getDataType(ExecutableElement method) {
+    ExecutableType execType = (ExecutableType) method.asType();
+    DeclaredType returnType = (DeclaredType) execType.getReturnType();
+    return returnType.getTypeArguments().get(0);
+  }
+
   private List<String> parameters(final JavaWriter w, final ExecutableElement method) {
     ArrayList<String> res = new ArrayList<String>(method.getParameters().size());
     for (VariableElement arg : method.getParameters()) {
       TypeMirror type = arg.asType();
-      res.add(w.compressType(type.toString()));
+      res.add("final " + w.compressType(type.toString()));
       res.add(arg.getSimpleName().toString());
     }
     return res;

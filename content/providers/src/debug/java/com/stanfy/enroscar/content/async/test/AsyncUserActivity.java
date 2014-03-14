@@ -1,6 +1,5 @@
 package com.stanfy.enroscar.content.async.test;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -10,11 +9,15 @@ import com.stanfy.enroscar.content.async.Async;
 import com.stanfy.enroscar.content.async.AsyncObserver;
 import com.stanfy.enroscar.content.async.Tools;
 import com.stanfy.enroscar.content.async.internal.AsyncContext;
+import com.stanfy.enroscar.content.async.internal.AsyncProvider;
 import com.stanfy.enroscar.content.async.internal.LoadAsync;
 import com.stanfy.enroscar.content.async.internal.SendAsync;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+
+import static com.stanfy.enroscar.content.async.internal.AsyncContext.DelegatedContext;
+import static com.stanfy.enroscar.content.async.internal.AsyncContext.DirectContext;
 
 /**
  * Activity that uses Async.
@@ -107,37 +110,29 @@ public final class AsyncUserActivity extends FragmentActivity {
     private final AsyncUserActivity activity;
 
     private final SendAsync<Thing> sendThingAsync;
+    private final DelegatedContext<Thing> sendThingContext;
 
     public DataGenerated(final AsyncUserActivity activity) {
       this.activity = activity;
-      AsyncContextImpl context = new AsyncContextImpl(activity, super.sendThing());
-      sendThingAsync = new SendAsync<>(activity.getSupportLoaderManager(), context, 1);
+      sendThingContext = new DelegatedContext<>(activity);
+      sendThingAsync = new SendAsync<>(activity.getSupportLoaderManager(), sendThingContext, 1);
     }
 
     @Override
     Async<Thing> getThing() {
-      AsyncContextImpl context = new AsyncContextImpl(activity, super.getThing());
+      AsyncContext<Thing> context = new DirectContext<>(super.getThing(), activity);
       return new LoadAsync<>(activity.getSupportLoaderManager(), context, 2);
     }
 
     @Override
     Async<Thing> sendThing() {
+      sendThingContext.setDelegate(new AsyncProvider<Thing>() {
+        @Override
+        public Async<Thing> provideAsync() {
+          return DataGenerated.super.sendThing();
+        }
+      });
       return sendThingAsync;
-    }
-
-    static final class AsyncContextImpl extends AsyncContext<Thing> {
-
-      /** For recording and tests. */
-      Thing releasedThing;
-
-      public AsyncContextImpl(final Activity activity, final Async<Thing> async) {
-        super(async, activity);
-      }
-
-      @Override
-      public void releaseData(final Thing data) {
-        releasedThing = data;
-      }
     }
 
   }

@@ -9,16 +9,14 @@ import com.stanfy.enroscar.content.async.AsyncObserver;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import static com.stanfy.enroscar.content.async.internal.AsyncContext.DirectContext;
 import static com.stanfy.enroscar.content.async.internal.WrapAsyncLoader.Result;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.robolectric.Robolectric.application;
 
 /**
@@ -35,7 +33,7 @@ public class LoaderBasedAsyncTest {
   @Before
   public void init() {
     LoaderManager lm = mock(LoaderManager.class);
-    AsyncContext<Thing> context = new AsyncContext<Thing>(mock(Async.class), application);
+    AsyncContext<Thing> context = new DirectContext<Thing>(mock(Async.class), application);
     async = new LoaderBasedAsync<Thing>(lm, context, 1) { };
   }
 

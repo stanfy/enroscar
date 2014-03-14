@@ -2,6 +2,7 @@ package com.stanfy.enroscar.sample.ui;
 
 import com.stanfy.enroscar.content.async.Async;
 import com.stanfy.enroscar.content.async.Load;
+import com.stanfy.enroscar.content.async.Send;
 import com.stanfy.enroscar.sample.data.Tweet;
 import com.stanfy.enroscar.sample.data.remote.TwitterApi;
 
@@ -21,6 +22,16 @@ class TweetsData {
       @Override
       public List<Tweet> call() throws Exception {
         return api.tweets("stanfy");
+      }
+    });
+  }
+
+  @Send
+  Async<String> send(final int param) {
+    return async(new Callable<String>() {
+      @Override
+      public String call() throws Exception {
+        return "ok " + param;
       }
     });
   }

@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import static com.stanfy.enroscar.content.async.internal.AsyncContext.DirectContext;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Robolectric.application;
@@ -35,7 +36,7 @@ public class LoadAsyncTest {
   @Before
   public void init() {
     loaderManager = mock(LoaderManager.class);
-    AsyncContext<Thing> context = new AsyncContext<Thing>(mock(Async.class), application);
+    AsyncContext<Thing> context = new DirectContext<Thing>(mock(Async.class), application);
     async = new LoadAsync<>(loaderManager, context, LOADER_ID);
   }
 
