@@ -56,6 +56,7 @@ public class LoadProcessorTest {
         "  @Load final Async<String> three() { }",
         "  @Load String four() { }",
         "  String five() { }",
+        "  @Send final Async<String> six() { }",
         "}"));
 
     ASSERT.about(javaSource())
@@ -63,7 +64,8 @@ public class LoadProcessorTest {
         .failsToCompile()
         .withErrorContaining("abstract").in(file).onLine(5).and()
         .withErrorContaining("final").in(file).onLine(6).and()
-        .withErrorContaining("Async").in(file).onLine(7);
+        .withErrorContaining("Async").in(file).onLine(7).and()
+        .withErrorContaining("final").in(file).onLine(9);
   }
 
   @Test
@@ -76,7 +78,7 @@ public class LoadProcessorTest {
         "  @Load Async<String> one(int a1, String a2) { return new AsyncStub(); }",
         "}"));
 
-    JavaFileObject expectedSource = expectedSource("Generated", "Generated");
+    JavaFileObject expectedSource = loadExpectedSource("Generated", "Generated");
 
     ASSERT.about(javaSource())
         .that(file).processedWith(processor)
@@ -86,7 +88,7 @@ public class LoadProcessorTest {
 
   @Test
   public void testInnerClassSupport() throws Exception {
-    JavaFileObject file = JavaFileObjects.forSourceString("Generated", Joiner.on("\n").join(
+    JavaFileObject file = JavaFileObjects.forSourceString("Outer", Joiner.on("\n").join(
         "import com.stanfy.enroscar.content.async.Load;",
         "import com.stanfy.enroscar.content.async.Async;",
         "import " + AsyncStub.class.getCanonicalName() + ";",
@@ -96,7 +98,7 @@ public class LoadProcessorTest {
         "  }",
         "}"));
 
-    JavaFileObject expectedSource = expectedSource("Outer.Inner", "OuterInner");
+    JavaFileObject expectedSource = loadExpectedSource("Outer.Inner", "OuterInner");
 
     ASSERT.about(javaSource())
         .that(file).processedWith(processor)
@@ -105,14 +107,16 @@ public class LoadProcessorTest {
 
   }
 
-  private JavaFileObject expectedSource(final String baseClassName, final String className) {
+  private JavaFileObject loadExpectedSource(final String baseClassName, final String className) {
     return JavaFileObjects.forSourceString(className + "$$Loader",
         Joiner.on('\n').join(
             "import android.content.Context;",
             "import android.support.v4.app.LoaderManager;",
             "import com.stanfy.enroscar.content.async.Async;",
             "import com.stanfy.enroscar.content.async.internal.AsyncContext;",
+            "import com.stanfy.enroscar.content.async.internal.AsyncProvider;",
             "import com.stanfy.enroscar.content.async.internal.LoadAsync;",
+            "import com.stanfy.enroscar.content.async.internal.SendAsync;",
 
             "class " + className + "$$Loader extends " +
                 baseClassName + " {",
@@ -126,13 +130,76 @@ public class LoadProcessorTest {
             "  }",
 
             "  @Override",
-            "  Async<String> one(int a1, String a2) {",
-            "    return new LoadAsync<String>(loaderManager, new AsyncContext<String>(super.one(a1, a2), context), " + LOADER_ID_START + ");",
+            "  Async<String> one(final int a1, final String a2) {",
+            "    return new LoadAsync<String>(loaderManager, new AsyncContext.DirectContext<String>(super.one(a1, a2), context), " + LOADER_ID_START + ");",
             "  }",
 
             "}"
         )
     );
+  }
+
+  @Test
+  public void sendMethods() {
+    JavaFileObject file = JavaFileObjects.forSourceString("WithSendMethods", Joiner.on("\n").join(
+        "import com.stanfy.enroscar.content.async.Load;",
+        "import com.stanfy.enroscar.content.async.Send;",
+        "import com.stanfy.enroscar.content.async.Async;",
+        "import " + AsyncStub.class.getCanonicalName() + ";",
+        "class WithSendMethods {",
+        "  @Load Async<String> one(int a1, String a2) { return new AsyncStub(); }",
+        "  @Send Async<String> two(float a1) { return new AsyncStub(); }",
+        "}"));
+
+    JavaFileObject expected = JavaFileObjects.forSourceString("WithSendMethods$$Loader",
+        Joiner.on('\n').join(
+            "import android.content.Context;",
+            "import android.support.v4.app.LoaderManager;",
+            "import com.stanfy.enroscar.content.async.Async;",
+            "import com.stanfy.enroscar.content.async.internal.AsyncContext;",
+            "import com.stanfy.enroscar.content.async.internal.AsyncProvider;",
+            "import com.stanfy.enroscar.content.async.internal.LoadAsync;",
+            "import com.stanfy.enroscar.content.async.internal.SendAsync;",
+
+            "class WithSendMethods$$Loader extends WithSendMethods {",
+
+            "  private final Context context;",
+            "  private final LoaderManager loaderManager;",
+
+            "  private final AsyncContext.DelegatedContext<String> twoContext;",
+            "  private final Async<String> twoAsync;",
+
+            "  WithSendMethods$$Loader(Context context, LoaderManager loaderManager) {",
+            "    this.context = context;",
+            "    this.loaderManager = loaderManager;",
+
+            "    this.twoContext = new AsyncContext.DelegatedContext<String>(context);",
+            "    this.twoAsync = new SendAsync<String>(loaderManager, this.twoContext, " + LOADER_ID_START + ");",
+            "  }",
+
+            "  @Override",
+            "  Async<String> one(final int a1, final String a2) {",
+            "    return new LoadAsync<String>(loaderManager, new AsyncContext<String>(super.one(a1, a2), context), " + (LOADER_ID_START + 1) + ");",
+            "  }",
+
+            "  @Override",
+            "  Async<String> two(final float a1) {",
+            "    this.twoContext.setDelegate(new AsyncProvider<String>() {",
+            "      @Override public Async<String> provideAsync() {",
+            "        return WithSendMethods$$Loader.super.two(a1);",
+            "      }",
+            "    });",
+            "    return this.twoAsync;",
+            "  }",
+
+            "}"
+        )
+    );
+
+    ASSERT.about(javaSource())
+        .that(file).processedWith(processor)
+        .compilesWithoutError(); //.and() TODO
+        //.generatesSources(expected);
   }
 
   // TODO: loader IDs, multiple methods, release methods

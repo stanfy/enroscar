@@ -54,7 +54,12 @@ public class WrapAsyncLoaderTest {
     cancelInvoked = false;
     releasedData = null;
 
-    AsyncContext<String> context = new AsyncContext<String>(mockAsync, Robolectric.application) {
+    AsyncContext<String> context = new AsyncContext<String>(Robolectric.application) {
+      @Override
+      public Async<String> provideAsync() {
+        return mockAsync;
+      }
+
       @Override
       public void releaseData(final String data) {
         if (data == null) {
