@@ -62,4 +62,20 @@ public class SendAsyncTest {
     verify(loaderManager).restartLoader(LOADER_ID, null, async);
   }
 
+  @SuppressWarnings("unchecked")
+  @Test
+  public void shouldAllowNewSubscribeAfterLoadingFinished() {
+    SendAsync<Thing> async = new SendAsync<>(loaderManager, context, LOADER_ID);
+    AsyncObserver<Thing> observer = mock(AsyncObserver.class);
+    async.subscribe(observer);
+    reset(loaderManager);
+    Thing thing = new Thing();
+
+    async.onLoadFinished(null, new Result<>(thing, null));
+    verify(observer).onResult(thing);
+
+    async.subscribe(observer);
+    verify(loaderManager).restartLoader(LOADER_ID, null, async);
+  }
+
 }

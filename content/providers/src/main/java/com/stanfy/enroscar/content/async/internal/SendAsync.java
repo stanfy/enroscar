@@ -36,8 +36,11 @@ public final class SendAsync<D> extends LoaderBasedAsync<D> {
 
   @Override
   public void onLoadFinished(final Loader<Result<D>> loader, final Result<D> result) {
-    destroyLoader();
-    super.onLoadFinished(loader, result);
+    try {
+      super.onLoadFinished(loader, result);
+    } finally {
+      destroyLoader();
+    }
   }
 
 }

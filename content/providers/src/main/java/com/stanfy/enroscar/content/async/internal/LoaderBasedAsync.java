@@ -48,6 +48,7 @@ abstract class LoaderBasedAsync<D> extends BaseAsync<D> implements LoaderCallbac
   }
 
   protected final void destroyLoader() {
+    cancel();
     loaderManager.destroyLoader(loaderId);
   }
 
