@@ -13,7 +13,7 @@ public final class Utils {
     if (packageName.length() > 0) {
       base = base.substring(packageName.length() + 1);
     }
-    return base.replace(".", "").concat(SUFFIX);
+    return base.replace(".", "$").concat(SUFFIX);
   }
 
 }
