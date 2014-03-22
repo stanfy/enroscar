@@ -98,7 +98,7 @@ public class LoadProcessorTest {
         "  }",
         "}"));
 
-    JavaFileObject expectedSource = loadExpectedSource("Outer.Inner", "OuterInner");
+    JavaFileObject expectedSource = loadExpectedSource("Outer.Inner", "Outer$Inner");
 
     ASSERT.about(javaSource())
         .that(file).processedWith(processor)
@@ -198,7 +198,7 @@ public class LoadProcessorTest {
 
     ASSERT.about(javaSource())
         .that(file).processedWith(processor)
-        .compilesWithoutError(); //.and() TODO
+        .compilesWithoutError(); // TODO .and()
         //.generatesSources(expected);
   }
 
