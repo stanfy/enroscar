@@ -1,5 +1,6 @@
 package com.stanfy.enroscar.goro;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,8 @@ import org.robolectric.annotation.Config;
 import java.util.concurrent.Callable;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for GoroService.
@@ -84,8 +87,15 @@ public class GoroServiceTest {
     assertThat(executed).isTrue();
   }
 
+  @Test
+  public void serviceContextShouldBeInjected() {
+    Task task = mock(Task.class);
+    service.onStartCommand(GoroService.taskIntent(Robolectric.application, task), 0, 1);
+    verify(task).injectServiceContext(service);
+  }
+
   /** A test task. */
-  public static class Task implements Parcelable, Callable<String> {
+  public static class Task implements Parcelable, Callable<String>, ServiceContextAware {
 
     /** Creator instance. */
     public static Creator<Task> CREATOR = new Creator<Task>() {
@@ -118,6 +128,11 @@ public class GoroServiceTest {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+
+    }
+
+    @Override
+    public void injectServiceContext(Context context) {
 
     }
   }

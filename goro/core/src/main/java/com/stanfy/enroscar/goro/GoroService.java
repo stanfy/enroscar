@@ -132,13 +132,6 @@ public class GoroService extends Service {
     context.unbindService(connection);
   }
 
-  private GoroBinder getBinder() {
-    if (binder == null) {
-      binder = new GoroBinder(createGoro(), new GoroTasksListener());
-    }
-    return binder;
-  }
-
   protected static Callable<?> getTaskFromExtras(final Intent intent) {
     if (!intent.hasExtra(EXTRA_TASK) && !intent.hasExtra(EXTRA_TASK_BUNDLE)) {
       return null;
@@ -159,12 +152,26 @@ public class GoroService extends Service {
     return (Callable<?>)taskArg;
   }
 
+  private GoroBinder getBinder() {
+    if (binder == null) {
+      binder = new GoroBinder(createGoro(), new GoroTasksListener());
+    }
+    return binder;
+  }
+
+  private void injectContext(final Callable<?> task) {
+    if (task instanceof ServiceContextAware) {
+      ((ServiceContextAware) task).injectServiceContext(this);
+    }
+  }
+
 
   @Override
   public int onStartCommand(final Intent intent, final int flags, final int startId) {
     if (intent != null) {
       Callable<?> task = getTaskFromExtras(intent);
       if (task != null) {
+        injectContext(task);
         String queueName = intent.hasExtra(EXTRA_QUEUE_NAME)
             ? intent.getStringExtra(EXTRA_QUEUE_NAME)
             : Goro.DEFAULT_QUEUE;
