@@ -13,6 +13,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static com.stanfy.enroscar.goro.GoroFuture.IMMEDIATE;
+
 /**
  * Handles tasks in multiple queues using Android service.
  * @see com.stanfy.enroscar.goro.GoroService
@@ -125,12 +127,12 @@ public abstract class BoundGoro extends Goro implements ServiceConnection {
     }
 
     @Override
-    public <T> Future<T> schedule(final Callable<T> task) {
+    public <T> ObservableFuture<T> schedule(final Callable<T> task) {
       return schedule(DEFAULT_QUEUE, task);
     }
 
     @Override
-    public <T> Future<T> schedule(String queueName, Callable<T> task) {
+    public <T> ObservableFuture<T> schedule(String queueName, Callable<T> task) {
       synchronized (lock) {
         if (service != null) {
           return service.schedule(queueName, task);
@@ -198,7 +200,7 @@ public abstract class BoundGoro extends Goro implements ServiceConnection {
     }
 
     /** Postponed scheduled future. */
-    private final class BoundFuture<T> implements Future<T>, Postponed {
+    private final class BoundFuture<T> implements ObservableFuture<T>, Postponed {
 
       /** Queue name. */
       final String queue;
@@ -262,6 +264,16 @@ public abstract class BoundGoro extends Goro implements ServiceConnection {
         }
         // TODO
         throw new UnsupportedOperationException("not implemented yet");
+      }
+
+      @Override
+      public void subscribe(final Executor executor, final FutureObserver<T> observer) {
+        // TODO
+      }
+
+      @Override
+      public void subscribe(final FutureObserver<T> observer) {
+        subscribe(IMMEDIATE, observer);
       }
     }
   }

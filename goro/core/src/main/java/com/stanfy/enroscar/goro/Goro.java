@@ -5,7 +5,6 @@ import android.os.IBinder;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 
 import static com.stanfy.enroscar.goro.BoundGoro.BoundGoroImpl;
 
@@ -74,7 +73,7 @@ public abstract class Goro {
    * @param task task instance
    * @return task future instance
    */
-  public abstract <T> Future<T> schedule(final Callable<T> task);
+  public abstract <T> ObservableFuture<T> schedule(final Callable<T> task);
 
   /**
    * Add a task to the specified queue.
@@ -84,7 +83,7 @@ public abstract class Goro {
    * @param task task instance
    * @return task future instance
    */
-  public abstract <T> Future<T> schedule(final String queueName, final Callable<T> task);
+  public abstract <T> ObservableFuture<T> schedule(final String queueName, final Callable<T> task);
 
   /**
    * Returns an executor for performing tasks in a specified queue. If queue name is null,
@@ -122,12 +121,12 @@ public abstract class Goro {
     }
 
     @Override
-    public <T> Future<T> schedule(final Callable<T> task) {
+    public <T> ObservableFuture<T> schedule(final Callable<T> task) {
       return schedule(DEFAULT_QUEUE, task);
     }
 
     @Override
-    public <T> Future<T> schedule(final String queueName, final Callable<T> task) {
+    public <T> ObservableFuture<T> schedule(final String queueName, final Callable<T> task) {
       if (task == null) {
         throw new IllegalArgumentException("Task must not be null");
       }

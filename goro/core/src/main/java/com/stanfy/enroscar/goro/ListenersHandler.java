@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 /**
@@ -19,7 +21,7 @@ class ListenersHandler extends BaseListenersHandler {
   private static final int INIT_CAPACITY = 5;
 
   /** Handler implementation. */
-  private final H h = new H();
+  private final H h = new H(this);
 
   public ListenersHandler() {
     super(INIT_CAPACITY);
@@ -56,14 +58,23 @@ class ListenersHandler extends BaseListenersHandler {
   }
 
   /** Handler implementation. */
-  private class H extends Handler {
+  private static class H extends Handler {
 
-    public H() {
+    /** Outer class instance handler. */
+    private final WeakReference<ListenersHandler> listenersHandlerRef;
+
+    public H(ListenersHandler listenersHandler) {
       super(Looper.getMainLooper());
+      this.listenersHandlerRef = new WeakReference<>(listenersHandler);
     }
 
     @Override
     public void handleMessage(@SuppressWarnings("NullableProblems") final Message msg) {
+      ListenersHandler lh = listenersHandlerRef.get();
+      if (lh == null) {
+        return;
+      }
+      ArrayList<GoroListener> taskListeners = lh.taskListeners;
       if (taskListeners.isEmpty()) {
         return;
       }

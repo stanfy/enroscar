@@ -157,4 +157,48 @@ public class GoroImplTest {
     assertThat(testingQueues.getLastQueueName()).isNull();
   }
 
+  @SuppressWarnings("unchecked")
+  @Test
+  public void immediateObserversShouldBeCalled() {
+    FutureObserver observer = mock(FutureObserver.class);
+    goro.schedule(mock(Callable.class)).subscribe(observer);
+    verify(observer, never()).onSuccess(any());
+    testingQueues.executeAll();
+    verify(observer).onSuccess(any());
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void observersShouldBeCalledOnTheirExecutors() {
+    FutureObserver observer = mock(FutureObserver.class);
+    final Runnable[] commands = new Runnable[1];
+    //noinspection NullableProblems
+    Executor executor = new Executor() {
+      @Override
+      public void execute(final Runnable command) {
+        commands[0] = command;
+      }
+    };
+
+    goro.schedule(mock(Callable.class)).subscribe(executor, observer);
+    verify(observer, never()).onSuccess(any());
+    testingQueues.executeAll();
+    assertThat(commands[0]).isNotNull();
+    commands[0].run();
+    verify(observer).onSuccess(any());
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void errorsShouldBePassedToObservers() throws Exception {
+    FutureObserver observer = mock(FutureObserver.class);
+    Callable<?> task = mock(Callable.class);
+    Exception e = new Exception();
+    doThrow(e).when(task).call();
+    goro.schedule(task).subscribe(observer);
+
+    testingQueues.executeAll();
+    verify(observer).onError(e);
+  }
+
 }

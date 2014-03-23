@@ -140,7 +140,7 @@ public class BoundGoroTest {
   public void afterBindingScheduleShouldBeDelegated() {
     goro.bind();
     Callable<?> task = mock(Callable.class);
-    Future<?> future = mock(Future.class);
+    ObservableFuture<?> future = mock(ObservableFuture.class);
     doReturn(future).when(serviceInstance).schedule("2", task);
     assertThat((Object) goro.schedule("2", task)).isSameAs(future);
   }
