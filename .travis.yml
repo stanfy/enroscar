@@ -17,9 +17,9 @@ install:
   - ./gradlew -q assemble
 
 script:
-  - ./gradlew check
+  - ./gradlew --continue check
   - wait_for_emulator
-  - ./gradlew -PpreDex=false :goro:conCheck :images:conCheck :net:conCheck
+  - ./gradlew --continue -PpreDex=false :images:conCheck :goro:conCheck :net:conCheck
 
 after_success:
   - chmod +x scripts/deploy_to_maven.sh
