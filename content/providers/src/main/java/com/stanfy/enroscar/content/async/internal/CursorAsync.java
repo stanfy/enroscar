@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.stanfy.enroscar.content.async.ContentProviderQuery;
+import com.stanfy.enroscar.content.ContentProviderQuery;
 
 /**
  * {@link com.stanfy.enroscar.content.async.Async} implementation that queries a cursor from

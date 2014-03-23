@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.content.async;
+package com.stanfy.enroscar.content;
 
 import android.content.ContentResolver;
 import android.content.Context;

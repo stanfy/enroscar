@@ -1,15 +1,16 @@
-package com.stanfy.enroscar.content.async;
+package com.stanfy.enroscar.content;
 
 import android.content.Context;
 import android.database.Cursor;
 
+import com.stanfy.enroscar.content.async.Async;
 import com.stanfy.enroscar.content.async.internal.CursorAsync;
 
-import static com.stanfy.enroscar.content.async.ContentProviderQuery.BaseParamsBuilder;
-import static com.stanfy.enroscar.content.async.ContentProviderQuery.Builder.makeQuery;
+import static com.stanfy.enroscar.content.ContentProviderQuery.BaseParamsBuilder;
+import static com.stanfy.enroscar.content.ContentProviderQuery.Builder.makeQuery;
 
 /**
- * Builder for {@link Async} that loads a {@link Cursor}
+ * Builder for {@link com.stanfy.enroscar.content.async.Async} that loads a {@link Cursor}
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
 public final class CursorAsyncBuilder extends BaseParamsBuilder<Async<Cursor>, CursorAsyncBuilder> {
@@ -17,7 +18,7 @@ public final class CursorAsyncBuilder extends BaseParamsBuilder<Async<Cursor>, C
   /** Observation flag. */
   private boolean observeDescendants;
 
-  CursorAsyncBuilder(final Context context) {
+  public CursorAsyncBuilder(final Context context) {
     super(context);
   }
 
