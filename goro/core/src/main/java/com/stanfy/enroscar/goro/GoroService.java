@@ -235,7 +235,7 @@ public class GoroService extends Service {
   }
 
   /** Listens to task events. */
-  private class GoroTasksListener implements GoroListener {
+  class GoroTasksListener implements GoroListener {
 
     int activeTasksCount;
 

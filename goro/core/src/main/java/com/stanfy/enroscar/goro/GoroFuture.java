@@ -26,7 +26,7 @@ final class GoroFuture<T> extends FutureTask<T> implements ObservableFuture<T> {
   };
 
   /** Observers list. */
-  private final ExecutionObserversList observers = new ExecutionObserversList();
+  final ExecutionObserversList observers = new ExecutionObserversList();
 
   /** Weak reference to Goro. */
   private final WeakReference<GoroImpl> goroRef;
@@ -96,13 +96,13 @@ final class GoroFuture<T> extends FutureTask<T> implements ObservableFuture<T> {
    * What can be added to the observers list.
    * @param <T> future data type
    */
-  private static final class ObserverRunnable<T> implements Runnable {
+  static final class ObserverRunnable<T> implements Runnable {
 
     /** Observer reference. */
     private final FutureObserver<T> observer;
 
     /** Future instance. */
-    private GoroFuture<T> future;
+    GoroFuture<T> future;
 
     ObserverRunnable(final FutureObserver<T> observer, final GoroFuture<T> future) {
       this.observer = observer;

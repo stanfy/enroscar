@@ -7,7 +7,7 @@ import java.util.concurrent.Executor;
  * See ExecutionList there.
  * Main change: execution order has no guarantees.
  */
-final class ExecutionObserversList {
+class ExecutionObserversList {
 
   /** Linked list pointer to the first subscriber. */
   private ObserverExecutorPair observersHead;
@@ -44,8 +44,12 @@ final class ExecutionObserversList {
     // And we can iterate over the elements without holding a lock.
 
     for (; head != null; head = head.next) {
-      head.executor.execute(head.what);
+      executeObserver(head.executor, head.what);
     }
+  }
+
+  protected void executeObserver(final Executor executor, final Runnable what) {
+    executor.execute(what);
   }
 
   /** Pair of observers' runnable and its executor inside our linked list. */

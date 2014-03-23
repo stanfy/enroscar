@@ -18,11 +18,12 @@ import org.robolectric.shadows.ShadowActivity;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import static org.mockito.Mockito.*;
-
-import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.ANDROID.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for BoundGoro.
@@ -42,6 +43,7 @@ public class BoundGoroTest {
 
   private IBinder binder;
   private ComponentName serviceCompName;
+  private TestingQueues testingQueues;
 
   @Before
   public void create() {
@@ -50,10 +52,12 @@ public class BoundGoroTest {
     goro = Goro.bindWith(context);
     goro = spy(goro);
 
-    serviceInstance = mock(Goro.class);
+    testingQueues = new TestingQueues();
+    serviceInstance = spy(new Goro.GoroImpl(testingQueues));
 
     serviceCompName = new ComponentName(context, GoroService.class);
-    binder = new GoroService.GoroBinder(serviceInstance, null);
+    GoroService service = new GoroService();
+    binder = new GoroService.GoroBinder(serviceInstance, service.new GoroTasksListener());
     shadowContext.getShadowApplication()
         .setComponentNameAndServiceForBindService(
             serviceCompName,
@@ -165,6 +169,113 @@ public class BoundGoroTest {
     goro.bind();
 
     verify(task).run();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void observersSuccess() throws Exception {
+    Callable<String> task = okTask();
+    FutureObserver<String> observer = mock(FutureObserver.class);
+    goro.schedule(task).subscribe(observer);
+
+    goro.bind();
+    verify(serviceInstance).schedule(Goro.DEFAULT_QUEUE, task);
+    testingQueues.executeAll();
+    verify(observer).onSuccess("ok");
+  }
+
+  @SuppressWarnings("unchecked")
+  private Callable<String> okTask() throws Exception {
+    Callable<String> task = mock(Callable.class);
+    doReturn("ok").when(task).call();
+    return task;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void observersError() throws Exception {
+    Callable<String> task = mock(Callable.class);
+    Exception e = new Exception();
+    doThrow(e).when(task).call();
+    FutureObserver<String> observer = mock(FutureObserver.class);
+    goro.schedule(task).subscribe(observer);
+
+    goro.bind();
+    testingQueues.executeAll();
+    verify(observer).onError(e);
+  }
+
+  @Test
+  public void getOnFuture() throws Exception {
+    final Future<String> f = goro.schedule(okTask());
+    final String[] result = new String[1];
+    final Exception[] error = new Exception[1];
+    Thread t = new Thread() {
+      @Override
+      public void run() {
+        try {
+          result[0] = f.get();
+        } catch (Exception e) {
+          error[0] = e;
+        }
+      }
+    };
+    t.start();
+    assertThat(result).containsNull();
+    goro.bind();
+    testingQueues.executeAll();
+    t.join(1000);
+    if (error[0] != null) {
+      throw new AssertionError(error[0]);
+    }
+    assertThat(result).containsOnly("ok");
+  }
+
+  @Test
+  public void getOnFutureWithTimeout() throws Exception {
+    final Future<String> f = goro.schedule(okTask());
+    final String[] result = new String[1];
+    final Exception[] error = new Exception[1];
+    Thread t = new Thread() {
+      @Override
+      public void run() {
+        try {
+          result[0] = f.get(3, TimeUnit.SECONDS);
+        } catch (Exception e) {
+          error[0] = e;
+        }
+      }
+    };
+    t.start();
+    assertThat(result).containsNull();
+    goro.bind();
+    testingQueues.executeAll();
+    t.join(1000);
+    if (error[0] != null) {
+      throw new AssertionError(error[0]);
+    }
+    assertThat(result).containsOnly("ok");
+  }
+
+  @Test
+  public void throwingTimeoutWithoutBinding() throws Exception {
+    final Future<String> f = goro.schedule(okTask());
+    final String[] result = new String[1];
+    final Exception[] error = new Exception[1];
+    Thread t = new Thread() {
+      @Override
+      public void run() {
+        try {
+          result[0] = f.get(5, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+          error[0] = e;
+        }
+      }
+    };
+    t.start();
+    t.join(1000);
+    assertThat(result).containsNull();
+    assertThat(error[0]).isInstanceOf(TimeoutException.class);
   }
 
 }
