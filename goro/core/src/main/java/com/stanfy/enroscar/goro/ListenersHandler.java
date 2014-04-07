@@ -78,6 +78,8 @@ class ListenersHandler extends BaseListenersHandler {
       if (taskListeners.isEmpty()) {
         return;
       }
+      // make a copy of listeners to allow them to modify listeners collection
+      taskListeners = new ArrayList<>(taskListeners);
 
       MessageData data = (MessageData) msg.obj;
       if (data == null) {
