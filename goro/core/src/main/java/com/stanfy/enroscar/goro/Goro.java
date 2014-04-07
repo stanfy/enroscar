@@ -16,9 +16,14 @@ public abstract class Goro {
   /** Default queue name. */
   public static final String DEFAULT_QUEUE = "default";
 
+  /**
+   * Gives access to Goro instance that is provided by a service.
+   * @param binder Goro service binder
+   * @return Goro instance provided by the service
+   */
   public static Goro from(final IBinder binder) {
     if (binder instanceof GoroService.GoroBinder) {
-      return ((GoroService.GoroBinder) binder).goro;
+      return ((GoroService.GoroBinder) binder).goro();
     }
     throw new IllegalArgumentException("Cannot get Goro from " + binder);
   }

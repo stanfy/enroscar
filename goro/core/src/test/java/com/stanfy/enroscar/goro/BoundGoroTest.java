@@ -57,7 +57,7 @@ public class BoundGoroTest {
 
     serviceCompName = new ComponentName(context, GoroService.class);
     GoroService service = new GoroService();
-    binder = new GoroService.GoroBinder(serviceInstance, service.new GoroTasksListener());
+    binder = new GoroService.GoroBinderImpl(serviceInstance, service.new GoroTasksListener());
     shadowContext.getShadowApplication()
         .setComponentNameAndServiceForBindService(
             serviceCompName,

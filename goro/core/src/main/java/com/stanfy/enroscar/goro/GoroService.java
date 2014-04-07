@@ -56,7 +56,7 @@ public class GoroService extends Service {
   boolean hasBoundUsers;
 
   /** Binder instance. */
-  private GoroBinder binder;
+  private GoroBinderImpl binder;
 
   /** Stop handler. */
   private final StopHandler stopHandler = new StopHandler(this);
@@ -152,9 +152,9 @@ public class GoroService extends Service {
     return (Callable<?>)taskArg;
   }
 
-  private GoroBinder getBinder() {
+  private GoroBinderImpl getBinder() {
     if (binder == null) {
-      binder = new GoroBinder(createGoro(), new GoroTasksListener());
+      binder = new GoroBinderImpl(createGoro(), new GoroTasksListener());
     }
     return binder;
   }
@@ -216,9 +216,13 @@ public class GoroService extends Service {
     return delegateExecutor != null ? createWithDelegate(delegateExecutor) : create();
   }
 
+  /** Returns a Goro instance. */
+  public interface GoroBinder extends IBinder {
+    Goro goro();
+  }
 
   /** Goro service binder. */
-  static class GoroBinder extends Binder {
+  static class GoroBinderImpl extends Binder implements GoroBinder {
 
     /** Goro instance. */
     final Goro goro;
@@ -226,12 +230,16 @@ public class GoroService extends Service {
     /** Listener. */
     final GoroTasksListener listener;
 
-    GoroBinder(final Goro goro, final GoroTasksListener listener) {
+    GoroBinderImpl(final Goro goro, final GoroTasksListener listener) {
       this.goro = goro;
       this.listener = listener;
       goro.addTaskListener(listener);
     }
 
+    @Override
+    public Goro goro() {
+      return goro;
+    }
   }
 
   /** Listens to task events. */
