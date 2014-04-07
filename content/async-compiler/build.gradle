@@ -49,6 +49,13 @@ task debug << {
   configurations.testRuntime.each { println it }
 }
 
-install.repositories.mavenInstaller.pom.whenConfigured { pom ->
+def cleanupPom = { pom ->
   pom.dependencies.removeAll { it.groupId == project.group }
+}
+
+install.repositories.mavenInstaller.pom.whenConfigured(cleanupPom)
+uploadArchives.repositories {
+  mavenDeployer {
+    pom.whenConfigured(cleanupPom)
+  }
 }
