@@ -18,7 +18,7 @@ install:
 
 script:
   - ./gradlew --continue check
-  - wait_for_emulator
+  - wait_for_emulator || exit 1
   - ./gradlew --continue -PpreDex=false :images:conCheck :goro:conCheck :net:conCheck
 
 after_success:
