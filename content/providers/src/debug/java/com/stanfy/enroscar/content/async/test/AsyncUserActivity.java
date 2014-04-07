@@ -3,93 +3,152 @@ package com.stanfy.enroscar.content.async.test;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.stanfy.enroscar.content.async.Action;
 import com.stanfy.enroscar.content.async.Async;
-import com.stanfy.enroscar.content.async.AsyncObserver;
+import com.stanfy.enroscar.content.async.Load;
+import com.stanfy.enroscar.content.async.OperatorBuilder;
+import com.stanfy.enroscar.content.async.Send;
 import com.stanfy.enroscar.content.async.Tools;
-import com.stanfy.enroscar.content.async.internal.AsyncContext;
 import com.stanfy.enroscar.content.async.internal.AsyncProvider;
-import com.stanfy.enroscar.content.async.internal.LoadAsync;
-import com.stanfy.enroscar.content.async.internal.SendAsync;
+import com.stanfy.enroscar.content.async.internal.LoaderDescription;
+import com.stanfy.enroscar.content.async.internal.ObserverBuilder;
+import com.stanfy.enroscar.content.async.internal.OperatorBase;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-
-import static com.stanfy.enroscar.content.async.internal.AsyncContext.DelegatedContext;
-import static com.stanfy.enroscar.content.async.internal.AsyncContext.DirectContext;
 
 /**
  * Activity that uses Async.
  */
 public final class AsyncUserActivity extends FragmentActivity {
 
+  private static final String STATE_LAZY_LOAD = "ll";
+
   /** Text view. */
-  TextView textView;
+  TextView textViewLoad;
+  /** Send data text view. */
+  TextView textViewSend;
 
   /** A getThing. */
   Thing thing;
 
+  private boolean lazyLoad;
+
   final CountDownLatch loadSync = new CountDownLatch(1);
+  final CountDownLatch lazyLoadSync = new CountDownLatch(1);
   final CountDownLatch sendSync = new CountDownLatch(1);
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    textView = new TextView(this);
-    setContentView(textView);
 
-    final Data data = new DataGenerated(AsyncUserActivity.this);
+    if (savedInstanceState != null) {
+      lazyLoad = savedInstanceState.getBoolean(STATE_LAZY_LOAD);
+    }
 
-    textView.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        data.sendThing().subscribe(new AsyncObserver<Thing>() {
+    LinearLayout ll = new LinearLayout(this);
+    ll.setOrientation(LinearLayout.VERTICAL);
+
+    textViewLoad = new TextView(this);
+    textViewSend = new TextView(this);
+    ll.addView(textViewLoad);
+    ll.addView(textViewSend);
+
+    setContentView(ll);
+
+    final Data operations = new Data("init");
+    operations.setSomething(0.5f);
+    final DataOperator data = DataOperator.build()
+        .operations(operations)
+        .withinActivity(this)
+        .get();
+
+    data.when().getThingIsFinished()
+        .doOnResult(new Action<Thing>() {
           @Override
-          public void onError(final Throwable e) {
-            throw new AssertionError(e);
-          }
-          @Override
-          public void onResult(final Thing data) {
+          public void act(final Thing data) {
             thing = data;
-            textView.setText(textView.getText() + "Send result: " + data.toString());
+            textViewLoad.setText(textViewLoad.getText() + data.toString());
+            if (lazyLoad) {
+              lazyLoadSync.countDown();
+            } else {
+              loadSync.countDown();
+            }
+          }
+        })
+        .doOnError(new Action<Throwable>() {
+          @Override
+          public void act(final Throwable data) {
+            throw new AssertionError(data);
+          }
+        })
+
+        .alsoWhen().sendThingIsFinished()
+        .doOnResult(new Action<Thing>() {
+          @Override
+          public void act(final Thing data) {
+            thing = data;
+            //noinspection ConstantConditions
+            textViewSend.setText(textViewSend.getText().toString() + data);
             sendSync.countDown();
           }
         });
+
+
+    textViewSend.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        data.sendThing(2);
       }
     });
 
-    data.getThing().subscribe(new AsyncObserver<Thing>() {
+    textViewLoad.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onError(final Throwable e) {
-        throw new AssertionError(e);
-      }
-
-      @Override
-      public void onResult(final Thing data) {
-        thing = data;
-        textView.setText(textView.getText() + data.toString());
-        loadSync.countDown();
+      public void onClick(final View v) {
+        lazyLoad = true;
+        data.forceGetThing(3);
       }
     });
+
+    data.getThing(1);
+  }
+
+  @Override
+  protected void onSaveInstanceState(final Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putBoolean(STATE_LAZY_LOAD, lazyLoad);
   }
 
   /** Loader. */
   static class Data {
 
-    Async<Thing> getThing() {
-      return getAsync();
+    private final String initParam;
+    private float setParam;
+
+    Data(final String initParam) {
+      this.initParam = initParam;
     }
 
-    Async<Thing> sendThing() {
-      return getAsync();
+    public void setSomething(final float param) {
+      setParam = param;
     }
 
-    private Async<Thing> getAsync() {
+    @Load Async<Thing> getThing(final int param) {
+      return getAsync(param);
+    }
+
+    @Send Async<Thing> sendThing(final int param) {
+      return getAsync(param);
+    }
+
+    private Async<Thing> getAsync(final int param) {
       return Tools.async(new Callable<Thing>() {
         @Override
         public Thing call() throws Exception {
-          return new Thing();
+          return new Thing(initParam, setParam, param);
         }
       });
     }
@@ -97,42 +156,92 @@ public final class AsyncUserActivity extends FragmentActivity {
 
   /** Something that is loaded. */
   public static class Thing {
+    final String str;
+    final float fl;
+
+    /** Parameter. */
+    final int param;
+
+    public Thing(final String str, float fl, final int param) {
+      this.str = str;
+      this.fl = fl;
+      this.param = param;
+    }
+
     @Override
     public String toString() {
-      return "a getThing";
+      return "a thing: " + param + "/" + str + "/" + fl;
     }
   }
 
   // -------------- GENERATED CODE ----------------
 
-  static final class DataGenerated extends Data {
+  static final class DataOperator extends OperatorBase<Data, Data$$LoaderDescription> {
 
-    private final AsyncUserActivity activity;
+    // construction
 
-    private final SendAsync<Thing> sendThingAsync;
-    private final DelegatedContext<Thing> sendThingContext;
-
-    public DataGenerated(final AsyncUserActivity activity) {
-      this.activity = activity;
-      sendThingContext = new DelegatedContext<>(activity);
-      sendThingAsync = new SendAsync<>(activity.getSupportLoaderManager(), sendThingContext, 1);
+    DataOperator(final OperatorContext<Data> operatorContext) {
+      super(new Data$$LoaderDescription(operatorContext), operatorContext);
     }
 
-    @Override
-    Async<Thing> getThing() {
-      AsyncContext<Thing> context = new DirectContext<>(super.getThing(), activity);
-      return new LoadAsync<>(activity.getSupportLoaderManager(), context, 2);
+    public static OperatorBuilder<DataOperator, Data> build() {
+      return new OperatorBuilderBase<DataOperator, Data>() {
+        @Override
+        protected DataOperator create(final OperatorContext<Data> context) {
+          return new DataOperator(context);
+        }
+      };
     }
 
-    @Override
-    Async<Thing> sendThing() {
-      sendThingContext.setDelegate(new AsyncProvider<Thing>() {
+    // invocation
+
+    public void getThing(final int param) {
+      AsyncProvider<Thing> provider = new AsyncProvider<Thing>() {
         @Override
         public Async<Thing> provideAsync() {
-          return DataGenerated.super.sendThing();
+          return getOperations().getThing(param);
         }
-      });
-      return sendThingAsync;
+      };
+      initLoader(1, provider, false);
+    }
+    public void forceGetThing(final int param) {
+      AsyncProvider<Thing> provider = new AsyncProvider<Thing>() {
+        @Override
+        public Async<Thing> provideAsync() {
+          return getOperations().getThing(param);
+        }
+      };
+      restartLoader(1, provider);
+    }
+    public void sendThing(final int param) {
+      AsyncProvider<Thing> provider = new AsyncProvider<Thing>() {
+        @Override
+        public Async<Thing> provideAsync() {
+          return getOperations().sendThing(param);
+        }
+      };
+      initLoader(2, provider, true);
+    }
+
+    // TODO: cancellation
+
+  }
+
+  /* same visibility */
+  static final class Data$$LoaderDescription extends LoaderDescription {
+
+    Data$$LoaderDescription(final OperatorBase.OperatorContext<Data> context) {
+      super(context);
+    }
+
+    /* same visibility */
+    ObserverBuilder<Thing, Data$$LoaderDescription> getThingIsFinished() {
+      return new ObserverBuilder<>(1, this);
+    }
+
+    /* same visibility */
+    ObserverBuilder<Thing, Data$$LoaderDescription> sendThingIsFinished() {
+      return new ObserverBuilder<>(2, this);
     }
 
   }

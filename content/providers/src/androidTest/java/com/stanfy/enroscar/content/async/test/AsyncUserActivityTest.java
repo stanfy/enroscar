@@ -31,7 +31,8 @@ public class AsyncUserActivityTest extends ActivityInstrumentationTestCase2<Asyn
       @Override
       public void run() {
         assertThat(activity.thing).isNotNull();
-        assertThat(activity.textView).hasTextString(activity.thing.toString());
+        assertThat(activity.thing.param).isEqualTo(1);
+        assertThat(activity.textViewLoad).hasTextString(activity.thing.toString());
       }
     });
   }
@@ -43,7 +44,7 @@ public class AsyncUserActivityTest extends ActivityInstrumentationTestCase2<Asyn
     runTestOnUiThread(new Runnable() {
       @Override
       public void run() {
-        activity.textView.performClick();
+        activity.textViewSend.performClick();
       }
     });
 
@@ -52,9 +53,30 @@ public class AsyncUserActivityTest extends ActivityInstrumentationTestCase2<Asyn
       @Override
       public void run() {
         assertThat(activity.thing).isNotSameAs(lastThing).isNotNull();
-        assertThat(activity.textView).hasTextString(
-            lastThing.toString() + "Send result: " + activity.thing
-        );
+        assertThat(activity.thing.param).isEqualTo(2);
+        assertThat(activity.textViewSend).hasTextString(activity.thing.toString());
+      }
+    });
+  }
+
+  public void testLazyLoadThing() throws Throwable {
+    assertThat(activity.loadSync.await(1, TimeUnit.SECONDS)).isTrue();
+    final AsyncUserActivity.Thing lastThing = activity.thing;
+
+    runTestOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        activity.textViewLoad.performClick();
+      }
+    });
+
+    assertThat(activity.lazyLoadSync.await(1, TimeUnit.SECONDS)).isTrue();
+    runTestOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        assertThat(activity.thing).isNotSameAs(lastThing).isNotNull();
+        assertThat(activity.thing.param).isEqualTo(3);
+        assertThat(activity.textViewLoad).hasTextString(lastThing.toString() + activity.thing);
       }
     });
   }

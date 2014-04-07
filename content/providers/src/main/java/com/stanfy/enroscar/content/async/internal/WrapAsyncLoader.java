@@ -46,7 +46,7 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
     }
     async = context.provideAsync();
     if (async == null) {
-      throw new IllegalArgumentException("Async can't be null. Have you implemented @Load method?");
+      throw new IllegalArgumentException("Async can't be null. Have you implemented @Load or @Send method?");
     }
 
     async.subscribe(observer);
