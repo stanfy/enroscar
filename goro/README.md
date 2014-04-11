@@ -3,8 +3,9 @@ Goro
 
 Goro performs asynchronous operations in a queue.
 You may ask Goro to perform some task with `schedule` method invocation:
-```
-  goro.schedule(myOperations);
+```java
+Goro goro = Goro.create();
+goro.schedule(myOperations);
 ```
 
 Tasks are instances of [`Callable`](https://developer.android.com/reference/java/util/concurrent/Callable.html).
@@ -12,11 +13,11 @@ Tasks are instances of [`Callable`](https://developer.android.com/reference/java
 All the operations you ask Goro to perform are put in a queue and executed one by one.
 Goro allows you to organize multiple queues. You can specify what queue a task should be sent to
 with the second argument of `schedule` method:
-```
-  goro.schedule("firstQueue", myOperations1);
-  goro.schedule("secondQueue", myOperations2);
-  goro.schedule("firstQueue", myOperations3);
-  goro.schedule("secondQueue", myOperations4);
+```java
+goro.schedule("firstQueue", myOperations1);
+goro.schedule("secondQueue", myOperations2);
+goro.schedule("firstQueue", myOperations3);
+goro.schedule("secondQueue", myOperations4);
 ```
 
 Queue is defined with a name. Goro does not limit number of your queues and lazily creates a new
@@ -28,15 +29,30 @@ operations in different queues may be executed in parallel.
 
 After scheduling your task to be performed, Goro returns a `Future` instance that may be used
 to cancel your task or wait for its finishing synchronously.
-
+```java
+Future<?> taskFuture = goro.schedule(task);
+taskFuture.cancel(true);
 ```
-  Future<?> taskFuture = goro.schedule(task);
-  taskFuture.cancel(true);
+
+`Future` returned by Goro has an extended interface `ObservableFuture`, which allows you to
+asynchronously listen to task execution results:
+```java
+// executed in the task thread
+goro.schedule(task).subscribe(new FutureObserver() {
+  public void onSuccess(Result value) {
+    Log.i(TAG, "Task result: " + value);
+  }
+  public void onError(Throwable error) {
+    Log.e(TAG, "Task error: " + error);
+  }
+});
+// customize how observer is executed
+goro.schedule(task).subscribe(uiThreadExecutor, observer);
 ```
 
 You may also get an
 [`Executor`](https://developer.android.com/reference/java/util/concurrent/Executor.html) instance
-for a particular queue and integrate Goro with such frameworks as RxJava or Bolts:
+for a particular queue to integrate Goro with other libraries:
 ```java
 // --- RxJava ---
 // Perform actions in "actions queue"
@@ -68,20 +84,46 @@ Service
 
 Usually we run Goro within a `Service` context to tell Android system that there are ongoing tasks
 and ensure that our process is not the first candidate for termination.
-Such a service is `GoroService`. We can bind to it and get Goro instance from the service:
+Such a service is `GoroService`. If you use `aar` package of this library in a Gradle build based
+project, the service will be added to your app automatically.
+Otherwise you'll need to insert the following line into your `AndroidManifest.xml`:
+```xml
+<service android:name="com.stanfy.enroscar.goro.GoroService" />
+```
 
+The service creates a `Goro` instance when it's created. To interact with this instance you'll need
+to bind to the service. Use `BoundGoro` for this:
 ```java
-  public void bindToGoroService() {
-    GoroService.bind(context, this /* implements ServiceConnection */);
+
+public class MyActivity extends Activity {
+
+  // Goro instance
+  private BoundGoro goro;
+
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    // The factory method is supplied with a Context used to execute bindService method.
+    goro = Goro.bindWith(this);
+
+    findViewById(R.id.submitButton).setOnClickListener(new OnClickListener() {
+      public void onClick(View view) {
+        goro.schedule(submissionTask);
+      }
+    });
   }
 
-  public void onServiceConnected(ComponentName name, IBinder service) {
-    this.goro = Goro.from(service);
+  protected void onStart() {
+    super.onStart();
+    goro.bind();
   }
 
-  public void unbindFromGoroService() {
-    GoroService.unbind(context, this /* implements ServiceConnection */);
+  protected void onStop() {
+    super.onStop();
+    goro.unbind();
   }
+
+}
+
 ```
 
 We may also ask `GoroService` to perform some task sending an intent containing our `Callable`
@@ -104,6 +146,59 @@ and schedule task execution with `AlarmManager` or `Notification`:
 
   new Notification.Builder(context).setContentIntent(pending);
 ```
+
+
+Goro listeners
+--------------
+You may add listeners that will be notified when each task starts, finishes, fails,
+or is canceled.
+```java
+  goro.addTaskListener(myListener);
+```
+
+All the listener callbacks are invoked in the main thread. Listener can be added or removed in
+the main thread only too.
+
+
+Errors Handling
+---------------
+Goro `schedule` method returns you an `ObservableFuture` instance. Hence you can handle an error
+thrown by a scheduled `Callable` in `try-catch` block that wraps future's `get` method invocation.
+```java
+Future<Result> f = goro.schedule(task);
+// ...
+try {
+  Result result = f.get();
+} catch (ExecutionException e) {
+  Exception thrownException = e.getCause();
+}
+```
+
+Also the thrown exception will be passed to all observers that are subscribed to the `Future`
+instance:
+```java
+goro.schedule(task).subscribe(new FutureObserver() {
+  public void onSuccess(Result value) { }
+
+  public void onError(Throwable error) {
+    // handle you error here
+  }
+});
+```
+
+This is your responsibility to handle an error. If the returned `Future` instance is not interacted
+in any way, the thrown error will be never handled by anyone. Although your app won't crash,
+you'll never know about the error.
+
+When you schedule your task with an `Intent` sent to `GoroService`
+(either directly with `context.startService(GoroService.taskIntent(task))` or with execution
+of `PendingIntent`), you do not have these means to track an error though. Hence, `GoroService`
+sets its own observer, and if an exception is thrown by a `Callable` in such conditions, service
+will throw `GoroException` wrapping the cause, which will crash the app.
+This policy can be soften, if you set `EXTRA_IGNORE_ERROR` to `true` on the `Intent` passed to the
+service. However we discourage you from doing this. And if you do, ensure that you have set up
+a global `GoroListener` that can handle the error.
+
 
 Usage
 -----
@@ -136,18 +231,6 @@ Or use it with Maven:
     <version>$latestVersion</version>
   </dependency>
 ```
-
-
-Goro listeners
---------------
-You may add listeners that will be notified when each task starts, finishes, fails,
-or is canceled.
-```java
-  goro.addTaskListener(myListener);
-```
-
-All the listener callbacks are invoked in the main thread. Listener can be added or removed in
-the main thread only too.
 
 
 Queues are not threads
