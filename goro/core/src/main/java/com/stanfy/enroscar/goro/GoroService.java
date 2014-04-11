@@ -29,18 +29,25 @@ public class GoroService extends Service {
   private static final boolean DEBUG = false;
 
   /**
-   * Used as a {@link android.os.Parcelable} field in service command intent to pass
-   * a task for execution. {@link android.os.Parcelable} instance must also implement
-   * {@link java.util.concurrent.Callable} interface.
-   */
-  public static final String EXTRA_TASK = "task";
-
-  /**
    * Used as a {@link java.lang.String} field in service command intent to pass
    * a queue name. If this extra is not defined, {@link Goro#DEFAULT_QUEUE} is used.
    * You may manually set value to {@code null} in order to perform task beyond any queue.
    */
   public static final String EXTRA_QUEUE_NAME = "queue_name";
+
+  /**
+   * Boolean indicating whether error thrown by an executed task should be ignored.
+   * Use with caution. Ensure that you have set up a @{link GoroListener} that can handle
+   * error appropriately.
+   */
+  public static final String EXTRA_IGNORE_ERROR = "ignore_error";
+
+  /**
+   * Used as a {@link android.os.Parcelable} field in service command intent to pass
+   * a task for execution. {@link android.os.Parcelable} instance must also implement
+   * {@link java.util.concurrent.Callable} interface.
+   */
+  static final String EXTRA_TASK = "task";
 
   /**
    * Used as a workaround for http://code.google.com/p/android/issues/detail?id=6822
@@ -50,6 +57,9 @@ public class GoroService extends Service {
 
   /** Delegate executor. */
   private static Executor delegateExecutor;
+
+  /** Errors thrower. */
+  private static final ErrorThrow ERROR_THROWER = new ErrorThrow();
 
 
   /** Bound users flag. */
@@ -176,10 +186,18 @@ public class GoroService extends Service {
             ? intent.getStringExtra(EXTRA_QUEUE_NAME)
             : Goro.DEFAULT_QUEUE;
 
-        getBinder().goro.schedule(queueName, task);
+        ObservableFuture<?> future = getBinder().goro.schedule(queueName, task);
+        if (!intent.getBooleanExtra(EXTRA_IGNORE_ERROR, false)) {
+          ensureErrorWillBeThrown(future);
+        }
       }
     }
     return START_STICKY;
+  }
+
+  @SuppressWarnings("unchecked")
+  private static void ensureErrorWillBeThrown(final ObservableFuture<?> future) {
+    future.subscribe(ERROR_THROWER);
   }
 
   @Override
@@ -345,5 +363,23 @@ public class GoroService extends Service {
 
   }
 
+  /**
+   * Rethrows an error.
+   */
+  private static final class ErrorThrow implements FutureObserver {
+
+    @Override
+    public void onSuccess(final Object value) {
+      // nothing
+    }
+
+    @Override
+    public void onError(final Throwable error) {
+      throw new GoroException(
+          "Uncaught error thrown by a task scheduled with startService()",
+          error
+      );
+    }
+  }
 
 }

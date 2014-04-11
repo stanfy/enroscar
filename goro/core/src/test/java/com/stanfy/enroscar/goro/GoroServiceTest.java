@@ -17,6 +17,8 @@ import org.robolectric.annotation.Config;
 import java.util.concurrent.Callable;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.fail;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -92,6 +94,31 @@ public class GoroServiceTest {
     Task task = mock(Task.class);
     service.onStartCommand(GoroService.taskIntent(Robolectric.application, task), 0, 1);
     verify(task).injectServiceContext(service);
+  }
+
+  @Test
+  public void shouldNotEatErrors() throws Exception {
+    Task task = mock(Task.class);
+    Exception e = new Exception();
+    doThrow(e).when(task).call();
+    service.onStartCommand(GoroService.taskIntent(Robolectric.application, task), 0, 1);
+    try {
+      queues.executeAll();
+      fail("Error was not rethrown");
+    } catch (GoroException ge) {
+      assertThat(ge.getCause()).isSameAs(e);
+    }
+  }
+
+  @Test
+  public void canEatErrorsWhenAsked() throws Exception {
+    Task task = mock(Task.class);
+    Exception e = new Exception();
+    doThrow(e).when(task).call();
+    Intent intent = GoroService.taskIntent(Robolectric.application, task)
+        .putExtra(GoroService.EXTRA_IGNORE_ERROR, true);
+    service.onStartCommand(intent, 0, 1);
+    queues.executeAll(); // and nothing happens
   }
 
   /** A test task. */
