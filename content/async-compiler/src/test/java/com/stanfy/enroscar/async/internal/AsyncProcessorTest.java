@@ -17,33 +17,18 @@ import static com.stanfy.enroscar.async.internal.LoaderGenerator.LOADER_ID_START
 import static org.truth0.Truth.ASSERT;
 
 /**
- * Tests for LoadProcessor.
+ * Tests for AsyncProcessor.
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest=Config.NONE)
-public class LoadProcessorTest {
+public class AsyncProcessorTest {
 
   static {
     GenUtils.debug = true;
   }
 
   /** Processor. */
-  private final LoadProcessor processor = new LoadProcessor();
-
-  @Test
-  public void finalClass() {
-    JavaFileObject file = JavaFileObjects.forSourceString("Error", Joiner.on("\n").join(
-        "import com.stanfy.enroscar.async.Load;",
-        "import com.stanfy.enroscar.async.Async;",
-        "final class Error {",
-        "  @Load Async<String> one() { }",
-        "}"));
-
-    ASSERT.about(javaSource())
-        .that(file).processedWith(processor)
-        .failsToCompile()
-        .withErrorContaining("final").in(file).onLine(3);
-  }
+  private final AsyncProcessor processor = new AsyncProcessor();
 
   @Test
   public void methodErrors() {
@@ -52,20 +37,20 @@ public class LoadProcessorTest {
         "import com.stanfy.enroscar.async.Async;",
         "class Error {",
         "  @Load Async<String> one() { }",
-        "  @Load abstract Async<String> two() { }",
-        "  @Load final Async<String> three() { }",
         "  @Load String four() { }",
         "  String five() { }",
-        "  @Send final Async<String> six() { }",
+        "  @Send int six() { }",
         "}"));
 
     ASSERT.about(javaSource())
         .that(file).processedWith(processor)
         .failsToCompile()
-        .withErrorContaining("abstract").in(file).onLine(5).and()
-        .withErrorContaining("final").in(file).onLine(6).and()
-        .withErrorContaining("Async").in(file).onLine(7).and()
-        .withErrorContaining("final").in(file).onLine(9);
+
+        .withErrorContaining("@Load").in(file).onLine(5).and()
+        .withErrorContaining("Async").in(file).onLine(5).and()
+
+        .withErrorContaining("@Send").in(file).onLine(7).and()
+        .withErrorContaining("Async").in(file).onLine(7);
   }
 
   @Test

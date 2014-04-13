@@ -23,14 +23,12 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 
-import static javax.lang.model.element.Modifier.ABSTRACT;
-import static javax.lang.model.element.Modifier.FINAL;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
 /**
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
-public final class LoadProcessor extends AbstractProcessor {
+public final class AsyncProcessor extends AbstractProcessor {
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
@@ -75,19 +73,6 @@ public final class LoadProcessor extends AbstractProcessor {
             + " in " + encl);
       }
       TypeElement type = (TypeElement) encl;
-
-      if (type.getModifiers().contains(FINAL)) {
-        error(type, "Class with @" + annotation.getSimpleName() + " annotations must not be final");
-        continue;
-      }
-      if (method.getModifiers().contains(FINAL)) {
-        error(method, "Method annotated with @" + annotation.getSimpleName() + " must not be final");
-        continue;
-      }
-      if (method.getModifiers().contains(ABSTRACT)) {
-        error(method, "Method annotated with @" + annotation.getSimpleName() + " must not be abstract");
-        continue;
-      }
 
       String expectedReturn = Async.class.getCanonicalName();
       if (!GenUtils.getReturnType(method).startsWith(expectedReturn)) {

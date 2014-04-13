@@ -33,7 +33,7 @@ dependencies {
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
   testCompile 'com.google.testing.compile:compile-testing:0.4'
   testCompile 'com.google.guava:guava:15.0'
-  testCompile 'org.truth0:truth:0.13'
+  testCompile 'org.truth0:truth:0.15'
 
   testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
   testRuntime files("${System.properties['java.home']}/../lib/tools.jar")
@@ -43,10 +43,6 @@ dependencies {
 tasks.withType(Test) {
   scanForTestClasses = false
   include "**/*Test.class"
-}
-
-task debug << {
-  configurations.testRuntime.each { println it }
 }
 
 def cleanupPom = { pom ->
