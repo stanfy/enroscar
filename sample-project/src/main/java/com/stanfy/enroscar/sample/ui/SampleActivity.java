@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.stanfy.enroscar.content.async.AsyncObserver;
-import com.stanfy.enroscar.content.async.Tools;
+import com.stanfy.enroscar.async.AsyncObserver;
+import com.stanfy.enroscar.async.Tools;
 import com.stanfy.enroscar.goro.BoundGoro;
 import com.stanfy.enroscar.goro.Goro;
 import com.stanfy.enroscar.sample.BuildConfig;
@@ -19,7 +19,7 @@ import javax.inject.Inject;
 
 import retrofit.RestAdapter;
 
-import static com.stanfy.enroscar.content.async.Tools.loading;
+import static com.stanfy.enroscar.async.Tools.loading;
 import static retrofit.RestAdapter.LogLevel.FULL;
 import static retrofit.RestAdapter.LogLevel.NONE;
 

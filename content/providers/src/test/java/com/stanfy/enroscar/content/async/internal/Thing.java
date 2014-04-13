@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.content.async.internal;
+package com.stanfy.enroscar.async.internal;
 
 /** What is loaded. */
 class Thing {

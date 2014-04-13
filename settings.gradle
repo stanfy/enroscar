@@ -11,6 +11,8 @@ include ':content'
 project(':content').projectDir = new File(rootDir, "content/providers")
 include ':async-compiler'
 project(':async-compiler').projectDir = new File(rootDir, "content/async-compiler")
+include ':async-rx'
+project(':async-rx').projectDir = new File(rootDir, "content/async-rx")
 
 
 // === Goro ===

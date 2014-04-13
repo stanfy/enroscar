@@ -1,8 +1,8 @@
-package com.stanfy.enroscar.content.async.internal;
+package com.stanfy.enroscar.async.internal;
 
-import com.stanfy.enroscar.content.async.Async;
-import com.stanfy.enroscar.content.async.AsyncObserver;
-import com.stanfy.enroscar.content.async.internal.WrapAsyncLoader.Result;
+import com.stanfy.enroscar.async.Async;
+import com.stanfy.enroscar.async.AsyncObserver;
+import com.stanfy.enroscar.async.internal.WrapAsyncLoader.Result;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +16,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests for {@link com.stanfy.enroscar.content.async.internal.WrapAsyncLoader}
+ * Tests for {@link com.stanfy.enroscar.async.internal.WrapAsyncLoader}
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)

@@ -1,17 +1,17 @@
-package com.stanfy.enroscar.content.async.internal;
+package com.stanfy.enroscar.async.internal;
 
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.stanfy.enroscar.content.async.Async;
-import com.stanfy.enroscar.content.async.AsyncObserver;
+import com.stanfy.enroscar.async.Async;
+import com.stanfy.enroscar.async.AsyncObserver;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static com.stanfy.enroscar.content.async.Tools.asyncCursor;
+import static com.stanfy.enroscar.async.Tools.asyncCursor;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.robolectric.Robolectric.application;
