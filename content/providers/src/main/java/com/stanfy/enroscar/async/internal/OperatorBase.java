@@ -44,6 +44,11 @@ public abstract class OperatorBase<W, D extends LoaderDescription> {
     lm.restartLoader(loaderId, null, description.makeCallbacks(loaderId, provider, false));
   }
 
+  protected final void destroyLoader(final int loaderId) {
+    LoaderManager lm = operatorContext.getLoaderManager();
+    lm.destroyLoader(loaderId);
+  }
+
   /**
    * @param <T> operations object type
    */

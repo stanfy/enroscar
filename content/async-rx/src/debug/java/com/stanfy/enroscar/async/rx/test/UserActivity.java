@@ -147,7 +147,15 @@ public class UserActivity extends FragmentActivity {
       initLoader(2, provider, true);
     }
 
-    // TODO: cancellation
+    // cancellation
+
+    public void cancelLoadThing() {
+      destroyLoader(1);
+    }
+
+    public void cancelSendThing() {
+      destroyLoader(2);
+    }
 
   }
 
