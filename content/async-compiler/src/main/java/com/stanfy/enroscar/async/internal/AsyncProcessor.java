@@ -52,7 +52,7 @@ public final class AsyncProcessor extends AbstractProcessor {
     collectAndValidate(classMethods, Send.class, roundEnv);
 
     for (Map.Entry<TypeElement, List<ExecutableElement>> e : classMethods.entrySet()) {
-      generateLoader(e.getKey(), e.getValue());
+      generateCode(e.getKey(), e.getValue());
     }
 
     return false;
@@ -89,25 +89,9 @@ public final class AsyncProcessor extends AbstractProcessor {
     }
   }
 
-  private void generateLoader(final TypeElement baseType, final List<ExecutableElement> methods) {
-    LoaderGenerator gen = new LoaderGenerator(processingEnv, baseType, methods);
-    Writer out = null;
-    try {
-      JavaFileObject jfo = processingEnv.getFiler().createSourceFile(gen.getFqcn(), baseType);
-      out = jfo.openWriter();
-      GenUtils.generate(gen, out);
-      out.flush();
-    } catch (IOException e) {
-      error(baseType, "Cannot generate loader for base class " + baseType + ": " + e.getMessage());
-    } finally {
-      if (out != null) {
-        try {
-          out.close();
-        } catch (IOException e) {
-          // nothing
-        }
-      }
-    }
+  private void generateCode(final TypeElement baseType, final List<ExecutableElement> methods) {
+    new LoaderDescriptionGenerator(processingEnv, baseType, methods).generateCode();
+    new OperatorGenerator(processingEnv, baseType, methods).generateCode();
   }
 
   private void error(final Element element, final String message) {
