@@ -85,11 +85,13 @@ public final class AsyncProcessor extends AbstractProcessor {
         methods = new ArrayList<>();
         classMethods.put(type, methods);
       }
+      System.out.println("Add " + method);
       methods.add(method);
     }
   }
 
   private void generateCode(final TypeElement baseType, final List<ExecutableElement> methods) {
+    System.out.println("Gen " + methods);
     new LoaderDescriptionGenerator(processingEnv, baseType, methods).generateCode();
     new OperatorGenerator(processingEnv, baseType, methods).generateCode();
   }

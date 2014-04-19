@@ -10,7 +10,7 @@ package com.stanfy.enroscar.async;
  *   Asynchronous operation that provides the result is triggered (meaning actually executed)
  *   not sooner than the first {@link #subscribe(AsyncObserver)} call is performed.
  *   If {@link #cancel()} is called before the first {@link #subscribe(AsyncObserver)} invocation,
- *   the operations is never executed.
+ *   the operations is never executed, and {@code subscribe()} is no-op.
  * </p>
  *
  * <p>

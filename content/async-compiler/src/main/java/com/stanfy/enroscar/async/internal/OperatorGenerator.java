@@ -14,8 +14,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 import static com.stanfy.enroscar.async.internal.GenUtils.*;
@@ -40,7 +38,7 @@ final class OperatorGenerator extends BaseGenerator {
     );
     String operationsName = operationsClass.getQualifiedName().toString();
     setExtendsClass(OperatorBase.class.getSimpleName() + "<" + operationsName + ","
-        + " " + loaderDescription(operationsClass) + ">");
+        + " " + loaderDescription(packageName, operationsClass) + ">");
   }
 
   @Override
@@ -48,7 +46,7 @@ final class OperatorGenerator extends BaseGenerator {
     w.emitSingleLineComment("construction");
 
     w.beginConstructor(EnumSet.of(PRIVATE), "final " + operatorContext(operationsClass), "context");
-    w.emitStatement("super(new %s(context), context)", loaderDescription(operationsClass));
+    w.emitStatement("super(new %s(context), context)", loaderDescription(packageName, operationsClass));
     w.endConstructor();
 
     String buildClass = OperatorBuilder.class.getName()

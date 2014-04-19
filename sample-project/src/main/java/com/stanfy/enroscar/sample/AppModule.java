@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.sample;
 
 import com.stanfy.enroscar.sample.data.remote.TwitterApi;
+import com.stanfy.enroscar.sample.ui.SampleActivity;
 
 import javax.inject.Singleton;
 
@@ -15,8 +16,7 @@ import static retrofit.RestAdapter.LogLevel.NONE;
  * Application module.
  */
 @Module(injects = {
-    SampleApplication.class,
-    TwitterApi.class
+    SampleActivity.class,
 })
 class AppModule {
 
@@ -34,9 +34,9 @@ class AppModule {
         .build();
   }
 
-  @Provides @Singleton SampleApplication application() {
-    return application;
-  }
+//  @Provides @Singleton SampleApplication application() {
+//    return application;
+//  }
 
   @Provides @Singleton TwitterApi twitterApi() {
     return restAdapter.create(TwitterApi.class);

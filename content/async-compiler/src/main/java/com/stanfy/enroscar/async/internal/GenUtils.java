@@ -31,20 +31,16 @@ final class GenUtils {
   /** Generated class name suffix. */
   public static final String SUFFIX_LOADER_DESC = "$$LoaderDescription";
 
-  public static String getGeneratedClassName(final String packageName, final String baseClassName, final String suffix) {
-    String base = baseClassName;
+  public static String getGeneratedClassName(final String packageName, final String name, final String suffix) {
+    String base = name;
     if (packageName.length() > 0) {
       base = base.substring(packageName.length() + 1);
     }
-    return generatedClass(suffix, base);
-  }
-
-  private static String generatedClass(final String suffix, final String base) {
     return base.replace(".", "").concat(suffix);
   }
 
-  public static String loaderDescription(final TypeElement operationsClass) {
-    return generatedClass(SUFFIX_LOADER_DESC, operationsClass.getQualifiedName().toString());
+  public static String loaderDescription(final String packageName, final TypeElement operationsClass) {
+    return getGeneratedClassName(packageName, operationsClass.getQualifiedName().toString(), SUFFIX_LOADER_DESC);
   }
 
   public static String operatorContext(final TypeElement operationsClass) {

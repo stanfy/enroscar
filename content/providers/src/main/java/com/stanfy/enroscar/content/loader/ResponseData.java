@@ -13,11 +13,13 @@ package com.stanfy.enroscar.content.loader;
 public class ResponseData<T>  {
 
   /** Error code. */
-  private final int errorCode;
+  private int errorCode;
   /** Message. */
-  private final String message;
+  private String message;
   /** Result object. */
-  private final T model;
+  private T model;
+
+  public ResponseData() { }
 
   public ResponseData(final int errorCode) {
     this(errorCode, null);
@@ -65,5 +67,17 @@ public class ResponseData<T>  {
   public String toString() {
     return "ResponseData{errorCode=" + errorCode + ", message='" + message + "', model="
         + (model == null ? "<null>" : model.getClass()) + "}";
+  }
+
+  public void setErrorCode(int errorCode) {
+    this.errorCode = errorCode;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
+  public void setModel(T model) {
+    this.model = model;
   }
 }

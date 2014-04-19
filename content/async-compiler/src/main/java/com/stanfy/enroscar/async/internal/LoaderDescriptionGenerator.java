@@ -45,7 +45,7 @@ final class LoaderDescriptionGenerator extends BaseGenerator {
     for (ExecutableElement m : methods) {
       String dataType = getDataType(m).toString();
       String builderType = w.compressType(ObserverBuilder.class.getName()
-          + "<" + dataType + "," + loaderDescription(operationsClass) + ">");
+          + "<" + dataType + "," + loaderDescription(packageName, operationsClass) + ">");
       w.beginMethod(
           builderType,
           m.getSimpleName().toString().concat("IsFinished"),

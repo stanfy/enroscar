@@ -40,6 +40,9 @@ dependencies {
   testRuntime files("${System.env['ANDROID_HOME']}/platforms/android-19/android.jar")
 }
 
+//JavaCompile testsCompileTask = tasks.compileTestJava as JavaCompile
+//testsCompileTask.classpath = testsCompileTask.classpath.filter { !it.path.contains("resources") }
+
 tasks.withType(Test) {
   scanForTestClasses = false
   include "**/*Test.class"

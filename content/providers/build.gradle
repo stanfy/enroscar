@@ -6,6 +6,8 @@ dependencies {
 
 }
 
+version = '2.0.test-SNAPSHOT'
+
 // FIXME: IDE hack
 //apply from: file("$rootDir/gradle/tests-ide-hack.gradle")
 
