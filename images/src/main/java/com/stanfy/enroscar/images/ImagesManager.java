@@ -4,9 +4,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.NinePatch;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.NinePatchDrawable;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
@@ -375,7 +377,12 @@ public class ImagesManager implements InitializingBean {
     // nothing
   }
 
-  private BitmapDrawable createDrawable(final Bitmap bitmap) {
+  private Drawable createDrawable(final Bitmap bitmap) {
+    // same logic as private Drawable.drawableFromBitmap(...)
+    final byte[] npc = bitmap.getNinePatchChunk();
+    if (npc != null && NinePatch.isNinePatchChunk(npc)) {
+      return new NinePatchDrawable(getResources(), new NinePatch(bitmap, npc, null));
+    }
     return new BitmapDrawable(getResources(), bitmap);
   }
 
