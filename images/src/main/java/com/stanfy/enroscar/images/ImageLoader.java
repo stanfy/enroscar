@@ -69,7 +69,7 @@ class ImageLoader implements Callable<Void> {
 
   // main thread
   public void removeTarget(final ImageConsumer consumer) {
-    if (DEBUG) { Log.d(TAG, "Cancel request: " + request.getKey() + "\nLoader: " + this); }
+    if (imagesManager.debug) { Log.d(TAG, "Cancel request: " + request.getKey() + "\nLoader: " + this); }
 
     consumer.onCancel(request.url);
 
@@ -79,7 +79,7 @@ class ImageLoader implements Callable<Void> {
 
       if (targets.isEmpty()) {
         if (!future.cancel(true)) {
-          if (DEBUG) { Log.d(TAG, "Can't cancel task so let's try to remove loader manually"); }
+          if (imagesManager.debug) { Log.d(TAG, "Can't cancel task so let's try to remove loader manually"); }
           imagesManager.currentLoads.remove(request.getKey(), this);
         }
       }
@@ -89,7 +89,7 @@ class ImageLoader implements Callable<Void> {
 
   // worker thread
   private void safeImageSet(final ImageResult result) {
-    if (DEBUG) { Log.v(ImagesManager.TAG, "Post setting drawable for " + request.getKey()); }
+    if (imagesManager.debug) { Log.v(ImagesManager.TAG, "Post setting drawable for " + request.getKey()); }
 
     synchronized (targets) {
       if (this.result != null) { throw new IllegalStateException("Result is already set"); }
@@ -110,12 +110,12 @@ class ImageLoader implements Callable<Void> {
           //noinspection ForLoopReplaceableByForEach
           for (int i = 0; i < count; i++) {
             final ImageConsumer imageHolder = targets.get(i);
-            if (DEBUG) {
+            if (imagesManager.debug) {
               Log.d(TAG, "Try to set " + imageHolder + " - " + request.getKey());
             }
             setToConsumer(imageHolder, result);
           }
-        } else if (DEBUG) {
+        } else if (imagesManager.debug) {
           Log.w(TAG, "set drawable: have no targets in list");
         }
 
@@ -236,7 +236,7 @@ class ImageLoader implements Callable<Void> {
 
   @Override
   public Void call() {
-    if (DEBUG) { Log.d(TAG, "Start image task"); }
+    if (imagesManager.debug) { Log.d(TAG, "Start image task"); }
     try {
 
       if (!imagesManager.waitForPause()) {
@@ -260,7 +260,7 @@ class ImageLoader implements Callable<Void> {
 
     } catch (final IOException e) {
 
-      if (DEBUG_IO) { Log.e(TAG, "IO error for " + request.url + ": " + e.getMessage()); }
+      if (imagesManager.debug) { Log.e(TAG, "IO error for " + request.url + ": " + e.getMessage()); }
       error(e);
 
     } catch (final Exception e) {
@@ -271,7 +271,7 @@ class ImageLoader implements Callable<Void> {
     } finally {
 
       final boolean removed = imagesManager.currentLoads.remove(request.getKey(), this);
-      if (DEBUG) {
+      if (imagesManager.debug) {
         Log.d(TAG, "Current loaders count: " + imagesManager.currentLoads.size());
         if (!removed) { Log.w(TAG, "Incorrect loader in currents for " + request.getKey()); }
       }
