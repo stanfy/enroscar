@@ -49,10 +49,6 @@ public class ImagesManager implements InitializingBean {
 
   /** Logging tag. */
   static final String TAG = BEAN_NAME;
-  /** Debug flag. */
-  static final boolean DEBUG = false;
-  /** Debug flag. */
-  static final boolean DEBUG_IO = false;
 
   /** Max distance between sample factor and its nearest power of 2 to use the latter. */
   static final int MAX_POWER_OF_2_DISTANCE = 3;
@@ -77,7 +73,7 @@ public class ImagesManager implements InitializingBean {
   private boolean paused = false;
 
   /** Debug flag. */
-  boolean debug = DEBUG;
+  boolean debug = false;
 
   public ImagesManager(final Context context) {
     this.context = context.getApplicationContext();
@@ -156,7 +152,7 @@ public class ImagesManager implements InitializingBean {
           try {
             request.storeToDisk();
           } catch (final IOException e) {
-            if (DEBUG_IO) { Log.e(TAG, "IO error for " + request.url + ": " + e.getMessage()); }
+            if (debug) { Log.e(TAG, "IO error for " + request.url + ": " + e.getMessage()); }
           } catch (final Exception e) {
             Log.e(TAG, "Ignored error for ensureImages", e);
           }
@@ -452,7 +448,7 @@ public class ImagesManager implements InitializingBean {
 
     if (loader == null) {
 
-      if (DEBUG) { Log.d(TAG, "Start a new task"); }
+      if (debug) { Log.d(TAG, "Start a new task"); }
       loader = new ImageLoader(request, this);
       if (!loader.addTarget(consumer)) {
         throw new IllegalStateException("Cannot add target to the new loader");
@@ -474,7 +470,7 @@ public class ImagesManager implements InitializingBean {
    * @param bitmap bitmap
    */
   protected void memCacheImage(final String url, final Bitmap bitmap) {
-    if (DEBUG) { Log.d(TAG, "Memcache for " + url); }
+    if (debug) { Log.d(TAG, "Memcache for " + url); }
     memCache.putElement(url, bitmap);
   }
 
