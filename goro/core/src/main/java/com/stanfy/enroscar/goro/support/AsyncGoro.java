@@ -21,10 +21,16 @@ public class AsyncGoro {
     this.goro = goro;
   }
 
+  /**
+   * @see {@link Goro#schedule(String, Callable)}
+   */
   public <T> Async<T> schedule(final String queue, final Callable<T> task) {
     return new GoroAsync<>(queue, task);
   }
 
+  /**
+   * @see {@link Goro#schedule(Callable)}
+   */
   public <T> Async<T> schedule(final Callable<T> task) {
     return schedule(Goro.DEFAULT_QUEUE, task);
   }

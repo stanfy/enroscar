@@ -24,7 +24,7 @@ include ':goro-sample'
 project(':goro-sample').projectDir = new File(rootDir, "goro/sample")
 
 // === Sample ===
-//include 'sample-project'
+include 'sample-project'
 
 // integration
 
