@@ -247,3 +247,8 @@ you use Goro.
 Sample
 ------
 In this repository you'll also find [a sample](sample) demonstrating what Goro does.
+
+RxJava Integration
+------------------
+As long as you have RxJava jar in your classpath, you can use class `RxGoro`, which can wrap
+a `Goro` instance and provide `schedule` methods that return `rx.Observable` instead of `Future`.
