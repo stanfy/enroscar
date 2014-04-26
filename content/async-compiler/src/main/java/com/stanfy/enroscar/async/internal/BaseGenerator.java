@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ abstract class BaseGenerator {
   final TypeElement operationsClass;
 
   /** Methods. */
-  final List<ExecutableElement> methods;
+  final List<MethodData> methods;
 
   /** Imports to emit. */
   private final Set<String> imports = new HashSet<>();
@@ -53,7 +54,7 @@ abstract class BaseGenerator {
   private String extendsClass;
 
   public BaseGenerator(final ProcessingEnvironment env, final TypeElement type,
-                       final List<ExecutableElement> methods, final String suffix) {
+                       final List<MethodData> methods, final String suffix) {
     this.env = env;
     this.operationsClass = type;
     this.packageName = env.getElementUtils().getPackageOf(type).getQualifiedName().toString();
@@ -68,8 +69,12 @@ abstract class BaseGenerator {
     return packageName + "." + className;
   }
 
-  protected final void setImports(final String... imports) {
+  protected final void addImports(final String... imports) {
     this.imports.addAll(Arrays.asList(imports));
+  }
+
+  protected final void addImports(final Collection<String> imports) {
+    this.imports.addAll(imports);
   }
 
   protected final void setExtendsClass(final String name) {
@@ -88,7 +93,6 @@ abstract class BaseGenerator {
   public final void generateCode() {
     Writer out = null;
     try {
-      System.out.println("class name " + getFqcn());
       JavaFileObject jfo = env.getFiler().createSourceFile(getFqcn(), operationsClass);
       out = jfo.openWriter();
       GenUtils.generate(this, out);

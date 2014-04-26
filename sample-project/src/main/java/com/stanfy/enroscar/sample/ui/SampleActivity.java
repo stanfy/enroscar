@@ -11,6 +11,7 @@ import com.stanfy.enroscar.async.Tools;
 import com.stanfy.enroscar.goro.BoundGoro;
 import com.stanfy.enroscar.goro.Goro;
 import com.stanfy.enroscar.goro.support.AsyncGoro;
+import com.stanfy.enroscar.goro.support.RxGoro;
 import com.stanfy.enroscar.sample.SampleApplication;
 import com.stanfy.enroscar.sample.data.Tweet;
 import com.stanfy.enroscar.sample.data.remote.TwitterApi;
@@ -19,6 +20,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.functions.Action1;
 
 /**
  * @author Roman Mazur - Stanfy (http://stanfy.com)
@@ -32,6 +36,15 @@ public class SampleActivity extends FragmentActivity {
 
   @Load Async<List<Tweet>> loadTweets(final TwitterApi api) {
     return new AsyncGoro(goro).schedule(new Callable<List<Tweet>>() {
+      @Override
+      public List<Tweet> call() throws Exception {
+        return api.tweets("stanfy");
+      }
+    });
+  }
+
+  @Load Observable<List<Tweet>> rxTweets(final TwitterApi api) {
+    return new RxGoro(goro).schedule(new Callable<List<Tweet>>() {
       @Override
       public List<Tweet> call() throws Exception {
         return api.tweets("stanfy");
@@ -57,7 +70,15 @@ public class SampleActivity extends FragmentActivity {
           }
         });
 
+    operator.when().rxTweetsIsFinished().subscribe(new Action1<List<Tweet>>() {
+      @Override
+      public void call(List<Tweet> tweets) {
+        Log.d("222222", tweets.toString());
+      }
+    });
+
     operator.loadTweets(api);
+    operator.rxTweets(api);
   }
 
   @Override

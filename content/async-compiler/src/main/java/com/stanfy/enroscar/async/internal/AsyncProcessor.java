@@ -4,8 +4,6 @@ import com.stanfy.enroscar.async.Async;
 import com.stanfy.enroscar.async.Load;
 import com.stanfy.enroscar.async.Send;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +19,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.tools.JavaFileObject;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
 
@@ -46,19 +43,19 @@ public final class AsyncProcessor extends AbstractProcessor {
   @Override
   public boolean process(final Set<? extends TypeElement> annotations,
                          final RoundEnvironment roundEnv) {
-    Map<TypeElement, List<ExecutableElement>> classMethods =
+    Map<TypeElement, List<MethodData>> classMethods =
         new LinkedHashMap<>();
     collectAndValidate(classMethods, Load.class, roundEnv);
     collectAndValidate(classMethods, Send.class, roundEnv);
 
-    for (Map.Entry<TypeElement, List<ExecutableElement>> e : classMethods.entrySet()) {
+    for (Map.Entry<TypeElement, List<MethodData>> e : classMethods.entrySet()) {
       generateCode(e.getKey(), e.getValue());
     }
 
     return false;
   }
 
-  private void collectAndValidate(final Map<TypeElement, List<ExecutableElement>> classMethods,
+  private void collectAndValidate(final Map<TypeElement, List<MethodData>> classMethods,
                                   final Class<? extends Annotation> annotation,
                                   final RoundEnvironment roundEnv) {
     for (Element m : roundEnv.getElementsAnnotatedWith(annotation)) {
@@ -74,24 +71,31 @@ public final class AsyncProcessor extends AbstractProcessor {
       }
       TypeElement type = (TypeElement) encl;
 
-      String expectedReturn = Async.class.getCanonicalName();
-      if (!GenUtils.getReturnType(method).startsWith(expectedReturn)) {
-        error(method, "Method annotated with @" + annotation.getSimpleName() + " must return " + expectedReturn);
+      String returnType = GenUtils.getReturnType(method);
+
+      TypeSupport typeSupport = null;
+      if (returnType.startsWith(Async.class.getCanonicalName().concat("<"))) {
+        typeSupport = TypeSupport.ASYNC;
+      } else if (returnType.startsWith(TypeSupport.RX_OBSERVABLE.concat("<"))) {
+        typeSupport = TypeSupport.RX;
+      }
+
+      if (typeSupport == null) {
+        error(method, "Method annotated with @" + annotation.getSimpleName()
+            + " must return either Async<T> or rx.Observable<T>");
         continue;
       }
 
-      List<ExecutableElement> methods = classMethods.get(type);
+      List<MethodData> methods = classMethods.get(type);
       if (methods == null) {
         methods = new ArrayList<>();
         classMethods.put(type, methods);
       }
-      System.out.println("Add " + method);
-      methods.add(method);
+      methods.add(new MethodData(method, typeSupport));
     }
   }
 
-  private void generateCode(final TypeElement baseType, final List<ExecutableElement> methods) {
-    System.out.println("Gen " + methods);
+  private void generateCode(final TypeElement baseType, final List<MethodData> methods) {
     new LoaderDescriptionGenerator(processingEnv, baseType, methods).generateCode();
     new OperatorGenerator(processingEnv, baseType, methods).generateCode();
   }

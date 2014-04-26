@@ -63,6 +63,7 @@ dependencies {
   compile 'com.squareup.retrofit:retrofit:1.4.1'
 
   compile project(":content")
+  compile project(":async-rx")
   provided("com.stanfy.enroscar:async-compiler:1.0-SNAPSHOT") {
     exclude group: 'com.stanfy.enroscar'
   }

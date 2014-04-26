@@ -1,12 +1,17 @@
 package com.stanfy.enroscar.async.internal;
 
+import com.squareup.javawriter.JavaWriter;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
@@ -81,4 +86,26 @@ final class GenUtils {
     loaderId.set(LOADER_ID_START);
   }
 
+  public static String invocation(final ExecutableElement method) {
+    StringBuilder stmt = new StringBuilder()
+        .append(method.getSimpleName()).append("(");
+    if (!method.getParameters().isEmpty()) {
+      for (VariableElement arg : method.getParameters()) {
+        stmt.append(arg.getSimpleName().toString()).append(", ");
+      }
+      stmt.delete(stmt.length() - 2, stmt.length());
+    }
+    stmt.append(")");
+    return stmt.toString();
+  }
+
+  public static List<String> parameters(final JavaWriter w, final ExecutableElement method) {
+    ArrayList<String> res = new ArrayList<String>(method.getParameters().size());
+    for (VariableElement arg : method.getParameters()) {
+      TypeMirror type = arg.asType();
+      res.add("final " + w.compressType(type.toString()));
+      res.add(arg.getSimpleName().toString());
+    }
+    return res;
+  }
 }

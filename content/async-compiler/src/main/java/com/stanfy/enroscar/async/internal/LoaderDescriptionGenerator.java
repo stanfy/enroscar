@@ -1,7 +1,6 @@
 package com.stanfy.enroscar.async.internal;
 
 import com.squareup.javawriter.JavaWriter;
-import com.stanfy.enroscar.async.OperatorBuilder;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -9,11 +8,8 @@ import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
-import static com.stanfy.enroscar.async.internal.GenUtils.getDataType;
-import static com.stanfy.enroscar.async.internal.GenUtils.loaderDescription;
 import static com.stanfy.enroscar.async.internal.GenUtils.operatorContext;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
@@ -24,14 +20,17 @@ final class LoaderDescriptionGenerator extends BaseGenerator {
 
 
   public LoaderDescriptionGenerator(final ProcessingEnvironment env, final TypeElement type,
-                                    final List<ExecutableElement> methods) {
+                                    final List<MethodData> methods) {
     super(env, type, methods, GenUtils.SUFFIX_LOADER_DESC);
     setExtendsClass(LoaderDescription.class.getName());
-    setImports(
+    addImports(
         LoaderDescription.class.getName(),
-        OperatorBase.OperatorContext.class.getName().replace('$', '.'),
-        ObserverBuilder.class.getName()
+        OperatorBase.OperatorContext.class.getName().replace('$', '.')
     );
+
+    for (MethodData d : methods) {
+      addImports(d.typeSupport.loaderDescriptionImports());
+    }
   }
 
   @Override
@@ -42,16 +41,15 @@ final class LoaderDescriptionGenerator extends BaseGenerator {
 
     w.emitEmptyLine();
 
-    for (ExecutableElement m : methods) {
-      String dataType = getDataType(m).toString();
-      String builderType = w.compressType(ObserverBuilder.class.getName()
-          + "<" + dataType + "," + loaderDescription(packageName, operationsClass) + ">");
+    for (MethodData data : methods) {
+      ExecutableElement m = data.method;
+
       w.beginMethod(
-          builderType,
+          data.typeSupport.loaderDescriptionReturnType(w, m, this),
           m.getSimpleName().toString().concat("IsFinished"),
           EnumSet.of(PUBLIC)
       );
-      w.emitStatement("return new %s(%d, this)", builderType, getLoaderId(m));
+      w.emitStatement(data.typeSupport.loaderDescriptionMethodBody(w, m, this));
       w.endMethod();
     }
   }
