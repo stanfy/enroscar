@@ -27,7 +27,7 @@ repositories {
 
 dependencies {
   compile project(path: ':content', configuration: 'plain')
-  compile 'com.squareup:javawriter:2.4.0'
+  compile 'com.squareup:javawriter:2.5.0'
 
   testCompile 'junit:junit:4.11'
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
@@ -40,9 +40,6 @@ dependencies {
   testRuntime files("${System.env['ANDROID_HOME']}/platforms/android-19/android.jar")
 }
 
-//JavaCompile testsCompileTask = tasks.compileTestJava as JavaCompile
-//testsCompileTask.classpath = testsCompileTask.classpath.filter { !it.path.contains("resources") }
-
 tasks.withType(Test) {
   scanForTestClasses = false
   include "**/*Test.class"
@@ -53,8 +50,6 @@ def cleanupPom = { pom ->
 }
 
 install.repositories.mavenInstaller.pom.whenConfigured(cleanupPom)
-uploadArchives.repositories {
-  mavenDeployer {
-    pom.whenConfigured(cleanupPom)
-  }
+afterEvaluate {
+  uploadArchives.repositories.mavenDeployer.pom.whenConfigured(cleanupPom)
 }

@@ -21,3 +21,9 @@ dependencies {
   androidTestCompile project(":content")
   androidTestCompile 'com.netflix.rxjava:rxjava-core:0.17.5'
 }
+
+android {
+  defaultConfig {
+    consumerProguardFiles file('config/proguard-consumer.txt')
+  }
+}
