@@ -112,7 +112,7 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
 
   private void waitForListener() {
     try {
-      assertThat(sync.await(2, TimeUnit.SECONDS)).describedAs("Listener not called").isTrue();
+      assertThat(sync.await(10, TimeUnit.SECONDS)).describedAs("Listener not called").isTrue();
     } catch (InterruptedException e) {
       fail("Wait for listener interrupted");
     }

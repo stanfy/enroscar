@@ -42,7 +42,7 @@ public class BindOneshotTest extends AndroidTestCase {
     goro.bindOneshot();
 
     try {
-      future.get(1, TimeUnit.SECONDS);
+      future.get(10, TimeUnit.SECONDS);
       fail("Exception expected");
     } catch (InterruptedException e) {
       throw new AssertionError(e);
@@ -139,7 +139,7 @@ public class BindOneshotTest extends AndroidTestCase {
 
   private void await(CountDownLatch sync) {
     try {
-      assertEquals(true, sync.await(1, TimeUnit.SECONDS));
+      assertEquals(true, sync.await(10, TimeUnit.SECONDS));
     } catch (InterruptedException e) {
       throw new AssertionError(e);
     }
