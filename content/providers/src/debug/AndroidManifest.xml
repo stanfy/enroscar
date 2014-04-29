@@ -5,7 +5,7 @@
 
   <application>
 
-    <activity android:name=".async.test.AsyncUserActivity" />
+    <activity android:name="com.stanfy.enroscar.async.test.AsyncUserActivity" />
 
   </application>
 

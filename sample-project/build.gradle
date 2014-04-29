@@ -3,11 +3,13 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.8.+'
+    classpath 'com.android.tools.build:gradle:0.9.2'
+    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2'
   }
 }
 
 apply plugin: 'android'
+//apply plugin: 'android-apt'
 
 android {
   compileSdkVersion 19
@@ -32,11 +34,27 @@ android {
     targetCompatibility JavaVersion.VERSION_1_7
   }
 
+  applicationVariants.all { v ->
+    v.javaCompile.options.verbose = true
+  }
+
 }
 
 repositories {
-  mavenCentral()
   mavenLocal()
+  mavenCentral()
+}
+
+def aptOutputDir = project.file(new File(project.buildDir, "source/apt"))
+android.applicationVariants.all { def v ->
+  def aptOutput = new File(aptOutputDir, v.dirName)
+  v.addJavaSourceFoldersToModel(aptOutput)
+  v.javaCompile.options.compilerArgs += [
+      '-s', aptOutput.absolutePath
+  ]
+  v.javaCompile.doFirst {
+    aptOutput.mkdirs()
+  }
 }
 
 dependencies {
@@ -44,14 +62,18 @@ dependencies {
   compile 'com.netflix.rxjava:rxjava-android:0.17.0-RC1'
   compile 'com.squareup.retrofit:retrofit:1.4.1'
 
-  provided "com.stanfy.enroscar:async-compiler:1.0-SNAPSHOT"
+  compile project(":content")
+  compile project(":async-rx")
+  provided("com.stanfy.enroscar:async-compiler:1.0-SNAPSHOT") {
+    exclude group: 'com.stanfy.enroscar'
+  }
 
   compile 'com.squareup.dagger:dagger:1.2.1'
   provided 'com.squareup.dagger:dagger-compiler:1.2.1'
 
-  compile project(":net")
-  compile project(":images")
-  compile project(":ui")
-  compile project(":assist")
+//  compile project(":net")
+//  compile project(":images")
+//  compile project(":ui")
+//  compile project(":assist")
 }
 

@@ -28,6 +28,8 @@ public abstract class BoundGoro extends Goro implements ServiceConnection {
   /** Unbind from {@link com.stanfy.enroscar.goro.GoroService}. */
   public abstract void unbind();
 
+  /** Bind to {@link com.stanfy.enroscar.goro.GoroService} and unbind as soon as tasks are delegated. */
+  public abstract void bindOneshot();
 
   /** Implementation. */
   static class BoundGoroImpl extends BoundGoro implements ServiceConnection {
@@ -47,21 +49,38 @@ public abstract class BoundGoro extends Goro implements ServiceConnection {
     /** Instance from service. */
     private Goro service;
 
+    /** Oneshot binding flag. */
+    private boolean oneshot;
+
     BoundGoroImpl(final Context context) {
       this.context = context;
     }
 
     @Override
     public void bind() {
+      synchronized (lock) {
+        oneshot = false;
+      }
       GoroService.bind(context, this);
     }
 
     @Override
     public void unbind() {
       synchronized (lock) {
-        service = null;
-        GoroService.unbind(context, this);
+        if (oneshot) {
+          throw new IllegalStateException("bindOneshot() was already called. "
+              + "You must call bind() to be able to call unbind()");
+        }
+        doUnbindLocked();
       }
+    }
+
+    @Override
+    public void bindOneshot() {
+      synchronized (lock) {
+        oneshot = true;
+      }
+      GoroService.bind(context, this);
     }
 
     @Override
@@ -87,7 +106,20 @@ public abstract class BoundGoro extends Goro implements ServiceConnection {
           }
           postponed.clear();
         }
+
+        if (oneshot) {
+          doUnbindLocked();
+        }
       }
+    }
+
+    private void doUnbindLocked() {
+      service = null;
+      GoroService.unbind(context, this);
+    }
+
+    Goro getServiceObject() {
+      return service;
     }
 
     boolean cancelPostponed(final Postponed p) {

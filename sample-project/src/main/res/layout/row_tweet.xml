@@ -1,14 +1,11 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:enroscar="http://schemas.android.com/apk/res-auto"
     style="@style/StretchHorizontallyContainer"
     >
   
-  <com.stanfy.enroscar.images.views.LoadableImageView
+  <ImageView
       android:layout_width="75dp"
       android:layout_height="75dp"
-      enroscar:loadingImage="@drawable/no_image"
-      enroscar:useTransition="yes"
       android:id="@+id/tweet_image"
       />
   

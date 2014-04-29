@@ -4,13 +4,13 @@ buildscript {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.9.+'
+    classpath 'com.android.tools.build:gradle:0.9.2'
     classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
   }
 }
 
 def getPackageName = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').replaceAll(/enroscar/, '')}" }
-def projectVersion = "2.0-SNAPSHOT"
+def projectVersion = "2.0.alpha1-SNAPSHOT"
 
 task wrapper(type: Wrapper) {
   gradleVersion = '1.9'
@@ -21,7 +21,7 @@ def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 
 def libraryModules = [
-    'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui'
+    'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui', 'async-rx'
     //'sherlock-integration'
 ].collect { project(":$it") }
 

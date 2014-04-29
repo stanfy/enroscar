@@ -1,0 +1,4 @@
+dependencies {
+  compile 'com.netflix.rxjava:rxjava-core:0.17.5'
+  compile project(':content')
+}

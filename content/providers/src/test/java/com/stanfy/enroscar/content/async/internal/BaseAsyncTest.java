@@ -1,6 +1,6 @@
-package com.stanfy.enroscar.content.async.internal;
+package com.stanfy.enroscar.async.internal;
 
-import com.stanfy.enroscar.content.async.AsyncObserver;
+import com.stanfy.enroscar.async.AsyncObserver;
 
 import org.junit.Before;
 import org.junit.Test;

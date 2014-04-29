@@ -12,7 +12,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'nexus'
 
-version = '1.0-SNAPSHOT'
+version = '2.0.alpha1-SNAPSHOT'
 group = 'com.stanfy.enroscar'
 
 repositories {
@@ -27,12 +27,12 @@ repositories {
 
 dependencies {
   compile project(path: ':content', configuration: 'plain')
-  compile 'com.squareup:javawriter:2.4.0'
+  compile 'com.squareup:javawriter:2.5.0'
 
   testCompile 'junit:junit:4.11'
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
   testCompile 'com.google.testing.compile:compile-testing:0.4'
-  testCompile 'com.google.guava:guava:15.0'
+  testCompile 'com.google.guava:guava:16.0.1'
   testCompile 'org.truth0:truth:0.13'
 
   testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
@@ -45,17 +45,11 @@ tasks.withType(Test) {
   include "**/*Test.class"
 }
 
-task debug << {
-  configurations.testRuntime.each { println it }
-}
-
 def cleanupPom = { pom ->
   pom.dependencies.removeAll { it.groupId == project.group }
 }
 
 install.repositories.mavenInstaller.pom.whenConfigured(cleanupPom)
-uploadArchives.repositories {
-  mavenDeployer {
-    pom.whenConfigured(cleanupPom)
-  }
+afterEvaluate {
+  uploadArchives.repositories.mavenDeployer.pom.whenConfigured(cleanupPom)
 }
