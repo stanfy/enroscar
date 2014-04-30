@@ -12,7 +12,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'nexus'
 
-version = '2.0.alpha1-SNAPSHOT'
+version = '2.0.alpha2-SNAPSHOT'
 group = 'com.stanfy.enroscar'
 
 repositories {
@@ -52,4 +52,34 @@ def cleanupPom = { pom ->
 install.repositories.mavenInstaller.pom.whenConfigured(cleanupPom)
 afterEvaluate {
   uploadArchives.repositories.mavenDeployer.pom.whenConfigured(cleanupPom)
+}
+
+modifyPom {
+  project {
+    name 'Enroscar Async Compiler'
+    description 'Processor for @Load/@Send annotations'
+    url 'https://github.com/stanfy/enroscar'
+    inceptionYear '2011'
+
+    scm {
+      url 'https://github.com/stanfy/enroscar'
+      connection 'scm:git:git@github.com:stanfy/enroscar.git'
+      developerConnection 'scm:git:git@github.com:stanfy/enroscar.git'
+    }
+
+    licenses {
+      license {
+        name 'The Apache Software License, Version 2.0'
+        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        distribution 'repo'
+      }
+    }
+
+    developers {
+      developer {
+        id 'stanfy'
+        name 'Stanfy Corp.'
+      }
+    }
+  }
 }
