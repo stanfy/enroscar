@@ -1,8 +1,14 @@
+repositories {
+  flatDir {
+    dirs 'libs'
+  }
+}
+
 dependOnProjects([':beans'])
 
 dependencies {
   
-  compile fileTree(dir : 'libs', include : '*.jar')
+  provided 'com.flurry:flurry:3.2.1'
     
 }
 
