@@ -24,6 +24,6 @@ dependencies {
 
 android {
   defaultConfig {
-    consumerProguardFiles file('config/proguard-consumer.txt')
+    consumerProguardFiles file("config/proguard-consumer.txt")
   }
 }

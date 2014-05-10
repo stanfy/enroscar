@@ -2,7 +2,9 @@ apply plugin: 'android-test'
 
 android.libraryVariants.all { variant ->
   if (variant.buildType.name.equalsIgnoreCase('release')) { return }
-  tasks["test${variant.name.capitalize()}"].configure {
+
+  def task = tasks["test${variant.name.capitalize()}"]
+  task.configure {
     scanForTestClasses = false
 
     def selection = null
@@ -27,5 +29,16 @@ android.libraryVariants.all { variant ->
 
     include selection
     exclude "**/Abstract*.class"
+  }
+
+  // XXX: workaround to support 0.10 plugin
+  def compileTask = tasks["compileTest${variant.name.capitalize()}Java"]
+  compileTask.actions.remove(0)
+  compileTask.doFirst {
+    compileTask.options.bootClasspath = android.bootClasspath.join(File.pathSeparator)
+  }
+  task.actions.remove(0)
+  task.doFirst {
+    task.classpath += project.files(android.bootClasspath)
   }
 }

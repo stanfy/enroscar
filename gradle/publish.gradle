@@ -65,7 +65,7 @@ task javadocs(type: Javadoc) {
   source = android.sourceSets.main.allJava
 }
 afterEvaluate {
-  javadocs.classpath += files(android.plugin.runtimeJarList)
+  javadocs.classpath += files(android.bootClasspath)
 }
 
 task javadocsJar(type: Jar, dependsOn: ['javadocs']) {
