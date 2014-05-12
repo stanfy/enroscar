@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.stanfy.enroscar:enroscar-io:2.0-SNAPSHOT'
+  compile 'com.stanfy.enroscar:enroscar-io:1.3-SNAPSHOT'
 
   testCompile 'junit:junit:4.11'
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
