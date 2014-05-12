@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.goro;
 
 import android.test.AndroidTestCase;
+import android.test.FlakyTest;
 
 import com.stanfy.enroscar.async.AsyncObserver;
 import com.stanfy.enroscar.goro.support.AsyncGoro;
@@ -32,6 +33,7 @@ public class BindOneshotTest extends AndroidTestCase {
     res = "fail";
   }
 
+  @FlakyTest
   public void testScheduleBindGet() {
     Future<?> future = goro.schedule(new Callable<Object>() {
       @Override
@@ -56,6 +58,7 @@ public class BindOneshotTest extends AndroidTestCase {
     assertNull(((BoundGoro.BoundGoroImpl) goro).getServiceObject());
   }
 
+  @FlakyTest
   public void testScheduleObserveBind() {
     final CountDownLatch sync = new CountDownLatch(1);
     goro.schedule(new Callable<String>() {
