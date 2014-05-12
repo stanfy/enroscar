@@ -63,7 +63,7 @@ uploadArchives {
         pom.dependencies.each {
           if (it.groupId == project.group) {
             def depProject = project(":${it.artifactId - 'enroscar-'}")
-            if (depProject.hasPropery('latestStableVersion')) {
+            if (depProject.hasProperty('latestStableVersion')) {
               it.version = depProject.latestStableVersion as String
             }
           }
