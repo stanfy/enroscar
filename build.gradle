@@ -40,8 +40,6 @@ configure(libraryModules) {
 //    configProperties['basedir'] = project.projectDir
 //  }
 
-  archivesBaseName = "enroscar-${project.name}"
-
   repositories {
     mavenLocal()
     mavenCentral()

@@ -1,4 +1,7 @@
 version = '1.3.0-SNAPSHOT'
+ext {
+  latestStableVersion = '1.2'
+}
 
 // POM file modifications
 uploadArchives {

@@ -1,6 +1,8 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+archivesBaseName = "enroscar-${project.name}"
+
 boolean snapshot = "$project.version".contains("SNAPSHOT")
 boolean hasCredentials = hasProperty('nexusUsername') && hasProperty('nexusPassword')
 
@@ -53,6 +55,17 @@ uploadArchives {
           developer {
             id 'stanfy'
             name 'Stanfy Corp.'
+          }
+        }
+      }
+
+      pom.whenConfigured { def pom ->
+        pom.dependencies.each {
+          if (it.groupId == project.group) {
+            def depProject = project(":${it.artifactId - 'enroscar-'}")
+            if (depProject.hasPropery('latestStableVersion')) {
+              it.version = depProject.latestStableVersion as String
+            }
           }
         }
       }
