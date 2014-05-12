@@ -18,6 +18,10 @@ public class BaseFragment extends Fragment {
   /** Class name of NoSaveStateFrameLayout. */
   private static final String CLASS_NOSAVE_STATE_FRAME_LAYOUT = "NoSaveStateFrameLayout";
 
+  public BaseFragment() {
+    // nothing
+  }
+
   protected View getMainView() {
     View view = getView();
     if (view != null && view instanceof FrameLayout && CLASS_NOSAVE_STATE_FRAME_LAYOUT.equals(view.getClass().getSimpleName())) {

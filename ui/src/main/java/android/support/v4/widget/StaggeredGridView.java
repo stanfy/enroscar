@@ -16,9 +16,6 @@
 
 package android.support.v4.widget;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
@@ -42,6 +39,9 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 
 import com.stanfy.enroscar.ui.R;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * ListView and GridView just not complex enough? Try StaggeredGridView!
@@ -191,7 +191,7 @@ public class StaggeredGridView extends ViewGroup {
   private static final int TOUCH_MODE_FLINGING = 2;
 
   private int mTouchMode;
-  private final VelocityTracker mVelocityTracker = VelocityTracker.obtain();
+  private VelocityTracker mVelocityTracker;
   private final ScrollerCompat mScroller;
 
   private final EdgeEffectCompat mTopEdge;
@@ -359,6 +359,18 @@ public class StaggeredGridView extends ViewGroup {
     mBottomEdge = new EdgeEffectCompat(context);
     setWillNotDraw(false);
     setClipToPadding(false);
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    mVelocityTracker = VelocityTracker.obtain();
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    mVelocityTracker.recycle();
   }
 
   /**

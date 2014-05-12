@@ -79,6 +79,10 @@ public class VideoPlayFragment extends BaseFragment implements OnPreparedListene
   /** Auto resume management flag. */
   private boolean autoResumeManagement = true;
 
+  public VideoPlayFragment() {
+    // nothing
+  }
+
   /**
    * @param source source URI
    * @return fragment instance
@@ -235,6 +239,10 @@ public class VideoPlayFragment extends BaseFragment implements OnPreparedListene
    * @author Roman Mazur (Stanfy - http://www.stanfy.com)
    */
   public static class ErrorDialogFragment extends BaseDialogFragment {
+
+    public ErrorDialogFragment() {
+      // nothing
+    }
 
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
