@@ -13,6 +13,7 @@ import org.robolectric.annotation.Config;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -199,6 +200,27 @@ public class GoroImplTest {
 
     testingQueues.executeAll();
     verify(observer).onError(e);
+  }
+
+  @Test
+  public void clearShouldRemoveTasks() {
+    final AtomicInteger counter = new AtomicInteger(0);
+    goro.schedule("q1", new Callable<Object>() {
+      @Override
+      public Object call() throws Exception {
+        return counter.incrementAndGet();
+      }
+    });
+    goro.getExecutor("q1").execute(new Runnable() {
+      @Override
+      public void run() {
+        counter.incrementAndGet();
+      }
+    });
+    goro.clear("q1");
+    testingQueues.executeAll();
+    assertThat(counter.get()).describedAs("some task has been executed").isZero();
+    assertThat(testingQueues.getLastQueueName()).isEqualTo("q1");
   }
 
 }

@@ -3,6 +3,7 @@ package com.stanfy.enroscar.goro;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -64,6 +65,36 @@ public class QueuesImplTest {
     Executor mainExecutor = mock(Executor.class);
     queuesImpl.setDelegateExecutor(mainExecutor);
     assertThat(queuesImpl.getExecutor(null)).isSameAs(mainExecutor);
+  }
+
+  @Test
+  public void clearShouldRemoveTasks() {
+    final ArrayList<Runnable> tasks = new ArrayList<>();
+    //noinspection NullableProblems
+    queuesImpl.setDelegateExecutor(new Executor() {
+      @Override
+      public void execute(final Runnable command) {
+        tasks.add(command);
+      }
+    });
+
+    // normal scenario
+    queuesImpl.getExecutor("q").execute(mock(Runnable.class));
+    queuesImpl.getExecutor("q").execute(mock(Runnable.class));
+    assertThat(tasks).hasSize(1);
+    tasks.remove(0).run();
+    assertThat(tasks).hasSize(1);
+    tasks.remove(0).run();
+    assertThat(tasks).isEmpty();
+
+    // clear scenario
+    queuesImpl.getExecutor("q").execute(mock(Runnable.class));
+    queuesImpl.getExecutor("q").execute(mock(Runnable.class));
+    queuesImpl.getExecutor("q").execute(mock(Runnable.class));
+    queuesImpl.clear("q");
+    assertThat(tasks).hasSize(1);
+    tasks.remove(0).run();
+    assertThat(tasks).isEmpty();
   }
 
 }

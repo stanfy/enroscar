@@ -187,6 +187,16 @@ public abstract class BoundGoro extends Goro implements ServiceConnection {
       }
     }
 
+    @Override
+    protected void removeTasksInQueue(final String queueName) {
+      synchronized (lock) {
+        if (service != null) {
+          service.clear(queueName);
+        }
+        postponed.add(new ClearAction(queueName));
+      }
+    }
+
     /** Some postponed action. */
     private interface Postponed {
       void act(Goro goro);
@@ -207,6 +217,21 @@ public abstract class BoundGoro extends Goro implements ServiceConnection {
       @Override
       public void act(final Goro goro) {
         goro.getExecutor(queue).execute(command);
+      }
+    }
+
+    /** Postponed clear call. */
+    private static final class ClearAction implements Postponed {
+      /** Queue name. */
+      private final String queueName;
+
+      ClearAction(final String queueName) {
+        this.queueName = queueName;
+      }
+
+      @Override
+      public void act(final Goro goro) {
+        goro.clear(queueName);
       }
     }
 

@@ -98,6 +98,18 @@ public abstract class Goro {
    */
   public abstract Executor getExecutor(final String queueName);
 
+  /**
+   * Removes all the pending tasks from a specified queue.
+   * @param queueName queue name, must not be {@code null}
+   */
+  public final void clear(final String queueName) {
+    if (queueName == null) {
+      throw new IllegalArgumentException("Queue name must not be null");
+    }
+    removeTasksInQueue(queueName);
+  }
+
+  protected abstract void removeTasksInQueue(final String queueName);
 
   /** Main implementation. */
   static class GoroImpl extends Goro {
@@ -145,6 +157,11 @@ public abstract class Goro {
     @Override
     public Executor getExecutor(final String queueName) {
       return queues.getExecutor(queueName == null ? DEFAULT_QUEUE : queueName);
+    }
+
+    @Override
+    protected void removeTasksInQueue(final String queueName) {
+      queues.clear(queueName);
     }
   }
 

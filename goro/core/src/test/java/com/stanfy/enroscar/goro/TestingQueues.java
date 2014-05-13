@@ -28,9 +28,15 @@ public class TestingQueues implements Queues {
   }
 
   @Override
-  public Executor getExecutor(String queueName) {
+  public Executor getExecutor(final String queueName) {
     lastQueueName = queueName;
     return new TaskQueueExecutor(delegateExecutor);
+  }
+
+  @Override
+  public void clear(final String queueName) {
+    lastQueueName = queueName;
+    tasks.clear();
   }
 
   public String getLastQueueName() {

@@ -30,6 +30,12 @@ interface Queues {
    */
   Executor getExecutor(String queueName);
 
+  /**
+   * Remove tasks from a queue.
+   * @param queueName queue name
+   */
+  void clear(String queueName);
+
   /** Default implementation. */
   class Impl implements Queues {
 
@@ -43,7 +49,7 @@ interface Queues {
     private static Executor defaultThreadPoolExecutor;
 
     /** Executors map. */
-    private final HashMap<String, Executor> executorsMap = new HashMap<>();
+    private final HashMap<String, TaskQueueExecutor> executorsMap = new HashMap<>();
 
     /** Used threads pool. */
     private Executor delegateExecutor;
@@ -100,7 +106,7 @@ interface Queues {
           return delegateExecutor;
         }
 
-        Executor exec = executorsMap.get(queueName);
+        TaskQueueExecutor exec = executorsMap.get(queueName);
         if (exec == null) {
           exec = new TaskQueueExecutor(delegateExecutor);
           executorsMap.put(queueName, exec);
@@ -109,6 +115,16 @@ interface Queues {
       }
     }
 
+    @Override
+    public void clear(final String queueName) {
+      final TaskQueueExecutor exec;
+      synchronized (executorsMap) {
+        exec = executorsMap.get(queueName);
+      }
+      if (exec != null) {
+        exec.clear();
+      }
+    }
   }
 
   /** Executor for the task queue. */
@@ -149,6 +165,9 @@ interface Queues {
       }
     }
 
+    synchronized void clear() {
+      tasks.clear();
+    }
   }
 
 }

@@ -8,6 +8,7 @@ Version 2.0 (in dev)
 - Service context can be injected to tasks scheduled with `startService`:
   `ServiceContextAware` interface.
 - Errors thrown within tasks scheduled with `startService` are not silently eaten.
+- Ability to clear pending tasks in a queue.
 
 Version 1.2
 ===========

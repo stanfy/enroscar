@@ -278,4 +278,25 @@ public class BoundGoroTest {
     assertThat(error[0]).isInstanceOf(TimeoutException.class);
   }
 
+  @Test
+  public void clearShouldDelegate() {
+    goro.bind();
+    goro.clear("clearedQueue");
+    verify(serviceInstance).clear("clearedQueue");
+  }
+
+  @Test
+  public void clearShouldBeAppliedAfterBinding() {
+    Callable<?> task1 = mock(Callable.class);
+    goro.schedule("clearedQueue", task1);
+    goro.clear("clearedQueue");
+    Callable<?> task2 = mock(Callable.class);
+    goro.schedule("clearedQueue", task2);
+    goro.bind();
+    InOrder order = inOrder(serviceInstance);
+    order.verify(serviceInstance).schedule("clearedQueue", task1);
+    order.verify(serviceInstance).clear("clearedQueue");
+    order.verify(serviceInstance).schedule("clearedQueue", task2);
+  }
+
 }
