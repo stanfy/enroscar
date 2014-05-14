@@ -28,7 +28,7 @@ and will be present there not for a very long time, we hope.
 License
 -------
 
-     Copyright 2014 Stanfy Corp.
+     Copyright 2011-2014 Stanfy Corp.
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
