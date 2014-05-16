@@ -50,4 +50,10 @@ public class CursorAsyncTest {
     assertThat(shadowOf(application.getContentResolver()).getContentObserver(uri)).isNull();
   }
 
+  @Test
+  public void replicateShouldReturnNewInstance() {
+    Async<Cursor> async = asyncCursor(application).uri(uri).get();
+    assertThat(async.replicate()).isNotSameAs(async).isNotNull();
+  }
+
 }

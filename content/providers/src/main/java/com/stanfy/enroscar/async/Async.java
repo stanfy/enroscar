@@ -27,4 +27,11 @@ public interface Async<D> {
 
   void cancel();
 
+  /**
+   * Makes a copy of this asynchronous operation replicating internal parameters.
+   * Does not copy subscribers and execution state.
+   * @return new instance of async operation
+   */
+  Async<D> replicate();
+
 }

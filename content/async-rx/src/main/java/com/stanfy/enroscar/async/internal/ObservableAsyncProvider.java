@@ -41,6 +41,11 @@ public abstract class ObservableAsyncProvider<D> implements AsyncProvider<D> {
     }
 
     @Override
+    public RxAsync<D> replicate() {
+      return new RxAsync<>(rxObservable);
+    }
+
+    @Override
     public void subscribe(final AsyncObserver<D> observer) {
       if (canceled) {
         return;

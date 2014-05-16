@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.stanfy.enroscar.async.Async;
 import com.stanfy.enroscar.content.ContentProviderQuery;
 
 /**
@@ -26,6 +27,11 @@ public class CursorAsync extends TaskAsync<Cursor, ContentProviderQuery> {
   public CursorAsync(final ContentProviderQuery query, final boolean observeDescendants) {
     super(query);
     this.observeDescendants = observeDescendants;
+  }
+
+  @Override
+  public CursorAsync replicate() {
+    return new CursorAsync(task, observeDescendants);
   }
 
   @Override

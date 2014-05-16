@@ -56,6 +56,11 @@ public class AsyncGoro {
     }
 
     @Override
+    public GoroAsync<T> replicate() {
+      return new GoroAsync<>(queue, task);
+    }
+
+    @Override
     public void subscribe(final AsyncObserver<T> observer) {
       synchronized (this) {
         if (canceled) {

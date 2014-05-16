@@ -7,13 +7,13 @@ import com.stanfy.enroscar.async.Async;
 /**
  * @param <D> data type
  */
-class AsyncContext<D> implements AsyncProvider<D> {
+class AsyncContext<D> {
 
   /** Application context. */
   final Context applicationContext;
 
   /** Delegate instance. */
-  private final Async<D> async;
+  final Async<D> async;
 
   public AsyncContext(final Context context, final Async<D> async) {
     if (async == null) {
@@ -23,11 +23,6 @@ class AsyncContext<D> implements AsyncProvider<D> {
     }
     this.applicationContext = context.getApplicationContext();
     this.async = async;
-  }
-
-  @Override
-  public Async<D> provideAsync() {
-    return async;
   }
 
   protected void releaseData(final D data) {

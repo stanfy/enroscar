@@ -21,6 +21,11 @@ public class TaskAsync<D, T extends Callable<D>> extends BaseAsync<D> {
   }
 
   @Override
+  public TaskAsync<D, T> replicate() {
+    return new TaskAsync<>(task);
+  }
+
+  @Override
   protected void onTrigger() {
     doCancel();
     asyncTask = new AsyncTaskWithDelegate<>(task, this);

@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @param <D> data type
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
-class BaseAsync<D> implements Async<D> {
+abstract class BaseAsync<D> implements Async<D> {
 
   /** Observers collection. */
   private final ArrayList<AsyncObserver<D>> observers = new ArrayList<>(3);

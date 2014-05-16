@@ -1,5 +1,6 @@
 package com.stanfy.enroscar.async.internal;
 
+import com.stanfy.enroscar.async.Async;
 import com.stanfy.enroscar.async.AsyncObserver;
 
 import org.junit.Before;
@@ -18,7 +19,12 @@ public class BaseAsyncTest {
 
   @Before
   public void init() {
-    async = spy(new BaseAsync<Integer>());
+    async = spy(new BaseAsync<Integer>() {
+      @Override
+      public Async<Integer> replicate() {
+        return this;
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")

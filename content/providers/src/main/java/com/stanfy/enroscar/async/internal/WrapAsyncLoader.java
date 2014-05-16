@@ -44,9 +44,12 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
     if (async != null) {
       async.cancel();
     }
-    async = context.provideAsync();
+    async = context.async.replicate();
     if (async == null) {
-      throw new IllegalArgumentException("Async can't be null. Have you implemented @Load or @Send method?");
+      throw new IllegalArgumentException(
+          "Async can't be null. Have you implemented @Load or @Send method? "
+              + "If yes, check that your Async implementation can replicate itself"
+      );
     }
 
     async.subscribe(observer);
@@ -57,7 +60,7 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
     if (result != null) {
       deliverResult(result);
     }
-    if (takeContentChanged() || async == null) {
+    if (takeContentChanged() || result == null) {
       forceLoad();
     }
   }

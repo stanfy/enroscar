@@ -248,6 +248,11 @@ public class AsyncProcessorTest {
     public void cancel() {
       throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Async<String> replicate() {
+      return new AsyncStub();
+    }
   }
 
 }

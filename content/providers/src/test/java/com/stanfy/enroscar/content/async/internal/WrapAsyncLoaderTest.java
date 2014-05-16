@@ -32,7 +32,7 @@ public class WrapAsyncLoaderTest {
   private AsyncObserver<String> registeredObserver;
 
   /** Invocation flag. */
-  private boolean cancelInvoked;
+  private boolean cancelInvoked, replicateInvoked;
 
   /** Releases data. */
   private String releasedData;
@@ -46,12 +46,19 @@ public class WrapAsyncLoaderTest {
       }
 
       @Override
+      public Async<String> replicate() {
+        replicateInvoked = true;
+        return this;
+      }
+
+      @Override
       public void cancel() {
         cancelInvoked = true;
       }
     };
     registeredObserver = null;
     cancelInvoked = false;
+    replicateInvoked = false;
     releasedData = null;
 
     AsyncContext<String> context = new AsyncContext<String>(Robolectric.application, mockAsync) {
@@ -71,14 +78,17 @@ public class WrapAsyncLoaderTest {
     assertThat(registeredObserver).isNull();
     loader.forceLoad();
     assertThat(registeredObserver).isNotNull();
+    assertThat(replicateInvoked).isTrue();
   }
 
   @Test
   public void forceLoadShouldCancelPrevious() {
     loader.forceLoad();
     assertThat(cancelInvoked).isFalse();
+    replicateInvoked = false;
     loader.forceLoad();
     assertThat(cancelInvoked).isTrue();
+    assertThat(replicateInvoked).isTrue();
   }
 
   @Test
@@ -86,6 +96,7 @@ public class WrapAsyncLoaderTest {
     assertThat(registeredObserver).isNull();
     loader.startLoading();
     assertThat(registeredObserver).isNotNull();
+    assertThat(replicateInvoked).isTrue();
   }
 
   @Test
@@ -105,8 +116,10 @@ public class WrapAsyncLoaderTest {
     @SuppressWarnings("unchecked")
     OnLoadCompleteListener<Result<String>> listener = mock(OnLoadCompleteListener.class);
     loader.registerListener(1, listener);
+    replicateInvoked = false;
     loader.startLoading();
     verify(listener).onLoadComplete(loader, new Result<>("ok", null));
+    assertThat(replicateInvoked).isFalse();
   }
 
   @Test
