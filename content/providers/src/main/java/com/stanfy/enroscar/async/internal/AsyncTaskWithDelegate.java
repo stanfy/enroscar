@@ -7,17 +7,14 @@ import java.util.concurrent.Callable;
 final class AsyncTaskWithDelegate<D> extends AsyncTask<Void, Void, D> {
 
   /** Delegate. */
-  BaseAsync<D> async;
+  private final BaseAsync<D> async;
 
   /** Task. */
-  private Callable<D> task;
+  private final Callable<D> task;
 
   /** Caught error. */
   private Exception error;
 
-  protected AsyncTaskWithDelegate(final Callable<D> task) {
-    this(task, null);
-  }
   protected AsyncTaskWithDelegate(final Callable<D> task, final BaseAsync<D> async) {
     this.async = async;
     this.task = task;

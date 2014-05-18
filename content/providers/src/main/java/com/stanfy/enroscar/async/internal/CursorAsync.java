@@ -36,6 +36,7 @@ public class CursorAsync extends TaskAsync<Cursor, ContentProviderQuery> {
 
   @Override
   protected void onTrigger() {
+    // it's assumed we are running on a main thread
     super.onTrigger();
     if (observer == null) {
       observer = new ContentObserver(H) {
