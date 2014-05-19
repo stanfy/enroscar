@@ -5,7 +5,7 @@ Makes it easy to put your asynchronous operations behind
 [Android's Loader](https://developer.android.com/reference/android/content/Loader.html).
 
 Main abstraction here is
-[`Async`](content/providers/src/main/java/com/stanfy/enroscar/async/Async.java)
+[`Async`](providers/src/main/java/com/stanfy/enroscar/async/Async.java)
 which represents some asynchronous operation.
 
 Start with describing your operations
