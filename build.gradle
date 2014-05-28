@@ -83,7 +83,7 @@ configure(libraryModules) {
       androidTestCompile it
     }
 
-    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
+    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3'
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.easytesting:fest-util:1.2.5'
   }

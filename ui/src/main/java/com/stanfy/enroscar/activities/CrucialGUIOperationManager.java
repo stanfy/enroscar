@@ -1,21 +1,18 @@
 package com.stanfy.enroscar.activities;
 
-import java.util.HashSet;
-
 import android.os.Looper;
 import android.util.Log;
 
-import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.EnroscarBean;
-import com.stanfy.enroscar.beans.InitializingBean;
-import com.stanfy.enroscar.images.ImagesManager;
+
+import java.util.HashSet;
 
 /**
  * Crucial GUI operation manager.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
  */
 @EnroscarBean(value = CrucialGUIOperationManager.BEAN_NAME)
-public class CrucialGUIOperationManager implements InitializingBean {
+public class CrucialGUIOperationManager {
 
   /** Bean name. */
   public static final String BEAN_NAME = "CrucialGUIOperationManager";
@@ -28,9 +25,6 @@ public class CrucialGUIOperationManager implements InitializingBean {
 
   /** Crucial GUI operation listeners. */
   private HashSet<CrucialGUIOperationListener> crucialGuiOperationListeners;
-
-  /** Images manager. */
-  private ImagesManager imagesManager;
 
   private void checkThread() {
     if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -46,9 +40,6 @@ public class CrucialGUIOperationManager implements InitializingBean {
   public void dispatchCrucialGUIOperationStart() {
     checkThread();
     crucialGuiOperationRunning = true;
-    if (imagesManager != null) {
-      imagesManager.pauseLoading();
-    }
     final HashSet<CrucialGUIOperationListener> listeners = crucialGuiOperationListeners;
     if (listeners != null) {
       for (final CrucialGUIOperationListener crucialGUIOperationListener : listeners) {
@@ -68,9 +59,6 @@ public class CrucialGUIOperationManager implements InitializingBean {
     checkThread();
     if (!crucialGuiOperationRunning) { return; }
     crucialGuiOperationRunning = false;
-    if (imagesManager != null) {
-      imagesManager.resumeLoading();
-    }
     final HashSet<CrucialGUIOperationListener> listeners = crucialGuiOperationListeners;
     if (listeners != null) {
       for (final CrucialGUIOperationListener crucialGUIOperationListener : listeners) {
@@ -103,11 +91,6 @@ public class CrucialGUIOperationManager implements InitializingBean {
     checkThread();
     if (crucialGuiOperationListeners == null) { return; }
     crucialGuiOperationListeners.remove(listener);
-  }
-
-  @Override
-  public void onInitializationFinished(final BeansContainer container) {
-    this.imagesManager = container.getBean(ImagesManager.BEAN_NAME, ImagesManager.class);
   }
   
   /**
