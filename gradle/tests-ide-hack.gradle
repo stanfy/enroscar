@@ -11,6 +11,6 @@ android {
 
 dependencies {
   androidTestCompile 'junit:junit:4.11'
-  androidTestCompile 'org.robolectric:robolectric:2.3-SNAPSHOT'
+  androidTestCompile 'org.robolectric:robolectric:2.3'
   androidTestCompile 'org.mockito:mockito-all:1.9.5'
 }

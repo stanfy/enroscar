@@ -37,7 +37,7 @@ dependencies {
   testCompile 'com.google.guava:guava:16.0.1'
   testCompile 'org.truth0:truth:0.13'
 
-  testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3-SNAPSHOT'
+  testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3'
   testRuntime files("${System.properties['java.home']}/../lib/tools.jar")
   testRuntime files("${System.env['ANDROID_HOME']}/platforms/android-19/android.jar")
 }

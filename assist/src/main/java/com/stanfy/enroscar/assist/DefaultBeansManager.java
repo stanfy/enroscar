@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.stanfy.enroscar.activities.ActivityBehaviorFactory;
 import com.stanfy.enroscar.activities.CrucialGUIOperationManager;
+import com.stanfy.enroscar.assist.util.ImagesManagerCrucialGUIOperationListener;
 import com.stanfy.enroscar.beans.BeanUtils;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.ImagesManager;
@@ -13,8 +14,8 @@ import com.stanfy.enroscar.images.views.ImageConsumers;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
-import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
@@ -123,6 +124,7 @@ public class DefaultBeansManager extends BeansManager {
     public Editor activitiesBehavior() {
       put(ActivityBehaviorFactory.class);
       put(CrucialGUIOperationManager.class);
+      put(ImagesManagerCrucialGUIOperationListener.class);
       return this;
     }
 
