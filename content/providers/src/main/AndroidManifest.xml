@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.stanfy.enroscar.content" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <application tools:ignore="AllowBackup" />
+  <application />
 
 </manifest>

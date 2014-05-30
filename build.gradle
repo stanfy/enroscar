@@ -4,7 +4,7 @@ buildscript {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.10.1'
+    classpath 'com.android.tools.build:gradle:0.10.4'
     classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
   }
 }
@@ -49,7 +49,9 @@ configure(libraryModules) {
   android {
     compileSdkVersion 19
 
-    buildToolsVersion '19.0.3'
+    buildToolsVersion '19.1.0'
+
+//    useOldManifestMerger = false
 
     defaultConfig {
       versionCode 10

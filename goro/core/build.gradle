@@ -1,3 +1,8 @@
+version = '2.0.alpha4-SNAPSHOT'
+ext {
+  latestStableVersion = '2.0.0'
+}
+
 // POM file modifications
 uploadArchives {
   repositories {
@@ -16,14 +21,14 @@ apply from: file("$rootDir/gradle/jar.gradle")
 
 dependencies {
   provided project(":content")
-  provided 'com.netflix.rxjava:rxjava-core:0.18.1'
+  provided 'com.netflix.rxjava:rxjava-core:0.18.4'
 
   androidTestCompile project(":content")
-  androidTestCompile 'com.netflix.rxjava:rxjava-core:0.18.1'
+  androidTestCompile 'com.netflix.rxjava:rxjava-core:0.18.4'
 }
 
 android {
   defaultConfig {
-    consumerProguardFiles file("config/proguard-consumer.txt")
+    consumerProguardFiles file("config/consumer.proguard")
   }
 }
