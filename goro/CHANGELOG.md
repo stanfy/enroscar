@@ -1,5 +1,5 @@
-Version 2.0 (in dev)
-====================
+Version 2.0.0
+=============
 - Returned `Future` is an observable future allowing listening to task execution result/error:
   `ObservableFuture` interface.
 - Simplified interaction with a `Goro` instance that is run in the service context:
