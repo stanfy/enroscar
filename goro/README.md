@@ -222,7 +222,8 @@ dependencies {
 }
 ```
 
-You may also simply grab a [JAR](http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.stanfy.enroscar&a=enroscar-goro&v=LATEST&e=jar).
+You may also simply grab a [JAR](http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.stanfy.enroscar&a=enroscar-goro&v=LATEST&e=jar)
+or an [AAR](http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.stanfy.enroscar&a=enroscar-goro&v=LATEST&e=aar).
 Or use it with Maven:
 ```xml
   <dependency>
