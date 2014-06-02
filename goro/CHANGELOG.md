@@ -9,6 +9,7 @@ Version 2.0.0
   `ServiceContextAware` interface.
 - Errors thrown within tasks scheduled with `startService` are not silently eaten.
 - Ability to clear pending tasks in a queue.
+- RxJava integration: `RxGoro` wrapper in `support` package. 
 
 Version 1.2
 ===========
