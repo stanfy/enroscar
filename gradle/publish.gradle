@@ -97,7 +97,7 @@ task testsJar(type : Jar) {
 }
 
 task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
-  from 'build/bundles/release/classes.jar'
+  from 'build/intermediates/bundles/release/classes.jar'
   into "build/libs"
   rename { "${project.name}-${project.version}.jar" }
 }
