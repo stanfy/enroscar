@@ -10,12 +10,12 @@ import static org.fest.assertions.api.Assertions.assertThat;
 /**
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
-public class UserActivityTest extends ActivityInstrumentationTestCase2<UserActivity> {
+public class UserActivityAndroidTest extends ActivityInstrumentationTestCase2<UserActivity> {
 
   /** Activity instance. */
   private UserActivity activity;
 
-  public UserActivityTest() {
+  public UserActivityAndroidTest() {
     super(UserActivity.class);
   }
 

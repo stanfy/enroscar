@@ -10,12 +10,12 @@ import static org.fest.assertions.api.Assertions.assertThat;
 /**
  * Test of AsyncUserActivity.
  */
-public class AsyncUserActivityTest extends ActivityInstrumentationTestCase2<AsyncUserActivity> {
+public class AsyncUserActivityAndroidTest extends ActivityInstrumentationTestCase2<AsyncUserActivity> {
 
   /** Activity instance. */
   private AsyncUserActivity activity;
 
-  public AsyncUserActivityTest() {
+  public AsyncUserActivityAndroidTest() {
     super(AsyncUserActivity.class);
   }
 

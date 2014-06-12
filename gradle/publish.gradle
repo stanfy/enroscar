@@ -75,7 +75,7 @@ uploadArchives {
 }
 
 task javadocs(type: Javadoc) {
-  source = android.sourceSets.main.allJava
+  source = android.sourceSets.main.java.source
 }
 afterEvaluate {
   javadocs.classpath += files(android.bootClasspath)

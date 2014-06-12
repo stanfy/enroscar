@@ -4,14 +4,12 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.util.Base64;
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.IoUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +22,7 @@ import com.stanfy.enroscar.images.test.R;
 /**
  * Tests for ImageRequest.
  */
-public class ImageRequestRealTest extends BaseTest {
+public class ImageRequestAndroidTest extends BaseAndroidTest {
 
   /** Test bitmap. */
   private Bitmap testBitmap;

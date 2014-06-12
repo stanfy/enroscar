@@ -2,7 +2,7 @@ dependOnProjects([':beans', ':io', ':net'])
 
 android {
   defaultConfig {
-    testPackageName "com.stanfy.enroscar.images.test"
+    testApplicationId "com.stanfy.enroscar.images.test"
     testInstrumentationRunner "android.test.InstrumentationTestRunner"
   }
 }

@@ -16,9 +16,6 @@ uploadArchives {
 }
 apply from: file("$rootDir/gradle/jar.gradle")
 
-// FIXME: IDE hack
-//apply from: file("$rootDir/gradle/tests-ide-hack.gradle")
-
 dependencies {
   provided project(":content")
   provided 'com.netflix.rxjava:rxjava-core:0.18.4'

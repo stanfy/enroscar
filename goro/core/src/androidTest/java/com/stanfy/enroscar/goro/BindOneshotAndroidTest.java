@@ -20,7 +20,7 @@ import rx.functions.Action1;
 /**
  * Test oneshot Goro usage.
  */
-public class BindOneshotTest extends AndroidTestCase {
+public class BindOneshotAndroidTest extends AndroidTestCase {
 
   private BoundGoro goro;
 

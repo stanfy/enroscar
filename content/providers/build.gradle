@@ -2,12 +2,9 @@ apply from: file("$rootDir/gradle/jar.gradle")
 
 dependencies {
 
-  compile 'com.android.support:support-v4:19.0.1'
+  compile 'com.android.support:support-v4:19.1.0'
 
 }
-
-// FIXME: IDE hack
-apply from: file("$rootDir/gradle/tests-ide-hack.gradle")
 
 // POM file modifications
 uploadArchives {

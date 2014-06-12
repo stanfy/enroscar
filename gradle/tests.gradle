@@ -1,22 +1,29 @@
-apply plugin: 'android-test'
+apply plugin: 'robolectric'
+
+robolectric {
+
+  def selection = null
+  try {
+    selection = project.testSelection
+  } catch (def e) {
+    // ignore
+  }
+  if (!selection) {
+    selection = "**/*Test.class"
+  }
+
+  include selection
+  exclude "**/Abstract*.class"
+}
 
 android.libraryVariants.all { variant ->
   if (variant.buildType.name.equalsIgnoreCase('release')) { return }
 
+  def compileTask = tasks["compileTest${variant.name.capitalize()}Java"]
+  compileTask.excludes += "**/*AndroidTest.java"
+
   def task = tasks["test${variant.name.capitalize()}"]
   task.configure {
-    scanForTestClasses = false
-
-    def selection = null
-    try {
-      selection = project.testSelection
-    } catch (def e) {
-      // ignore
-    }
-    if (!selection) {
-      selection = "**/*Test.class"
-    }
-
     def debug = null
     try {
       debug = project.testDebug
@@ -26,19 +33,6 @@ android.libraryVariants.all { variant ->
     if (debug == "yes") {
       jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
     }
-
-    include selection
-    exclude "**/Abstract*.class"
   }
-
-  // XXX: workaround to support 0.10 plugin
-  def compileTask = tasks["compileTest${variant.name.capitalize()}Java"]
-  compileTask.actions.remove(0)
-  compileTask.doFirst {
-    compileTask.options.bootClasspath = android.bootClasspath.join(File.pathSeparator)
-  }
-  task.actions.remove(0)
-  task.doFirst {
-    task.classpath += project.files(android.bootClasspath)
-  }
+  task.excludes += "**/*AndroidTest.class"
 }

@@ -16,7 +16,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 /**
  * Tests for {@link Goro}.
  */
-public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
+public class GoroServiceAndroidTest extends ServiceTestCase<GoroService> {
 
   /** Instance under the test. */
   private Goro goro;
@@ -83,7 +83,7 @@ public class GoroServiceInstrumentTest extends ServiceTestCase<GoroService> {
   /** A latch. */
   private CountDownLatch sync;
 
-  public GoroServiceInstrumentTest() {
+  public GoroServiceAndroidTest() {
     super(GoroService.class);
   }
 

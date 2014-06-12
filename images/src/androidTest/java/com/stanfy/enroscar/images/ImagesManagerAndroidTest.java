@@ -9,7 +9,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 /**
  * Tests for Images manager.
  */
-public class ImagesManagerRealTest extends BaseTest {
+public class ImagesManagerAndroidTest extends BaseAndroidTest {
 
   public void testSetup() {
 

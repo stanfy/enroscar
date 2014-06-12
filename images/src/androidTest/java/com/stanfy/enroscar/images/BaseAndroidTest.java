@@ -5,7 +5,7 @@ import android.test.AndroidTestCase;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 
-public abstract class BaseTest extends AndroidTestCase {
+public abstract class BaseAndroidTest extends AndroidTestCase {
 
   /** Images manager. */
   ImagesManager imagesManager;
