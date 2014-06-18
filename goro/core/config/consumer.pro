@@ -1,3 +1,5 @@
+-dontwarn com.stanfy.enroscar.goro.support.*
+
 # Ignore warning caused by RxGoro
 -dontwarn rx.Observable
 -dontwarn rx.Observable$OnSubscribe
