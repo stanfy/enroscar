@@ -139,9 +139,9 @@ public class WrapAsyncLoaderTest {
   }
 
   @Test
-  public void stopLoadingShouldCancelAsyncResult() {
+  public void abandoneShouldCancelAsyncResult() {
     loader.startLoading();
-    loader.stopLoading();
+    loader.abandon();
     assertThat(cancelInvoked).isTrue();
   }
 
