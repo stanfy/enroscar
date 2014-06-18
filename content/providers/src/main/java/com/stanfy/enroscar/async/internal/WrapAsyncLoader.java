@@ -85,7 +85,7 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
   }
 
   @Override
-  protected void onStopLoading() {
+  protected void onAbandon() {
     if (async != null) {
       async.cancel();
       async = null;
@@ -96,6 +96,7 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
   protected void onReset() {
     if (result != null) {
       onReleaseData(result);
+      result = null;
     }
   }
 
