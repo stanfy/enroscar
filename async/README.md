@@ -58,6 +58,11 @@ operator.loadGreeting();
 operator.cancelLoadGreeting();    
 ```
 
+**Note** that working with an `operator` you actually control an Android `Loader`. Hence, using it 
+within an `Activity` or `Fragment` you do not care about their lifecycle. Actions you provide 
+subscribing to operations will be automatically attached to running tasks during `Activity` 
+recreation.
+
 See more (including RxJava integration) at our Recipes page.
 
 Download
@@ -65,5 +70,5 @@ Download
 Gradle
 
 ```groovy
-compile 
+compile 'todo'
 ```
