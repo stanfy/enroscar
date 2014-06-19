@@ -37,6 +37,7 @@ start/cancel your operations or subscribe to their execution results. Use it!
 Foo foo = new Foo();
 
 // prepare the operator
+// FooOperator is a generated class
 FooOperator operator = FooOperator.build()
     .withinActivity(activity)
     .operations(foo)
