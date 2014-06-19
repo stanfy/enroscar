@@ -64,7 +64,7 @@ within an `Activity` or `Fragment` you do not care about their lifecycle. Action
 subscribing to operations will be automatically attached to running tasks during `Activity` 
 recreation.
 
-See more (including RxJava integration) at our Recipes page.
+See more (including RxJava integration) at our [Recipes page](Enroscar-Async).
 
 Download
 --------
