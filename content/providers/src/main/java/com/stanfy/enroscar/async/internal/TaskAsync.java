@@ -43,4 +43,7 @@ public class TaskAsync<D, T extends Callable<D>> extends BaseAsync<D> {
     }
   }
 
+  protected T getTask() {
+    return task;
+  }
 }

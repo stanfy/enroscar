@@ -3,7 +3,7 @@ package com.stanfy.enroscar.async;
 import android.content.Context;
 
 import com.stanfy.enroscar.async.internal.TaskAsync;
-import com.stanfy.enroscar.content.CursorAsyncBuilder;
+import com.stanfy.enroscar.async.content.CursorAsyncBuilder;
 
 import java.util.concurrent.Callable;
 
@@ -24,7 +24,12 @@ public class Tools {
     return new TaskAsync<>(task);
   }
 
-  // TODO: release mechanism
+  /**
+   * Create a builder for asynchronous operation that loads a {@link android.database.Cursor}
+   * using Android's {@link android.content.ContentResolver}.
+   * @param context context used to get a resolver instance
+   * @return builder of {@code Cursor} load operation
+   */
   public static CursorAsyncBuilder asyncCursor(final Context context) {
     return new CursorAsyncBuilder(context);
   }

@@ -3,6 +3,7 @@ package com.stanfy.enroscar.async.internal;
 import android.content.Context;
 
 import com.stanfy.enroscar.async.Async;
+import com.stanfy.enroscar.async.Releaser;
 
 /**
  * @param <D> data type
@@ -25,8 +26,11 @@ class AsyncContext<D> {
     this.async = async;
   }
 
+  @SuppressWarnings("unchecked")
   protected void releaseData(final D data) {
-    // TODO
+    if (async instanceof Releaser) {
+      ((Releaser<D>) async).release(data);
+    }
   }
 
 }
