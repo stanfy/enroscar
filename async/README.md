@@ -15,10 +15,10 @@ Describe an asynchronous operation.
 
 ```java
 class Foo {
-  @Load Async<String> loadGreeting(long userId) {
+  @Load Async<String> loadGreeting(final String name) {
     return Tools.async(new Callable<String>() {
       public String call() {
-        String name = fetchUserName(userId);
+        try { Thread.sleep(1000); } catch (InterruptedException ignored) { }
         return "Hello " + name;
       }
     });
