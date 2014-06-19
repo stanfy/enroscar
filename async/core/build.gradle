@@ -11,8 +11,8 @@ uploadArchives {
   repositories {
     mavenDeployer {
       pom.project {
-        name 'Enroscar Content'
-        description 'Helper classes and extended abstractions for Android loaders, content resolvers, and DB access.'
+        name 'Enroscar Async'
+        description 'Library for managing asynchronous operations via Android loaders with a nice API'
       }
     }
   }

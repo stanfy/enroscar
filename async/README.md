@@ -1,5 +1,5 @@
-Enroscar Content
-================
+Enroscar Async
+==============
 
 Makes it easy to put your asynchronous operations behind
 [Android's Loader](https://developer.android.com/reference/android/content/Loader.html).

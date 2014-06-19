@@ -5,14 +5,15 @@ include 'stats'
 include 'images'
 include 'ui'
 include 'assist'
+include 'content'
 
-// === Content ===
-include ':content'
-project(':content').projectDir = new File(rootDir, "content/providers")
+// === Async ===
+include ':async'
+project(':async').projectDir = new File(rootDir, "async/core")
 include ':async-compiler'
-project(':async-compiler').projectDir = new File(rootDir, "content/async-compiler")
+project(':async-compiler').projectDir = new File(rootDir, "async/async-compiler")
 include ':async-rx'
-project(':async-rx').projectDir = new File(rootDir, "content/async-rx")
+project(':async-rx').projectDir = new File(rootDir, "async/async-rx")
 
 
 // === Goro ===

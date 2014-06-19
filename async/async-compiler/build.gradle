@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-  compile project(path: ':content', configuration: 'plain')
+  compile project(path: ':async', configuration: 'plain')
   compile 'com.squareup:javawriter:2.5.0'
 
   testCompile 'junit:junit:4.11'
