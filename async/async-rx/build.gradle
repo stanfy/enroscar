@@ -1,0 +1,4 @@
+dependencies {
+  compile 'com.netflix.rxjava:rxjava-core:0.18.1'
+  compile project(':async')
+}
