@@ -166,7 +166,7 @@ public class GoroServiceAndroidTest extends ServiceTestCase<GoroService> {
     addListener();
 
     Future<?> future = goro.schedule(mockTask);
-    assertThat(future.cancel(true)).isTrue();
+    future.cancel(true);
     waitForListener();
 
     assertThat(scheduleCallThread).isNotNull();
