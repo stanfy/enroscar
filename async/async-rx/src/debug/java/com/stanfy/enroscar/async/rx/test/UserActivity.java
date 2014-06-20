@@ -19,6 +19,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 
 import rx.Observable;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -26,10 +27,14 @@ import rx.functions.Action1;
  */
 public class UserActivity extends FragmentActivity {
 
+  static final int LOADER_LOAD = 1, LOADER_SEND = 2;
+
   final CountDownLatch loadSync = new CountDownLatch(1);
   final CountDownLatch sendSync = new CountDownLatch(1);
 
   TextView view;
+
+  boolean completeCalled;
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -44,6 +49,12 @@ public class UserActivity extends FragmentActivity {
         .get();
 
     operator.when().loadThingIsFinished()
+        .doOnCompleted(new Action0() {
+          @Override
+          public void call() {
+            completeCalled = true;
+          }
+        })
         .subscribe(new Action1<Thing>() {
           @Override
           public void call(final Thing thing) {
@@ -150,11 +161,11 @@ public class UserActivity extends FragmentActivity {
     // cancellation
 
     public void cancelLoadThing() {
-      destroyLoader(1);
+      destroyLoader(LOADER_LOAD);
     }
 
     public void cancelSendThing() {
-      destroyLoader(2);
+      destroyLoader(LOADER_SEND);
     }
 
   }
@@ -168,12 +179,12 @@ public class UserActivity extends FragmentActivity {
 
     /* same visibility */
     Observable<Thing> loadThingIsFinished() {
-      return ObservableTools.loaderObservable(1, this);
+      return ObservableTools.loaderObservable(LOADER_LOAD, this);
     }
 
     /* same visibility */
     Observable<Thing> sendThingIsFinished() {
-      return ObservableTools.loaderObservable(2, this);
+      return ObservableTools.loaderObservable(LOADER_SEND, this);
     }
 
   }
