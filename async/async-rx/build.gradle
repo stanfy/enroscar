@@ -1,4 +1,5 @@
 version = '1.0-SNAPSHOT'
+apply from: file("$rootDir/gradle/jar.gradle")
 dependencies {
   compile 'com.netflix.rxjava:rxjava-core:0.19.1'
   compile project(':async')
