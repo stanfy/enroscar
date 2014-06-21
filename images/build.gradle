@@ -1,8 +1,1 @@
 dependOnProjects([':beans', ':io', ':net'])
-
-android {
-  defaultConfig {
-    testApplicationId "com.stanfy.enroscar.images.test"
-    testInstrumentationRunner "android.test.InstrumentationTestRunner"
-  }
-}

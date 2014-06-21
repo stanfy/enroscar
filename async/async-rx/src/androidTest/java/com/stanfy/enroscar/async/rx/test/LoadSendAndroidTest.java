@@ -10,12 +10,12 @@ import static org.fest.assertions.api.Assertions.assertThat;
 /**
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
-public class UserActivityAndroidTest extends ActivityInstrumentationTestCase2<UserActivity> {
+public class LoadSendAndroidTest extends ActivityInstrumentationTestCase2<UserActivity> {
 
   /** Activity instance. */
   private UserActivity activity;
 
-  public UserActivityAndroidTest() {
+  public LoadSendAndroidTest() {
     super(UserActivity.class);
   }
 
@@ -36,7 +36,6 @@ public class UserActivityAndroidTest extends ActivityInstrumentationTestCase2<Us
   }
 
   public void testSendThing() throws Throwable {
-    activity.completeCalled = false;
     assertThat(activity.loadSync.await(1, TimeUnit.SECONDS)).isTrue();
 
     runTestOnUiThread(new Runnable() {
@@ -58,19 +57,6 @@ public class UserActivityAndroidTest extends ActivityInstrumentationTestCase2<Us
       }
     });
 
-  }
-
-  public void testOnCompleteWhenLoaderIsReset() throws Throwable {
-    runTestOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        activity.completeCalled = false;
-
-        getInstrumentation().callActivityOnDestroy(activity);
-        setActivity(null);
-        assertThat(activity.completeCalled).isTrue();
-      }
-    });
   }
 
 }

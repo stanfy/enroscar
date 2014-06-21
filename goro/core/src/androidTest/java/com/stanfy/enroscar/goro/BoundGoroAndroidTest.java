@@ -3,6 +3,7 @@ package com.stanfy.enroscar.goro;
 import android.test.AndroidTestCase;
 import android.test.FlakyTest;
 
+import com.google.android.apps.common.testing.ui.espresso.Espresso;
 import com.stanfy.enroscar.async.AsyncObserver;
 import com.stanfy.enroscar.goro.support.AsyncGoro;
 import com.stanfy.enroscar.goro.support.RxGoro;
@@ -17,20 +18,66 @@ import java.util.concurrent.TimeoutException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+
 /**
  * Test oneshot Goro usage.
  */
-public class BindOneshotAndroidTest extends AndroidTestCase {
+public class BoundGoroAndroidTest extends AndroidTestCase {
 
   private BoundGoro goro;
 
   private String res;
 
+  private CountDownLatch scheduleSync;
+
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    GoroService.setDelegateExecutor(null);
     goro = Goro.bindWith(getContext());
     res = "fail";
+
+    scheduleSync = prepareScheduleSync();
+  }
+
+  private CountDownLatch prepareScheduleSync() throws InterruptedException {
+    final CountDownLatch scheduleSync = new CountDownLatch(1);
+    final CountDownLatch listenerSync = new CountDownLatch(1);
+    GoroServiceAndroidTest.onMainThread(new Runnable() {
+      @Override
+      public void run() {
+        goro.addTaskListener(new GoroListener() {
+          @Override
+          public void onTaskSchedule(Callable<?> task, String queue) {
+            scheduleSync.countDown();
+          }
+
+          @Override
+          public void onTaskStart(Callable<?> task) {
+
+          }
+
+          @Override
+          public void onTaskFinish(Callable<?> task, Object result) {
+
+          }
+
+          @Override
+          public void onTaskCancel(Callable<?> task) {
+
+          }
+
+          @Override
+          public void onTaskError(Callable<?> task, Throwable error) {
+
+          }
+        });
+        listenerSync.countDown();
+      }
+    });
+    listenerSync.await();
+    return scheduleSync;
   }
 
   @FlakyTest
@@ -42,6 +89,7 @@ public class BindOneshotAndroidTest extends AndroidTestCase {
       }
     });
     goro.bindOneshot();
+    awaitScheduling();
 
     try {
       future.get(10, TimeUnit.SECONDS);
@@ -57,6 +105,14 @@ public class BindOneshotAndroidTest extends AndroidTestCase {
     // unbound?
     // FIXME: bindOneShot is still flaky
     // assertNull(((BoundGoro.BoundGoroImpl) goro).getServiceObject());
+  }
+
+  private void awaitScheduling() {
+    try {
+      assertThat(scheduleSync.await(20, TimeUnit.SECONDS)).isTrue();
+    } catch (InterruptedException e) {
+      throw new AssertionError(e);
+    }
   }
 
   @FlakyTest
@@ -80,6 +136,7 @@ public class BindOneshotAndroidTest extends AndroidTestCase {
     });
 
     goro.bindOneshot();
+    awaitScheduling();
 
     await(sync);
 
@@ -109,6 +166,7 @@ public class BindOneshotAndroidTest extends AndroidTestCase {
     });
 
     goro.bindOneshot();
+    awaitScheduling();
 
     await(sync);
     assertEquals("async", res);
@@ -135,6 +193,7 @@ public class BindOneshotAndroidTest extends AndroidTestCase {
     });
 
     goro.bindOneshot();
+    awaitScheduling();
 
     await(sync);
 

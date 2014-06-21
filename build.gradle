@@ -56,6 +56,9 @@ configure(libraryModules) {
       versionName projectVersion
       minSdkVersion 8
       applicationId getApplicationId(project)
+
+      testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
+      testApplicationId "${getApplicationId(project)}.test"
     }
 
     compileOptions {
@@ -76,6 +79,10 @@ configure(libraryModules) {
     testDeps.each {
       testCompile it
       androidTestCompile it
+    }
+
+    androidTestCompile('com.jakewharton.espresso:espresso:1.1-r3') {
+      exclude group: 'org.hamcrest'
     }
 
     testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3'
