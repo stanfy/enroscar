@@ -3,8 +3,6 @@ package com.stanfy.enroscar.async.internal;
 import com.stanfy.enroscar.async.Async;
 import com.stanfy.enroscar.async.Load;
 import com.stanfy.enroscar.async.Send;
-import com.stanfy.enroscar.async.rx.RxLoad;
-import com.stanfy.enroscar.async.rx.RxSend;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -34,8 +32,8 @@ public final class AsyncProcessor extends AbstractProcessor {
     return new HashSet<>(Arrays.asList(
         Load.class.getCanonicalName(),
         Send.class.getCanonicalName(),
-        RxLoad.class.getCanonicalName(),
-        RxSend.class.getCanonicalName()
+        Rx.LOAD,
+        Rx.SEND
     ));
   }
 
@@ -50,9 +48,11 @@ public final class AsyncProcessor extends AbstractProcessor {
     Map<TypeElement, List<MethodData>> classMethods =
         new LinkedHashMap<>();
     collectAndValidate(classMethods, Load.class, roundEnv);
-    collectAndValidate(classMethods, RxLoad.class, roundEnv);
     collectAndValidate(classMethods, Send.class, roundEnv);
-    collectAndValidate(classMethods, RxSend.class, roundEnv);
+    if (Rx.hasRx()) {
+      collectAndValidate(classMethods, Rx.rxLoad(), roundEnv);
+      collectAndValidate(classMethods, Rx.rxSend(), roundEnv);
+    }
 
     for (Map.Entry<TypeElement, List<MethodData>> e : classMethods.entrySet()) {
       generateCode(e.getKey(), e.getValue());
@@ -93,7 +93,7 @@ public final class AsyncProcessor extends AbstractProcessor {
       }
 
       TypeSupport loaderDescriptionTypeSupport = operatorTypeSupport;
-      if (annotation == RxLoad.class || annotation == RxSend.class) {
+      if (Rx.hasRx() && (annotation == Rx.rxLoad() || annotation == Rx.rxSend())) {
         loaderDescriptionTypeSupport = TypeSupport.RX;
       }
 

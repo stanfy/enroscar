@@ -3,7 +3,6 @@ package com.stanfy.enroscar.async.internal;
 import com.squareup.javawriter.JavaWriter;
 import com.stanfy.enroscar.async.Load;
 import com.stanfy.enroscar.async.OperatorBuilder;
-import com.stanfy.enroscar.async.rx.RxLoad;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -72,7 +71,8 @@ final class OperatorGenerator extends BaseGenerator {
     for (MethodData data : methods) {
       ExecutableElement m = data.method;
 
-      boolean load = m.getAnnotation(Load.class) != null || m.getAnnotation(RxLoad.class) != null;
+      boolean load = m.getAnnotation(Load.class) != null
+          || (Rx.hasRx() && m.getAnnotation(Rx.rxLoad()) != null);
       int loaderId = getLoaderId(m);
 
       w.beginMethod("void", m.getSimpleName().toString(), EnumSet.of(PUBLIC), parameters(w, m), null);
