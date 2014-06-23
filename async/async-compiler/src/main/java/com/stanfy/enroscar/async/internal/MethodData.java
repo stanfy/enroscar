@@ -5,14 +5,17 @@ import javax.lang.model.element.ExecutableElement;
 /**
  * Contains information about method that is processed.
  */
-public class MethodData {
+final class MethodData {
 
   final ExecutableElement method;
 
-  final TypeSupport typeSupport;
+  final TypeSupport operatorTypeSupport;
+  final TypeSupport loaderDescriptionTypeSupport;
 
-  public MethodData(ExecutableElement method, TypeSupport typeSupport) {
+  public MethodData(ExecutableElement method, TypeSupport typeSupport,
+                    TypeSupport loaderDescriptionTypeSupport) {
     this.method = method;
-    this.typeSupport = typeSupport;
+    this.operatorTypeSupport = typeSupport;
+    this.loaderDescriptionTypeSupport = loaderDescriptionTypeSupport;
   }
 }

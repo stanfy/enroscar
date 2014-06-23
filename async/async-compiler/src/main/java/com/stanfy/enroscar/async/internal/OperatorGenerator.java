@@ -3,6 +3,7 @@ package com.stanfy.enroscar.async.internal;
 import com.squareup.javawriter.JavaWriter;
 import com.stanfy.enroscar.async.Load;
 import com.stanfy.enroscar.async.OperatorBuilder;
+import com.stanfy.enroscar.async.rx.RxLoad;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -35,7 +36,7 @@ final class OperatorGenerator extends BaseGenerator {
     );
 
     for (MethodData d : methods) {
-      addImports(d.typeSupport.operatorImports());
+      addImports(d.operatorTypeSupport.operatorImports());
     }
 
     String operationsName = operationsClass.getQualifiedName().toString();
@@ -71,11 +72,11 @@ final class OperatorGenerator extends BaseGenerator {
     for (MethodData data : methods) {
       ExecutableElement m = data.method;
 
-      boolean load = m.getAnnotation(Load.class) != null;
+      boolean load = m.getAnnotation(Load.class) != null || m.getAnnotation(RxLoad.class) != null;
       int loaderId = getLoaderId(m);
 
       w.beginMethod("void", m.getSimpleName().toString(), EnumSet.of(PUBLIC), parameters(w, m), null);
-      w.emitStatement(data.typeSupport.asyncProvider(w, m));
+      w.emitStatement(data.operatorTypeSupport.asyncProvider(w, m));
       w.emitStatement("initLoader(%d, provider, %b)", loaderId, !load);
       w.endMethod();
       w.emitEmptyLine();
@@ -84,7 +85,7 @@ final class OperatorGenerator extends BaseGenerator {
         // force method
         w.beginMethod("void", "force" + capitalize(m.getSimpleName().toString()),
             EnumSet.of(PUBLIC), parameters(w, m), null);
-        w.emitStatement(data.typeSupport.asyncProvider(w, m));
+        w.emitStatement(data.operatorTypeSupport.asyncProvider(w, m));
         w.emitStatement("restartLoader(%d, provider)", loaderId);
         w.endMethod();
         w.emitEmptyLine();

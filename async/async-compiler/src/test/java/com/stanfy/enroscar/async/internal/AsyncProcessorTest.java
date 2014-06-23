@@ -2,8 +2,6 @@ package com.stanfy.enroscar.async.internal;
 
 import com.google.common.base.Joiner;
 import com.google.testing.compile.JavaFileObjects;
-import com.stanfy.enroscar.async.Async;
-import com.stanfy.enroscar.async.AsyncObserver;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +71,7 @@ public class AsyncProcessorTest {
     ASSERT.about(javaSource())
         .that(file).processedWith(processor)
         .compilesWithoutError().and()
-        .generatesSources(loadExpectedSource("Operations")).and()
+        .generatesSources(loadExpectedOperatorSource("Operations")).and()
         .generatesSources(loaderDescriptionExpected("Operations"));
   }
 
@@ -92,12 +90,12 @@ public class AsyncProcessorTest {
     ASSERT.about(javaSource())
         .that(file).processedWith(processor)
         .compilesWithoutError().and()
-        .generatesSources(loadExpectedSource("Outer.Inner")); //.and() TODO
+        .generatesSources(loadExpectedOperatorSource("Outer.Inner")); //.and() TODO
         //.generatesSources(loaderDescriptionExpected("Outer.Inner"));
 
   }
 
-  private JavaFileObject loadExpectedSource(final String className) {
+  private JavaFileObject loadExpectedOperatorSource(final String className) {
     String base = className.replace(".", "");
     return JavaFileObjects.forSourceString(base + "Operator",
         Joiner.on('\n').join(
@@ -236,23 +234,5 @@ public class AsyncProcessorTest {
   }
 
   // TODO: loader IDs, multiple methods, release methods
-
-  /** Stub. */
-  public static class AsyncStub implements Async<String> {
-    @Override
-    public void subscribe(final AsyncObserver<String> observer) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void cancel() {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Async<String> replicate() {
-      return new AsyncStub();
-    }
-  }
 
 }

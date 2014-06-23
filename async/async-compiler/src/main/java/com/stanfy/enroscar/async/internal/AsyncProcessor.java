@@ -3,6 +3,8 @@ package com.stanfy.enroscar.async.internal;
 import com.stanfy.enroscar.async.Async;
 import com.stanfy.enroscar.async.Load;
 import com.stanfy.enroscar.async.Send;
+import com.stanfy.enroscar.async.rx.RxLoad;
+import com.stanfy.enroscar.async.rx.RxSend;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -31,7 +33,9 @@ public final class AsyncProcessor extends AbstractProcessor {
   public Set<String> getSupportedAnnotationTypes() {
     return new HashSet<>(Arrays.asList(
         Load.class.getCanonicalName(),
-        Send.class.getCanonicalName()
+        Send.class.getCanonicalName(),
+        RxLoad.class.getCanonicalName(),
+        RxSend.class.getCanonicalName()
     ));
   }
 
@@ -46,7 +50,9 @@ public final class AsyncProcessor extends AbstractProcessor {
     Map<TypeElement, List<MethodData>> classMethods =
         new LinkedHashMap<>();
     collectAndValidate(classMethods, Load.class, roundEnv);
+    collectAndValidate(classMethods, RxLoad.class, roundEnv);
     collectAndValidate(classMethods, Send.class, roundEnv);
+    collectAndValidate(classMethods, RxSend.class, roundEnv);
 
     for (Map.Entry<TypeElement, List<MethodData>> e : classMethods.entrySet()) {
       generateCode(e.getKey(), e.getValue());
@@ -73,17 +79,22 @@ public final class AsyncProcessor extends AbstractProcessor {
 
       String returnType = GenUtils.getReturnType(method);
 
-      TypeSupport typeSupport = null;
+      TypeSupport operatorTypeSupport = null;
       if (returnType.startsWith(Async.class.getCanonicalName().concat("<"))) {
-        typeSupport = TypeSupport.ASYNC;
+        operatorTypeSupport = TypeSupport.ASYNC;
       } else if (returnType.startsWith(TypeSupport.RX_OBSERVABLE.concat("<"))) {
-        typeSupport = TypeSupport.RX;
+        operatorTypeSupport = TypeSupport.RX;
       }
 
-      if (typeSupport == null) {
+      if (operatorTypeSupport == null) {
         error(method, "Method annotated with @" + annotation.getSimpleName()
             + " must return either Async<T> or rx.Observable<T>");
         continue;
+      }
+
+      TypeSupport loaderDescriptionTypeSupport = operatorTypeSupport;
+      if (annotation == RxLoad.class || annotation == RxSend.class) {
+        loaderDescriptionTypeSupport = TypeSupport.RX;
       }
 
       List<MethodData> methods = classMethods.get(type);
@@ -91,7 +102,7 @@ public final class AsyncProcessor extends AbstractProcessor {
         methods = new ArrayList<>();
         classMethods.put(type, methods);
       }
-      methods.add(new MethodData(method, typeSupport));
+      methods.add(new MethodData(method, operatorTypeSupport, loaderDescriptionTypeSupport));
     }
   }
 

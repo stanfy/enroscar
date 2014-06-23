@@ -29,7 +29,7 @@ final class LoaderDescriptionGenerator extends BaseGenerator {
     );
 
     for (MethodData d : methods) {
-      addImports(d.typeSupport.loaderDescriptionImports());
+      addImports(d.loaderDescriptionTypeSupport.loaderDescriptionImports());
     }
   }
 
@@ -45,11 +45,11 @@ final class LoaderDescriptionGenerator extends BaseGenerator {
       ExecutableElement m = data.method;
 
       w.beginMethod(
-          data.typeSupport.loaderDescriptionReturnType(w, m, this),
+          data.loaderDescriptionTypeSupport.loaderDescriptionReturnType(w, m, this),
           m.getSimpleName().toString().concat("IsFinished"),
           EnumSet.of(PUBLIC)
       );
-      w.emitStatement(data.typeSupport.loaderDescriptionMethodBody(w, m, this));
+      w.emitStatement(data.loaderDescriptionTypeSupport.loaderDescriptionMethodBody(w, m, this));
       w.endMethod();
     }
   }
