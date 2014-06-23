@@ -49,6 +49,15 @@ tasks.withType(Test) {
   include "**/*Test.class"
 }
 
+def cleanupPom = { pom ->
+  pom.dependencies.removeAll { it.groupId == project.group }
+}
+
+install.repositories.mavenInstaller.pom.whenConfigured(cleanupPom)
+afterEvaluate {
+  uploadArchives.repositories.mavenDeployer.pom.whenConfigured(cleanupPom)
+}
+
 modifyPom {
   project {
     name 'Enroscar Async Compiler'
