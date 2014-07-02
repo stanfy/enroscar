@@ -30,6 +30,11 @@ public final class ObserverBuilder<D, T extends LoaderDescription> {
     return this;
   }
 
+  public ObserverBuilder<D, T> doOnReset(final Runnable resetAction) {
+    observer.resetAction = resetAction;
+    return this;
+  }
+
   public T alsoWhen() {
     return description;
   }
@@ -44,6 +49,8 @@ public final class ObserverBuilder<D, T extends LoaderDescription> {
     Action<D> resultAction;
     /** On error. */
     Action<Throwable> errorAction;
+    /** Reset action. */
+    Runnable resetAction;
 
     @Override
     public void onError(final Throwable e) {
@@ -58,6 +65,13 @@ public final class ObserverBuilder<D, T extends LoaderDescription> {
     public void onResult(final D data) {
       if (resultAction != null) {
         resultAction.act(data);
+      }
+    }
+
+    @Override
+    public void onReset() {
+      if (resetAction != null) {
+        resetAction.run();
       }
     }
 

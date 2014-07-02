@@ -12,4 +12,6 @@ public interface AsyncObserver<D> {
 
   void onResult(D data);
 
+  void onReset();
+
 }

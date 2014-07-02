@@ -61,9 +61,7 @@ final class ObserverCallbacks<D> implements LoaderManager.LoaderCallbacks<Result
 
   @Override
   public void onLoaderReset(final Loader<Result<D>> loader) {
-    if (observer instanceof AsyncCompleteObserver) {
-      ((AsyncCompleteObserver) observer).onCompleted();
-    }
+    observer.onReset();
   }
 
 }

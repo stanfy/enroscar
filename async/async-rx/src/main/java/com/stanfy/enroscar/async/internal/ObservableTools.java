@@ -1,5 +1,7 @@
 package com.stanfy.enroscar.async.internal;
 
+import com.stanfy.enroscar.async.AsyncObserver;
+
 import rx.Observable;
 import rx.Subscriber;
 
@@ -16,7 +18,7 @@ public final class ObservableTools {
     return Observable.create(new Observable.OnSubscribe<D>() {
       @Override
       public void call(final Subscriber<? super D> subscriber) {
-        description.addObserver(loaderId, new AsyncCompleteObserver<D>() {
+        description.addObserver(loaderId, new AsyncObserver<D>() {
           @Override
           public void onError(final Throwable e) {
             subscriber.onError(e);
@@ -28,7 +30,7 @@ public final class ObservableTools {
           }
 
           @Override
-          public void onCompleted() {
+          public void onReset() {
             subscriber.onCompleted();
           }
         });

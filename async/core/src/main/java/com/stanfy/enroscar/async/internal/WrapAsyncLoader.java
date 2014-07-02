@@ -32,6 +32,10 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
     public void onResult(final D data) {
       post(new Result<>(data, null));
     }
+    @Override
+    public void onReset() {
+      // nothing for now
+    }
   };
 
   public WrapAsyncLoader(final AsyncContext<D> context) {

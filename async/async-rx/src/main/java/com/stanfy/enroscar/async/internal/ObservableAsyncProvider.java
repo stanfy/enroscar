@@ -4,6 +4,7 @@ import com.stanfy.enroscar.async.Async;
 import com.stanfy.enroscar.async.AsyncObserver;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 
@@ -51,20 +52,20 @@ public abstract class ObservableAsyncProvider<D> implements AsyncProvider<D> {
         return;
       }
 
-      subscription = rxObservable.subscribe(
-          new Action1<D>() {
-            @Override
-            public void call(final D d) {
-              observer.onResult(d);
-            }
-          },
-          new Action1<Throwable>() {
-            @Override
-            public void call(final Throwable throwable) {
-              observer.onError(throwable);
-            }
-          }
-      );
+      subscription = rxObservable.subscribe(new Subscriber<D>() {
+        @Override
+        public void onCompleted() {
+          observer.onReset();
+        }
+        @Override
+        public void onError(final Throwable e) {
+          observer.onError(e);
+        }
+        @Override
+        public void onNext(final D d) {
+          observer.onResult(d);
+        }
+      });
     }
 
     @Override
