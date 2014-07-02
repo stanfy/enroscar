@@ -2,8 +2,8 @@ package com.stanfy.enroscar.async;
 
 import android.content.Context;
 
-import com.stanfy.enroscar.async.internal.TaskAsync;
 import com.stanfy.enroscar.async.content.CursorAsyncBuilder;
+import com.stanfy.enroscar.async.internal.TaskAsync;
 
 import java.util.concurrent.Callable;
 
@@ -11,7 +11,9 @@ import java.util.concurrent.Callable;
  * Set of utility methods that provide basic implementations of {@link Async}.
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
-public class Tools {
+public final class Tools {
+
+  private Tools() { }
 
   /**
    * Create an asynchronous operations that executed a provided task creating
@@ -31,7 +33,7 @@ public class Tools {
    * @return builder of {@code Cursor} load operation
    */
   public static CursorAsyncBuilder asyncCursor(final Context context) {
-    return new CursorAsyncBuilder(context);
+    return new CursorAsyncBuilder(context.getContentResolver());
   }
 
 }
