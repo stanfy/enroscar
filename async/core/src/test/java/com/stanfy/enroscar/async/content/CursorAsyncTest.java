@@ -130,6 +130,11 @@ public class CursorAsyncTest {
       public void onResult(Cursor data) {
         result[0] = data;
       }
+
+      @Override
+      public void onReset() {
+        // nothing
+      }
     });
 
     Robolectric.runBackgroundTasks();

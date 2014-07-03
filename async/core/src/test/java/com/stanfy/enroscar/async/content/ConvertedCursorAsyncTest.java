@@ -130,6 +130,11 @@ public class ConvertedCursorAsyncTest {
       public void onResult(String data) {
         result[0] = data;
       }
+
+      @Override
+      public void onReset() {
+        // nothing
+      }
     });
 
     Robolectric.runBackgroundTasks();
@@ -159,6 +164,11 @@ public class ConvertedCursorAsyncTest {
       @Override
       public void onResult(String data) {
         result[0] = data;
+      }
+
+      @Override
+      public void onReset() {
+        // nothing
       }
     });
 
@@ -192,6 +202,11 @@ public class ConvertedCursorAsyncTest {
       @Override
       public void onResult(List<String> data) {
         result[0] = data;
+      }
+
+      @Override
+      public void onReset() {
+        // nothing
       }
     });
 

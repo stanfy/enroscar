@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit;
 import static org.fest.assertions.api.ANDROID.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class CursorCloseTest extends ActivityInstrumentationTestCase2<CursorAsyncUserActivity> {
+public class CursorCloseAndroidTest extends ActivityInstrumentationTestCase2<CursorAsyncUserActivity> {
 
-  public CursorCloseTest() {
+  public CursorCloseAndroidTest() {
     super(CursorAsyncUserActivity.class);
   }
 

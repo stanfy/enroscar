@@ -84,10 +84,6 @@ configure(libraryModules) {
     androidTestCompile('com.jakewharton.espresso:espresso:1.1-r3') {
       exclude group: 'org.hamcrest'
     }
-    androidTestCompile('com.google.dexmaker:dexmaker-mockito:1.1') {
-      exclude group: 'org.hamcrest'
-      exclude group: 'org.mockito'
-    }
 
     testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3'
     testCompile group: 'junit', name: 'junit', version: '4.11'
