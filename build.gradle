@@ -25,6 +25,10 @@ def libraryModules = [
     //'sherlock-integration'
 ].collect { project(":$it") }
 
+ext {
+  androidBuildToolsVersion = '19.1.0'
+}
+
 configure(libraryModules) {
 
   version = projectVersion
@@ -49,7 +53,7 @@ configure(libraryModules) {
   android {
     compileSdkVersion 19
 
-    buildToolsVersion '19.1.0'
+    buildToolsVersion project.androidBuildToolsVersion
 
     defaultConfig {
       versionCode 10
