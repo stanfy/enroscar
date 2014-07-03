@@ -27,7 +27,7 @@ script:
   # JavaVM tests
   - ./gradlew --continue check
   # Android tests
-  - ./scripts/wait_for_emulator || exit 1
+  - ./scripts/wait_emulator || exit 1
   - adb shell input keyevent 82 &
   - ./gradlew --continue -PpreDex=false :images:conCheck :goro:conCheck :net:conCheck :async:conCheck :async-rx:conCheck
 
