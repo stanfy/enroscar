@@ -50,6 +50,14 @@ abstract class BaseAsync<D> implements Async<D> {
     }
   }
 
+  protected final void postReset() {
+    int count = observers.size();
+    //noinspection ForLoopReplaceableByForEach
+    for (int i = 0; i < count; i++) {
+      observers.get(i).onReset();
+    }
+  }
+
   /**
    * Invoked when async operation is canceled.
    */

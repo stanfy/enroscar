@@ -5,6 +5,8 @@ import android.database.Cursor;
 
 import com.stanfy.enroscar.async.Releaser;
 
+import java.util.concurrent.Executor;
+
 import static com.stanfy.enroscar.async.content.BaseCursorAsyncBuilder.Params;
 
 /**
@@ -15,13 +17,13 @@ import static com.stanfy.enroscar.async.content.BaseCursorAsyncBuilder.Params;
 final class CursorAsync extends ContentObserverAsync<Cursor, ContentProviderQuery>
     implements Releaser<Cursor> {
 
-  CursorAsync(final ContentProviderQuery query) {
-    super(query);
+  CursorAsync(final ContentProviderQuery query, final Executor executor) {
+    super(query, executor);
   }
 
   @Override
   public CursorAsync replicate() {
-    return new CursorAsync(getTask());
+    return new CursorAsync(getTask(), getExecutor());
   }
 
   @Override

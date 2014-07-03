@@ -6,6 +6,7 @@ import com.stanfy.enroscar.async.content.CursorAsyncBuilder;
 import com.stanfy.enroscar.async.internal.TaskAsync;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 
 /**
  * Set of utility methods that provide basic implementations of {@link Async}.
@@ -16,14 +17,26 @@ public final class Tools {
   private Tools() { }
 
   /**
-   * Create an asynchronous operations that executed a provided task creating
+   * Create an asynchronous operation that executes a provided task creating
    * an Android's {@link android.os.AsyncTask}.
    * @param task job to do
    * @param <D> result data type
-   * @return implementations of {@link Async}, never {@code null}
+   * @return implementation of {@link Async}, never {@code null}
    */
   public static <D> Async<D> async(final Callable<D> task) {
-    return new TaskAsync<>(task);
+    return async(null, task);
+  }
+
+  /**
+   * Create an asynchronous operation that executes a provided task creating
+   * an Android's {@link android.os.AsyncTask} with a specified executor.
+   * @param task job to do
+   * @param executor executor used by AsyncTask
+   * @param <D> result data type
+   * @return implementations of {@link Async}, never {@code null}
+   */
+  public static <D> Async<D> async(final Executor executor, final Callable<D> task) {
+    return new TaskAsync<>(task, executor);
   }
 
   /**

@@ -36,6 +36,7 @@ final class AsyncTaskWithDelegate<D> extends AsyncTask<Void, Void, D> {
       async.postError(error);
     } else {
       async.postResult(d);
+      async.postReset();
     }
   }
 

@@ -38,7 +38,7 @@ public final class CursorAsyncBuilder extends BaseCursorAsyncBuilder<CursorAsync
 
   @Override
   public Async<Cursor> get() {
-    return new CursorAsync(new ContentProviderQuery(resolver, params));
+    return new CursorAsync(new ContentProviderQuery(resolver, params), executor);
   }
 
   /** Converts a single record cursor to an object. */
@@ -99,7 +99,7 @@ public final class CursorAsyncBuilder extends BaseCursorAsyncBuilder<CursorAsync
       if (converter == null) {
         throw new IllegalStateException("Converter is not defined");
       }
-      return new ConvertedCursorAsync<>(params, converter, resolver);
+      return new ConvertedCursorAsync<>(params, converter, resolver, executor);
     }
 
   }

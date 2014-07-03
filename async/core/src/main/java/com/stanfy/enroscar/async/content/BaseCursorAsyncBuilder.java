@@ -5,6 +5,8 @@ import android.net.Uri;
 
 import com.stanfy.enroscar.async.Async;
 
+import java.util.concurrent.Executor;
+
 /**
  * Base class for {@link com.stanfy.enroscar.async.Async} operations
  * that load {@link android.database.Cursor}.
@@ -17,6 +19,8 @@ public abstract class BaseCursorAsyncBuilder<B extends BaseCursorAsyncBuilder<?,
 
   /** Query parameters. */
   final Params params;
+
+  Executor executor;
 
   private final B self;
 
@@ -84,6 +88,15 @@ public abstract class BaseCursorAsyncBuilder<B extends BaseCursorAsyncBuilder<?,
    */
   public B observeDescendants(final boolean value) {
     params.observeDescendants = value;
+    return self;
+  }
+
+  /**
+   * Define what executor is used to perform a query.
+   * {@code null} means a default {@link android.os.AsyncTask} executor.
+   */
+  public B onExecutor(final Executor executor) {
+    this.executor = executor;
     return self;
   }
 

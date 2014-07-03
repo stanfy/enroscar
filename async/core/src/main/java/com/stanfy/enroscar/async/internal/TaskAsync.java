@@ -1,8 +1,12 @@
 package com.stanfy.enroscar.async.internal;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
+
 import com.stanfy.enroscar.async.Async;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 
 /**
  * Implementation of {@link Async} based on AsyncTask.
@@ -16,20 +20,33 @@ public class TaskAsync<D, T extends Callable<D>> extends BaseAsync<D> {
   /** Android AsyncTask. */
   private AsyncTaskWithDelegate<D> asyncTask;
 
-  public TaskAsync(final T task) {
+  /** Executor for this task. */
+  private final Executor executor;
+
+  public TaskAsync(final T task, final Executor executor) {
     this.task = task;
+    this.executor = executor;
+  }
+
+  protected Executor getExecutor() {
+    return executor;
   }
 
   @Override
   public TaskAsync<D, T> replicate() {
-    return new TaskAsync<>(task);
+    return new TaskAsync<>(task, executor);
   }
 
+  @SuppressLint("NewApi")
   @Override
   protected void onTrigger() {
     doCancel();
     asyncTask = new AsyncTaskWithDelegate<>(task, this);
-    asyncTask.execute();
+    if (executor == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+      asyncTask.execute();
+    } else {
+      asyncTask.executeOnExecutor(executor);
+    }
   }
 
   @Override

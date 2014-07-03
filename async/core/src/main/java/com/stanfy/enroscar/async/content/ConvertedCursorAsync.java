@@ -3,9 +3,8 @@ package com.stanfy.enroscar.async.content;
 import android.content.ContentResolver;
 import android.database.Cursor;
 
-import com.stanfy.enroscar.async.internal.TaskAsync;
-
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 
 import static com.stanfy.enroscar.async.content.BaseCursorAsyncBuilder.Params;
 
@@ -15,17 +14,17 @@ import static com.stanfy.enroscar.async.content.BaseCursorAsyncBuilder.Params;
 final class ConvertedCursorAsync<D> extends ContentObserverAsync<D, ConvertedCursorAsync.LoadTask<D>> {
 
   public ConvertedCursorAsync(final Params params, final CursorConverter<D> converter,
-                              final ContentResolver resolver) {
-    this(new LoadTask<>(params, converter, resolver));
+                              final ContentResolver resolver, final Executor executor) {
+    this(new LoadTask<>(params, converter, resolver), executor);
   }
 
-  private ConvertedCursorAsync(final LoadTask<D> task) {
-    super(task);
+  private ConvertedCursorAsync(final LoadTask<D> task, final Executor executor) {
+    super(task, executor);
   }
 
   @Override
   public ConvertedCursorAsync<D> replicate() {
-    return new ConvertedCursorAsync<>(getTask());
+    return new ConvertedCursorAsync<>(getTask(), getExecutor());
   }
 
   @Override

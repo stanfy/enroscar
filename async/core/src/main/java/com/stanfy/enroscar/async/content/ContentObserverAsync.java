@@ -8,6 +8,7 @@ import android.os.Looper;
 import com.stanfy.enroscar.async.internal.TaskAsync;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 
 import static com.stanfy.enroscar.async.content.BaseCursorAsyncBuilder.Params;
 
@@ -22,8 +23,8 @@ abstract class ContentObserverAsync<D, T extends Callable<D>> extends TaskAsync<
   /** Content observer. */
   private ContentObserver observer;
 
-  public ContentObserverAsync(final T task) {
-    super(task);
+  public ContentObserverAsync(final T task, final Executor executor) {
+    super(task, executor);
   }
 
   @Override
