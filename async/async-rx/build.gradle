@@ -1,4 +1,4 @@
-version = '1.0-SNAPSHOT'
+version = '1.0-RC1'
 apply from: file("$rootDir/gradle/jar.gradle")
 dependencies {
   compile 'com.netflix.rxjava:rxjava-core:0.19.2'
