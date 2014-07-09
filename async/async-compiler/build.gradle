@@ -12,7 +12,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'nexus'
 
-version = '1.0-RC2'
+version = '1.0-SNAPSHOT'
 group = 'com.stanfy.enroscar'
 
 archivesBaseName = "enroscar-${project.name}"
