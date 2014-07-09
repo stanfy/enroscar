@@ -81,6 +81,10 @@ public class RxTest {
             "    restartLoader(" + LOADER_ID_START + ", provider);",
             "  }",
 
+            "  public void cancelOperation() {",
+            "    destroyLoader(" + LOADER_ID_START + ");",
+            "  }",
+
             "}"
         )
     );
@@ -164,6 +168,10 @@ public class RxTest {
             "      }",
             "    };",
             "    restartLoader(" + LOADER_ID_START + ", provider);",
+            "  }",
+
+            "  public void cancelOperation() {",
+            "    destroyLoader(" + LOADER_ID_START + ");",
             "  }",
 
             "}"

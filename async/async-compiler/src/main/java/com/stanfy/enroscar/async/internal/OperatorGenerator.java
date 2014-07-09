@@ -90,6 +90,13 @@ final class OperatorGenerator extends BaseGenerator {
         w.endMethod();
         w.emitEmptyLine();
       }
+
+      w.beginMethod("void", "cancel" + capitalize(m.getSimpleName().toString()),
+          EnumSet.of(PUBLIC));
+      w.emitStatement("destroyLoader(%d)", loaderId);
+      w.endMethod();
+      w.emitEmptyLine();
+
     }
 
   }

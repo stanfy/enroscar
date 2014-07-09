@@ -143,6 +143,10 @@ public class AsyncProcessorTest {
             "    restartLoader(" + LOADER_ID_START + ", provider);",
             "  }",
 
+            "  public void cancelOperation() {",
+            "    destroyLoader(" + LOADER_ID_START + ");",
+            "  }",
+
             "}"
         )
     );
