@@ -3,7 +3,6 @@ package com.stanfy.enroscar.goro;
 import android.test.AndroidTestCase;
 import android.test.FlakyTest;
 
-import com.google.android.apps.common.testing.ui.espresso.Espresso;
 import com.stanfy.enroscar.async.AsyncObserver;
 import com.stanfy.enroscar.goro.support.AsyncGoro;
 import com.stanfy.enroscar.goro.support.RxGoro;
@@ -162,6 +161,10 @@ public class BoundGoroAndroidTest extends AndroidTestCase {
       public void onResult(final String data) {
         res = data;
         sync.countDown();
+      }
+      @Override
+      public void onReset() {
+        // nothing
       }
     });
 
