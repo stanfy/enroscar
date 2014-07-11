@@ -21,19 +21,24 @@ final class ObserverCallbacks<D> implements LoaderManager.LoaderCallbacks<Result
   /** Operator context. */
   private final OperatorContext<?> operatorContext;
 
-  /** Observer instance. */
-  private final AsyncObserver<D> observer;
+  /** Observers collection. */
+  private final LoaderDescription description;
+
+  /** Associated loader ID. */
+  private final int loaderId;
 
   /** Whether to destroy loader when it is finished. */
   private final boolean destroyOnFinish;
 
   public ObserverCallbacks(final AsyncProvider<D> asyncProvider,
                            final OperatorContext<?> operatorContext,
-                           final AsyncObserver<D> observer,
+                           final LoaderDescription description,
+                           final int loaderId,
                            final boolean destroyOnFinish) {
     this.provider = asyncProvider;
     this.operatorContext = operatorContext;
-    this.observer = observer;
+    this.description = description;
+    this.loaderId = loaderId;
     this.destroyOnFinish = destroyOnFinish;
   }
 
@@ -46,7 +51,11 @@ final class ObserverCallbacks<D> implements LoaderManager.LoaderCallbacks<Result
 
   @Override
   public void onLoadFinished(final Loader<Result<D>> loader, final Result<D> result) {
+    AsyncObserver<D> observer = description.getObserver(loaderId);
     try {
+      if (observer == null) {
+        return;
+      }
       if (result.error != null) {
         observer.onError(result.error);
       } else {
@@ -61,7 +70,10 @@ final class ObserverCallbacks<D> implements LoaderManager.LoaderCallbacks<Result
 
   @Override
   public void onLoaderReset(final Loader<Result<D>> loader) {
-    observer.onReset();
+    AsyncObserver<D> observer = description.getObserver(loaderId);
+    if (observer != null) {
+      observer.onReset();
+    }
   }
 
 }

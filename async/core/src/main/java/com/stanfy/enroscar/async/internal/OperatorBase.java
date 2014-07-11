@@ -87,7 +87,8 @@ public abstract class OperatorBase<W, D extends LoaderDescription> {
   }
 
   /**
-   * @author Roman Mazur - Stanfy (http://stanfy.com)
+   * Base implementation of {@link com.stanfy.enroscar.async.OperatorBuilder}.
+   * Generated code has to implement {@link #create(OperatorBase.OperatorContext)} method only.
    */
   public abstract static class OperatorBuilderBase<T, W> implements OperatorBuilder<T, W> {
 

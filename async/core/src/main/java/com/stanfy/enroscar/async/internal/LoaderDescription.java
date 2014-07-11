@@ -28,11 +28,14 @@ public abstract class LoaderDescription {
   }
 
   <D> LoaderManager.LoaderCallbacks<?> makeCallbacks(final int loaderId,
-                                                            final AsyncProvider<D> provider,
-                                                            final boolean destroyOnFinish) {
-    @SuppressWarnings("unchecked")
-    AsyncObserver<D> observer = (AsyncObserver<D>) observers.get(loaderId);
-    return new ObserverCallbacks<>(provider, operatorContext, observer, destroyOnFinish);
+                                                     final AsyncProvider<D> provider,
+                                                     final boolean destroyOnFinish) {
+    return new ObserverCallbacks<>(provider, operatorContext, this, loaderId, destroyOnFinish);
+  }
+
+  @SuppressWarnings("unchecked")
+  <D> AsyncObserver<D> getObserver(final int id) {
+    return (AsyncObserver<D>) observers.get(id);
   }
 
 }

@@ -21,19 +21,53 @@ public final class CursorAsyncBuilder extends BaseCursorAsyncBuilder<CursorAsync
     super(resolver);
   }
 
+  /**
+   * Wrap a provided converter.
+   * Returns a converter that is equivalent to
+   * <pre>{@code
+   *   return cursor.moveToNext()
+   *       ? converter.toObject(cursor)
+   *       : null;
+   * }</pre>
+   */
+  public static <D> CursorConverter<D> singleRecordConverter(final CursorConverter<D> converter) {
+    return new SingleRecordConverter<>(converter);
+  }
+
+  /**
+   * Wrap a provided converter.
+   * Returns a converter that creates of list of elements obtained with a provider converter.
+   */
+  public static <D> CursorConverter<List<D>> listConverter(final CursorConverter<D> converter) {
+    return new ListConverter<>(converter);
+  }
+
+  /**
+   * Convert {@code Cursor} into a POJO using a {@code CursorConverter}.
+   */
   public <D> BaseCursorAsyncBuilder<? extends BaseCursorAsyncBuilder<?, D>, D> convert(
       final CursorConverter<D> converter) {
     return new ConvertedCursorAsyncBuilder<>(resolver, converter, params);
   }
 
+  /**
+   * Convert {@code Cursor} into a POJO using a {@code CursorConverter}.
+   * Only the first cursor record will be converted. Provided {@code CursorConverter} should not
+   * invoke any {@code move} methods on a cursor.
+   */
   public <D> BaseCursorAsyncBuilder<? extends BaseCursorAsyncBuilder<?, D>, D> convertFirst(
       final CursorConverter<D> converter) {
-    return convert(new SingleRecordConverter<>(converter));
+    return convert(singleRecordConverter(converter));
   }
 
+  /**
+   * Convert {@code Cursor} into a {@code List} creating each item with
+   * a provided {@code CursorConverter}.
+   * Provided {@code CursorConverter} should not invoke any {@code move} methods on a cursor.
+   */
   public <D> BaseCursorAsyncBuilder<? extends BaseCursorAsyncBuilder<?, List<D>>, List<D>>
       convertList(final CursorConverter<D> converter) {
-    return convert(new ListConverter<>(converter));
+    return convert(listConverter(converter));
   }
 
   @Override
@@ -51,7 +85,7 @@ public final class CursorAsyncBuilder extends BaseCursorAsyncBuilder<CursorAsync
 
     @Override
     public D toObject(Cursor cursor) {
-      return cursor.moveToFirst()
+      return cursor.moveToNext()
           ? delegate.toObject(cursor)
           : null;
     }
