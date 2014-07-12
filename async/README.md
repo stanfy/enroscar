@@ -71,9 +71,9 @@ Download
 Gradle
 
 ```groovy
-compile 'com.stanfy.enroscar:enroscar-async:1.0.0'
+compile 'com.stanfy.enroscar:enroscar-async:{latestVersionHere}'
 // annotation processor should be added to 'compile' configuration
-provided 'com.stanfy.enroscar:enroscar-async-compiler:1.0.0'
+provided 'com.stanfy.enroscar:enroscar-async-compiler:{latestVersionHere}'
 ```
 To use it with RxJava you'll also need
 ```groovy
