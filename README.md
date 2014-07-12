@@ -13,6 +13,8 @@ Currently we have 2 components that are **definitely worth to check out now:**
 * [Enroscar Async](async) - a library that helps to put any asynchronous operation behind Android Loader and
   integrate it with [RxJava](https://github.com/Netflix/RxJava).
 
+Project [Async2014](https://github.com/roman-mazur/async2014) demonstrates how they can be used.
+
 License
 -------
 
