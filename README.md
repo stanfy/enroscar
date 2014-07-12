@@ -1,4 +1,4 @@
-Enroscar
+![Enroscar](logo.png)
 =======
 
 **A set of Android tools that facilitate apps development**
@@ -12,8 +12,6 @@ Currently we have 2 components that are **definitely worth to check out now:**
 * [Goro](goro) - a generic tool for organizing asynchronous tasks in queues and Android service
 * [Enroscar Async](async) - a library that helps to put any asynchronous operation behind Android Loader and
   integrate it with [RxJava](https://github.com/Netflix/RxJava).
-
-![Logo](logo.png)
 
 License
 -------
