@@ -11,19 +11,8 @@ a tool with a specific purpose. These modules can be smoothly integrated using t
 
 **Definitely worth to check out now:**
 * [Goro](goro) - a generic tool for organizing asynchronous tasks in queues and Android service
-* [Enroscar IO](io) - a buffers pool implementation along with some other i/o utilities
-
-In our continuous dev stack:
-* [Enroscar Net](net) - do more with `URLConnection` class
-* content
-* images
-* ui
-* stats
-* beans
-* assist
-
-[Old "docs" are relocated](README_OLD.md)
-and will be present there not for a very long time, we hope.
+* [Enroscar Async](async) - a library that helps to put any asynchronous operation behind Android Loader and
+  integrate it with [RxJava](https://github.com/Netflix/RxJava).
 
 License
 -------
