@@ -5,14 +5,15 @@ Enroscar
 
 [![Build Status](https://secure.travis-ci.org/stanfy/enroscar.png?branch=master)](http://travis-ci.org/stanfy/enroscar)
 
-Well, this repo contains pretty much code, smelling in some parts.
-But the general idea is that there are several independent modules. Each of them contains
-a tool with a specific purpose. These modules can be smoothly integrated using the `assist` module.
+Well, this repo contains pretty much code used internally at Stanfy to develop Android apps.
+Some parts lack documentation and are outdated, we are working on this problem.
+Currently we have 2 components that are **definitely worth to check out now:**
 
-**Definitely worth to check out now:**
 * [Goro](goro) - a generic tool for organizing asynchronous tasks in queues and Android service
 * [Enroscar Async](async) - a library that helps to put any asynchronous operation behind Android Loader and
   integrate it with [RxJava](https://github.com/Netflix/RxJava).
+
+![Logo](logo.png)
 
 License
 -------
