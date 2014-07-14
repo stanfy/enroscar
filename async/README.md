@@ -68,6 +68,8 @@ See more (including RxJava integration) at our [Recipes page](https://github.com
 
 Download
 --------
+![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.stanfy.enroscar/enroscar-async/badge.svg)
+
 Gradle
 
 ```groovy
