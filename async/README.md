@@ -11,6 +11,9 @@ which represents some asynchronous operation.
 How it is used
 --------------
 
+Read our [recipes page](https://github.com/stanfy/enroscar/wiki/Enroscar-Async-Recipes).
+Here is a quick overview.
+
 Describe an asynchronous operation.
 
 ```java
@@ -64,7 +67,6 @@ within an `Activity` or `Fragment` you do not care about their lifecycle. Action
 subscribing to operations will be automatically attached to running tasks during `Activity` 
 recreation.
 
-See more (including RxJava integration) at our [Recipes page](https://github.com/stanfy/enroscar/wiki/Enroscar-Async-Recipes).
 
 Download
 --------
