@@ -5,7 +5,7 @@ Makes it easy to put your asynchronous operations behind
 [Android's Loader](https://developer.android.com/reference/android/content/Loader.html).
 
 Main abstraction here is
-[`Async`](providers/src/main/java/com/stanfy/enroscar/async/Async.java)
+[`Async`](core/src/main/java/com/stanfy/enroscar/async/Async.java)
 which represents some asynchronous operation.
 
 How it is used
@@ -79,8 +79,6 @@ provided 'com.stanfy.enroscar:enroscar-async-compiler:{latestVersionHere}'
 ```
 To use it with RxJava you'll also need
 ```groovy
-compile 'com.stanfy.enroscar:enroscar-async-rx:1.0.0'
+compile 'com.stanfy.enroscar:enroscar-async-rx:{latestVersionHere}'
 compile 'com.netflix.rxjava:rxjava-core:{latestVersionHere}'
 ```
-
-
