@@ -65,16 +65,19 @@ public final class AsyncProcessor extends AbstractProcessor {
                                   final Class<? extends Annotation> annotation,
                                   final RoundEnvironment roundEnv) {
     for (Element m : roundEnv.getElementsAnnotatedWith(annotation)) {
+      Element encl = m.getEnclosingElement();
       if (!(m instanceof ExecutableElement)) {
-        throw new IllegalStateException(m + " annotated with @" + annotation.getSimpleName());
+        // this can happen in case of compilation errors
+        // just skip it
+        continue;
       }
+      if (!(encl instanceof TypeElement)) {
+        throw new IllegalStateException(m + " annotated with @" + annotation.getSimpleName()
+            + " in " + encl + ". Enclosing element is not a type.");
+      }
+
       ExecutableElement method = (ExecutableElement) m;
 
-      Element encl = method.getEnclosingElement();
-      if (!(encl instanceof TypeElement)) {
-        throw new IllegalStateException(method + " annotated with @" + annotation.getSimpleName()
-            + " in " + encl);
-      }
       TypeElement type = (TypeElement) encl;
 
       String returnType = GenUtils.getReturnType(method);
