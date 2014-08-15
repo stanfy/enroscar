@@ -124,12 +124,17 @@ abstract class BaseGenerator {
     w.emitImports(imports);
     w.emitEmptyLine();
 
+    classJavaDoc(w);
     w.beginType(className, "class", modifiers(operationsClass), extendsClass);
     w.emitEmptyLine();
 
     writeClassBody(w);
 
     w.endType();
+  }
+
+  protected void classJavaDoc(final JavaWriter w) throws IOException {
+    // nothing
   }
 
   protected abstract void writeClassBody(final JavaWriter w) throws IOException;

@@ -37,6 +37,8 @@ public final class AsyncUserActivity extends FragmentActivity {
 
   private boolean lazyLoad;
 
+  boolean startInvoked;
+
   final CountDownLatch loadSync = new CountDownLatch(1);
   final CountDownLatch lazyLoadSync = new CountDownLatch(1);
   final CountDownLatch sendSync = new CountDownLatch(1);
@@ -94,6 +96,13 @@ public final class AsyncUserActivity extends FragmentActivity {
             //noinspection ConstantConditions
             textViewSend.setText(textViewSend.getText().toString() + data);
             sendSync.countDown();
+          }
+        })
+
+        .alsoWhen().sendThingIsStartedDo(new Runnable() {
+          @Override
+          public void run() {
+            startInvoked = true;
           }
         });
 
@@ -211,7 +220,7 @@ public final class AsyncUserActivity extends FragmentActivity {
           return getOperations().getThing(param);
         }
       };
-      restartLoader(1, provider);
+      restartLoader(1, provider, false);
     }
     public void sendThing(final int param) {
       AsyncProvider<Thing> provider = new AsyncProvider<Thing>() {
@@ -236,7 +245,7 @@ public final class AsyncUserActivity extends FragmentActivity {
   }
 
   /* same visibility */
-  static final class Data$$LoaderDescription extends LoaderDescription {
+  static final class Data$$LoaderDescription extends LoaderDescription<Data$$LoaderDescription> {
 
     Data$$LoaderDescription(final OperatorBase.OperatorContext<Data> context) {
       super(context);
@@ -244,12 +253,18 @@ public final class AsyncUserActivity extends FragmentActivity {
 
     /* same visibility */
     ObserverBuilder<Thing, Data$$LoaderDescription> getThingIsFinished() {
-      return new ObserverBuilder<>(1, this);
+      return new ObserverBuilder<>(1, this, false);
     }
 
     /* same visibility */
     ObserverBuilder<Thing, Data$$LoaderDescription> sendThingIsFinished() {
-      return new ObserverBuilder<>(2, this);
+      return new ObserverBuilder<>(2, this, true);
+    }
+
+    /* same visibility */
+    Data$$LoaderDescription sendThingIsStartedDo(final Runnable action) {
+      addStartAction(2, action);
+      return this;
     }
 
   }

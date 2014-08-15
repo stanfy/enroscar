@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
 /**
- * Set of utility methods that provide basic implementations of {@link Async}.
+ * A set of utility methods that provide basic implementations of {@link Async}.
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
 public final class Tools {

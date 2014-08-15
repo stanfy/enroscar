@@ -52,7 +52,7 @@ public class LoadSendAndroidTest extends ActivityInstrumentationTestCase2<UserAc
         assertThat(activity.view).hasTextString("thing 1thing 2");
 
         assertThat(activity.getSupportLoaderManager().getLoader(UserActivity.LOADER_SEND))
-            .describedAs("loader is not destroyed")
+            .describedAs("loader is not destroyed " + UserActivity.LOADER_SEND)
             .isNull();
       }
     });

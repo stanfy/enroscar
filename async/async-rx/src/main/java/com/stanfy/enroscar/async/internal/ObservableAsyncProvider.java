@@ -6,7 +6,6 @@ import com.stanfy.enroscar.async.AsyncObserver;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
 
 /**
  * Adapts {@link rx.Observable} to {@link com.stanfy.enroscar.async.Async}.
@@ -23,7 +22,8 @@ public abstract class ObservableAsyncProvider<D> implements AsyncProvider<D> {
   protected abstract Observable<D> provideObservable();
 
   /**
-   * Adapter.
+   * Adapter. Based on an assumption that methods of {@code Async} are invoked by {@code Loader}
+   * in the main thread.
    * @param <D> data type
    */
   private static class RxAsync<D> implements Async<D> {
@@ -55,15 +55,20 @@ public abstract class ObservableAsyncProvider<D> implements AsyncProvider<D> {
       subscription = rxObservable.subscribe(new Subscriber<D>() {
         @Override
         public void onCompleted() {
-          observer.onReset();
+          if (!isUnsubscribed()) {
+            observer.onReset();
+          }
         }
         @Override
         public void onError(final Throwable e) {
+          // TODO: is it correct to emit errors if we are unsubscribed?
           observer.onError(e);
         }
         @Override
         public void onNext(final D d) {
-          observer.onResult(d);
+          if (!isUnsubscribed()) {
+            observer.onResult(d);
+          }
         }
       });
     }

@@ -78,7 +78,7 @@ public class RxTest {
             "        return getOperations().operation(a);",
             "      }",
             "    };",
-            "    restartLoader(" + LOADER_ID_START + ", provider);",
+            "    restartLoader(" + LOADER_ID_START + ", provider, false);",
             "  }",
 
             "  public void cancelOperation() {",
@@ -103,7 +103,12 @@ public class RxTest {
             "  }",
 
             "  public Observable<String> operationIsFinished() {",
-            "    return ObservableTools.loaderObservable(" + LOADER_ID_START + ", this);",
+            "    return ObservableTools.loaderObservable(" + LOADER_ID_START + ", this, false);",
+            "  }",
+
+            "  public A$$LoaderDescription operationIsStartedDo(final Runnable action) {",
+            "    addStartAction(" + LOADER_ID_START + ", action);",
+            "    return this;",
             "  }",
             "}"
         )
@@ -167,7 +172,7 @@ public class RxTest {
             "        return getOperations().operation(a);",
             "      }",
             "    };",
-            "    restartLoader(" + LOADER_ID_START + ", provider);",
+            "    restartLoader(" + LOADER_ID_START + ", provider, false);",
             "  }",
 
             "  public void cancelOperation() {",
@@ -192,7 +197,12 @@ public class RxTest {
             "  }",
 
             "  public Observable<String> operationIsFinished() {",
-            "    return ObservableTools.loaderObservable(" + LOADER_ID_START + ", this);",
+            "    return ObservableTools.loaderObservable(" + LOADER_ID_START + ", this, false);",
+            "  }",
+
+            "  public A$$LoaderDescription operationIsStartedDo(final Runnable action) {",
+            "    addStartAction(" + LOADER_ID_START + ", action);",
+            "    return this;",
             "  }",
             "}"
         )

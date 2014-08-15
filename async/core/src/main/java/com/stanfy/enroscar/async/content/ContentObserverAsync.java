@@ -2,8 +2,6 @@ package com.stanfy.enroscar.async.content;
 
 import android.content.ContentResolver;
 import android.database.ContentObserver;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.stanfy.enroscar.async.internal.TaskAsync;
 
@@ -11,14 +9,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
 import static com.stanfy.enroscar.async.content.BaseCursorAsyncBuilder.Params;
+import static com.stanfy.enroscar.async.internal.Utils.MAIN_THREAD_HANDLER;
 
 /**
  * Async implementation that can register a content observer.
  */
 abstract class ContentObserverAsync<D, T extends Callable<D>> extends TaskAsync<D, T> {
-
-  /** Main thread handler. */
-  private static final Handler H = new Handler(Looper.getMainLooper());
 
   /** Content observer. */
   private ContentObserver observer;
@@ -40,7 +36,7 @@ abstract class ContentObserverAsync<D, T extends Callable<D>> extends TaskAsync<
     // it's assumed we are running on a main thread
     super.onTrigger();
     if (observer == null) {
-      observer = new ContentObserver(H) {
+      observer = new ContentObserver(MAIN_THREAD_HANDLER) {
         @Override
         public void onChange(boolean selfChange) {
           onTrigger();
@@ -56,6 +52,7 @@ abstract class ContentObserverAsync<D, T extends Callable<D>> extends TaskAsync<
     super.onCancel();
     if (observer != null) {
       getResolver().unregisterContentObserver(observer);
+      observer = null;
     }
   }
 

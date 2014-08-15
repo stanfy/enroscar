@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.async.test;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -77,6 +78,17 @@ public class AsyncUserActivityAndroidTest extends ActivityInstrumentationTestCas
         assertThat(activity.thing).isNotSameAs(lastThing).isNotNull();
         assertThat(activity.thing.param).isEqualTo(3);
         assertThat(activity.textViewLoad).hasTextString(lastThing.toString() + activity.thing);
+      }
+    });
+  }
+
+  public void testStartActionInvocation() throws Throwable {
+    activity.startInvoked = false;
+    runTestOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        activity.textViewSend.performClick();
+        assertThat(activity.startInvoked).isTrue();
       }
     });
   }

@@ -96,7 +96,7 @@ public class CursorAsyncUserActivity extends FragmentActivity {
           return getOperations().loadCursor();
         }
       };
-      restartLoader(1, provider);
+      restartLoader(1, provider, false);
     }
 
     // cancellation
@@ -116,7 +116,7 @@ public class CursorAsyncUserActivity extends FragmentActivity {
 
     /* same visibility */
     ObserverBuilder<Cursor, Activity$$LoaderDescription> loadCursorIsFinished() {
-      return new ObserverBuilder<>(1, this);
+      return new ObserverBuilder<>(1, this, false);
     }
 
   }

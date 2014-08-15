@@ -140,7 +140,7 @@ public class AsyncProcessorTest {
             "        return getOperations().operation(a1, a2);",
             "      }",
             "    };",
-            "    restartLoader(" + LOADER_ID_START + ", provider);",
+            "    restartLoader(" + LOADER_ID_START + ", provider, false);",
             "  }",
 
             "  public void cancelOperation() {",
@@ -168,8 +168,14 @@ public class AsyncProcessorTest {
             "  }",
 
             "  public ObserverBuilder<String, " + base + "$$LoaderDescription> operationIsFinished() {",
-            "    return new ObserverBuilder<String," + base + "$$LoaderDescription>(" + LOADER_ID_START + ", this);",
+            "    return new ObserverBuilder<String," + base + "$$LoaderDescription>(" + LOADER_ID_START + ", this, false);",
             "  }",
+
+            "  public " + base + "$$LoaderDescription operationIsStartedDo(final Runnable action) {",
+            "    addStartAction(" + LOADER_ID_START + ", action);",
+            "    return this;",
+            "  }",
+
             "}"
         )
     );

@@ -11,17 +11,18 @@ import com.stanfy.enroscar.async.internal.WrapAsyncLoader.Result;
 
 /**
  * Loader callbacks based on {@link Async} and {@link AsyncObserver}.
- * @author Roman Mazur
  */
 final class ObserverCallbacks<D> implements LoaderManager.LoaderCallbacks<Result<D>> {
 
-  /** Async provider (for lazy creation of Async in onCreateLoader). */
+  /**
+   * Async provider (for lazy creation of Async in onCreateLoader).
+   * I basically invokes methods annotated with {@code Load} or {@code Send}.
+   */
   private final AsyncProvider<D> provider;
 
-  /** Operator context. */
   private final OperatorContext<?> operatorContext;
 
-  /** Observers collection. */
+  /** Provides access to observers. */
   private final LoaderDescription description;
 
   /** Associated loader ID. */
@@ -49,6 +50,7 @@ final class ObserverCallbacks<D> implements LoaderManager.LoaderCallbacks<Result
     ));
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void onLoadFinished(final Loader<Result<D>> loader, final Result<D> result) {
     AsyncObserver<D> observer = description.getObserver(loaderId);
@@ -63,11 +65,12 @@ final class ObserverCallbacks<D> implements LoaderManager.LoaderCallbacks<Result
       }
     } finally {
       if (destroyOnFinish) {
-        operatorContext.getLoaderManager().destroyLoader(loader.getId());
+        operatorContext.loaderManager.destroyLoader(loader.getId());
       }
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void onLoaderReset(final Loader<Result<D>> loader) {
     AsyncObserver<D> observer = description.getObserver(loaderId);
