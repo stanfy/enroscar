@@ -11,6 +11,11 @@ import android.content.Context;
  */
 public interface ServiceContextAware {
 
+  /**
+   * Invoked by {@link GoroService} on tasks passed via {@link android.content.Intent} to
+   * provide a context instance.
+   * You are not supposed to invoke this method manually except in tests code.
+   */
   void injectServiceContext(Context context);
 
 }
