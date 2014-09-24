@@ -6,7 +6,6 @@ android:
     - android-19
     - android-10
     - extra-android-m2repository
-    - sys-img-x86-android-10
   licenses:
     - 'android-sdk-license-.+'
 
@@ -16,7 +15,7 @@ env:
     - secure: "GdbZFkBJYt7nuAg8VJytyFFwW/HPpH/kcXXtdjH7Dw5dF/rw1QlBkMCrzVPYv1QgaBW6eprdWQ1OeSi8A4puK/jMGyAxcLVjmop1167MUQjt1C9HuY1HjMiwCrTpbdHchPSQd37cg++sbJ9AXaKdfRxLZ/knMKLtcH/p8d8DHWQ="
   matrix:
     - ANDROID_TARGET=android-19  ANDROID_ABI=armeabi-v7a
-    - ANDROID_TARGET=android-10  ANDROID_ABI=x86
+    - ANDROID_TARGET=android-10  ANDROID_ABI=armeabi
 
 before_install:
   - export TERM=dumb
