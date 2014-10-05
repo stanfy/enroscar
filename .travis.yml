@@ -33,7 +33,7 @@ script:
   # Android tests
   - android-wait-for-emulator || exit 1
   - adb shell input keyevent 82 &
-  - ./gradlew --continue -PpreDex=false :images:conCheck :goro:conCheck :async:conCheck :async-rx:conCheck
+  - ./gradlew --continue -PpreDex=false :goro:conCheck :async:conCheck :async-rx:conCheck
 
 after_success:
   - chmod +x scripts/deploy_to_maven.sh
