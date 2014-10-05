@@ -1,13 +1,13 @@
 // add a simple JAR to artifacts
 
-def plainJarFile = file("$buildDir/libs/${project.name}-${project.version}.jar")
+def plainJarFile = file("$buildDir/libs/enroscar-${project.name}-${project.version}.jar")
 
 configurations {
   plain
 }
 
 artifacts {
-  archives javadocsJar
-  archives file:plainJarFile, builtBy: classesJar
+  archives androidJavadocsJar
+  //archives file:plainJarFile, builtBy: classesJar
   plain file:plainJarFile, builtBy: classesJar
 }

@@ -74,21 +74,22 @@ uploadArchives {
   }
 }
 
-task javadocs(type: Javadoc) {
-  source = android.sourceSets.main.java.source
+task androidJavadocs(type: Javadoc) {
+  source = android.sourceSets.main.java.srcDirs
 }
 afterEvaluate {
-  javadocs.classpath += files(android.bootClasspath)
+  androidJavadocs.classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+  androidJavadocs.classpath += project.configurations.compile
 }
 
-task javadocsJar(type: Jar, dependsOn: ['javadocs']) {
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
   classifier = 'javadoc'
-  from javadocs.destinationDir
+  from androidJavadocs.destinationDir
 }
 
-task sourcesJar(type: Jar) {
-  from 'src/main/java'
+task androidSourcesJar(type: Jar) {
   classifier = 'sources'
+  from android.sourceSets.main.java.sourceFiles
 }
 
 task testsJar(type : Jar) {
@@ -99,10 +100,11 @@ task testsJar(type : Jar) {
 task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
   from 'build/intermediates/bundles/release/classes.jar'
   into "build/libs"
-  rename { "${project.name}-${project.version}.jar" }
+  rename { "enroscar-${project.name}-${project.version}.jar" }
 }
 
 artifacts {
-  archives sourcesJar
+  archives androidSourcesJar
+  archives androidJavadocsJar
   testCompile testsJar
 }
