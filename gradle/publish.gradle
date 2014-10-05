@@ -104,6 +104,7 @@ task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
   into "build/libs"
   rename { "enroscar-${project.name}-${project.version}.jar" }
 }
+classesJar.outputs.upToDateWhen { false }
 
 artifacts {
   archives androidSourcesJar
