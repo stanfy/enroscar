@@ -74,12 +74,14 @@ uploadArchives {
   }
 }
 
-task androidJavadocs(type: Javadoc) {
+task androidJavadocs(type: Javadoc, dependsOn: 'compileReleaseJava') {
   source = android.sourceSets.main.java.srcDirs
+  source += files("$project.buildDir/generated/source/r/release/")
 }
 afterEvaluate {
   androidJavadocs.classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
   androidJavadocs.classpath += project.configurations.compile
+  androidJavadocs.classpath += fileTree(dir: "$project.buildDir/intermediates/exploded-aar/", include: "**/classes.jar")
 }
 
 task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
