@@ -114,7 +114,7 @@ public class BoundGoroAndroidTest extends AndroidTestCase {
     }
   }
 
-  @FlakyTest
+  @FlakyTest(tolerance = 3)
   public void testScheduleObserveBind() {
     final CountDownLatch sync = new CountDownLatch(1);
     goro.schedule(new Callable<String>() {
