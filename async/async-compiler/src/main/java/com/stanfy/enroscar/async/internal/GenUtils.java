@@ -1,6 +1,7 @@
 package com.stanfy.enroscar.async.internal;
 
 import com.squareup.javawriter.JavaWriter;
+import com.stanfy.enroscar.async.Load;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,6 +23,28 @@ import static com.stanfy.enroscar.async.internal.OperatorBase.OperatorContext;
  * Tools.
  */
 final class GenUtils {
+
+  static final String DOCS_OPERATOR_CLASS = "Provides methods to control asynchronous operations "
+      + "described in class {@link %s}.%n<p>Usage examples:</p>%n"
+      + "<pre>%n"
+      + "  // construct operator instance%n"
+      + "  %s operator = %s.build()%n"
+      + "      .operations(this)%n"
+      + "      .context(getActivity())%n"
+      + "      .loaderManager(getSupportLoaderManager())%n"
+      + "      .create();%n"
+      + "%n"
+      + "  // setup actions invoked when operation finishes%n"
+      + "  operator.when().%sIsFinished()%n"
+      + "      .%s%n"
+      + "%n"
+      + "  // trigger operation start%n"
+      + "  operator.%s%s;%n"
+      + "  // forcing operation start (discarding cached result by Loader)%n"
+      + "  operator.force%s%s;%n"
+      + "  // cancel operation%n"
+      + "  operator.cancel%s();%n"
+      + "</pre>%n";
 
   static boolean debug = false;
 
@@ -73,6 +96,11 @@ final class GenUtils {
     }
   }
 
+  static boolean isLoadMethod(ExecutableElement method) {
+    return method.getAnnotation(Load.class) != null
+        || (Rx.hasRx() && method.getAnnotation(Rx.rxLoad()) != null);
+  }
+
   public static String capitalize(final String s) {
     char first = Character.toUpperCase(s.charAt(0));
     return s.length() > 1 ? first + s.substring(1) : String.valueOf(first);
@@ -87,8 +115,11 @@ final class GenUtils {
   }
 
   public static String invocation(final ExecutableElement method) {
-    StringBuilder stmt = new StringBuilder()
-        .append(method.getSimpleName()).append("(");
+    return method.getSimpleName().toString().concat(invocationParams(method));
+  }
+
+  public static String invocationParams(final ExecutableElement method) {
+    StringBuilder stmt = new StringBuilder().append("(");
     if (!method.getParameters().isEmpty()) {
       for (VariableElement arg : method.getParameters()) {
         stmt.append(arg.getSimpleName().toString()).append(", ");

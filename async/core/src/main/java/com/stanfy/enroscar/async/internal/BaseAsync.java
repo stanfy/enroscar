@@ -7,13 +7,18 @@ import java.util.ArrayList;
 
 /**
  * Base implementation for {@link com.stanfy.enroscar.async.Async}.
- * Supports multiple observers. Not thread safe.
+ * Supports multiple observers. Not thread safe: {@code Async} methods like {@code subscribe} and
+ * {@code cancel} are supposed to be invoked in the main thread by {@code Loader}.
  * @param <D> data type
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
 abstract class BaseAsync<D> implements Async<D> {
 
-  /** Observers collection. */
+  /**
+   * Observers collection.
+   * Initial capacity is based on an assumption that we have a really small number of observers
+   * created in activities/fragments.
+   */
   private final ArrayList<AsyncObserver<D>> observers = new ArrayList<>(3);
 
   @Override

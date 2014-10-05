@@ -14,7 +14,8 @@ public final class ObservableTools {
   private ObservableTools() { /* hidden */ }
 
   public static <D> Observable<D> loaderObservable(final int loaderId,
-                                                   final LoaderDescription description) {
+                                                   final LoaderDescription description,
+                                                   final boolean destroyOnFinish) {
     return Observable.create(new Observable.OnSubscribe<D>() {
       @Override
       public void call(final Subscriber<? super D> subscriber) {
@@ -26,14 +27,18 @@ public final class ObservableTools {
 
           @Override
           public void onResult(final D data) {
-            subscriber.onNext(data);
+            if (!subscriber.isUnsubscribed()) {
+              subscriber.onNext(data);
+            }
           }
 
           @Override
           public void onReset() {
-            subscriber.onCompleted();
+            if (!subscriber.isUnsubscribed()) {
+              subscriber.onCompleted();
+            }
           }
-        });
+        }, destroyOnFinish);
       }
     });
   }

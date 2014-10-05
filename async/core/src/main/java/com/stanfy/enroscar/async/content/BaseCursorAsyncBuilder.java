@@ -84,7 +84,7 @@ public abstract class BaseCursorAsyncBuilder<B extends BaseCursorAsyncBuilder<?,
    * Set to {@code true} if you want to observe descendant URIs.
    * If <code>true</code> changes to URIs beginning with what is set with
    * {@link #uri(android.net.Uri)} will also induce delivering results to subscribers.
-   * @see {@link android.content.ContentResolver#registerContentObserver(android.net.Uri, boolean, android.database.ContentObserver)}
+   * @see android.content.ContentResolver#registerContentObserver(android.net.Uri, boolean, android.database.ContentObserver)
    */
   public B observeDescendants(final boolean value) {
     params.observeDescendants = value;

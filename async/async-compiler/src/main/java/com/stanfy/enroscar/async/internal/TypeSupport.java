@@ -27,6 +27,8 @@ interface TypeSupport {
 
   String loaderDescriptionMethodBody(JavaWriter w, ExecutableElement method, BaseGenerator generator);
 
+  String listenerExample(String dataType);
+
 
   String RX_OBSERVABLE = "rx.Observable";
 
@@ -66,7 +68,18 @@ interface TypeSupport {
     public String loaderDescriptionMethodBody(JavaWriter w, ExecutableElement method,
                                               BaseGenerator generator) {
       String type = loaderDescriptionReturnType(w, method, generator);
-      return String.format("return new %s(%d, this)", type, generator.getLoaderId(method));
+      return String.format("return new %s(%d, this, %b)",
+          type, generator.getLoaderId(method), !isLoadMethod(method));
+    }
+
+    @Override
+    public String listenerExample(String dataType) {
+      return String.format("doOnResult(new Action<%s>() { ... })", dataType);
+    }
+
+    @Override
+    public String toString() {
+      return "AsyncSupport";
     }
   };
 
@@ -111,9 +124,19 @@ interface TypeSupport {
     @Override
     public String loaderDescriptionMethodBody(JavaWriter w, ExecutableElement method,
                                               BaseGenerator generator) {
-      return "return " + TOOLS + ".loaderObservable(" + generator.getLoaderId(method) + ", this)";
+      return String.format("return %s.loaderObservable(%d, this, %b)",
+          TOOLS, generator.getLoaderId(method), !isLoadMethod(method));
     }
 
+    @Override
+    public String listenerExample(String dataType) {
+      return String.format("subscribe(new Action1<%s>() { ... })", dataType);
+    }
+
+    @Override
+    public String toString() {
+      return "RxSupport";
+    }
   };
 
 }

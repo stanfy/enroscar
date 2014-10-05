@@ -1,11 +1,12 @@
 package com.stanfy.enroscar.async.internal;
 
-import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.Loader;
 
 import com.stanfy.enroscar.async.Async;
 import com.stanfy.enroscar.async.AsyncObserver;
+
+import static com.stanfy.enroscar.async.internal.Utils.MAIN_THREAD_HANDLER;
 
 /**
  * Loader that backs {@link com.stanfy.enroscar.async.Async} result.
@@ -14,9 +15,6 @@ import com.stanfy.enroscar.async.AsyncObserver;
  * @author Roman Mazur - Stanfy (http://stanfy.com)
  */
 final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
-
-  /** Main thread handler. */
-  private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
   private final AsyncContext<D> context;
   private Async<D> async;
@@ -35,6 +33,8 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
     @Override
     public void onReset() {
       // nothing for now
+      // In rx world this is invoked from onComplete though.
+      // TODO: should loader react on Observable completion?
     }
   };
 
@@ -114,7 +114,7 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
     if (Looper.getMainLooper() == Looper.myLooper()) {
       deliverResult(result);
     } else {
-      MAIN_HANDLER.post(new Runnable() {
+      MAIN_THREAD_HANDLER.post(new Runnable() {
         @Override
         public void run() {
           deliverResult(result);

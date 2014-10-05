@@ -7,6 +7,8 @@ import android.support.v4.app.LoaderManager;
 
 import com.stanfy.enroscar.async.OperatorBuilder;
 
+import static com.stanfy.enroscar.async.internal.Utils.MAIN_THREAD_HANDLER;
+
 /**
  * Base class for generated operators.
  * @author Roman Mazur - Stanfy (http://stanfy.com)
@@ -19,6 +21,14 @@ public abstract class OperatorBase<W, D extends LoaderDescription> {
   /** Operator context. */
   private final OperatorContext<W> operatorContext;
 
+  /** Check what loaders are started, invoke initLoader for them. */
+  private final Runnable checkStartedLoaders = new Runnable() {
+    @Override
+    public void run() {
+      description.initStartedLoaders();
+    }
+  };
+
   protected OperatorBase(final D description,
                         final OperatorContext<W> operatorContext) {
     this.operatorContext = operatorContext;
@@ -26,6 +36,7 @@ public abstract class OperatorBase<W, D extends LoaderDescription> {
   }
 
   public final D when() {
+    MAIN_THREAD_HANDLER.post(checkStartedLoaders);
     return description;
   }
 
@@ -35,32 +46,32 @@ public abstract class OperatorBase<W, D extends LoaderDescription> {
 
   protected final void initLoader(final int loaderId, final AsyncProvider<?> provider,
                                   final boolean destroyOnFinish) {
-    LoaderManager lm = operatorContext.getLoaderManager();
-    lm.initLoader(loaderId, null, description.makeCallbacks(loaderId, provider, destroyOnFinish));
+    Utils.initLoader(operatorContext, loaderId, provider, destroyOnFinish, description);
   }
 
-  protected final void restartLoader(final int loaderId, final AsyncProvider<?> provider) {
-    LoaderManager lm = operatorContext.getLoaderManager();
-    lm.restartLoader(loaderId, null, description.makeCallbacks(loaderId, provider, false));
+  protected final void restartLoader(final int loaderId, final AsyncProvider<?> provider,
+                                     final boolean destroyOnFinish) {
+    description.invokeStartAction(loaderId);
+    LoaderManager lm = operatorContext.loaderManager;
+    lm.restartLoader(
+        loaderId,
+        null,
+        description.makeCallbacks(loaderId, provider, destroyOnFinish)
+    );
   }
 
   protected final void destroyLoader(final int loaderId) {
-    LoaderManager lm = operatorContext.getLoaderManager();
+    LoaderManager lm = operatorContext.loaderManager;
     lm.destroyLoader(loaderId);
   }
 
   /**
-   * @param <T> operations object type
+   * @param <T> operations object type (where {@code @Load} and {@code @Send} methods are defined)
    */
   public static final class OperatorContext<T> {
 
-    /** Operations object. */
     T operations;
-
-    /** Context instance. */
     Context context;
-
-    /** Loader manager. */
     LoaderManager loaderManager;
 
     OperatorContext() {  }
@@ -75,10 +86,6 @@ public abstract class OperatorBase<W, D extends LoaderDescription> {
       if (operations == null) {
         throw new IllegalStateException("Operations object is not defined");
       }
-    }
-
-    public LoaderManager getLoaderManager() {
-      return loaderManager;
     }
 
     public T getOperations() {

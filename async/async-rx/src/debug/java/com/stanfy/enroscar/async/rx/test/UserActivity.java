@@ -10,9 +10,9 @@ import com.stanfy.enroscar.async.OperatorBuilder;
 import com.stanfy.enroscar.async.Send;
 import com.stanfy.enroscar.async.internal.AsyncProvider;
 import com.stanfy.enroscar.async.internal.LoaderDescription;
+import com.stanfy.enroscar.async.internal.ObservableAsyncProvider;
 import com.stanfy.enroscar.async.internal.ObservableTools;
 import com.stanfy.enroscar.async.internal.OperatorBase;
-import com.stanfy.enroscar.async.internal.ObservableAsyncProvider;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Example of Async Rx usage.
@@ -91,7 +92,7 @@ public class UserActivity extends FragmentActivity {
       public Thing call() throws Exception {
         return new Thing(v);
       }
-    }));
+    })).subscribeOn(Schedulers.newThread());
   }
 
   /** Data type. */
@@ -146,7 +147,7 @@ public class UserActivity extends FragmentActivity {
           return getOperations().loadThing(param);
         }
       };
-      restartLoader(1, provider);
+      restartLoader(1, provider, false);
     }
     public void sendThing(final int param) {
       AsyncProvider<Thing> provider = new ObservableAsyncProvider<Thing>() {
@@ -155,7 +156,7 @@ public class UserActivity extends FragmentActivity {
           return getOperations().sendThing(param);
         }
       };
-      initLoader(2, provider, true);
+      restartLoader(2, provider, true);
     }
 
     // cancellation
@@ -179,12 +180,12 @@ public class UserActivity extends FragmentActivity {
 
     /* same visibility */
     Observable<Thing> loadThingIsFinished() {
-      return ObservableTools.loaderObservable(LOADER_LOAD, this);
+      return ObservableTools.loaderObservable(LOADER_LOAD, this, false);
     }
 
     /* same visibility */
     Observable<Thing> sendThingIsFinished() {
-      return ObservableTools.loaderObservable(LOADER_SEND, this);
+      return ObservableTools.loaderObservable(LOADER_SEND, this, true);
     }
 
   }

@@ -44,12 +44,24 @@ final class LoaderDescriptionGenerator extends BaseGenerator {
     for (MethodData data : methods) {
       ExecutableElement m = data.method;
 
+      String operationName = m.getSimpleName().toString();
+
       w.beginMethod(
           data.loaderDescriptionTypeSupport.loaderDescriptionReturnType(w, m, this),
-          m.getSimpleName().toString().concat("IsFinished"),
+          operationName.concat("IsFinished"),
           EnumSet.of(PUBLIC)
       );
       w.emitStatement(data.loaderDescriptionTypeSupport.loaderDescriptionMethodBody(w, m, this));
+      w.endMethod();
+
+      w.beginMethod(
+          w.compressType(getFqcn()),
+          operationName.concat("IsStartedDo"),
+          EnumSet.of(PUBLIC),
+          "final Runnable", "action"
+      );
+      w.emitStatement("addStartAction(%d, action)", getLoaderId(m));
+      w.emitStatement("return this");
       w.endMethod();
     }
   }

@@ -6,6 +6,7 @@ import com.stanfy.enroscar.async.Async;
 import com.stanfy.enroscar.async.Releaser;
 
 /**
+ * It must not hold links to Activities/Fragments/Views.
  * @param <D> data type
  */
 class AsyncContext<D> {

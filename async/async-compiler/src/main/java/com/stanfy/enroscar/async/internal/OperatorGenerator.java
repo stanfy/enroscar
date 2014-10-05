@@ -1,7 +1,6 @@
 package com.stanfy.enroscar.async.internal;
 
 import com.squareup.javawriter.JavaWriter;
-import com.stanfy.enroscar.async.Load;
 import com.stanfy.enroscar.async.OperatorBuilder;
 
 import java.io.IOException;
@@ -22,8 +21,6 @@ import static javax.lang.model.element.Modifier.*;
  */
 final class OperatorGenerator extends BaseGenerator {
 
-  // TODO: release method support
-
   public OperatorGenerator(final ProcessingEnvironment env, final TypeElement type,
                            final List<MethodData> methods) {
     super(env, type, methods, GenUtils.SUFFIX_OPERATOR);
@@ -41,6 +38,27 @@ final class OperatorGenerator extends BaseGenerator {
     String operationsName = operationsClass.getQualifiedName().toString();
     setExtendsClass(OperatorBase.class.getSimpleName() + "<" + operationsName + ","
         + " " + loaderDescription(packageName, operationsClass) + ">");
+  }
+
+  @Override
+  protected void classJavaDoc(JavaWriter w) throws IOException {
+    String operatorClassName = w.compressType(getFqcn());
+    ExecutableElement method = methods.get(0).method;
+    String operationName = method.getSimpleName().toString();
+    String params = invocationParams(method);
+
+    w.emitJavadoc(GenUtils.DOCS_OPERATOR_CLASS,
+        operationsClass.getQualifiedName().toString(),
+        operatorClassName,
+        operatorClassName,
+        operationName,
+        methods.get(0).operatorTypeSupport.listenerExample(w.compressType(getDataType(method).toString())),
+        operationName,
+        params,
+        capitalize(operationName),
+        params,
+        capitalize(operationName)
+        );
   }
 
   @Override
@@ -71,13 +89,12 @@ final class OperatorGenerator extends BaseGenerator {
     for (MethodData data : methods) {
       ExecutableElement m = data.method;
 
-      boolean load = m.getAnnotation(Load.class) != null
-          || (Rx.hasRx() && m.getAnnotation(Rx.rxLoad()) != null);
+      boolean load = isLoadMethod(m);
       int loaderId = getLoaderId(m);
 
       w.beginMethod("void", m.getSimpleName().toString(), EnumSet.of(PUBLIC), parameters(w, m), null);
       w.emitStatement(data.operatorTypeSupport.asyncProvider(w, m));
-      w.emitStatement("initLoader(%d, provider, %b)", loaderId, !load);
+      w.emitStatement("%sLoader(%d, provider, %b)", load ? "init" : "restart", loaderId, !load);
       w.endMethod();
       w.emitEmptyLine();
 
@@ -86,7 +103,7 @@ final class OperatorGenerator extends BaseGenerator {
         w.beginMethod("void", "force" + capitalize(m.getSimpleName().toString()),
             EnumSet.of(PUBLIC), parameters(w, m), null);
         w.emitStatement(data.operatorTypeSupport.asyncProvider(w, m));
-        w.emitStatement("restartLoader(%d, provider)", loaderId);
+        w.emitStatement("restartLoader(%d, provider, false)", loaderId);
         w.endMethod();
         w.emitEmptyLine();
       }

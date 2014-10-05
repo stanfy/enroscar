@@ -7,7 +7,7 @@ import android.support.v4.app.LoaderManager;
 
 /**
  * This interface contains methods you can use to build an operator object.
- * You should not implement this class.
+ * You should not implement this class. Use generated operator class instead.
  */
 public interface OperatorBuilder<T, W> {
 

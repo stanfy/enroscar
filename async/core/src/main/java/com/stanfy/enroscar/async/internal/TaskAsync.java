@@ -15,7 +15,7 @@ import java.util.concurrent.Executor;
 public class TaskAsync<D, T extends Callable<D>> extends BaseAsync<D> {
 
   /** Task instance. */
-  final T task;
+  private final T task;
 
   /** Android AsyncTask. */
   private AsyncTaskWithDelegate<D> asyncTask;
@@ -43,6 +43,7 @@ public class TaskAsync<D, T extends Callable<D>> extends BaseAsync<D> {
     doCancel();
     asyncTask = new AsyncTaskWithDelegate<>(task, this);
     if (executor == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+      // using default serial executor (we do not support Cupcake where default executor is parallel)
       asyncTask.execute();
     } else {
       asyncTask.executeOnExecutor(executor);

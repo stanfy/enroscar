@@ -1,7 +1,7 @@
 package com.stanfy.enroscar.async.internal;
 
 import com.stanfy.enroscar.async.Action;
-import com.stanfy.enroscar.async.AsyncError;
+import com.stanfy.enroscar.async.AsyncException;
 import com.stanfy.enroscar.async.AsyncObserver;
 
 /**
@@ -15,9 +15,9 @@ public final class ObserverBuilder<D, T extends LoaderDescription> {
   /** Observer instance. */
   private final Observer<D> observer = new Observer<>();
 
-  public ObserverBuilder(final int loaderId, final T description) {
+  public ObserverBuilder(final int loaderId, final T description, final boolean destroyOnFinish) {
     this.description = description;
-    this.description.addObserver(loaderId, observer);
+    this.description.addObserver(loaderId, observer, destroyOnFinish);
   }
 
   public ObserverBuilder<D, T> doOnResult(final Action<D> resultAction) {
@@ -43,7 +43,7 @@ public final class ObserverBuilder<D, T extends LoaderDescription> {
    * {@link AsyncObserver} based on {@link Action}s.
    * @param <D> data type
    */
-  private static class Observer<D> implements AsyncObserver<D> {
+  private static final class Observer<D> implements AsyncObserver<D> {
 
     /** On result. */
     Action<D> resultAction;
@@ -57,7 +57,7 @@ public final class ObserverBuilder<D, T extends LoaderDescription> {
       if (errorAction != null) {
         errorAction.act(e);
       } else {
-        throw new AsyncError(e);
+        throw new AsyncException(e);
       }
     }
 
