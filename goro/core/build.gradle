@@ -18,10 +18,10 @@ apply from: file("$rootDir/gradle/jar.gradle")
 
 dependencies {
   provided project(":async")
-  provided 'com.netflix.rxjava:rxjava-core:0.18.4'
+  provided 'com.netflix.rxjava:rxjava-core:0.20.5'
 
   androidTestCompile project(":content")
-  androidTestCompile 'com.netflix.rxjava:rxjava-core:0.18.4'
+  androidTestCompile 'com.netflix.rxjava:rxjava-core:0.20.5'
 }
 
 android {

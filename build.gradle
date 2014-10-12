@@ -12,11 +12,6 @@ buildscript {
 def getApplicationId = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').replaceAll(/enroscar/, '')}" }
 def projectVersion = "2.0.alpha4-SNAPSHOT"
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '1.9'
-}
-
-
 def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 
@@ -57,7 +52,6 @@ configure(libraryModules) {
 
     defaultConfig {
       minSdkVersion 8
-      applicationId getApplicationId(project)
 
       testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
       testApplicationId "${getApplicationId(project)}.test"
