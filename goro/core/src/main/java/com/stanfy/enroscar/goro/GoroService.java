@@ -24,9 +24,9 @@ import static com.stanfy.enroscar.goro.Goro.createWithDelegate;
  */
 public class GoroService extends Service {
 
-  /** Internal debug flag. */
-  // FIXME should be BuildConfig.DEBUG but current gradle plugin makes something strange with this for tests
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = BuildConfig.DEBUG;
+
+  private static final String TAG = "Goro";
 
   /**
    * Used as a {@link java.lang.String} field in service command intent to pass
@@ -142,7 +142,11 @@ public class GoroService extends Service {
     context.unbindService(connection);
   }
 
-  protected static Callable<?> getTaskFromExtras(final Intent intent) {
+  /**
+   * Get a task instance packed into an {@code Intent} with
+   * {@link #taskIntent(android.content.Context, java.util.concurrent.Callable)}.
+   */
+  public static Callable<?> getTaskFromExtras(final Intent intent) {
     if (!intent.hasExtra(EXTRA_TASK) && !intent.hasExtra(EXTRA_TASK_BUNDLE)) {
       return null;
     }
@@ -164,6 +168,12 @@ public class GoroService extends Service {
 
   private GoroBinderImpl getBinder() {
     if (binder == null) {
+      if (!Util.checkMainThread()) {
+        throw new IllegalStateException(
+            "Goro binder is being created not in the main thread. "
+            + "This might happen if you invoke GoroService.getGoro() not from the main thread."
+        );
+      }
       binder = new GoroBinderImpl(createGoro(), new GoroTasksListener());
     }
     return binder;
@@ -203,7 +213,7 @@ public class GoroService extends Service {
   @Override
   public IBinder onBind(final Intent intent) {
     if (DEBUG) {
-      Log.w("Goro", "bind");
+      Log.i(TAG, "bind");
     }
     hasBoundUsers = true;
     stopHandler.doNotStop();
@@ -213,7 +223,7 @@ public class GoroService extends Service {
   @Override
   public boolean onUnbind(final Intent intent) {
     if (DEBUG) {
-      Log.w("Goro", "unbind");
+      Log.i(TAG, "unbind");
     }
     hasBoundUsers = false;
     stopHandler.checkForStop();
@@ -223,12 +233,19 @@ public class GoroService extends Service {
   @Override
   public void onRebind(final Intent intent) {
     if (DEBUG) {
-      Log.w("Goro", "rebind");
+      Log.i(TAG, "rebind");
     }
     hasBoundUsers = true;
     stopHandler.doNotStop();
   }
 
+  /**
+   * Return an instance of {@link com.stanfy.enroscar.goro.Goro} managed by this service.
+   * Should be called from the main thread.
+   */
+  public Goro getGoro() {
+    return getBinder().goro();
+  }
 
   protected Goro createGoro() {
     return delegateExecutor != null ? createWithDelegate(delegateExecutor) : create();
@@ -312,7 +329,7 @@ public class GoroService extends Service {
 
     public void checkForStop() {
       if (DEBUG) {
-        Log.w("Goro", "send check for stop");
+        Log.w(TAG, "send check for stop");
       }
       doNotStop(); // clear any existing checks
       sendEmptyMessage(MSG_CHECK_FOR_STOP);
@@ -320,7 +337,7 @@ public class GoroService extends Service {
 
     public void doNotStop() {
       if (DEBUG) {
-        Log.w("Goro", "do not stop now");
+        Log.w(TAG, "do not stop now");
       }
       removeMessages(MSG_STOP);
       removeMessages(MSG_CHECK_FOR_STOP);
@@ -329,7 +346,7 @@ public class GoroService extends Service {
     private static boolean isServiceActive(final GoroService service) {
       boolean tasksRunning = service.binder != null && service.binder.listener.activeTasksCount > 0;
       if (DEBUG) {
-        Log.w("Goro", "isServiceActive: " + service.hasBoundUsers + ", " + tasksRunning);
+        Log.w(TAG, "isServiceActive: " + service.hasBoundUsers + ", " + tasksRunning);
       }
       return service.hasBoundUsers || tasksRunning;
     }
@@ -343,7 +360,7 @@ public class GoroService extends Service {
         case MSG_CHECK_FOR_STOP:
           if (!isServiceActive(service)) {
             if (DEBUG) {
-              Log.w("Goro", "send stop");
+              Log.w(TAG, "send stop");
             }
             sendEmptyMessage(MSG_STOP);
           }
@@ -351,7 +368,7 @@ public class GoroService extends Service {
 
         case MSG_STOP:
           if (DEBUG) {
-            Log.w("Goro", "do stop");
+            Log.w(TAG, "do stop");
           }
           service.stopSelf();
           break;
@@ -363,9 +380,7 @@ public class GoroService extends Service {
 
   }
 
-  /**
-   * Rethrows an error.
-   */
+  /** Rethrows an error. */
   private static final class ErrorThrow implements FutureObserver {
 
     @Override

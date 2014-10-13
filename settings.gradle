@@ -24,6 +24,9 @@ project(':goro').projectDir = new File(rootDir, "goro/core")
 include ':goro-sample'
 project(':goro-sample').projectDir = new File(rootDir, "goro/sample")
 
+include ':goro-tape-sample'
+project(':goro-tape-sample').projectDir = new File(rootDir, "goro/tape-sample")
+
 // === Sample ===
 //include 'sample-project'
 
