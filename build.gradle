@@ -4,8 +4,8 @@ buildscript {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.13.1'
-    classpath 'org.robolectric:robolectric-gradle-plugin:0.12.0'
+    classpath 'com.android.tools.build:gradle:0.13.3'
+    classpath 'org.robolectric:robolectric-gradle-plugin:0.13.0'
   }
 }
 
@@ -56,8 +56,6 @@ configure(libraryModules) {
     buildToolsVersion project.androidBuildToolsVersion
 
     defaultConfig {
-      versionCode 10
-      versionName projectVersion
       minSdkVersion 8
       applicationId getApplicationId(project)
 
