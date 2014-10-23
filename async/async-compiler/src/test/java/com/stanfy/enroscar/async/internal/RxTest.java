@@ -96,7 +96,7 @@ public class RxTest {
             "import com.stanfy.enroscar.async.internal.OperatorBase.OperatorContext;",
             "import rx.Observable;",
 
-            "class A$$LoaderDescription extends LoaderDescription {",
+            "class A$$LoaderDescription extends LoaderDescription<A$$LoaderDescription> {",
 
             "  A$$LoaderDescription(final OperatorContext<A> context) {",
             "    super(context);",
@@ -190,7 +190,7 @@ public class RxTest {
             "import com.stanfy.enroscar.async.internal.OperatorBase.OperatorContext;",
             "import rx.Observable;",
 
-            "class A$$LoaderDescription extends LoaderDescription {",
+            "class A$$LoaderDescription extends LoaderDescription<A$$LoaderDescription> {",
 
             "  A$$LoaderDescription(final OperatorContext<A> context) {",
             "    super(context);",

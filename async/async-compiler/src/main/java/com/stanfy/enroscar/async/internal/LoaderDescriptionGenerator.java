@@ -22,7 +22,7 @@ final class LoaderDescriptionGenerator extends BaseGenerator {
   public LoaderDescriptionGenerator(final ProcessingEnvironment env, final TypeElement type,
                                     final List<MethodData> methods) {
     super(env, type, methods, GenUtils.SUFFIX_LOADER_DESC);
-    setExtendsClass(LoaderDescription.class.getName());
+    setExtendsClass(LoaderDescription.class.getName() + "<" + getFqcn() + ">");
     addImports(
         LoaderDescription.class.getName(),
         OperatorBase.OperatorContext.class.getName().replace('$', '.')

@@ -161,7 +161,7 @@ public class AsyncProcessorTest {
             "import com.stanfy.enroscar.async.internal.ObserverBuilder;",
             "import com.stanfy.enroscar.async.internal.OperatorBase.OperatorContext;",
 
-            "class " + base + "$$LoaderDescription extends LoaderDescription {",
+            "class " + base + "$$LoaderDescription extends LoaderDescription<" + base + "$$LoaderDescription> {",
 
             "  " + base + "$$LoaderDescription(final OperatorContext<Operations> context) {",
             "    super(context);",
