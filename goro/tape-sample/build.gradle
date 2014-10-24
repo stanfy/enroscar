@@ -4,11 +4,12 @@ buildscript {
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:0.13.2'
+    classpath 'com.stanfy.android:gradle-android-apt:1.0.0'
   }
 }
 
 apply plugin: 'com.android.application'
-apply from: 'https://gist.githubusercontent.com/roman-mazur/95c7f46b66c7f15fb97a/raw/36051179b3cbefc7d3bbcffd49422a2f9f7e92fd/apt.gradle'
+apply plugin: 'com.stanfy.android.apt'
 
 android {
   buildToolsVersion '20.0.0'
