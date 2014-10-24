@@ -56,7 +56,7 @@ public class VideoPlayActivity extends OneFragmentActivity {
   /**
    * @return the fragment media controller
    */
-  public MediaController getMediaController() {
+  public MediaController getVideoController() {
     final VideoPlayFragment videoPlayFragment = (VideoPlayFragment) getFragment();
 
     if (videoPlayFragment == null) {
