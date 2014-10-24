@@ -3,8 +3,10 @@ package com.stanfy.enroscar.async.internal;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 
 import com.stanfy.enroscar.async.Async;
+import com.stanfy.enroscar.async.AsyncException;
 import com.stanfy.enroscar.async.AsyncObserver;
 import com.stanfy.enroscar.async.internal.OperatorBase.OperatorContext;
 import com.stanfy.enroscar.async.internal.WrapAsyncLoader.Result;
@@ -56,6 +58,10 @@ final class ObserverCallbacks<D> implements LoaderManager.LoaderCallbacks<Result
     AsyncObserver<D> observer = description.getObserver(loaderId);
     try {
       if (observer == null) {
+        Log.w("EnroscarAsync", "There is no observer for loader results " + loaderId);
+        if (result.error != null) {
+          throw new AsyncException(result.error);
+        }
         return;
       }
       if (result.error != null) {
