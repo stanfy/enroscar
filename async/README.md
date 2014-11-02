@@ -76,7 +76,8 @@ Gradle
 
 ```groovy
 compile 'com.stanfy.enroscar:enroscar-async:{latestVersionHere}'
-// annotation processor should be added to 'compile' configuration
+// annotation processor should be added to 'provided' configuration
+// it will not be included to your apk
 provided 'com.stanfy.enroscar:enroscar-async-compiler:{latestVersionHere}'
 ```
 To use it with RxJava you'll also need
