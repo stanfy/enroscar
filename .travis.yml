@@ -26,7 +26,7 @@ before_install:
   - emulator -avd test -no-skin -no-audio -no-window &
 
 install:
-  - ./gradlew -q assemble
+  - ./gradlew assemble
 
 script:
   # JavaVM tests
