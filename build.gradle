@@ -4,7 +4,7 @@ buildscript {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.13.3'
+    classpath 'com.android.tools.build:gradle:0.14.0'
     classpath 'org.robolectric:robolectric-gradle-plugin:0.13.0'
   }
 }
@@ -21,7 +21,7 @@ def libraryModules = [
 ].collect { project(":$it") }
 
 ext {
-  androidBuildToolsVersion = '20.0.0'
+  androidBuildToolsVersion = '21.1.0'
 }
 
 configure(libraryModules) {

@@ -25,7 +25,6 @@ dependencies {
 }
 
 android {
-  useOldManifestMerger = false
   defaultConfig {
     consumerProguardFiles file("config/consumer.pro")
     versionName project.version

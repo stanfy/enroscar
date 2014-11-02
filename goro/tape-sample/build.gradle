@@ -3,7 +3,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.13.2'
+    classpath 'com.android.tools.build:gradle:0.14.0'
     classpath 'com.stanfy.android:gradle-android-apt:1.0.0'
   }
 }
@@ -12,13 +12,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.stanfy.android.apt'
 
 android {
-  buildToolsVersion '20.0.0'
-  compileSdkVersion 20
+  compileSdkVersion 21
+  buildToolsVersion project.androidBuildToolsVersion
 
   defaultConfig {
     minSdkVersion 10
+    targetSdkVersion 21
     applicationId "com.stanfy.enroscar.sample"
-
   }
 
   lintOptions {

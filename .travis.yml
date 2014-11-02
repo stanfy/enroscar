@@ -2,9 +2,8 @@ language: android
 
 android:
   components:
-    - build-tools-20.0.0
-    - android-20
-    - android-19
+    - build-tools-21.1.0
+    - android-21
     - android-10
     - extra-android-m2repository
   licenses:
@@ -15,7 +14,7 @@ env:
     - secure: "VgzgkHpv8GQtVighZP+Fnkeaj08Abk8c+HJePEkO+0c1aoeL0Lwt6yUwXrMlPhgBndLi9foDZV1PH1xVxLlnj5u5GA8hNoNY4cOxjvEpD3E9MQ0gsdKmclMsoodJpY6YQ67FMexW6IVOHxkHcbEFm7ylcobmhyyX+MHujir980s="
     - secure: "GdbZFkBJYt7nuAg8VJytyFFwW/HPpH/kcXXtdjH7Dw5dF/rw1QlBkMCrzVPYv1QgaBW6eprdWQ1OeSi8A4puK/jMGyAxcLVjmop1167MUQjt1C9HuY1HjMiwCrTpbdHchPSQd37cg++sbJ9AXaKdfRxLZ/knMKLtcH/p8d8DHWQ="
   matrix:
-    - ANDROID_TARGET=android-19  ANDROID_ABI=armeabi-v7a
+    - ANDROID_TARGET=android-21  ANDROID_ABI=armeabi-v7a
     - ANDROID_TARGET=android-10  ANDROID_ABI=armeabi
 
 before_install:
