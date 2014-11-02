@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -35,6 +37,11 @@ interface Queues {
    * @param queueName queue name
    */
   void clear(String queueName);
+
+  /**
+   * Dump the queues state.
+   */
+  void dump(Appendable out) throws IOException;
 
   /** Default implementation. */
   class Impl implements Queues {
@@ -125,6 +132,34 @@ interface Queues {
         exec.clear();
       }
     }
+
+    public void dump(final Appendable out) throws IOException {
+      //          0         1         2         3         4         5         6         7         8
+      out.append("name        | processing      | line\n");
+      String line = "---------------------------------------------------------------\n";
+      out.append(line);
+      synchronized (executorsMap) {
+        for (Map.Entry<String, TaskQueueExecutor> entry : executorsMap.entrySet()) {
+
+        }
+      }
+      out.append(line);
+    }
+
+    private static String aligned(final String str, final int len) {
+      if (str.length() == len) {
+        return str;
+      }
+      if (str.length() > len) {
+        return str.substring(0, len);
+      }
+      StringBuilder res = new StringBuilder(len).append(str);
+      for (int count = str.length() - len; count > 0; count--) {
+        res.append(' ');
+      }
+      return res.toString();
+    }
+
   }
 
   /** Executor for the task queue. */
