@@ -1,14 +1,13 @@
 package com.stanfy.enroscar.async.test;
 
 import android.database.Cursor;
-import android.test.ActivityInstrumentationTestCase2;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.api.ANDROID.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class CursorCloseAndroidTest extends ActivityInstrumentationTestCase2<CursorAsyncUserActivity> {
+public class CursorCloseAndroidTest extends BaseActivityAndroidTest<CursorAsyncUserActivity> {
 
   public CursorCloseAndroidTest() {
     super(CursorAsyncUserActivity.class);

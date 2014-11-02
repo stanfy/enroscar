@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.stanfy.enroscar.async">
+    package="com.stanfy.enroscar.async.test">
 
   <application android:name="com.stanfy.enroscar.async.test.AsyncTestApp">
 

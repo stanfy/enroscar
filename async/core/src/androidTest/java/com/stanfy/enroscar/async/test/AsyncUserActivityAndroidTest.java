@@ -1,8 +1,5 @@
 package com.stanfy.enroscar.async.test;
 
-import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
-
 import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.api.ANDROID.assertThat;
@@ -11,7 +8,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 /**
  * Test of AsyncUserActivity.
  */
-public class AsyncUserActivityAndroidTest extends ActivityInstrumentationTestCase2<AsyncUserActivity> {
+public class AsyncUserActivityAndroidTest extends BaseActivityAndroidTest<AsyncUserActivity> {
 
   /** Activity instance. */
   private AsyncUserActivity activity;

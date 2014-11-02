@@ -20,6 +20,14 @@ public class AsyncTestApp extends Application {
     StrictMode.setVmPolicy(
         new StrictMode.VmPolicy.Builder()
             .detectAll()
+            .penaltyLog()
+            .penaltyDeath()
+            .build()
+    );
+    StrictMode.setThreadPolicy(
+        new StrictMode.ThreadPolicy.Builder()
+            .detectAll()
+            .penaltyLog()
             .penaltyDeath()
             .build()
     );

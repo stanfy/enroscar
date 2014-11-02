@@ -1,13 +1,11 @@
 package com.stanfy.enroscar.async.test;
 
-import android.test.ActivityInstrumentationTestCase2;
-
 import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.api.ANDROID.assertThat;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class CursorAsyncUserActivityAndroidTest extends ActivityInstrumentationTestCase2<CursorAsyncUserActivity> {
+public class CursorAsyncUserActivityAndroidTest extends BaseActivityAndroidTest<CursorAsyncUserActivity> {
 
   public CursorAsyncUserActivityAndroidTest() {
     super(CursorAsyncUserActivity.class);
