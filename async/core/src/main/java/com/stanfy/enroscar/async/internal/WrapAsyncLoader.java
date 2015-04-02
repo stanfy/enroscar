@@ -102,6 +102,11 @@ final class WrapAsyncLoader<D> extends Loader<WrapAsyncLoader.Result<D>> {
       onReleaseData(result);
       result = null;
     }
+
+    if (async != null) {
+      async.cancel();
+      async = null;
+    }
   }
 
   private void onReleaseData(final Result<D> result) {

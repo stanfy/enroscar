@@ -145,4 +145,11 @@ public class WrapAsyncLoaderTest {
     assertThat(cancelInvoked).isTrue();
   }
 
+  @Test
+  public void resetShouldCancelAsyncResult() {
+    loader.startLoading();
+    loader.reset();
+    assertThat(cancelInvoked).isTrue();
+  }
+
 }
