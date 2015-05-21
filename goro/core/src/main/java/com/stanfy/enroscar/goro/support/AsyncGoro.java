@@ -35,6 +35,9 @@ public class AsyncGoro {
     return schedule(Goro.DEFAULT_QUEUE, task);
   }
 
+  /** @return wrapped {@link Goro} instance */
+  public Goro getCore() { return goro; }
+
   /** Implementation. */
   private final class GoroAsync<T> implements Async<T> {
 
