@@ -32,6 +32,9 @@ project(':goro-tape-sample').projectDir = new File(rootDir, "goro/tape-sample")
 
 // integration
 
+include ':stats-flurry'
+project(':stats-flurry').projectDir = new File(rootDir, "integration/flurry/stats-flurry-integration")
+
 //include 'enroscar-sherlock-integration'
 //project(':enroscar-sherlock-integration').projectDir =
 //    new File(rootDir, 'integration/actionbarsherlock/enroscar-sherlock-integration')

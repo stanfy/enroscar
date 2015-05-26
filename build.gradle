@@ -16,8 +16,8 @@ def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
 
 def libraryModules = [
-    'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui', 'async-rx', 'async'
-    //'sherlock-integration'
+    'beans', 'content', 'assist', 'goro', 'images', 'io', 'net', 'stats', 'ui', 'async-rx', 'async',
+    'stats-flurry' //'sherlock-integration'
 ].collect { project(":$it") }
 
 ext {

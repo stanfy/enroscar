@@ -1,11 +1,11 @@
 package com.stanfy.enroscar.stats;
 
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Map;
-
 import android.app.Activity;
 
 import com.flurry.android.FlurryAgent;
+
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Map;
 
 /**
  * Statistics manager based on Flurry SDK.
