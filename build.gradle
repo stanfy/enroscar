@@ -65,7 +65,7 @@ configure(libraryModules) {
   }
 
   def testDeps = [
-      'com.squareup:fest-android:1.0.+',
+      'com.squareup:fest-android:1.0.+@aar',
       'com.google.mockwebserver:mockwebserver:20130706',
       'org.easytesting:fest-reflect:1.4.1',
       'org.mockito:mockito-all:1.9.5'
