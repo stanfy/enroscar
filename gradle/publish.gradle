@@ -74,6 +74,16 @@ uploadArchives {
   }
 }
 
+task installArchives(type: Upload) {
+  description "Installs the artifacts to the local Maven repository."
+  configuration = configurations['archives']
+  repositories {
+    mavenDeployer {
+      repository url: "file://${System.properties['user.home']}/.m2/repository"
+    }
+  }
+}
+
 task androidJavadocs(type: Javadoc, dependsOn: 'compileReleaseJava') {
   source = android.sourceSets.main.java.srcDirs
   source += files("$project.buildDir/generated/source/r/release/")
