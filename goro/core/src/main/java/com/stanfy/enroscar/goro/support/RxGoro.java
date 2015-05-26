@@ -51,4 +51,7 @@ public class RxGoro {
     });
   }
 
+  /** @return wrapped {@link Goro} instance */
+  public Goro getCore() { return goro; }
+
 }
