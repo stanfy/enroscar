@@ -40,7 +40,7 @@ dependencies {
   testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3'
   testRuntime files("${System.properties['java.home']}/../lib/tools.jar")
   testRuntime files("${System.env['ANDROID_HOME']}/platforms/android-19/android.jar")
-  testRuntime 'com.netflix.rxjava:rxjava-core:0.19.1'
+  testRuntime 'io.reactivex:rxjava:1.0.11'
   testRuntime project(path: ':async-rx', configuration: 'plain')
 }
 
