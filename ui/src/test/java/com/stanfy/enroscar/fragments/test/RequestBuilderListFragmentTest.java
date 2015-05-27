@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.google.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.fragments.RequestBuilderListFragment;
+import com.stanfy.enroscar.fragments.ListLoaderFragment;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.net.operation.RequestBuilder;
 import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
@@ -30,7 +30,7 @@ import java.util.List;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
- * Tests for RequestBuilderListFragment.
+ * Tests for ListLoaderFragment.
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = 18)
@@ -40,7 +40,7 @@ public class RequestBuilderListFragmentTest extends AbstractMockServerTest {
   private static final int LOADER_ID = 100;
 
   /** Fragment under the test. */
-  private RequestBuilderListFragment<String, List<String>> fragment;
+  private ListLoaderFragment<String, List<String>> fragment;
 
   /** Items adapter. */
   private RendererBasedAdapter<String> adapter;
@@ -49,7 +49,7 @@ public class RequestBuilderListFragmentTest extends AbstractMockServerTest {
   private int lastUserLoaderId;
 
   /** Method call flag. */
-  private boolean createViewCalled, modifyLoaderCalled;
+  private boolean createViewCalled;
 
   private void scheduleResponse() {
     getWebServer().enqueue(new MockResponse().setResponseCode(HttpURLConnection.HTTP_OK).setBody("['a', 'b', 'c']"));
@@ -71,7 +71,6 @@ public class RequestBuilderListFragmentTest extends AbstractMockServerTest {
   public void init() {
 
     createViewCalled = false;
-    modifyLoaderCalled = false;
 
     adapter = new RendererBasedAdapter<String>(Robolectric.application, null) {
       @Override
@@ -80,12 +79,7 @@ public class RequestBuilderListFragmentTest extends AbstractMockServerTest {
       }
     };
 
-    fragment = new RequestBuilderListFragment<String, List<String>>() {
-      @Override
-      protected RequestBuilder<List<String>> createRequestBuilder() {
-        return new SimpleRequestBuilder<List<String>>(getActivity()) { }
-            .setUrl(getWebServer().getUrl("/").toString());
-      }
+    fragment = new ListLoaderFragment<String, List<String>>() {
 
       @Override
       protected RendererBasedAdapter<String> createAdapter() {
@@ -105,9 +99,10 @@ public class RequestBuilderListFragmentTest extends AbstractMockServerTest {
       }
 
       @Override
-      protected Loader<ResponseData<List<String>>> modifyLoader(final Loader<ResponseData<List<String>>> loader) {
-        modifyLoaderCalled = true;
-        return super.modifyLoader(loader);
+      protected Loader<ResponseData<List<String>>> createLoader() {
+        return new SimpleRequestBuilder<List<String>>(getActivity()) { }
+            .setUrl(getWebServer().getUrl("/").toString())
+            .getLoader();
       }
     };
 
@@ -124,7 +119,6 @@ public class RequestBuilderListFragmentTest extends AbstractMockServerTest {
     scheduleResponse();
     fragment.startLoad();
     assertThat(lastUserLoaderId).isEqualTo(LOADER_ID).isEqualTo(fragment.getLoaderId());
-    assertThat(modifyLoaderCalled).as("modifyLoader method should be called").isTrue();
   }
 
   @Test

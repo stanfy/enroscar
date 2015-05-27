@@ -2,7 +2,6 @@ package com.stanfy.enroscar.fragments;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +11,7 @@ import android.view.ViewGroup;
 import com.stanfy.enroscar.activities.CrucialGUIOperationManager;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.net.operation.RequestBuilder;
+import com.stanfy.enroscar.content.loader.ResponseDataLoaderCallbacks;
 import com.stanfy.enroscar.views.list.FetchableListView;
 import com.stanfy.enroscar.views.list.FetchableView;
 import com.stanfy.enroscar.views.list.adapter.RendererBasedAdapter;
@@ -27,7 +26,7 @@ import java.util.Locale;
  * @param <LT> list type
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public abstract class RequestBuilderListFragment<MT, LT extends List<MT>> extends BaseFragment implements LoaderCallbacks<ResponseData<LT>> {
+public abstract class ListLoaderFragment<MT, LT extends List<MT>> extends BaseFragment implements ResponseDataLoaderCallbacks<LT> {
 
   /** Logging tag. */
   protected static final String TAG = "RBListFragment";
@@ -53,23 +52,14 @@ public abstract class RequestBuilderListFragment<MT, LT extends List<MT>> extend
   /** GUI operations manager. */
   private CrucialGUIOperationManager crucialGUIOperationManager;
 
-  /** @return request builder instance */
-  protected abstract RequestBuilder<LT> createRequestBuilder();
+  /** @return request loader instance */
+  protected abstract Loader<ResponseData<LT>> createLoader();
   /** @return adapter with renderer */
   protected abstract RendererBasedAdapter<MT> createAdapter();
 
   /** @return request builder adapter */
   protected ResponseDataLoaderAdapter<MT, LT> wrapAdapter(final RendererBasedAdapter<MT> adapter) {
     return new ResponseDataLoaderAdapter<MT, LT>(getActivity(), adapter);
-  }
-
-  /**
-   * A good place for configuring main loader, e.g set offset incrementor.
-   * @param loader loader instance
-   * @return loader instance
-   */
-  protected Loader<ResponseData<LT>> modifyLoader(final Loader<ResponseData<LT>> loader) {
-    return loader;
   }
 
   /** @return true if data should be reloaded on locale changes */
@@ -165,7 +155,7 @@ public abstract class RequestBuilderListFragment<MT, LT extends List<MT>> extend
       if (rbAdapter != null) {
         rbAdapter.onLoadStart();
       }
-      return modifyLoader(createRequestBuilder().getLoader());
+      return createLoader();
     }
     throw new IllegalArgumentException("Cannot create loader with id=" + id);
   }
