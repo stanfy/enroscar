@@ -15,18 +15,6 @@ project(':async-compiler').projectDir = new File(rootDir, "async/async-compiler"
 include ':async-rx'
 project(':async-rx').projectDir = new File(rootDir, "async/async-rx")
 
-
-// === Goro ===
-
-include ':goro'
-project(':goro').projectDir = new File(rootDir, "goro/core")
-
-include ':goro-sample'
-project(':goro-sample').projectDir = new File(rootDir, "goro/sample")
-
-include ':goro-tape-sample'
-project(':goro-tape-sample').projectDir = new File(rootDir, "goro/tape-sample")
-
 // === Sample ===
 //include 'sample-project'
 

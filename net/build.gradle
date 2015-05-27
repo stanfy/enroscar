@@ -1,8 +1,10 @@
 def depProjects = [
-    ':beans', ':io', ':content', ':goro'
+    ':beans', ':io', ':content'
 ].collect { project(it) }
 
 dependencies {
+
+  compile 'com.stanfy.enroscar:enroscar-goro:2.0.0@aar'
 
   compile depProjects
 

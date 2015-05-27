@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-  <string name="post_to_rest">Post to \'REST\'</string>
-  <string name="post_to_db">Post to \'DB\'</string>
-  <string name="post_notification">Notification</string>
-</resources>
