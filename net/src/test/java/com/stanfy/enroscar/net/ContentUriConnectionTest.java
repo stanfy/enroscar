@@ -15,8 +15,8 @@ import org.robolectric.annotation.Config;
 import java.io.FileInputStream;
 import java.net.URL;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * Tests for ContentUriConnection.

@@ -1,19 +1,20 @@
 package com.stanfy.enroscar.net.test;
 
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.stanfy.enroscar.io.IoUtils;
+import com.stanfy.enroscar.net.test.cache.AbstractOneCacheTest;
+
+import org.junit.Test;
+import org.robolectric.annotation.Config;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.zip.GZIPOutputStream;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import okio.Buffer;
 
-import org.junit.Test;
-
-import org.robolectric.annotation.Config;
-
-import com.google.mockwebserver.MockResponse;
-import com.stanfy.enroscar.io.IoUtils;
-import com.stanfy.enroscar.net.test.cache.AbstractOneCacheTest;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for gzip response.
@@ -40,7 +41,7 @@ public class CompressedResponseTest extends AbstractOneCacheTest {
     assertThat(zipped).isNotEqualTo(text.getBytes(IoUtils.UTF_8_NAME));
 
     getWebServer().enqueue(
-        new MockResponse().setBody(zipped).setHeader("Content-Encoding", "gzip")
+        new MockResponse().setBody(new Buffer().write(zipped)).setHeader("Content-Encoding", "gzip")
     );
 
     final URL url = getWebServer().getUrl("/");

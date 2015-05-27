@@ -1,28 +1,21 @@
-def depProjects = [
-    ':beans', ':io', ':content'
-].collect { project(it) }
+dependOnProjects([':beans', ':io', ':content'])
 
 dependencies {
 
   compile 'com.stanfy.enroscar:enroscar-goro:2.0.0@aar'
 
-  compile depProjects
-
   compile 'com.jakewharton:disklrucache:2.0.2'
 
-  compile 'com.squareup.okhttp:okhttp:1.+'
-  compile 'com.squareup.retrofit:retrofit:1.+'
+  compile 'com.squareup.okhttp:okhttp:2.4.0'
+  compile 'com.squareup.retrofit:retrofit:1.9.0'
 
-  compile 'com.google.code.gson:gson:2.2.4'
+  compile 'com.google.code.gson:gson:2.3.1'
   compile('com.stanfy:gson-xml-java:0.1.+') {
     exclude group: 'xmlpull', module: 'xmlpull' // we do not need this on Android
   }
 
   // xml parser implementation for tests
   testCompile 'net.sf.kxml:kxml2:2.3.0'
-
-  // get test classes from content module
-  testCompile project(path: ':content', configuration: 'testCompile')
 }
 
 android {

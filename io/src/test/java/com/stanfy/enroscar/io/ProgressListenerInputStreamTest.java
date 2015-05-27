@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.util.Random;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ProgressListenerInputStream}.

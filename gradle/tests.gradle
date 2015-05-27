@@ -1,6 +1,6 @@
-apply plugin: 'robolectric'
+apply plugin: 'org.robolectric'
 
-robolectric {
+android.testOptions.unitTests.all {
 
   def selection = null
   try {
@@ -13,43 +13,5 @@ robolectric {
   }
 
   include selection
-  exclude "**/Abstract*.class"
+  exclude "**/Abstract*.class", "**/*AndroidTest.java"
 }
-
-android.libraryVariants.all { variant ->
-  if (variant.buildType.name.equalsIgnoreCase('release')) { return }
-
-  def compileTask = tasks["compileTest${variant.name.capitalize()}Java"]
-  compileTask.excludes += "**/*AndroidTest.java"
-
-  def task = tasks["test${variant.name.capitalize()}"]
-  task.configure {
-    def debug = null
-    try {
-      debug = project.testDebug
-    } catch (def e) {
-      // ignore
-    }
-    if (debug == "yes") {
-      jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-    }
-  }
-  task.excludes += "**/*AndroidTest.class"
-}
-
-// FIXME IDE hack
-// TODO monitor next two URLs for better solution
-// https://groups.google.com/forum/#!msg/adt-dev/v0AluPBcoy0/B0r-hGVMMMkJ
-// https://github.com/JakeWharton/gradle-android-test-plugin/issues/4
-
-//android {
-//  sourceSets {
-//    androidTest.setRoot('src/test')
-//  }
-//}
-//
-//dependencies {
-//  androidTestCompile 'junit:junit:4.11'
-//  androidTestCompile 'org.robolectric:robolectric:2.3'
-//  androidTestCompile 'org.mockito:mockito-all:1.9.5'
-//}

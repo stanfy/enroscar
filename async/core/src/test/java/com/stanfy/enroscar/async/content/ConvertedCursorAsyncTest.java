@@ -8,7 +8,6 @@ import android.net.Uri;
 
 import com.stanfy.enroscar.async.Async;
 import com.stanfy.enroscar.async.AsyncObserver;
-import com.stanfy.enroscar.async.Releaser;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,9 +20,8 @@ import org.robolectric.shadows.ShadowContentResolver;
 import java.util.List;
 
 import static com.stanfy.enroscar.async.Tools.asyncCursor;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.robolectric.Robolectric.application;
 import static org.robolectric.Robolectric.shadowOf;
 

@@ -83,7 +83,7 @@ public class UserActivity extends FragmentActivity {
   }
 
   @Load Observable<Thing> loadThing(final int v) {
-    return Observable.from(new Thing(v));
+    return Observable.just(new Thing(v));
   }
 
   @Send Observable<Thing> sendThing(final int v) {

@@ -6,8 +6,8 @@ import android.net.Uri;
 import android.os.Build;
 
 import com.google.gson.Gson;
-import com.google.mockwebserver.MockResponse;
-import com.google.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.net.ContentUriConnection;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
@@ -32,7 +32,7 @@ import retrofit.RestAdapter;
 import retrofit.http.GET;
 import retrofit.http.Query;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 /**

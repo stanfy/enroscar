@@ -1,16 +1,5 @@
 package com.stanfy.enroscar.content.loader.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import java.util.Arrays;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.util.FragmentTestUtil;
-import org.robolectric.annotation.Config;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -18,6 +7,17 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.stanfy.enroscar.content.loader.LoaderSet;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.util.FragmentTestUtil;
+
+import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LoaderSet}.

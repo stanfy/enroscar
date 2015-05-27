@@ -2,9 +2,9 @@ package com.stanfy.enroscar.utils.test;
 
 import com.stanfy.enroscar.utils.Time;
 
-import static org.fest.assertions.api.Assertions.*;
-
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for Time.

@@ -2,7 +2,7 @@ package com.stanfy.enroscar.async.rx.test;
 
 import android.test.ActivityInstrumentationTestCase2;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Roman Mazur - Stanfy (http://stanfy.com)

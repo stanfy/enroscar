@@ -98,11 +98,6 @@ task androidSourcesJar(type: Jar) {
   from android.sourceSets.main.java.sourceFiles
 }
 
-task testsJar(type : Jar) {
-  from 'src/test/java'
-  classifier = 'tests'
-}
-
 task classesJar(type : Copy) {
   into "build/libs"
   rename { "enroscar-${project.name}-${project.version}.jar" }
@@ -112,7 +107,6 @@ classesJar.outputs.upToDateWhen { false }
 artifacts {
   archives androidSourcesJar
   archives androidJavadocsJar
-  testCompile testsJar
 }
 
 afterEvaluate {

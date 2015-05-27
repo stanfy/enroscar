@@ -4,8 +4,8 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.fest.assertions.api.ANDROID.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.android.api.Assertions.assertThat;
 
 /**
  * @author Roman Mazur - Stanfy (http://stanfy.com)

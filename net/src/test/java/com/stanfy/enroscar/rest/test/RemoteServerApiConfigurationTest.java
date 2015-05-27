@@ -1,6 +1,13 @@
 package com.stanfy.enroscar.rest.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import com.stanfy.enroscar.beans.BeansManager;
+import com.stanfy.enroscar.net.operation.RequestBuilder;
+import com.stanfy.enroscar.net.operation.RequestDescription;
+import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
+import com.stanfy.enroscar.net.operation.executor.RequestExecutor;
+import com.stanfy.enroscar.net.test.cache.DummyResponseCache;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,14 +16,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import com.stanfy.enroscar.beans.BeansManager;
-import com.stanfy.enroscar.net.test.cache.DummyResponseCache;
-import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.net.operation.executor.RequestExecutor;
-import com.stanfy.enroscar.net.operation.RequestBuilder;
-import com.stanfy.enroscar.net.operation.RequestDescription;
-import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
-import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RemoteServerApiConfiguration}.

@@ -4,8 +4,8 @@ buildscript {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:1.0.1'
-    classpath 'org.robolectric:robolectric-gradle-plugin:0.14.0'
+    classpath 'com.android.tools.build:gradle:1.2.3'
+    classpath 'org.robolectric:robolectric-gradle-plugin:1.1.0'
   }
 }
 
@@ -21,7 +21,7 @@ def libraryModules = [
 ].collect { project(":$it") }
 
 ext {
-  androidBuildToolsVersion = '21.1.0'
+  androidBuildToolsVersion = '22.0.1'
 }
 
 configure(libraryModules) {
@@ -29,7 +29,7 @@ configure(libraryModules) {
   version = projectVersion
   group = 'com.stanfy.enroscar'
 
-  apply plugin: 'android-library'
+  apply plugin: 'com.android.library'
   apply from: file("$rootDir/gradle/tests.gradle")
   apply from: file("$rootDir/gradle/publish.gradle")
   //apply plugin: 'checkstyle'
@@ -51,7 +51,7 @@ configure(libraryModules) {
     buildToolsVersion project.androidBuildToolsVersion
 
     defaultConfig {
-      minSdkVersion 8
+      minSdkVersion 9
 
       testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
       testApplicationId "${getApplicationId(project)}.test"
@@ -62,36 +62,35 @@ configure(libraryModules) {
       targetCompatibility JavaVersion.VERSION_1_7
     }
 
-  }
-
-  def testDeps = [
-      'com.squareup:fest-android:1.0.8@aar',
-      'org.easytesting:fest-assert-core:2.0M10',
-      'com.google.mockwebserver:mockwebserver:20130706',
-      'org.easytesting:fest-reflect:1.4.1',
-      'org.mockito:mockito-all:1.9.5'
-  ]
-
-  dependencies {
-    testDeps.each {
-      testCompile it
-      androidTestCompile it
+    lintOptions {
+      ignore 'InvalidPackage'
     }
 
+  }
+
+  dependencies {
+    def commonDeps = [
+        'com.squareup.okhttp:mockwebserver:2.4.0',
+        'org.assertj:assertj-core:1.7.0',
+        'com.squareup.assertj:assertj-android:1.0.1-SNAPSHOT@aar',
+        'com.squareup.assertj:assertj-android-support-v4:1.0.1-SNAPSHOT@aar'
+    ]
+
+    androidTestCompile(commonDeps)
     androidTestCompile('com.jakewharton.espresso:espresso:1.1-r3') {
       exclude group: 'org.hamcrest'
     }
 
-    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.3'
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    testCompile 'org.easytesting:fest-util:1.2.5'
+    testCompile(commonDeps)
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:2.4'
+    testCompile 'org.mockito:mockito-all:1.9.5'
   }
 
   project.ext.dependOnProjects = { list ->
     project.dependencies {
       list.each {
         compile project(it)
-        testCompile project(path : it, configuration : 'testCompile')
       }
     }
   }

@@ -27,7 +27,7 @@ import java.util.Locale;
  * @param <LT> list type
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
  */
-public abstract class RequestBuilderListFragment<MT, LT extends List<MT>> extends BaseFragment implements LoaderCallbacks<ResponseData<LT>> {
+public abstract class ListLoaderFragment<MT, LT extends List<MT>> extends BaseFragment implements LoaderCallbacks<ResponseData<LT>> {
 
   /** Logging tag. */
   protected static final String TAG = "RBListFragment";

@@ -1,21 +1,21 @@
 package com.stanfy.enroscar.rest.loader.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.Ignore;
-
-import org.robolectric.annotation.Config;
 
 import android.support.v4.content.Loader;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.robolectric.annotation.Config;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test how JSON is parsed.
