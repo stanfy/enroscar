@@ -84,14 +84,8 @@ task installArchives(type: Upload) {
   }
 }
 
-task androidJavadocs(type: Javadoc, dependsOn: 'compileReleaseJava') {
+task androidJavadocs(type: Javadoc) {
   source = android.sourceSets.main.java.srcDirs
-  source += files("$project.buildDir/generated/source/r/release/")
-}
-afterEvaluate {
-  androidJavadocs.classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-  androidJavadocs.classpath += project.configurations.compile
-  androidJavadocs.classpath += fileTree(dir: "$project.buildDir/intermediates/exploded-aar/", include: "**/classes.jar")
 }
 
 task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
@@ -109,8 +103,7 @@ task testsJar(type : Jar) {
   classifier = 'tests'
 }
 
-task classesJar(type : Copy, dependsOn : 'packageReleaseJar') {
-  from 'build/intermediates/bundles/release/classes.jar'
+task classesJar(type : Copy) {
   into "build/libs"
   rename { "enroscar-${project.name}-${project.version}.jar" }
 }
@@ -120,4 +113,17 @@ artifacts {
   archives androidSourcesJar
   archives androidJavadocsJar
   testCompile testsJar
+}
+
+afterEvaluate {
+  def defaultVariant = android.libraryVariants.find({ it.name.equals(android.defaultPublishConfig) })
+
+  androidJavadocs.classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+  androidJavadocs.classpath += fileTree(dir: "$project.buildDir/intermediates/exploded-aar/", include: "**/classes.jar")
+  androidJavadocs.classpath += defaultVariant.javaCompile.classpath
+  androidJavadocs.source += files("$project.buildDir/generated/source/r/${defaultVariant.dirName}/")
+  androidJavadocs.dependsOn defaultVariant.javaCompile
+
+  classesJar.from "build/intermediates/bundles/${defaultVariant.dirName}/classes.jar"
+  classesJar.dependsOn defaultVariant.assemble
 }
