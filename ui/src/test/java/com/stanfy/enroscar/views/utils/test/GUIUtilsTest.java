@@ -1,7 +1,5 @@
 package com.stanfy.enroscar.views.utils.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -12,6 +10,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.stanfy.enroscar.views.GUIUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link GUIUtils}.

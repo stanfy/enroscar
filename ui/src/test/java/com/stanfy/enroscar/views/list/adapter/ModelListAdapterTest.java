@@ -2,8 +2,6 @@ package com.stanfy.enroscar.views.list.adapter;
 
 import android.os.Build;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +10,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for ModelListAdapter.

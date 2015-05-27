@@ -15,7 +15,7 @@ import java.util.HashSet;
 public class CrucialGUIOperationManager {
 
   /** Bean name. */
-  public static final String BEAN_NAME = "CrucialGUIOperationManager";
+  public static final String BEAN_NAME = "CrucialGUIOperations";
 
   /** Logging tag. */
   private static final String TAG = BEAN_NAME;

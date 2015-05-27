@@ -8,16 +8,17 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
-import com.stanfy.enroscar.test.AbstractNetTest;
 import com.stanfy.enroscar.views.StateHelper;
 import com.stanfy.enroscar.views.StateHelper.StateViewCreator;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.android.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * {@link com.stanfy.enroscar.views.StateHelper} test.
@@ -25,7 +26,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class StateHelperTest extends AbstractNetTest {
+public class StateHelperTest {
 
   /** Test helper state. */
   private static final int STATE_TEST = 1;
@@ -49,7 +50,7 @@ public class StateHelperTest extends AbstractNetTest {
   }
 
   private void assertStateView(final int state, final ViewGroup parent, final int width, final int height) {
-    final View stateView = stateHelper.getCustomStateView(STATE_TEST, getApplication(), null, parent);
+    final View stateView = stateHelper.getCustomStateView(STATE_TEST, Robolectric.application, null, parent);
     assertThat(stateView).isNotNull();
 
     final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
@@ -66,7 +67,7 @@ public class StateHelperTest extends AbstractNetTest {
    */
   @Test
   public void testStretchWithoutParentSize() {
-    final Context context = getApplication();
+    final Context context = Robolectric.application;
 
     final FrameLayout parent = new FrameLayout(context);
 
@@ -88,7 +89,7 @@ public class StateHelperTest extends AbstractNetTest {
    */
   @Test
   public void testStretchWithParentSize() {
-    final Context context = getApplication();
+    final Context context = Robolectric.application;
 
     final int width = 480;
     final int height = 800;
@@ -114,7 +115,7 @@ public class StateHelperTest extends AbstractNetTest {
    */
   @Test
   public void testStretchWithParentSizeSubsequentCalls() {
-    final Context context = getApplication();
+    final Context context = Robolectric.application;
 
     final int width = 480;
     final int height = 800;
@@ -153,7 +154,7 @@ public class StateHelperTest extends AbstractNetTest {
    */
   @Test
   public void testFixedWithParentSize() {
-    final Context context = getApplication();
+    final Context context = Robolectric.application;
 
     final int width = 480;
     final int height = 800;
