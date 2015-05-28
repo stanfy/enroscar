@@ -62,9 +62,12 @@ uploadArchives {
       pom.whenConfigured { def pom ->
         pom.dependencies.each {
           if (it.groupId == project.group) {
-            def depProject = project(":${it.artifactId - 'enroscar-'}")
-            if (depProject.hasProperty('latestStableVersion')) {
-              it.version = depProject.latestStableVersion as String
+            try {
+              def depProject = project(":${it.artifactId - 'enroscar-'}")
+              if (depProject.hasProperty('latestStableVersion')) {
+                it.version = depProject.latestStableVersion as String
+              }
+            } catch (def ignored) {
             }
           }
         }
