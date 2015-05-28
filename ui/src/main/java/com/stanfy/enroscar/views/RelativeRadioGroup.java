@@ -33,12 +33,6 @@ import com.stanfy.enroscar.ui.R;
  * <strong>XML Attributes</strong>
  * </p>
  * <p>
- * See {@link android.R.styleable#RadioGroup RadioGroup Attributes},
- * {@link android.R.styleable#RelativeLayout RelativeLayout Attributes},
- * {@link android.R.styleable#ViewGroup ViewGroup Attributes},
- * {@link android.R.styleable#View View Attributes}
- * </p>
- * <p>
  * Also see {@link android.widget.RelativeLayout.LayoutParams
  * RelativeLayout.LayoutParams} for layout attributes.
  * </p>

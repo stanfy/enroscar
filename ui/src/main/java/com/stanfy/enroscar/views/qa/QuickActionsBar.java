@@ -11,7 +11,7 @@ import android.widget.HorizontalScrollView;
 import com.stanfy.enroscar.ui.R;
 
 /**
- * {@link QuickActionWidget} that displays actions on a row.
+ * {@link QuickActionsWidget} that displays actions on a row.
  * See <a href="https://github.com/cyrilmottier/GreenDroid/blob/master/GreenDroid/src/greendroid/widget/QuickActionBar.java">GreenDroid</a>.
  * @author Benjamin Fellous
  * @author Cyril Mottier

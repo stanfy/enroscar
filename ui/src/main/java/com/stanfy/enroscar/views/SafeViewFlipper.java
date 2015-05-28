@@ -25,7 +25,6 @@ public class SafeViewFlipper extends ViewFlipper {
   /**
    * Workaround for Android Bug 6191:
    * http://code.google.com/p/android/issues/detail?id=6191
-   * <p/>
    * ViewFlipper occasionally throws an IllegalArgumentException after
    * screen rotations.
    */
