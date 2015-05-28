@@ -12,7 +12,6 @@ import java.net.URLStreamHandlerFactory;
 import static android.content.ContentResolver.*;
 
 /**
- * <p>
  *   Engine consists of two ingredients:
  *   <ol>
  *     <li>
@@ -27,9 +26,7 @@ import static android.content.ContentResolver.*;
  *       See {@link com.stanfy.enroscar.net.cache.CacheControlUrlConnection}.
  *     </li>
  *   </ol>
- * </p>
  *
- * <p>
  *   All three components may be configured like:
  *   <pre>
  *     EnroscarConnectionsEngine.config()
@@ -41,21 +38,16 @@ import static android.content.ContentResolver.*;
  *   By default all the flags are set to {@code true}. After {@code setup} is called,
  *   engine sets default stream handler factory with
  *   {@link java.net.URL#setURLStreamHandlerFactory(java.net.URLStreamHandlerFactory)}.
- * </p>
  *
- * <p>
  *   After engine is set up, you may create {@code URLConnection}s for supported schemes:
  *   <pre>
  *     new URL("content://com.some.app/data/2").openConnection().getInputStream();
  *     new URL("file:///android_assets/file.txt").openConnection().getInputStream();
  *   </pre>
- * </p>
  *
- * <p>
  *   If you need your custom factory, you may create Enroscar factory with
  *   {@link #createStreamHandlerFactory(android.content.Context)} and use the directly,
  *   wrapping e.g.
- * </p>
  */
 public final class EnroscarConnectionsEngine {
 

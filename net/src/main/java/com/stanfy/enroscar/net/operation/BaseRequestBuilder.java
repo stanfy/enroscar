@@ -381,8 +381,8 @@ public abstract class BaseRequestBuilder<MT> implements RequestBuilder<MT> {
   }
 
   /**
-   * Create an appropriate loader instance.<br/>
-   * Basic usage:<br/>
+   * Create an appropriate loader instance.
+   * Basic usage:
    * <pre>
    * public Loader onCreateLoader(int id, Bundle args) {
    *   return new RequestBuilder(this)

@@ -17,7 +17,7 @@ public interface PartSource {
     /**
      * Gets the number of bytes contained in this source.
      *
-     * @return a value >= 0
+     * @return a nonnegative value
      */
     long getLength();
 

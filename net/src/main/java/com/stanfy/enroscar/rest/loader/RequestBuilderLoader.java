@@ -84,7 +84,6 @@ public class RequestBuilderLoader<MT> extends Loader<ResponseData<MT>> {
   /**
    * @param requestId request ID
    * @param requestDescription request description instance (may be null)
-   * @see {link ApiSupportRequestCallback#filterOperation(int, RequestDescription)}
    * @return whether we are interested in the incoming data
    */
   protected boolean filterOperation(final int requestId, final RequestDescription requestDescription) {
