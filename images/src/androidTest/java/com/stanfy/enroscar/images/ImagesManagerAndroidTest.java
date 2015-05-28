@@ -4,7 +4,7 @@ import com.stanfy.enroscar.images.cache.ImageFileCache;
 
 import java.net.ResponseCache;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for Images manager.

@@ -13,7 +13,7 @@ import java.util.Random;
 import static com.stanfy.enroscar.io.ProgressListenerInputStreamTest.LENGTH;
 import static com.stanfy.enroscar.io.ProgressListenerInputStreamTest.LENGTH_FACTOR;
 import static com.stanfy.enroscar.io.ProgressListenerInputStreamTest.THROTTLE;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ProgressListenerOutputStream}.

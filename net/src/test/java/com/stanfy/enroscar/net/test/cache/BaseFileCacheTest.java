@@ -1,17 +1,16 @@
 package com.stanfy.enroscar.net.test.cache;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import com.jakewharton.disklrucache.DiskLruCache;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+
+import org.junit.Test;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.junit.Test;
-
-import org.robolectric.annotation.Config;
-
-import com.google.mockwebserver.MockResponse;
-import com.jakewharton.disklrucache.DiskLruCache;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link com.stanfy.net.cache.BaseFileResponseCache}.

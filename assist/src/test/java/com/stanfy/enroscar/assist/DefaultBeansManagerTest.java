@@ -2,17 +2,15 @@ package com.stanfy.enroscar.assist;
 
 import android.os.Build;
 
-import com.stanfy.enroscar.assist.BuffersPoolController;
-import com.stanfy.enroscar.assist.DefaultBeansManager;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.images.cache.ImageFileCache;
+import com.stanfy.enroscar.images.views.ImageConsumers;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;
 import com.stanfy.enroscar.rest.response.handler.GsonContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 import com.stanfy.enroscar.stats.StatsManager;
-import com.stanfy.enroscar.images.views.ImageConsumers;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +19,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DefaultBeansManager}.

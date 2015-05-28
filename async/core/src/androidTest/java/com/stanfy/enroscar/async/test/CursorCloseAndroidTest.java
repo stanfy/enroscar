@@ -4,8 +4,8 @@ import android.database.Cursor;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.fest.assertions.api.ANDROID.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.android.api.Assertions.assertThat;
 
 public class CursorCloseAndroidTest extends BaseActivityAndroidTest<CursorAsyncUserActivity> {
 

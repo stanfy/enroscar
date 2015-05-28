@@ -1,17 +1,6 @@
 package com.stanfy.enroscar.net.test.cache;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.ResponseCache;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
-
-import com.google.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansContainer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
@@ -21,6 +10,17 @@ import com.stanfy.enroscar.io.IoUtils;
 import com.stanfy.enroscar.net.UrlConnectionBuilder;
 import com.stanfy.enroscar.net.cache.CacheWrapper;
 import com.stanfy.enroscar.test.EnroscarNetConfig;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.ResponseCache;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link CacheWrapper}.

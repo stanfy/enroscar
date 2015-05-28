@@ -11,11 +11,10 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.reflect.core.Reflection.field;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for ModelListAdapter.
@@ -76,12 +75,6 @@ public class RendererBasedAdapterTest {
     adapter.remove(firstModel);
     assertThat(adapter.getCount()).isEqualTo(0);
     //CHECKSTYLE:ON
-  }
-
-  @Test
-  public void shouldMakeElementsCopyWhenConstructedFromOtherAdapter() {
-    RendererBasedAdapter<Model> another = new ModelListAdapter<Model>(adapter);
-    assertThat(field("elements").ofType(ArrayList.class).in(another)).isNotSameAs(field("elements").ofType(ArrayList.class).in(adapter));
   }
 
   /** Model. */

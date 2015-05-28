@@ -2,8 +2,8 @@ package com.stanfy.enroscar.async.test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.fest.assertions.api.ANDROID.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.android.api.Assertions.assertThat;
 
 /**
  * Test of AsyncUserActivity.

@@ -2,21 +2,21 @@ package com.stanfy.enroscar.rest.response.handler.test;
 
 import android.os.Build;
 
-import com.google.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.UrlConnectionBuilderFactory;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.net.operation.OperationType;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.net.operation.OperationType;
 import com.stanfy.enroscar.rest.request.net.BaseRequestDescriptionConverter;
 import com.stanfy.enroscar.rest.response.handler.BaseContentHandler;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
 
-import org.junit.Test;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -25,7 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.ResponseCache;
 import java.net.URLConnection;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**

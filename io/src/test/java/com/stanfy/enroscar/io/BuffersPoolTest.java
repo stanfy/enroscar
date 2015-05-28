@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 /**

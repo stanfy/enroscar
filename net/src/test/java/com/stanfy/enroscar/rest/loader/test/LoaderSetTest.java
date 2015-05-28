@@ -1,16 +1,5 @@
 package com.stanfy.enroscar.rest.loader.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import java.net.URL;
-import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
-import org.junit.Ignore;
-import org.robolectric.annotation.Config;
-import org.robolectric.util.FragmentTestUtil;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,12 +7,24 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.util.Log;
 
-import com.google.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.content.loader.LoaderSet;
 import com.stanfy.enroscar.content.loader.LoaderSetAccess;
 import com.stanfy.enroscar.content.loader.ResponseData;
 import com.stanfy.enroscar.rest.response.handler.StringContentHandler;
+
+import org.junit.Ignore;
+import org.junit.Test;
+import org.robolectric.annotation.Config;
+import org.robolectric.util.FragmentTestUtil;
+
+import java.net.URL;
+import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link LoaderSet}.

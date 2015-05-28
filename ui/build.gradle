@@ -1,9 +1,7 @@
-dependOnProjects([':beans', ':net', ':stats'])
+dependOnProjects([':beans', ':content', ':stats'])
 
 dependencies {
-  compile 'com.android.support:support-v4:19.1.0'
-
-  testCompile 'com.google.mockwebserver:mockwebserver:20130403'
+  compile 'com.android.support:support-v4:22.1.1'
 }
 
 // POM file modifications

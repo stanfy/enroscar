@@ -1,8 +1,11 @@
+# We do not need sudo - switch to Docker http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+sudo: false
+
 language: android
 
 android:
   components:
-    - build-tools-21.1.0
+    - build-tools-22.0.1
     - android-21
     - android-10
     - extra-android-m2repository
@@ -33,7 +36,7 @@ script:
   # Android tests
   - android-wait-for-emulator || exit 1
   - adb shell input keyevent 82 &
-  - ./gradlew --continue -PpreDex=false clean :goro:conCheck :async:conCheck :async-rx:conCheck
+  - ./gradlew --continue -PpreDex=false clean :async:conCheck :async-rx:conCheck
 
 after_success:
   - chmod +x scripts/deploy_to_maven.sh

@@ -3,7 +3,7 @@ package com.stanfy.enroscar.net.test;
 import android.content.Context;
 import android.support.v4.content.Loader;
 
-import com.google.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeanUtils;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
@@ -40,7 +40,7 @@ import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.util.List;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Mock server test.

@@ -1,16 +1,5 @@
 package com.stanfy.enroscar.net.cache;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.CacheRequest;
-import java.net.CacheResponse;
-import java.net.HttpURLConnection;
-import java.net.ResponseCache;
-import java.net.URI;
-import java.net.URLConnection;
-import java.util.List;
-import java.util.Map;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.http.HttpResponseCache;
@@ -24,6 +13,17 @@ import com.stanfy.enroscar.beans.EnroscarBean;
 import com.stanfy.enroscar.beans.InitializingBean;
 import com.stanfy.enroscar.net.UrlConnectionWrapper;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.CacheRequest;
+import java.net.CacheResponse;
+import java.net.HttpURLConnection;
+import java.net.ResponseCache;
+import java.net.URI;
+import java.net.URLConnection;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Standard HTTP response cache.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
@@ -33,7 +33,7 @@ import com.stanfy.enroscar.net.UrlConnectionWrapper;
 public class StandardHttpResponseCache extends BaseSizeRestrictedCache implements EnhancedResponseCache, InitializingBean, DestroyingBean {
 
   /** Bean name. */
-  public static final String BEAN_NAME = "StandardApiResponseCache";
+  public static final String BEAN_NAME = "StdApiResponseCache";
 
   /** Logging tag. */
   private static final String TAG = BEAN_NAME;

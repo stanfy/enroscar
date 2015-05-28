@@ -1,14 +1,13 @@
 package com.stanfy.enroscar.rest.loader.test;
 
-import org.junit.Before;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.robolectric.annotation.Config;
-
-import com.google.mockwebserver.MockResponse;
-import com.stanfy.enroscar.beans.BeansManager.Editor;
-import com.stanfy.enroscar.rest.response.handler.XmlGsonContentHandler;
 
 /**
  * XML format support test.

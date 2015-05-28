@@ -1,17 +1,17 @@
 package com.stanfy.enroscar.stats.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import android.app.Activity;
 
-import java.util.Map;
+import com.stanfy.enroscar.stats.StatsManager;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import android.app.Activity;
+import java.util.Map;
 
-import com.stanfy.enroscar.stats.StatsManager;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for error reports messages.

@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
-import com.google.mockwebserver.MockResponse;
-import com.google.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.IoUtils;
 
@@ -14,10 +14,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.fest.assertions.api.ANDROID.assertThat;
-import static org.fest.assertions.api.Assertions.assertThat;
+import okio.Buffer;
 
 import com.stanfy.enroscar.images.test.R;
+
+import static org.assertj.android.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for ImageRequest.
@@ -60,10 +62,10 @@ public class ImageRequestAndroidTest extends BaseAndroidTest {
 
   private MockWebServer prepareServer() throws IOException{
     MockWebServer server = new MockWebServer();
-    server.play();
+    server.start();
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     testBitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
-    server.enqueue(new MockResponse().setResponseCode(200).setBody(bytes.toByteArray()));
+    server.enqueue(new MockResponse().setResponseCode(200).setBody(new Buffer().write(bytes.toByteArray())));
     return server;
   }
 
@@ -113,7 +115,7 @@ public class ImageRequestAndroidTest extends BaseAndroidTest {
 
   public void testRealRemoteImage() throws IOException {
     MockWebServer server = new MockWebServer();
-    server.play();
+    server.start();
 
     final InputStream imageStream = getContext().getResources().getAssets().open("mustard.jpg");
     final byte[] imageBytes = new byte[imageStream.available()];
@@ -121,7 +123,7 @@ public class ImageRequestAndroidTest extends BaseAndroidTest {
     imageStream.read(imageBytes);
     IoUtils.closeQuietly(imageStream);
 
-    server.enqueue(new MockResponse().setResponseCode(200).setBody(imageBytes));
+    server.enqueue(new MockResponse().setResponseCode(200).setBody(new Buffer().write(imageBytes)));
     String url = server.getUrl("/image").toString();
 
     ImageRequest request = new ImageRequest(imagesManager, url, 1);

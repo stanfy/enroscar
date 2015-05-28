@@ -1,10 +1,14 @@
 package com.stanfy.enroscar.rest.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
 
-import java.net.HttpURLConnection;
-import java.net.ResponseCache;
-import java.net.URLConnection;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.net.UrlConnectionWrapper;
+import com.stanfy.enroscar.net.operation.OperationType;
+import com.stanfy.enroscar.net.operation.RequestDescription;
+import com.stanfy.enroscar.net.test.AbstractMockServerTest;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -13,14 +17,12 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import com.google.mockwebserver.MockResponse;
-import com.google.mockwebserver.RecordedRequest;
-import com.stanfy.enroscar.beans.BeansManager.Editor;
-import com.stanfy.enroscar.net.UrlConnectionWrapper;
-import com.stanfy.enroscar.net.test.AbstractMockServerTest;
-import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.net.operation.OperationType;
-import com.stanfy.enroscar.net.operation.RequestDescription;
+import java.net.HttpURLConnection;
+import java.net.ResponseCache;
+import java.net.URLConnection;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link com.stanfy.serverapi.request.RequestDescription}.
@@ -88,7 +90,7 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     assertThat(request.getPath()).isEqualTo("/r1?p1=v1&p2=v2");
     // headers: language, gzip
     final String lang = Robolectric.application.getResources().getConfiguration().locale.getLanguage();
-    assertThat(request.getHeaders()).contains("Accept-Language: " + lang, "Accept-Encoding: gzip");
+    assertThat(request.getHeaders().toMultimap()).containsEntry("Accept-Language: " + lang, Collections.singletonList("Accept-Encoding: gzip"));
   }
 
   @Test
@@ -107,7 +109,7 @@ public class RequestDescriptionTest extends AbstractMockServerTest {
     final String response = read(connection);
     final RecordedRequest request = getWebServer().takeRequest();
     assertThat(request.getMethod()).isEqualTo("POST");
-    assertThat(new String(request.getBody())).isEqualTo("p1=v1");
+    assertThat(request.getBody().readUtf8()).isEqualTo("p1=v1");
 
     final HttpURLConnection http = (HttpURLConnection)UrlConnectionWrapper.unwrap(connection);
     assertThat(http.getResponseCode()).isEqualTo(HttpURLConnection.HTTP_OK);

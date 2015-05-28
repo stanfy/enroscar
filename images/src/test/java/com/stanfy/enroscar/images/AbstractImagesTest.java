@@ -1,6 +1,6 @@
 package com.stanfy.enroscar.images;
 
-import com.google.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.io.BuffersPool;
 import com.stanfy.enroscar.net.EnroscarConnectionsEngine;

@@ -5,7 +5,6 @@ import android.os.Build;
 
 import com.stanfy.enroscar.content.UniqueObject;
 import com.stanfy.enroscar.content.loader.ResponseData;
-import com.stanfy.enroscar.test.AbstractNetTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,14 +15,14 @@ import org.robolectric.annotation.Config;
 import java.util.Collections;
 import java.util.List;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link com.stanfy.enroscar.views.list.adapter.ResponseDataLoaderAdapter}.
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class ResponseDataLoaderAdapterTest extends AbstractNetTest {
+public class ResponseDataLoaderAdapterTest {
 
   /** Call flag. */
   private boolean notifyDataSetChanged = false;
@@ -32,7 +31,7 @@ public class ResponseDataLoaderAdapterTest extends AbstractNetTest {
   public void replaceDataInCoreCausesNotifyDatasetChanged() {
     // setup
     ResponseDataLoaderAdapter<UniqueObject, List<UniqueObject>> rdAdapter
-        = new ResponseDataLoaderAdapter<UniqueObject, List<UniqueObject>>(Robolectric.application, new ModelListAdapter<UniqueObject>(getApplication(), null));
+        = new ResponseDataLoaderAdapter<UniqueObject, List<UniqueObject>>(Robolectric.application, new ModelListAdapter<UniqueObject>(Robolectric.application, null));
     rdAdapter.registerDataSetObserver(new DataSetObserver() {
       @Override
       public void onChanged() {

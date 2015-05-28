@@ -1,9 +1,10 @@
 package com.stanfy.enroscar.rest.test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.stanfy.enroscar.beans.BeansManager.Editor;
+import com.stanfy.enroscar.net.operation.RequestBuilder;
+import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
+import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
+import com.stanfy.enroscar.test.AbstractNetTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,11 +12,10 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import com.stanfy.enroscar.beans.BeansManager.Editor;
-import com.stanfy.enroscar.rest.RemoteServerApiConfiguration;
-import com.stanfy.enroscar.net.operation.RequestBuilder;
-import com.stanfy.enroscar.net.operation.SimpleRequestBuilder;
-import com.stanfy.enroscar.test.AbstractNetTest;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for list wrapper.

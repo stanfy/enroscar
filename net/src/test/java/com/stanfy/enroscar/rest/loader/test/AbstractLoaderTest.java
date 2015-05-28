@@ -1,9 +1,5 @@
 package com.stanfy.enroscar.rest.loader.test;
 
-import org.junit.Before;
-import org.robolectric.Robolectric;
-import org.robolectric.shadows.ShadowLooper;
-
 import android.support.v4.content.Loader;
 
 import com.stanfy.enroscar.content.loader.ResponseData;
@@ -12,7 +8,11 @@ import com.stanfy.enroscar.rest.loader.LoaderAccess;
 import com.stanfy.enroscar.rest.loader.RequestBuilderLoader;
 import com.stanfy.enroscar.test.EnroscarNetConfig;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import org.junit.Before;
+import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Base test class for loaders.

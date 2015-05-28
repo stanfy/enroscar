@@ -9,15 +9,15 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.stanfy.enroscar.test.AbstractNetTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.android.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -25,7 +25,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class CursorLoaderAdapterTest extends AbstractNetTest {
+public class CursorLoaderAdapterTest {
 
   /** Call flag. */
   private boolean notifyDataSetChanged = false;
@@ -42,7 +42,7 @@ public class CursorLoaderAdapterTest extends AbstractNetTest {
     cursor.addRow(new Object[] {1, "a"});
     cursor.addRow(new Object[] {2, "b"});
     cursor.addRow(new Object[] {3, "c"});
-    clAdapter = new CursorLoaderAdapter(getApplication(), new MyCursorAdapter(getApplication(), null));
+    clAdapter = new CursorLoaderAdapter(Robolectric.application, new MyCursorAdapter(Robolectric.application, null));
   }
 
   @Test

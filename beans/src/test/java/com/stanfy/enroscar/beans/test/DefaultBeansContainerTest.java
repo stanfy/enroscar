@@ -5,8 +5,8 @@ import com.stanfy.enroscar.beans.DefaultBeansContainer;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.fest.assertions.api.Assertions.*;
 
 /**
  * Tests for DefaultBeansContainer.

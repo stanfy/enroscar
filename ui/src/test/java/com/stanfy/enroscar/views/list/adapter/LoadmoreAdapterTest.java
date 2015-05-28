@@ -5,8 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
-import com.stanfy.enroscar.test.AbstractNetTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +12,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -22,7 +20,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class LoadmoreAdapterTest extends AbstractNetTest {
+public class LoadmoreAdapterTest {
 
   /** Adapter to test. */
   private LoadmoreAdapter loadmoreAdapter;
@@ -33,8 +31,8 @@ public class LoadmoreAdapterTest extends AbstractNetTest {
   @Before
   public void setup() {
     coreAdapter = new Adapter();
-    loadmoreAdapter = new LoadmoreAdapter(LayoutInflater.from(getApplication()), coreAdapter);
-    loadmoreAdapter.setLoadView(new View(getApplication()));
+    loadmoreAdapter = new LoadmoreAdapter(LayoutInflater.from(Robolectric.application), coreAdapter);
+    loadmoreAdapter.setLoadView(new View(Robolectric.application));
   }
 
   @Test

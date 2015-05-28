@@ -1,18 +1,8 @@
 package com.stanfy.enroscar.net.test.cache;
 
-import static org.fest.assertions.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.net.ResponseCache;
-import java.net.URLConnection;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
-
-import com.google.mockwebserver.MockResponse;
-import com.google.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.stanfy.enroscar.beans.BeansManager;
 import com.stanfy.enroscar.beans.BeansManager.Editor;
 import com.stanfy.enroscar.io.BuffersPool;
@@ -20,6 +10,17 @@ import com.stanfy.enroscar.net.UrlConnectionBuilder;
 import com.stanfy.enroscar.net.cache.ResponseCacheSwitcher;
 import com.stanfy.enroscar.net.test.AbstractMockServerTest;
 import com.stanfy.enroscar.test.EnroscarNetConfig;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+
+import java.io.IOException;
+import java.net.ResponseCache;
+import java.net.URLConnection;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link com.stanfy.net.cache.ResponseCacheSwitcher}.
