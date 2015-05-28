@@ -1,3 +1,6 @@
+# We do not need sudo - switch to Docker http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+sudo: false
+
 language: android
 
 android:
