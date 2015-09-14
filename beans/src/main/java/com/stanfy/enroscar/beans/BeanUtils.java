@@ -6,7 +6,9 @@ import java.lang.annotation.Annotation;
 /**
  * Bean utilities.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * @deprecated Beans subsystem is deprecated now. Use some dependency injection framework (e.g. Dagger) instead.
  */
+@Deprecated
 public final class BeanUtils {
 
   private BeanUtils() { /* hidden */ }

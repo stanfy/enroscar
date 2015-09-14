@@ -1,14 +1,16 @@
 package com.stanfy.enroscar.beans;
 
-import static com.stanfy.enroscar.beans.DebugFlags.DEBUG_BEANS;
 import android.content.ComponentCallbacks;
 import android.content.Context;
+
+import static com.stanfy.enroscar.beans.DebugFlags.DEBUG_BEANS;
 
 /**
  * Contains instances of different named application entities.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * @deprecated Beans subsystem is deprecated now. Use some dependency injection framework (e.g. Dagger) instead.
  */
-// TODO: change method names
+@Deprecated
 public interface BeansContainer extends ComponentCallbacks {
 
   /** Logging tag. */
