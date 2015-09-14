@@ -23,20 +23,12 @@ env:
 before_install:
   - export TERM=dumb
 
-  # Create and run emulator
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI || exit 1
-  - emulator -avd test -no-skin -no-audio -no-window &
-
 install:
   - ./gradlew assemble
 
 script:
   # JavaVM tests
   - ./gradlew --continue check
-  # Android tests
-  - android-wait-for-emulator || exit 1
-  - adb shell input keyevent 82 &
-  - ./gradlew --continue -PpreDex=false clean :async:conCheck :async-rx:conCheck
 
 after_success:
   - chmod +x scripts/deploy_to_maven.sh
