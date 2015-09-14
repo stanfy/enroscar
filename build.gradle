@@ -72,8 +72,8 @@ configure(libraryModules) {
     def commonDeps = [
         'com.squareup.okhttp:mockwebserver:2.4.0',
         'org.assertj:assertj-core:1.7.0',
-        'com.squareup.assertj:assertj-android:1.0.1-SNAPSHOT@aar',
-        'com.squareup.assertj:assertj-android-support-v4:1.0.1-SNAPSHOT@aar'
+        'com.squareup.assertj:assertj-android:1.1.0@aar',
+        'com.squareup.assertj:assertj-android-support-v4:1.1.0@aar'
     ]
 
     androidTestCompile(commonDeps)
