@@ -1,10 +1,5 @@
 package com.stanfy.enroscar.beans;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
@@ -14,10 +9,17 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * Beans manager.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * @deprecated Beans subsystem is deprecated now. Use some dependency injection framework (e.g. Dagger) instead.
  */
+@Deprecated
 public class BeansManager {
 
   /** Debug flag. */

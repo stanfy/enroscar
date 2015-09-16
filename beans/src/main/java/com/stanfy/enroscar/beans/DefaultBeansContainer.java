@@ -1,18 +1,19 @@
 package com.stanfy.enroscar.beans;
 
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.Log;
 
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 /**
  * A class that contains instances of different named application entities.
  * @author Roman Mazur (Stanfy - http://stanfy.com)
+ * @deprecated Beans subsystem is deprecated now. Use some dependency injection framework (e.g. Dagger) instead.
  */
+@Deprecated
 public class DefaultBeansContainer implements BeansContainer {
 
   /** Entities map. */

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.stanfy.enroscar.asyncrx" >
-
-  <application tools:ignore="AllowBackup" />
-
-</manifest>
