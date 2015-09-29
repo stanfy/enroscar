@@ -10,7 +10,7 @@ buildscript {
 }
 
 def getApplicationId = { "com.stanfy.enroscar.${it.name.replaceAll(/\W/, '').replaceAll(/enroscar/, '')}" }
-def projectVersion = "2.0.alpha4"
+def projectVersion = "2.0-SNAPSHOT"
 
 def checkstyleDir = new File(rootDir, 'config/checkstyle')
 def checkstyleConfig = new File(checkstyleDir, 'checkstyle.xml')
