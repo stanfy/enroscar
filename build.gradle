@@ -18,7 +18,7 @@ def libraryModules = [
 ].collect { project(":$it") }
 
 ext {
-  androidBuildToolsVersion = '23.0.3'
+  androidBuildToolsVersion = '23.0.1'
   androidSupportLibVersion = '23.4.0'
 }
 
