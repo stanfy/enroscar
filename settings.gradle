@@ -1,20 +1,5 @@
-include 'io'
-include 'net'
-include 'beans'
-include 'stats'
-include 'images'
 include 'ui'
-include 'assist'
 include 'content'
 
 // === Sample ===
 //include 'sample-project'
-
-// integration
-
-include ':stats-flurry'
-project(':stats-flurry').projectDir = new File(rootDir, "integration/flurry/stats-flurry-integration")
-
-//include 'enroscar-sherlock-integration'
-//project(':enroscar-sherlock-integration').projectDir =
-//    new File(rootDir, 'integration/actionbarsherlock/enroscar-sherlock-integration')

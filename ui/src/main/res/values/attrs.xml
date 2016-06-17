@@ -2,65 +2,22 @@
 <resources>
 
     <!-- Flag for freezing scroll positions in our custom views. -->
-    <attr name="frozeScrollPosition" format="boolean" />
+    <attr name="enroscar_ui_frozeScrollPosition" format="boolean" />
     <!-- Flag for notifying application about crucial GUI operations. -->
-    <attr name="notifyCrucialGUIOperations" format="boolean" />
-
-    <!-- List view attributes. -->
-    <declare-styleable name="ListView">
-        <attr name="frozeScrollPosition" />
-        <attr name="notifyCrucialGUIOperations" />
-    </declare-styleable>
+    <attr name="enroscar_ui_notifyCrucialGUIOperations" format="boolean" />
 
     <!-- Vertical scroll view attributes. -->
-    <declare-styleable name="ScrollView">
-        <attr name="frozeScrollPosition" />
+    <declare-styleable name="enroscar_ui_ScrollView">
+        <attr name="enroscar_ui_frozeScrollPosition" />
     </declare-styleable>
 
     <!-- Horizontal scroll view attributes. -->
-    <declare-styleable name="HorizontalScrollView">
-        <attr name="frozeScrollPosition" />
+    <declare-styleable name="enroscar_ui_HorizontalScrollView">
+        <attr name="enroscar_ui_frozeScrollPosition" />
     </declare-styleable>
 
-    <declare-styleable name="RelativeRadioGroup">
-        <attr name="checkedButton" format="integer" />
-    </declare-styleable>
-
-    <!-- =================== -->
-    <!-- Quick actions look. -->
-    <!-- =================== -->
-    <eat-comment />
-    <!-- Main container style of QA. -->
-    <attr name="qaMainContainerStyle" format="reference" />
-    <!-- Top frame style of QA. -->
-    <attr name="qaTopFrameStyle" format="reference" />
-    <!-- Left frame style of QA. -->
-    <attr name="qaLeftFrameStyle" format="reference" />
-    <!-- Right frame style of QA. -->
-    <attr name="qaRightFrameStyle" format="reference" />
-    <!-- Bottom frame style of QA. -->
-    <attr name="qaBottomFrameStyle" format="reference" />
-    <!-- Scroll style of QA. -->
-    <attr name="qaScrollStyle" format="reference" />
-    <!-- Down arrow of QA. -->
-    <attr name="qaArrowDownStyle" format="reference" />
-    <!-- Up arrow of QA. -->
-    <attr name="qaArrowUpStyle" format="reference" />
-    <!-- Quick actions widget parameters. -->
-    <declare-styleable name="QuickActionsWidget">
-
-        <!-- Arrow offset for quick actions widget. -->
-        <attr name="qaArrowOffset" format="dimension" />
-    </declare-styleable>
-
-    <!-- Grid view attributes. -->
-    <declare-styleable name="GridView">
-        <attr name="notifyCrucialGUIOperations" />
-    </declare-styleable>
-
-    <!-- Grid view attributes. -->
-    <declare-styleable name="StaggeredGridView_LayoutParams">
-        <attr name="maxSpan" format="boolean" />
+    <declare-styleable name="enroscar_ui_RelativeRadioGroup">
+        <attr name="enroscar_ui_checkedButton" format="integer" />
     </declare-styleable>
 
 </resources>

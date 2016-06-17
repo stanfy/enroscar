@@ -1,1 +1,1 @@
-dependOnProjects([':beans', ':io', ':net'])
+dependOnProjects([':io', ':net'])

@@ -1,7 +1,0 @@
-<resources>
-  
-  <string name="progress_loading">Loading&#8230;</string>
-
-  <string name="video_error">Sorry, this video cannot be played</string>
-
-</resources>

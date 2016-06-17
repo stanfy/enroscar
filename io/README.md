@@ -1,3 +1,7 @@
+Deprecated
+==========
+[Okio](https://github.com/square/okio) library provides buffers pooling with a beautiful interface.
+
 Enroscar IO
 ===========
 Java buffers pool implementation + some other I/O utilities.

@@ -74,10 +74,10 @@ public class RelativeRadioGroup extends RelativeLayout {
     // retrieve selected radio button as requested by the user in the
     // XML layout file
     final TypedArray attributes = context.obtainStyledAttributes(attrs,
-        R.styleable.RelativeRadioGroup, defStyle, 0);
+        R.styleable.enroscar_ui_RelativeRadioGroup, defStyle, 0);
 
     final int value = attributes.getResourceId(
-        R.styleable.RelativeRadioGroup_checkedButton, View.NO_ID);
+        R.styleable.enroscar_ui_RelativeRadioGroup_enroscar_ui_checkedButton, View.NO_ID);
     if (value != View.NO_ID) {
       mCheckedId = value;
     }

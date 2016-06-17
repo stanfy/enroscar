@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 
 import com.stanfy.enroscar.ui.R;
 
+import static com.stanfy.enroscar.ui.R.styleable.enroscar_ui_HorizontalScrollView_enroscar_ui_frozeScrollPosition;
+
 /**
  * Horizontal scroll view that can save its scroll position.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
@@ -33,8 +35,8 @@ public class HorizontalScrollView extends android.widget.HorizontalScrollView {
   }
 
   private void init(final Context context, final AttributeSet attrs) {
-    final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ScrollView);
-    final boolean frozeSPos = a.getBoolean(R.styleable.HorizontalScrollView_frozeScrollPosition, true);
+    final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.enroscar_ui_ScrollView);
+    final boolean frozeSPos = a.getBoolean(enroscar_ui_HorizontalScrollView_enroscar_ui_frozeScrollPosition, true);
     a.recycle();
     setFrozeScrollPosition(frozeSPos);
   }

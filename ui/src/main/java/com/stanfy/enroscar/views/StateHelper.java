@@ -1,17 +1,15 @@
 package com.stanfy.enroscar.views;
 
 import android.content.Context;
-import android.support.v4.widget.StaggeredGridView;
-import android.support.v4.widget.StaggeredGridView.LayoutParams;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.stanfy.enroscar.content.loader.ResponseData;
-
 import com.stanfy.enroscar.ui.R;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 /**
  * Helper class for handling states.
@@ -96,8 +94,8 @@ public class StateHelper {
         view = createView(context, parent);
         final ViewGroup.LayoutParams lp = view.getLayoutParams();
         if (lp != null) {
-          matchParentWidth = lp.width == LayoutParams.MATCH_PARENT;
-          matchParentHeight = lp.height == LayoutParams.MATCH_PARENT;
+          matchParentWidth = lp.width == MATCH_PARENT;
+          matchParentHeight = lp.height == MATCH_PARENT;
         }
       }
       configureStateViewWidth(parent);
@@ -121,7 +119,7 @@ public class StateHelper {
       final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
       if (lp == null) { return; }
 
-      final boolean widthSet = lp.width != LayoutParams.MATCH_PARENT;
+      final boolean widthSet = lp.width != MATCH_PARENT;
       /*
        * Do not change layout params if the state view
        * has custom width and did not want initially to match parent.
@@ -129,15 +127,9 @@ public class StateHelper {
       if (widthSet && !matchParentWidth) { return; }
 
 
-      if (parent instanceof StaggeredGridView) {
-        // The only way to stretch a child horizontally in SGV
-        final StaggeredGridView.LayoutParams params = (LayoutParams) lp;
-        params.span = StaggeredGridView.LayoutParams.SPAN_MAX;
-      } else {
-        int w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
-        if (w <= 0) { w = ViewGroup.LayoutParams.MATCH_PARENT; }
-        lp.width = w;
-      }
+      int w = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+      if (w <= 0) { w = MATCH_PARENT; }
+      lp.width = w;
 
       stateView.setLayoutParams(lp);
     }
@@ -149,7 +141,7 @@ public class StateHelper {
       final ViewGroup.LayoutParams lp = stateView.getLayoutParams();
       if (lp == null) { return; }
 
-      final boolean heightSet = lp.height != LayoutParams.MATCH_PARENT;
+      final boolean heightSet = lp.height != MATCH_PARENT;
       /*
        * Do not change layout params if the state view
        * has custom width and did not want initially to match parent.
@@ -185,7 +177,7 @@ public class StateHelper {
         h = parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
       }
 
-      if (h <= 0) { h = ViewGroup.LayoutParams.MATCH_PARENT; }
+      if (h <= 0) { h = MATCH_PARENT; }
 
       lp.height = h;
       stateView.setLayoutParams(lp);
@@ -197,7 +189,7 @@ public class StateHelper {
   public static class DefaultLoadingStateViewCreator extends StateViewCreator {
     @Override
     protected View createView(final Context context, final ViewGroup parent) {
-      return LayoutInflater.from(context).inflate(R.layout.progress_panel, parent, false);
+      return LayoutInflater.from(context).inflate(R.layout.enroscar_ui_progress_panel, parent, false);
     }
     @Override
     protected void bindView(final Context context, final View view, final Object lastResponseData, final ViewGroup parent) {
@@ -209,13 +201,11 @@ public class StateHelper {
   public static class DefaultMessageStateViewCreator extends StateViewCreator {
     @Override
     protected View createView(final Context context, final ViewGroup parent) {
-      return LayoutInflater.from(context).inflate(R.layout.message_panel, parent, false);
+      return LayoutInflater.from(context).inflate(R.layout.enroscar_ui_message_panel, parent, false);
     }
     @Override
     protected void bindView(final Context context, final View view, final Object lastResponseData, final ViewGroup parent) {
-      if (lastResponseData instanceof ResponseData) {
-        ((TextView)view).setText(((ResponseData<?>) lastResponseData).getMessage());
-      }
+      ((TextView)view).setText(String.valueOf(lastResponseData));
     }
   }
 

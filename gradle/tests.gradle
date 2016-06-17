@@ -1,5 +1,3 @@
-apply plugin: 'org.robolectric'
-
 android.testOptions.unitTests.all {
 
   def selection = null

@@ -1,7 +1,5 @@
-dependOnProjects([':beans', ':content', ':stats'])
-
 dependencies {
-  compile 'com.android.support:support-v4:22.1.1'
+  compile "com.android.support:support-v4:$androidSupportLibVersion"
 }
 
 // POM file modifications

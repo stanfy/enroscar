@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 
 import com.stanfy.enroscar.ui.R;
 
+import static com.stanfy.enroscar.ui.R.styleable.enroscar_ui_ScrollView_enroscar_ui_frozeScrollPosition;
+
 /**
  * Scroll view that can save its position.
  * @author Roman Mazur (Stanfy - http://www.stanfy.com)
@@ -33,8 +35,8 @@ public class ScrollView extends android.widget.ScrollView {
   }
 
   private void init(final Context context, final AttributeSet attrs) {
-    final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ScrollView);
-    final boolean frozeSPos = a.getBoolean(R.styleable.ScrollView_frozeScrollPosition, true);
+    final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.enroscar_ui_ScrollView);
+    final boolean frozeSPos = a.getBoolean(enroscar_ui_ScrollView_enroscar_ui_frozeScrollPosition, true);
     a.recycle();
     setFrozeScrollPosition(frozeSPos);
   }

@@ -1,3 +1,8 @@
+Deprecated
+==========
+
+Active development and support are stopped.
+
 Enroscar Net
 ============
 
