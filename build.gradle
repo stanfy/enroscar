@@ -44,7 +44,7 @@ configure(libraryModules) {
   }
 
   android {
-    compileSdkVersion 23
+    compileSdkVersion 21
 
     buildToolsVersion project.androidBuildToolsVersion
 

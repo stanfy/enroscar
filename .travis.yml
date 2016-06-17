@@ -31,7 +31,7 @@ install:
 
 script:
   # JavaVM tests
-  - ./gradlew --continue check || cat /home/travis/build/stanfy/enroscar/content/build/outputs/lint-results-debug.xml
+  - ./gradlew --continue check
 
 after_success:
   - chmod +x scripts/deploy_to_maven.sh
