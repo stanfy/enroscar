@@ -41,7 +41,6 @@ public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper>
 
   /**
    * Configure URI matcher.
-   * <p>
    *   Example:
    *   <pre>
    *     matcher.registerStrategy("com.example.authority", "/path/#", new SimpleStrategy() {
@@ -51,7 +50,6 @@ public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper>
    *         }
    *     });
    *   </pre>
-   * </p>
    * @param matcher URI matcher instance
    */
   protected abstract void onStrategyMatcherCreate(final StrategyMatcher<T> matcher);
@@ -146,31 +144,17 @@ public abstract class StrategiesContentProvider<T extends SQLiteOpenHelper>
    * @param <T> type of SQLiteOpenHelper
    */
   public interface Strategy<T extends SQLiteOpenHelper> {
-    /**
-     * @see android.content.ContentProvider#query(Uri, String[], String, String[], String)
-     */
+
     Cursor query(final T appDbManager, final Uri uri, final String[] projection,
                  final String selection, final String[] selectionArgs, final String sortOrder);
 
-    /**
-     * @see android.content.ContentProvider#getType(Uri)
-     */
     String getType(final T appDbManager, final Uri uri);
 
-    /**
-     * @see android.content.ContentProvider#insert(Uri, ContentValues)
-     */
     Uri insert(final T appDbManager, final Uri uri, final ContentValues values);
 
-    /**
-     * @see android.content.ContentProvider#delete(Uri, String, String[])
-     */
     int delete(final T appDbManager, final Uri uri, final String selection,
                final String[] selectionArgs);
 
-    /**
-     * @see android.content.ContentProvider#update(Uri, ContentValues, String, String[])
-     */
     int update(final T appDbManager, final Uri uri, final ContentValues values,
                final String selection, final String[] selectionArgs);
   }

@@ -223,7 +223,7 @@ public final class SharingHelper {
       }
       return getStreamUri() == null ? 0 : 1;
     }
-    /** @return stream URI (use content resolver to get content details and stream object) */
+
     public Uri getStreamUri(final int index) {
       if (cachedStreams == null && isMultipleShare()) { cacheStreams(); }
       if (cachedStreams != null) { return cachedStreams.get(index); }
@@ -234,7 +234,7 @@ public final class SharingHelper {
     /** @return whether sharing data describes a content stream */
     public boolean containsStream() { return getStreamUriCount() > 0; }
 
-    /** Caller information. */
+    /** @return caller information */
     public ComponentName getCallerInfo() { return callerInfo; }
 
     /** @return whether content stream is resolved */

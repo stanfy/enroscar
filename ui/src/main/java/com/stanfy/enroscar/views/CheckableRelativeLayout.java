@@ -1,13 +1,14 @@
 package com.stanfy.enroscar.views;
 
-import static com.stanfy.enroscar.views.CheckableConsts.CHECKED_ATTRS;
-import static com.stanfy.enroscar.views.CheckableConsts.CHECKED_STATE_SET;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Checkable;
 import android.widget.RelativeLayout;
+
+import static com.stanfy.enroscar.views.CheckableConsts.CHECKED_ATTRS;
+import static com.stanfy.enroscar.views.CheckableConsts.CHECKED_STATE_SET;
 
 /**
  * {@link RelativeLayout} that implements {@link Checkable}.
@@ -21,27 +22,15 @@ public class CheckableRelativeLayout extends RelativeLayout implements Checkable
   /** Checked flag. */
   private boolean checked;
 
-  /**
-   * @param context
-   */
   public CheckableRelativeLayout(final Context context) {
     super(context);
   }
 
-  /**
-   * @param context
-   * @param attrs
-   * @param defStyle
-   */
   public CheckableRelativeLayout(final Context context, final AttributeSet attrs, final int defStyle) {
     super(context, attrs, defStyle);
     init(context, attrs);
   }
 
-  /**
-   * @param context
-   * @param attrs
-   */
   public CheckableRelativeLayout(final Context context, final AttributeSet attrs) {
     super(context, attrs);
     init(context, attrs);
@@ -53,11 +42,6 @@ public class CheckableRelativeLayout extends RelativeLayout implements Checkable
     a.recycle();
   }
 
-  /**
-   * <p>Changes the checked state of this text view.</p>
-   *
-   * @param checked true to check the text, false to uncheck it
-   */
   @Override
   public void setChecked(final boolean checked) {
     if (this.checked != checked) {
@@ -101,19 +85,13 @@ public class CheckableRelativeLayout extends RelativeLayout implements Checkable
   public void setOnCheckedChangeListener(final OnCheckedChangeListener listener) { this.listener = listener; }
 
   /**
-   * <p>
    * Interface definition for a callback to be invoked when the checked state
    * is changed.
-   * </p>
    */
   public interface OnCheckedChangeListener {
     /**
-     * <p>
      * Called when the checked state has changed.
-     * </p>
-     *
-     * @param value
-     *          checked value
+     * @param value checked value
      */
     void onCheckedChanged(final boolean value);
   }

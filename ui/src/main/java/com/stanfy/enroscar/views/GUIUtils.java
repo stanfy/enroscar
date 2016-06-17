@@ -193,6 +193,7 @@ public class GUIUtils {
    * Find view by ID.
    * @param view view to start search
    * @param id view identifier
+   * @param <T> view type
    * @return view instance, null if nothing was found
    * @see View#findViewById(int)
    */
@@ -206,6 +207,7 @@ public class GUIUtils {
    * Find view by ID.
    * @param activity activity to search in
    * @param id view identifier
+   * @param <T> view type
    * @return view instance, null if nothing was found
    * @see Activity#findViewById(int)
    */

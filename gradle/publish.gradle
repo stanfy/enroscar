@@ -89,6 +89,7 @@ task installArchives(type: Upload) {
 
 task androidJavadocs(type: Javadoc) {
   source = android.sourceSets.main.java.srcDirs
+  options.addStringOption('Xdoclint:none', '-quiet')
 }
 
 task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
