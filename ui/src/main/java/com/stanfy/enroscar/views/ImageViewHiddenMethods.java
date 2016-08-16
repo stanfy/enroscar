@@ -1,11 +1,9 @@
-package com.stanfy.enroscar.images.views;
+package com.stanfy.enroscar.views;
 
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
-
-import com.stanfy.enroscar.images.views.ImageView;
 
 /**
  * Methods that are hidden inside the ImageView Android implementation.
