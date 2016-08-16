@@ -20,4 +20,10 @@
         <attr name="enroscar_ui_checkedButton" format="integer" />
     </declare-styleable>
 
+    <!-- ImageView custom attributes. -->
+    <declare-styleable name="ImageView">
+        <!-- Corners radius. -->
+        <attr name="android:radius" />
+    </declare-styleable>
+
 </resources>

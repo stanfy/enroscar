@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.stanfy.enroscar.images.decorator;
+package com.stanfy.enroscar.views.decorator;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

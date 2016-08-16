@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.images.decorator;
+package com.stanfy.enroscar.views.decorator;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;

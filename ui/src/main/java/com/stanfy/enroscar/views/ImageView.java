@@ -1,4 +1,4 @@
-package com.stanfy.enroscar.images.views;
+package com.stanfy.enroscar.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -14,9 +14,9 @@ import android.net.Uri;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 
-import com.stanfy.enroscar.images.decorator.ImageDecorator;
-import com.stanfy.enroscar.images.decorator.MaskImageDecorator;
-import com.stanfy.enroscar.images.R;
+import com.stanfy.enroscar.views.decorator.ImageDecorator;
+import com.stanfy.enroscar.views.decorator.MaskImageDecorator;
+import com.stanfy.enroscar.ui.R;
 
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;

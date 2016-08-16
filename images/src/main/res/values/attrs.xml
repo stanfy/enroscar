@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <!-- ImageView custom attributes. -->
-  <declare-styleable name="ImageView">
-    <!-- Corners radius. -->
-    <attr name="android:radius" />
-  </declare-styleable>
-
   <!-- Attributes for LoadableImageView -->
   <declare-styleable name="LoadableImageView">
     <attr name="skipScaleBeforeCache" format="boolean" />
